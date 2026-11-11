@@ -1,0 +1,5 @@
+export enum DataOrigin {
+  NASA_FIRMS = 'NASA_FIRMS',
+  IMPORTED = 'IMPORTED',
+  SIMULATED = 'SIMULATED',
+}

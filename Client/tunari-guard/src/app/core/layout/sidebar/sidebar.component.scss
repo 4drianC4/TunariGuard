@@ -1,0 +1,8 @@
+:host{display:block;height:100%}.side { background:#0b1423; border-right:1px solid #273549; padding:26px 14px; height:100%; display:flex; flex-direction:column; }
+.brand { display:flex; gap:12px; align-items:center; padding:0 10px 28px; strong { display:block; font-size:15px; letter-spacing:.075em; } small { display:block; font-size:11px; color:#91a5bc; margin-top:4px; } }
+.brand-mark { display:grid; place-items:center; background:#ae361e; width:38px; height:38px; border-radius:11px; font-size:24px; }
+.nav-caption { color:#658099; font-size:10px; font-weight:800; letter-spacing:.15em; padding:0 13px 12px; }
+nav { display:grid; gap:3px; a { color:#9db0c8; text-decoration:none; display:flex; align-items:center; padding:12px 13px; gap:12px; border-radius:9px; font-size:13px; font-weight:600; } a:hover,a.active { background:#172a3d; color:#f2f7fd; } a.active { border-left:3px solid #eb6b45; } }
+.nav-icon { width:18px; text-align:center; font-size:17px; }
+.side-note { margin-top:auto; color:#70859a; padding:13px; font-size:11px; }
+@media(max-width:850px) { .side{padding:14px}.nav-caption,.side-note{display:none}.brand{padding-bottom:8px} nav{display:flex;overflow:auto} nav a{white-space:nowrap} }

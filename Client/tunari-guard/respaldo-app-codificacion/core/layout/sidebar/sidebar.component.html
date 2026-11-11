@@ -1,0 +1,10 @@
+<aside class="side">
+  <div class="brand"><span class="brand-mark">â™¨</span><div><strong>TUNARI GUARD</strong><small>NASA Space Apps Â· Bolivia</small></div></div>
+  <div class="nav-caption">MONITOREO SATELITAL</div>
+  <nav aria-label="MenÃº principal">
+    @for (item of nav; track item.path) {
+      <a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}"><span class="nav-icon">{{item.icon}}</span>{{item.label}}</a>
+    }
+  </nav>
+  <div class="side-note">MVP acadÃ©mico Â· Datos DEMO</div>
+</aside>

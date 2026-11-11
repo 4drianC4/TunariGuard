@@ -1,0 +1,6 @@
+export enum MapLayer {
+  BASE = 'BASE',
+  SATELLITE = 'SATELLITE',
+  HEATMAP = 'HEATMAP',
+  DISTRICTS = 'DISTRICTS',
+}

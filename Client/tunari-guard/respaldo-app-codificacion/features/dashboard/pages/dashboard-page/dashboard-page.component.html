@@ -1,0 +1,16 @@
+<section class="page">
+  <div class="eyebrow">NASA SPACE APPS / TUNARI GUARD</div>
+  <h1>Centro de monitoreo</h1>
+  <p class="lead">Detecciones satelitales MODIS y VIIRS Â· Parque Tunari / Cochabamba</p>
+  <div class="notice">MODO DEMOSTRACIÃ“N â€” Todas las observaciones mostradas aquÃ­ son simuladas. No son alertas operativas ni incendios confirmados.</div>
+  <div class="stats">
+    <app-stat-card label="Observaciones" [value]="store.totalObservations()" caption="Filas satelitales simuladas" />
+    <app-stat-card label="VIIRS" [value]="store.viirsCount()" caption="Mayor resoluciÃ³n nominal (375 m)" />
+    <app-stat-card label="MODIS" [value]="store.modisCount()" caption="ResoluciÃ³n nominal (1 km)" />
+    <app-stat-card label="Focos agrupados" [value]="store.hotspotsCount()" caption="Agrupamiento manual de muestra" />
+  </div>
+  <div class="panel-grid">
+    <article class="panel"><h2>Mapa de focos</h2><p>El componente Leaflet se desarrollarÃ¡ en <code>features/map/components/hotspot-map/</code>. El mapa aÃºn no estÃ¡ conectado.</p><a routerLink="/mapa">Ir al mÃ³dulo de mapas â†’</a></article>
+    <article class="panel"><h2>ArmonizaciÃ³n cientÃ­fica</h2><p>El sistema conservarÃ¡ cada observaciÃ³n y registrarÃ¡ las reglas de coincidencia espacial y temporal.</p><a routerLink="/armonizacion">Ver mÃ³dulo de armonizaciÃ³n â†’</a></article>
+  </div>
+</section>
