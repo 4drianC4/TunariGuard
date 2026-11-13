@@ -1,1 +1,36 @@
-<p>hotspot-popup works!</p>
+@if (observation; as selected) {
+  <section class="space-y-3 rounded-xl border border-[#526b24]/30 bg-white p-4 text-[#30351f] shadow-sm" aria-live="polite" aria-label="Detalle de detección seleccionada">
+    <header class="flex items-start justify-between gap-2">
+      <div>
+        <span class="block text-[9px] font-extrabold uppercase tracking-widest text-[#b84e20]">
+          {{ origin === 'DEMO' ? 'DETALLE · DEMOSTRACIÓN' : 'DETALLE DE OBSERVACIÓN' }}
+        </span>
+        <h2 class="mt-1 text-base font-semibold text-[#30351f]">{{ selected.sensor }} · {{ selected.platform }}</h2>
+      </div>
+      <button type="button" class="grid size-8 place-items-center rounded-md text-xl text-[#424037] hover:bg-[#526b24]/10"
+        (click)="close.emit()" aria-label="Cerrar detalle">×</button>
+    </header>
+
+    <dl class="grid grid-cols-2 gap-3">
+      <div><dt class="text-[10px] font-medium text-[#526b24]">Identificador</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.id }}</dd></div>
+      <div><dt class="text-[10px] font-medium text-[#526b24]">Origen / dataset</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.source }} · {{ selected.dataset }}</dd></div>
+      <div><dt class="text-[10px] font-medium text-[#526b24]">Fecha y hora UTC</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.acquiredAtUtc | date:'medium':'UTC':'es-BO' }} UTC</dd></div>
+      <div><dt class="text-[10px] font-medium text-[#526b24]">Coordenadas</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.position.lat }}, {{ selected.position.lng }}</dd></div>
+      @if (selected.confidenceRaw != null || selected.confidenceLevel) {
+        <div><dt class="text-[10px] font-medium text-[#526b24]">Confianza original / clase</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.confidenceRaw ?? '—' }} · {{ selected.confidenceLevel || 'Sin clasificación' }}</dd></div>
+      }
+      @if (selected.frpMw != null) {
+        <div><dt class="text-[10px] font-medium text-[#526b24]">FRP</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.frpMw }} MW</dd></div>
+      }
+      @if (selected.brightnessKelvin != null) { <div><dt class="text-[10px] font-medium text-[#526b24]">Temperatura de brillo</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.brightnessKelvin }} K</dd></div> }
+      @if (selected.dayNight) { <div><dt class="text-[10px] font-medium text-[#526b24]">Día / noche</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.dayNight }}</dd></div> }
+      <div><dt class="text-[10px] font-medium text-[#526b24]">Asignación territorial</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.districtAssignment }}</dd></div>
+      @if (selected.district) { <div><dt class="text-[10px] font-medium text-[#526b24]">Distrito</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.district.name }} ({{ selected.district.code }})</dd></div> }
+      @if (selected.batchId) { <div><dt class="text-[10px] font-medium text-[#526b24]">Lote de ingesta</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.batchId }}</dd></div> }
+    </dl>
+
+    @if (origin === 'DEMO') {
+      <p class="rounded-md bg-[#526b24]/15 p-3 text-xs leading-5 text-[#424037]">Registro ficticio para probar la interfaz; no es una medición FIRMS.</p>
+    }
+  </section>
+}

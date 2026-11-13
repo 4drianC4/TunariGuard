@@ -1,1 +1,108 @@
-<p>hotspot-map works!</p>
+<section class="min-w-0 overflow-hidden rounded-2xl border border-[#dfd8cd] bg-gradient-to-br from-[#fffcf8] to-[#f9f6f1] text-[#30351f] shadow-sm" aria-label="Explorador geoespacial de Tunari Guard">
+  <header class="flex min-h-20 flex-wrap items-center gap-3 border-b border-[#dfd8cd] bg-white px-4 py-3">
+    <button type="button" class="inline-flex items-center gap-2 rounded-lg border border-[#526b24]/35 bg-[#30351f] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#424037]"
+      (click)="toggleFilters()" [attr.aria-expanded]="filtersOpen()" aria-controls="map-left-panel">
+      <span aria-hidden="true">☷</span>{{ filtersOpen() ? 'Ocultar capas y filtros' : 'Mostrar capas y filtros' }}
+    </button>
+    <div class="grid gap-1 border-l border-[#526b24]/30 pl-4 max-[720px]:pl-2">
+      <span class="text-[9px] font-extrabold tracking-widest text-[#b84e20]">ÁREA DE ANÁLISIS</span>
+      <strong class="text-xs font-semibold text-[#30351f]">{{ areaId }}</strong>
+    </div>
+    <app-map-timeline [areaId]="areaId" [period]="period" />
+    <span class="ml-auto rounded-md border border-[#b84e20]/30 bg-[#526b24]/10 px-2 py-1.5 text-[9px] font-extrabold tracking-wide text-[#424037]">
+      {{ dataSet().origin === 'DEMO' ? 'DATOS DEMO' : 'BACKEND' }}
+    </span>
+  </header>
+
+  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#dfd8cd] bg-white px-4 py-2">
+    <div class="flex items-center gap-2 text-sm text-[#424037]">
+      <strong class="text-lg text-[#30351f]">{{ filteredObservations.length }}</strong>
+      <span>observaciones visibles</span>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="group relative inline-flex items-center gap-1 text-xs text-[#424037]">
+        Área de interés
+        <button type="button" class="cursor-help text-[#526b24] hover:text-[#30351f]" aria-label="Ayuda sobre el dibujo del área de interés"
+          title="Dibuja un rectángulo o polígono para filtrar las detecciones. Usa los controles de edición para ajustar o quitar el área.">ⓘ</button>
+      </span>
+      @if (selectedArea()) {
+        <span class="rounded-full border border-[#526b24]/45 bg-[#526b24]/15 px-2 py-1 text-xs text-[#424037]">AOI activa</span>
+        <button type="button" class="rounded-md border border-[#526b24]/45 px-3 py-1.5 text-xs font-medium hover:bg-[#526b24]/10" (click)="exportSelectedArea()">Exportar AOI GeoJSON</button>
+        <button type="button" class="rounded-md border border-[#526b24]/45 px-3 py-1.5 text-xs font-medium hover:bg-[#526b24]/10" (click)="clearSelection()">Quitar AOI</button>
+      }
+      <button type="button" class="rounded-md border border-[#526b24]/45 px-3 py-1.5 text-xs font-medium hover:bg-[#526b24]/10 disabled:cursor-not-allowed disabled:opacity-50"
+        [disabled]="!filteredObservations.length" (click)="exportObservations('csv')">Exportar CSV</button>
+      <button type="button" class="rounded-md border border-[#526b24]/45 px-3 py-1.5 text-xs font-medium hover:bg-[#526b24]/10 disabled:cursor-not-allowed disabled:opacity-50"
+        [disabled]="!filteredObservations.length" (click)="exportObservations('geojson')">Exportar GeoJSON</button>
+    </div>
+  </div>
+
+  <div class="grid min-h-[min(76vh,760px)] grid-cols-[minmax(235px,278px)_minmax(0,1fr)_minmax(280px,350px)] bg-white max-[1120px]:grid-cols-[230px_minmax(0,1fr)] max-[720px]:flex max-[720px]:flex-col"
+    [ngClass]="[
+      filtersOpen() ? (hasRightSidebarContent ? 'grid-cols-[minmax(235px,278px)_minmax(0,1fr)_minmax(280px,350px)]!' : 'grid-cols-[minmax(235px,278px)_minmax(0,1fr)]!') : (hasRightSidebarContent ? 'grid-cols-[minmax(0,1fr)_minmax(280px,350px)]!' : 'grid-cols-[minmax(0,1fr)]!'),
+      filtersOpen() ? 'max-[1120px]:grid-cols-[230px_minmax(0,1fr)]!' : 'max-[1120px]:grid-cols-[minmax(0,1fr)]!'
+    ]">
+    @if (filtersOpen()) {
+      <aside id="map-left-panel" class="min-w-0 max-h-[min(76vh,760px)] space-y-5 overflow-auto border-r border-[#dfd8cd] bg-white p-4 max-[1120px]:row-start-1 max-[720px]:order-2 max-[720px]:max-h-none max-[720px]:border-r-0 max-[720px]:border-t" aria-label="Capas, filtros y cartografía">
+        <app-map-layer-switcher [observations]="dataSet().observations" [visibleSensors]="visibleSensors" (visibilityChange)="onSensorVisibilityChange($event)" />
+        <app-map-filters [observations]="dataSet().observations" [filters]="observationFilters" (filtersChange)="onFilterChanges($event)" (reset)="clearFilters()" />
+        <app-municipal-layer-control [layers]="municipalLayerControls" [open]="municipalLayersOpen()"
+          (openChange)="setMunicipalPanelOpen($event)" (visibilityChange)="setMunicipalLayer($event.id, $event.visible)"
+          (legendError)="markLegendFailed($event)" (retry)="retryMunicipalLayer($event)" />
+      </aside>
+    }
+
+    <div class="grid min-w-0 grid-rows-[minmax(400px,1fr)_auto] gap-2 pb-3 max-[1120px]:col-start-2 max-[1120px]:row-start-1 max-[720px]:order-1 max-[720px]:col-auto"
+      [ngClass]="filtersOpen() ? '' : 'max-[1120px]:col-span-full!'">
+      <div class="relative h-[min(76vh,760px)] min-h-[460px] overflow-hidden bg-[#e6e9df] max-[720px]:h-[62vh] max-[720px]:min-h-[380px]">
+        <div #mapContainer class="absolute inset-0 h-full w-full [&_img]:!max-w-none [&_img]:!max-h-none [&_.leaflet-bar]:!border-[#526b24]/50 [&_.leaflet-bar_a]:!bg-white [&_.leaflet-bar_a]:!text-[#30351f] [&_.leaflet-control-attribution]:!bg-white/90 [&_.leaflet-control-attribution]:!text-[#30351f]"
+          role="application" aria-label="Mapa interactivo de observaciones satelitales"></div>
+        <div class="pointer-events-none absolute bottom-3 left-3 right-3 z-[600] flex items-center justify-between gap-2 text-[10px] text-[#30351f] max-[720px]:text-[8px]">
+          <span class="rounded-md border border-white/80 bg-white/95 px-2 py-1.5 text-left text-[#424037] shadow-md">Una detección no confirma un incendio</span>
+          <span class="ml-auto inline-flex items-center gap-3 rounded-lg border border-[#526b24]/40 bg-white/95 px-3 py-2 text-[#30351f] shadow-md">
+            @if (visibleSensors.includes(SensorType.VIIRS)) { <span class="inline-flex items-center gap-1.5"><span class="size-2.5 rounded-full bg-[#DC2626]"></span>VIIRS</span> }
+            @if (visibleSensors.includes(SensorType.MODIS)) { <span class="inline-flex items-center gap-1.5"><span class="size-2.5 rounded-full bg-[#2563EB]"></span>MODIS</span> }
+          </span>
+        </div>
+      </div>
+
+      @if (dataStatus() === 'loading') { <div class="mx-3 rounded-lg bg-[#526b24]/10 px-3 py-2 text-xs text-[#424037]" role="status">Cargando datos del mapa…</div> }
+      @if (dataStatus() === 'error') { <div class="mx-3 flex flex-col gap-1 rounded-lg bg-[#b84e20]/10 px-3 py-2 text-xs text-[#424037]" role="alert"><strong>No se pudieron cargar los datos.</strong><span>{{ dataError() }}</span></div> }
+      @if (dataStatus() === 'ready' && !filteredObservations.length) { <div class="mx-3 rounded-lg bg-[#526b24]/10 px-3 py-2 text-xs text-[#424037]">No hay observaciones en el período y filtros recibidos.</div> }
+    </div>
+
+    @if (hasRightSidebarContent) {
+      <aside class="grid min-w-0 max-h-[min(76vh,760px)] content-start gap-3 overflow-auto border-l border-[#dfd8cd] bg-white p-3 max-[1120px]:col-span-full max-[1120px]:grid-cols-2 max-[1120px]:max-h-none max-[1120px]:border-l-0 max-[1120px]:border-t max-[720px]:order-3 max-[720px]:grid-cols-1" aria-label="Detalle y contexto municipal">
+        <app-hotspot-popup [observation]="selectedObservation()" [origin]="dataSet().origin" (close)="selectObservation(null)" />
+        @if (municipalFeatureInfo(); as info) {
+          <section class="space-y-3 rounded-xl border border-[#526b24]/30 bg-white p-3 text-[#30351f]" aria-live="polite">
+            <header class="flex items-start justify-between gap-2">
+              <div><p class="text-xs font-semibold uppercase tracking-wide text-[#526b24]">Consulta municipal</p><h2 class="mt-1 text-sm font-semibold">Información del lugar</h2></div>
+              <button type="button" class="rounded-md px-2 py-1 text-lg text-[#424037] hover:bg-[#526b24]/10" aria-label="Cerrar información territorial" (click)="closeMunicipalInfo()">×</button>
+            </header>
+            @if (municipalFeatureInfoError()) { <p class="rounded-md bg-[#b84e20]/10 p-2 text-xs text-[#424037]">{{ municipalFeatureInfoError() }}</p> }
+            @for (layerResult of info; track layerResult.name) {
+              @if (layerResult.result.features?.length) {
+                <article class="border-t border-[#dfd8cd] pt-3">
+                  <h3 class="mb-2 text-xs font-semibold text-[#424037]">{{ layerResult.name }}</h3>
+                  @for (feature of layerResult.result.features; track $index) {
+                    @if (feature.properties; as properties) {
+                      <dl class="space-y-2">
+                        @for (entry of (properties | keyvalue); track entry.key) {
+                          <div class="flex items-start justify-between gap-3 text-xs"><dt class="text-[#526b24]">{{ entry.key }}</dt><dd class="m-0 text-right text-[#30351f]">{{ entry.value ?? 'Sin valor' }}</dd></div>
+                        }
+                      </dl>
+                    }
+                  }
+                </article>
+              }
+            }
+            <p class="border-t border-[#dfd8cd] pt-2 text-xs text-[#526b24]">Atributos devueltos por las capas consultadas.</p>
+          </section>
+        } @else if (municipalFeatureInfoError()) {
+          <section class="rounded-xl border border-[#b84e20]/30 bg-[#b84e20]/5 p-3" aria-live="polite"><p class="text-xs text-[#424037]">{{ municipalFeatureInfoError() }}</p></section>
+        }
+      </aside>
+    }
+  </div>
+</section>
