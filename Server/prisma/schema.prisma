@@ -1,0 +1,136 @@
+// Esquema de Tunari Guard.
+// Las columnas espaciales se declaran como Unsupported("geometry(...)") y se consultan
+// con SQL parametrizado dentro del adaptador de persistencia de cada módulo.
+// Todas las fechas se guardan en UTC.
+
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Sensor {
+  MODIS
+  VIIRS
+}
+
+enum Platform {
+  TERRA
+  AQUA
+  SNPP
+  NOAA20
+  NOAA21
+}
+
+/// Clases de confianza publicadas por FIRMS. MODIS: 0–29 baja, 30–79 nominal, 80–100 alta.
+/// VIIRS: l / n / h. El valor original se conserva en confidence_raw.
+enum ConfidenceLevel {
+  LOW
+  NOMINAL
+  HIGH
+}
+
+enum DayNight {
+  DAY
+  NIGHT
+}
+
+enum DataOrigin {
+  REAL
+  SIMULATED
+}
+
+enum ImportSource {
+  CSV
+  FIRMS_API
+}
+
+/// PENDING: aún no evaluada · ASSIGNED: dentro de un solo distrito ·
+/// OUTSIDE: fuera de todos los distritos · AMBIGUOUS: cubierta por más de un polígono.
+enum DistrictAssignment {
+  PENDING
+  ASSIGNED
+  OUTSIDE
+  AMBIGUOUS
+}
+
+/// Límites territoriales versionados. Reimportar un código reemplaza su geometría.
+model District {
+  id           Int                                       @id @default(autoincrement())
+  code         String                                    @unique
+  name         String
+  source       String
+  version      String
+  provisional  Boolean                                   @default(false)
+  geom         Unsupported("geometry(MultiPolygon, 4326)")
+  importedAt   DateTime                                  @default(now()) @map("imported_at")
+  observations Observation[]
+
+  @@index([geom], type: Gist)
+  @@map("districts")
+}
+
+/// Un lote de importación (un archivo CSV o una sincronización FIRMS).
+model ImportBatch {
+  id           String        @id @default(uuid()) @db.Uuid
+  source       ImportSource
+  fileName     String?       @map("file_name")
+  checksum     String
+  dataset      String
+  origin       DataOrigin
+  rowsTotal    Int           @map("rows_total")
+  inserted     Int
+  duplicates   Int
+  rejected     Int
+  errors       Json          @default("[]")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  observations Observation[]
+
+  @@index([checksum])
+  @@map("import_batches")
+}
+
+/// Una detección térmica tal como la reporta un sensor. No equivale a un incendio confirmado.
+model Observation {
+  id                 String                            @id @default(uuid()) @db.Uuid
+  /// Huella para importaciones idempotentes: sensor, plataforma, instante y coordenadas.
+  dedupeKey          String                            @unique @map("dedupe_key")
+  sensor             Sensor
+  platform           Platform
+  latitude           Float
+  longitude          Float
+  geom               Unsupported("geometry(Point, 4326)")?
+  acquiredAt         DateTime                          @map("acquired_at")
+  confidenceRaw      String                            @map("confidence_raw")
+  confidenceLevel    ConfidenceLevel?                  @map("confidence_level")
+  /// MODIS: brightness (banda 21/22). VIIRS: bright_ti4 (banda I-4). Kelvin.
+  brightnessK        Float?                            @map("brightness_k")
+  /// MODIS: bright_t31. VIIRS: bright_ti5. Kelvin.
+  brightnessAuxK     Float?                            @map("brightness_aux_k")
+  frpMw              Float?                            @map("frp_mw")
+  scan               Float?
+  track              Float?
+  dayNight           DayNight?                         @map("day_night")
+  productVersion     String?                           @map("product_version")
+  origin             DataOrigin
+  /// Fila original del archivo, para trazabilidad.
+  raw                Json
+  districtAssignment DistrictAssignment                @default(PENDING) @map("district_assignment")
+  districtId         Int?                              @map("district_id")
+  district           District?                         @relation(fields: [districtId], references: [id], onDelete: SetNull)
+  batchId            String                            @map("batch_id") @db.Uuid
+  batch              ImportBatch                       @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  createdAt          DateTime                          @default(now()) @map("created_at")
+
+  @@index([acquiredAt])
+  @@index([sensor, acquiredAt])
+  @@index([districtId, acquiredAt])
+  @@index([batchId])
+  @@index([geom], type: Gist)
+  @@map("observations")
+}

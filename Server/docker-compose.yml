@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgis/postgis:17-3.5
+    container_name: tunari-guard-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-tunari}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tunari_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-tunari_guard}
+    ports:
+      - '${DB_PORT:-5432}:5432'
+    volumes:
+      - tunari-guard-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  tunari-guard-pgdata:
