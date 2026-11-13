@@ -1,16 +1,69 @@
 @use 'tailwindcss';
-:root { font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif; color:#edf3fa; background:#0e1928; font-synthesis:none; }
+:root { font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif; color:#30351f; background:#f5f0e8; font-synthesis:none; }
 * { box-sizing:border-box; }
 body { margin:0; min-height:100vh; }
 h1,h2,h3,p { margin-top:0; }
 h1 {font-size:clamp(27px,3vw,42px);letter-spacing:-.04em;margin-bottom:12px;}
 h2 {font-size:18px;}
-.page .eyebrow { color:#f59b71; font-size:11px; font-weight:800; letter-spacing:.17em; margin-bottom:12px; }
-.page .lead { color:#abc0d8; font-size:15px; max-width:780px; line-height:1.7; }
-.placeholder { background:#142338; border:1px dashed #476078; border-radius:14px; padding:35px; margin-top:30px; color:#d4e0ee; }
-.placeholder p {color:#99acc4;line-height:1.6;}
-code {overflow-wrap:anywhere;color:#efb17f;}
+.page .eyebrow { color:#b84e20; font-size:11px; font-weight:800; letter-spacing:.17em; margin-bottom:12px; }
+.page .lead { color:#595a4c; font-size:15px; max-width:780px; line-height:1.7; }
+.placeholder { background:#fffaf1; border:1px dashed #bac3a2; border-radius:14px; padding:35px; margin-top:30px; color:#3d4930; }
+.placeholder p {color:#68715c;line-height:1.6;}
+code {overflow-wrap:anywhere;color:#b35427;}
+/* Estilos anteriores de Tuni preservados abajo (si se aplica el instalador): el instalador conserva
+   el bloque TUNI_V12_PANEL_START existente y solo sustituye la base visual de esta hoja. */
 
-/* TUNI_V12_PANEL_START */
-.tuni-widget{.panel{position:absolute;right:calc(100% + 12px);bottom:15px;width:min(340px,calc(100vw - 32px));overflow:hidden;border-radius:19px;border:1px solid #d9e9e2;background:#fff;box-shadow:0 14px 44px rgb(7 38 34 / 23%);color:#174538;pointer-events:auto;animation:enter .22s ease-out}.p-header{padding:13px 13px 11px;display:flex;align-items:center;gap:9px;border-bottom:1px solid #e4eee9}.avatar{width:36px;height:36px;flex:none;border-radius:12px;background:#e7f4e8;overflow:hidden;display:grid;place-items:center}.avatar img{width:54px;height:auto;transform:translateY(4px)}.ident{display:flex;flex-direction:column;flex:1;min-width:0;gap:4px}.ident strong{font-size:13px;line-height:1.2}.ident span{font-size:9px;font-weight:750;color:#598a7a;letter-spacing:.065em}.xbtn{border:0;background:none;padding:2px 6px;cursor:pointer;color:#638077;font-size:22px}.chat-wrap{padding:14px 14px 8px}.chat-title{font-size:10px;font-weight:800;letter-spacing:.08em;color:#6b8d82;text-transform:uppercase;margin-bottom:9px}.simulation{font-size:10px;color:#b35c29;font-weight:800;margin-bottom:8px}.chat-list{display:flex;flex-direction:column;gap:8px}.bubble{max-width:92%;padding:10px 11px;border-radius:14px}.bubble .who{display:block;font-size:10px;font-weight:800;letter-spacing:.03em;margin-bottom:4px}.bubble p{font-size:12px;line-height:1.5;margin:0}.bubble.tuni{align-self:flex-start;background:#f2f8f5;border:1px solid #dcebe3;color:#23483c}.bubble.tuni .who{color:#2d7a60}.bubble.user{align-self:flex-end;background:#dff2e6;border:1px solid #b9dfc7;color:#1d4e3c}.bubble.user .who{color:#246d53}.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:12px 14px 10px}.actions button{border:1px solid #d4e8dd;border-radius:999px;background:#f5faf7;color:#1c5b45;font-weight:700;font-size:11px;padding:10px 8px;cursor:pointer}.actions button:hover,.actions button.selected{background:#dcefe3;border-color:#90cdb0}.p-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 14px 14px}.p-foot button{border:0;background:none;color:#638176;font-size:11px;cursor:pointer;padding:0}.p-foot a{text-decoration:none;color:#128264;font-size:11px;font-weight:750;white-space:nowrap}}
-/* TUNI_V12_PANEL_END */
+/* TUNARIGUARD_DASHBOARD_GLOBAL_START - selectores prefijados */
+.tg-dashboard{max-width:none;}
+.tg-dash-intro{position:relative;min-height:117px;overflow:hidden;padding:1px 7px 0;}
+.tg-dash-mountain{position:absolute;inset:-20px -29px auto auto;width:min(56vw,625px);height:147px;background:url('/assets/tunari-ui/cordillera-cabecera.webp') center center / cover no-repeat;opacity:.66;pointer-events:none;mask-image:linear-gradient(to right,transparent,black 38%);}
+.tg-breadcrumb{position:relative;z-index:1;margin-bottom:8px;color:#bb3c12;font-size:12px;font-weight:850;letter-spacing:.14em;}
+.tg-dash-intro h1{position:relative;z-index:1;margin:0 0 4px;color:#303722;font-size:clamp(29px,2.55vw,41px);font-weight:790;letter-spacing:-.045em;line-height:1.06;}
+.tg-dash-intro p{position:relative;z-index:1;max-width:750px;margin:6px 0 0;color:#424037;font-size:15px;line-height:1.5;}
+.tg-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin:0 7px 23px;}
+.tg-kpi{min-width:0;min-height:106px;padding:19px 19px 14px;border-radius:19px;border:1px solid #dfd8cd;background:linear-gradient(120deg,#fffcf8 0%,#f8f5f0 100%);box-shadow:0 3px 8px rgb(61 48 27 / 11%);display:flex;align-items:center;gap:15px;overflow:hidden;}
+.tg-kpi-fire{border-left:4px solid #e55211;padding-left:16px;}
+.tg-kpi-symbol{width:58px;height:58px;flex:0 0 58px;display:grid;place-items:center;border-radius:15px;background:#e9ecd9;color:#4b641f;}
+.tg-kpi-symbol.warm{color:#d94d0d;background:linear-gradient(135deg,#ffe4d0,#f7e9d6)}.tg-kpi-symbol.pink{color:#d74412;background:#f9e6df}.tg-kpi-symbol.green{color:#526b24;background:#eaecd8}
+.tg-kpi-symbol svg{width:34px;height:34px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.tg-kpi-copy{min-width:0;flex:1;border-left:1px solid #cec7b8;padding-left:15px;}
+.tg-kpi-title{font-size:14px;font-weight:620;color:#24261e;white-space:nowrap;}
+.tg-kpi-number{display:flex;align-items:baseline;gap:6px;margin-top:5px;line-height:1;color:#30391d;font-size:37px;font-weight:800;letter-spacing:-.06em;white-space:nowrap;}
+.tg-kpi-number small{font-size:25px;letter-spacing:-.02em;}
+.tg-change{margin-left:auto;padding:7px 9px;border-radius:999px;font-size:10px;letter-spacing:-.015em;font-weight:800;white-space:nowrap;}
+.tg-change.orange{background:#ffe7d5;color:#bc400e;}.tg-change.olive{background:#eaeccd;color:#486119;font-size:8px;}
+.tg-card{min-width:0;background:linear-gradient(125deg,#fffcf7,#f9f6f1);border:1px solid #ded6ca;border-radius:19px;box-shadow:0 4px 9px rgb(60 45 25 / 10%);padding:14px;}
+.tg-main-grid{display:grid;grid-template-columns:minmax(0,1.68fr) minmax(330px,1fr);gap:15px;margin-bottom:14px;}
+.tg-card-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px;margin:0 6px 10px;}
+.tg-card-heading.tg-tight{min-height:34px;margin-bottom:8px;}
+.tg-card-titleline{display:flex;align-items:flex-start;gap:15px;min-width:0;}
+.tg-card-titleline>svg{flex:0 0 29px;width:29px;height:29px;color:#4a5b27;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round;margin-top:1px;}
+.tg-card h2{font-size:19px;line-height:1.2;margin:0 0 2px;color:#303722;font-weight:800;letter-spacing:-.027em;}
+.tg-card p{margin:0;font-size:12.5px;color:#30312a;line-height:1.35;}
+.tg-map-button{display:inline-flex;align-items:center;justify-content:center;gap:10px;flex:0 0 auto;padding:8px 15px;color:#fff9e8;font-size:12px;font-weight:800;text-decoration:none;border-radius:999px;background:linear-gradient(#687b44,#30391e);box-shadow:0 3px 8px rgb(45 51 25 / 22%);}
+.tg-map-button:hover{filter:brightness(1.13)}.tg-map-button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.9;}
+.tg-map-picture{display:block;width:100%;height:276px;overflow:hidden;border-radius:16px;background:#b9c8a4;}
+.tg-map-picture img{width:100%;height:100%;display:block;object-fit:cover;object-position:center;transition:transform .25s;}.tg-map-picture:hover img{transform:scale(1.02)}
+.tg-right-grid{display:grid;grid-template-rows:1.28fr 1fr;gap:13px;min-width:0;}
+.tg-alert-card,.tg-harmony-card{min-height:0;padding:13px 15px;}
+.tg-alert-list{display:grid;gap:5px;}
+.tg-alert-row{display:flex;align-items:center;gap:8px;min-width:0;padding:6px 10px;background:#f3eee7;border-radius:999px;font-size:12px;}
+.tg-alert-status{display:flex;align-items:center;gap:9px;min-width:72px;font-weight:780;white-space:nowrap;}.tg-alert-status i,.tg-severity i{display:inline-block;width:10px;height:10px;border-radius:50%;flex:0 0 10px;background:#ed5a11;}
+.tg-alert-status.critical{color:#a92c0b}.tg-alert-status.critical i,.tg-severity.critical i{background:#e94119}.tg-alert-status.high{color:#824418}.tg-alert-status.high i,.tg-severity.high i{background:#fb8308}.tg-alert-status.medium{color:#685a1b}.tg-alert-status.medium i,.tg-severity.medium i{background:#e0b111}
+.tg-alert-district{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#333029;}.tg-alert-row small{white-space:nowrap;color:#777368;font-size:11px;}
+.tg-simple-link{color:#31361e;text-decoration:none;font-size:12px;white-space:nowrap;font-weight:650;}.tg-simple-link:hover{text-decoration:underline;}.tg-simple-link span{padding-left:5px;font-size:16px;}
+.tg-harmony-card{padding:16px 20px;}.tg-harmony-card .tg-card-titleline{width:100%;align-items:flex-start;}.tg-harmony-card .tg-card-titleline>div{flex:1;}.tg-harmony-card .tg-card-titleline>div p{max-width:280px;}.tg-harmony-value{font-size:26px;color:#394724;white-space:nowrap;margin-left:auto;margin-top:19px;}
+.tg-progress{height:14px;margin:7px 0 10px 48px;border-radius:999px;background:#e8dcc7;overflow:hidden;}.tg-progress span{display:block;height:100%;width:87%;border-radius:inherit;background:linear-gradient(90deg,#8eaa49,#526c26);}
+.tg-timestamp{padding-left:48px!important;font-size:11px!important;display:flex;align-items:center;gap:8px;}.tg-check{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;color:white;background:#6c8a31;font-weight:900;font-size:12px;}
+.tg-bottom-grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:14px;}.tg-bottom-grid .tg-card{min-height:210px;padding:12px 18px 8px;}
+.tg-trend-card .tg-card-heading,.tg-detections-card .tg-card-heading{margin-bottom:6px;}.tg-chart{height:145px;margin:2px 5px 0;}.tg-chart>svg{width:100%;height:100%;display:block;}
+.tg-table-scroll{overflow-x:auto;}.tg-detections-card table{width:100%;border-collapse:collapse;text-align:left;font-size:11px;white-space:nowrap;}.tg-detections-card thead{background:#eae0cd;}.tg-detections-card th{padding:7px 10px;color:#343222;font-size:11px;font-weight:800;}.tg-detections-card th:first-child{border-radius:8px 0 0 8px;}.tg-detections-card th:last-child{border-radius:0 8px 8px 0;}.tg-detections-card td{padding:4px 10px;border-bottom:1px solid #dfd7cc;color:#302f28;}
+.tg-severity{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;}.tg-severity i{width:9px;height:9px;flex-basis:9px;}.tg-severity.critical{color:#9b3111}.tg-severity.high{color:#a05019}.tg-severity.medium{color:#826b20}
+.tg-demo-disclaimer{padding:10px 8px 0;color:#737064;font-size:10px;line-height:1.4;margin:0;}
+@media(max-width:1480px){.tg-kpi{padding-right:12px;gap:10px}.tg-kpi-symbol{width:48px;height:48px;flex-basis:48px}.tg-kpi-symbol svg{width:29px;height:29px}.tg-kpi-copy{padding-left:10px}.tg-kpi-title{font-size:12px}.tg-kpi-number{font-size:32px}.tg-change{font-size:9px;padding:5px 7px}}
+@media(max-width:1260px){.tg-kpis{grid-template-columns:repeat(2,minmax(0,1fr));}.tg-main-grid{grid-template-columns:minmax(0,1.4fr) minmax(300px,1fr)}.tg-map-picture{height:292px}.tg-card h2{font-size:17px}.tg-card-titleline{gap:9px}.tg-alert-row{padding:6px 7px;font-size:11px}}
+@media(max-width:1050px){.tg-main-grid,.tg-bottom-grid{grid-template-columns:1fr}.tg-right-grid{grid-template-columns:1fr 1fr;grid-template-rows:auto}.tg-alert-card,.tg-harmony-card{min-height:192px}.tg-map-picture{height:300px}}
+@media(max-width:600px){.tg-dash-intro{min-height:124px}.tg-dash-mountain{opacity:.28;width:90vw}.tg-dash-intro p{font-size:13px}.tg-kpis{gap:9px;margin-inline:0}.tg-kpi{min-height:84px;padding:11px;gap:8px;border-radius:13px}.tg-kpi-copy{padding-left:8px}.tg-kpi-symbol{width:36px;height:36px;flex-basis:36px;border-radius:10px}.tg-kpi-symbol svg{width:24px;height:24px}.tg-kpi-title{font-size:10px;white-space:normal;line-height:1.2;display:block}.tg-kpi-number{font-size:26px}.tg-kpi-number small{font-size:14px}.tg-change{display:none}.tg-card{border-radius:15px;padding:10px}.tg-card-heading{margin-inline:1px;flex-wrap:wrap}.tg-map-picture{height:210px}.tg-right-grid{display:grid;grid-template-columns:1fr}.tg-alert-card,.tg-harmony-card{min-height:unset}.tg-chart{height:160px}}
+@media(max-width:360px){.tg-kpis{grid-template-columns:1fr}.tg-map-button{font-size:11px}.tg-card-titleline{gap:7px}}
+
+/* TUNARIGUARD_DASHBOARD_GLOBAL_END */

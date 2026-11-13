@@ -1,88 +1,94 @@
-<aside class="tuni-widget"
-  [class.open]="abierto()"
-  [class.paused]="!movimiento()"
-  [class.greet]="estado() === 'saludo'"
-  [class.alert]="estado() === 'alerta'"
-  [class.sat]="estado() === 'satelite'"
-  [class.help]="estado() === 'ayuda'">
-
+<!-- Tuni V14: burbuja compacta; estados animados originales recuperados -->
+<div class="tuni-chat-v14"
+     [class.is-open]="abierto()"
+     [class.is-paused]="!movimiento()"
+     [class.is-greet]="estado() === 'saludo' || estado() === 'bienvenida'"
+     [class.is-alert]="estado() === 'alerta'"
+     [class.is-sat]="estado() === 'satelite'"
+     [class.is-help]="estado() === 'ayuda'">
+  <link rel="stylesheet" href="/assets/tuni-v14/tuni-motion.css">
   @if (abierto()) {
-    <section class="panel" aria-label="Tuni, asistente forestal de ayuda">
-      <header class="p-header">
-        <div class="avatar" aria-hidden="true">
-          <img src="/assets/tuni-piezas/tuni-cabeza.webp" alt="" />
-        </div>
-        <div class="ident">
+    <section id="tuni-chat-panel" class="chat-panel" role="dialog" aria-label="Chat de ayuda de Tuni">
+      <header class="chat-header">
+        <span class="chat-avatar" aria-hidden="true">
+          <img src="/assets/tuni-piezas/tuni-cabeza.webp" alt="" draggable="false">
+        </span>
+        <div class="chat-identity">
           <strong>Tuni · Guardián forestal</strong>
-          <span>CHAT DE AYUDA · DEMO</span>
+          <small>CHAT DE AYUDA · DEMO</small>
         </div>
-        <button type="button" class="xbtn" (click)="cerrar()" aria-label="Cerrar panel de Tuni">×</button>
+        <button class="chat-close" type="button" (click)="cerrar()" aria-label="Cerrar chat de Tuni">×</button>
       </header>
 
-      <div class="chat-wrap" aria-live="polite" aria-atomic="true">
-        @if (estado() === 'alerta') { <div class="simulation">SIMULACIÓN VISUAL · NO ES ALERTA REAL</div> }
-        <div class="chat-title">{{ titulo() }}</div>
-        <div class="chat-list">
+      <div class="chat-content" aria-live="polite" aria-atomic="true">
+        @if (estado() === 'alerta') {
+          <p class="simulation-note">SIMULACIÓN VISUAL · NO ES UNA ALERTA REAL</p>
+        }
+        <p class="chat-subheading">
+          @if (estado() === 'saludo' || estado() === 'bienvenida') { <span>👋 </span> }
+          @if (estado() === 'alerta') { <span>🚨 </span> }
+          @if (estado() === 'satelite') { <span>🛰️ </span> }
+          @if (estado() === 'ayuda') { <span>✦ </span> }
+          {{ titulo() }}
+        </p>
+        <div class="chat-messages">
           @for (item of chat(); track $index) {
-            <div class="bubble" [class.user]="item.role === 'user'" [class.tuni]="item.role === 'tuni'">
-              <span class="who">{{ item.role === 'tuni' ? 'Tuni' : 'Tú' }}</span>
+            <div class="chat-message" [class.from-tuni]="item.role === 'tuni'" [class.from-user]="item.role === 'user'">
+              <span class="message-author">{{ item.role === 'tuni' ? 'Tuni' : 'Tú' }}</span>
               <p>{{ item.text }}</p>
             </div>
           }
         </div>
       </div>
 
-      <div class="actions" aria-label="Acciones de ayuda de Tuni">
+      <div class="chat-actions" aria-label="Opciones de ayuda de Tuni">
         <button type="button" (click)="elegir('saludo')" [class.selected]="estado() === 'saludo'">👋 Inicio</button>
         <button type="button" (click)="elegir('alerta')" [class.selected]="estado() === 'alerta'">🚨 Alerta</button>
         <button type="button" (click)="elegir('satelite')" [class.selected]="estado() === 'satelite'">🛰️ Satélite</button>
         <button type="button" (click)="elegir('ayuda')" [class.selected]="estado() === 'ayuda'">ℹ️ Ayuda</button>
       </div>
 
-      <footer class="p-foot">
+      <footer class="chat-footer">
         <button type="button" (click)="alternarMovimiento()" [attr.aria-pressed]="!movimiento()">
-          {{ movimiento() ? '⏸ Pausar animación' : '▶ Reanudar animación' }}
+          {{ movimiento() ? '⏸ Pausar animación' : '▶ Animar a Tuni' }}
         </button>
         <a routerLink="/mapa" (click)="cerrar()">Ver mapa ↗</a>
       </footer>
     </section>
+
+    <!-- Solo al abrir, renderizar piezas originales de Tuni V12 y sus gestos -->
+    <div class="tuni-animated" aria-hidden="true">
+      <div class="tuni-stage">
+        <div class="tuni-back-radar"><span class="tuni-ring tr1"></span><span class="tuni-ring tr2"></span><span class="tuni-ring tr3"></span></div>
+        <img class="tuni-part tuni-hologram" src="/assets/tuni-piezas/tuni-holograma.webp" alt="" draggable="false">
+        <img class="tuni-part tuni-tail" src="/assets/tuni-piezas/tuni-cola.webp" alt="" draggable="false">
+        <div class="tuni-torso">
+          <img class="tuni-part tuni-body" src="/assets/tuni-piezas/tuni-cuerpo-sin-brazo.webp" alt="" draggable="false">
+          <span class="tuni-joint"></span>
+          <img class="tuni-part tuni-arm" src="/assets/tuni-piezas/tuni-brazo.webp" alt="" draggable="false">
+        </div>
+        <div class="tuni-face">
+          <img class="tuni-part tuni-head" src="/assets/tuni-piezas/tuni-cabeza.webp" alt="" draggable="false">
+          <span class="tuni-eyelid"></span>
+          <span class="tuni-eye-wide"></span>
+          <span class="tuni-sweat">💧</span>
+        </div>
+        <img class="tuni-part tuni-pompom" src="/assets/tuni-piezas/tuni-pompon.webp" alt="" draggable="false">
+        <div class="tuni-tablet-radar">
+          <span class="tuni-tablet-ring r1"></span><span class="tuni-tablet-ring r2"></span><span class="tuni-tablet-sweep"></span>
+        </div>
+        <span class="tuni-alert-mark">!</span>
+        <span class="tuni-sparkle sp1">✦</span><span class="tuni-sparkle sp2">✧</span>
+      </div>
+    </div>
   }
 
-  <button type="button" class="trigger"
-    [attr.aria-expanded]="abierto()"
-    [attr.aria-label]="abierto() ? 'Cerrar asistente Tuni' : 'Abrir asistente Tuni'"
-    [style.--pointer-tilt]="inclinacion() + 'deg'"
-    (pointermove)="seguirPuntero($event)"
-    (pointerleave)="reiniciarPuntero()"
-    (click)="alternar()">
-    <span class="stage" aria-hidden="true">
-      <span class="back-radar">
-        <span class="ring r1"></span>
-        <span class="ring r2"></span>
-        <span class="ring r3"></span>
-      </span>
-      <img class="piece holo" src="/assets/tuni-piezas/tuni-holograma.webp" alt="" draggable="false" />
-      <img class="piece tail" src="/assets/tuni-piezas/tuni-cola.webp" alt="" draggable="false" />
-      <span class="torso">
-        <img class="piece base" src="/assets/tuni-piezas/tuni-cuerpo-sin-brazo.webp" alt="" draggable="false" />
-        <span class="joint"></span>
-        <img class="piece arm" src="/assets/tuni-piezas/tuni-brazo.webp" alt="" draggable="false" />
-      </span>
-      <span class="face">
-        <img class="piece head" src="/assets/tuni-piezas/tuni-cabeza.webp" alt="" draggable="false" />
-        <span class="lid"></span>
-        <span class="wide"></span>
-        <span class="sweat">💧</span>
-      </span>
-      <img class="piece pomp" src="/assets/tuni-piezas/tuni-pompon.webp" alt="" draggable="false" />
-      <span class="tablet-radar" aria-hidden="true">
-        <span class="tablet-ring tr1"></span>
-        <span class="tablet-ring tr2"></span>
-        <span class="tablet-sweep"></span>
-      </span>
-      <span class="mark" aria-hidden="true">!</span>
-      <span class="spk s-one">✦</span>
-      <span class="spk s-two">✧</span>
-    </span>
+  <button type="button" class="chat-bubble"
+          (click)="alternar()"
+          [attr.aria-expanded]="abierto()"
+          aria-controls="tuni-chat-panel"
+          [attr.aria-label]="abierto() ? 'Cerrar chat de Tuni' : 'Abrir chat de Tuni'">
+    <img src="/assets/tuni-piezas/tuni-cabeza.webp" alt="" aria-hidden="true" draggable="false">
+    @if (!abierto()) { <span class="bubble-dot" aria-hidden="true"></span> }
   </button>
-</aside>
+</div>

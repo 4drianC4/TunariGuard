@@ -1,16 +1,105 @@
-<section class="page">
-  <div class="eyebrow">NASA SPACE APPS / TUNARI GUARD</div>
-  <h1>Centro de monitoreo</h1>
-  <p class="lead">Detecciones satelitales MODIS y VIIRS · Parque Tunari / Cochabamba</p>
-  <div class="notice">MODO DEMOSTRACIÓN — Todas las observaciones mostradas aquí son simuladas. No son alertas operativas ni incendios confirmados.</div>
-  <div class="stats">
-    <app-stat-card label="Observaciones" [value]="store.totalObservations()" caption="Filas satelitales simuladas" />
-    <app-stat-card label="VIIRS" [value]="store.viirsCount()" caption="Mayor resolución nominal (375 m)" />
-    <app-stat-card label="MODIS" [value]="store.modisCount()" caption="Resolución nominal (1 km)" />
-    <app-stat-card label="Focos agrupados" [value]="store.hotspotsCount()" caption="Agrupamiento manual de muestra" />
+<section class="tg-dashboard page">
+  <header class="tg-dash-intro">
+    <div class="tg-dash-mountain" aria-hidden="true"></div>
+    <div class="tg-breadcrumb">TUNARI GUARD / inicio</div>
+    <h1>Panel de monitoreo</h1>
+    <p>Resumen ejecutivo del estado de anomalías térmicas, alertas y actividad reciente.</p>
+  </header>
+
+  <section class="tg-kpis" aria-label="Indicadores principales">
+    <article class="tg-kpi tg-kpi-fire">
+      <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#fire"></use></svg></span>
+      <div class="tg-kpi-copy"><span class="tg-kpi-title">Focos detectados · DEMO</span>
+        <div class="tg-kpi-number">{{ store.hotspotsCount() }} <span class="tg-change orange">↑ muestra</span></div></div>
+    </article>
+    <article class="tg-kpi">
+      <span class="tg-kpi-symbol pink"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#warning"></use></svg></span>
+      <div class="tg-kpi-copy"><span class="tg-kpi-title">Alertas de prioridad alta</span>
+        <div class="tg-kpi-number">{{ alertsHigh() }} <span class="tg-change orange">DEMO</span></div></div>
+    </article>
+    <article class="tg-kpi">
+      <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#districts"></use></svg></span>
+      <div class="tg-kpi-copy"><span class="tg-kpi-title">Distritos monitoreados</span>
+        <div class="tg-kpi-number">12</div></div>
+    </article>
+    <article class="tg-kpi">
+      <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#target"></use></svg></span>
+      <div class="tg-kpi-copy"><span class="tg-kpi-title">Precisión estimada*</span>
+        <div class="tg-kpi-number">92,7 <small>%</small> <span class="tg-change olive">ILUSTRATIVA</span></div></div>
+    </article>
+  </section>
+
+  <div class="tg-main-grid">
+    <article class="tg-card tg-map-card">
+      <div class="tg-card-heading">
+        <div class="tg-card-titleline"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#map"></use></svg>
+          <div><h2>Mapa rápido de focos</h2><p>Focos de calor detectados en la zona Tunari – Cochabamba.</p></div>
+        </div>
+        <a class="tg-map-button" routerLink="/mapa">Ver mapa completo <svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#external"></use></svg></a>
+      </div>
+      <a class="tg-map-picture" routerLink="/mapa" aria-label="Ir a mapa de focos (vista de referencia demostrativa)">
+        <img src="/assets/tunari-ui/mapa-referencia.webp" alt="Vista referencial del Parque Tunari con focos de calor simulados" />
+      </a>
+    </article>
+    <div class="tg-right-grid">
+      <article class="tg-card tg-alert-card">
+        <div class="tg-card-heading tg-tight">
+          <div class="tg-card-titleline"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#bell"></use></svg><h2>Alertas recientes</h2></div>
+          <a class="tg-simple-link" routerLink="/alertas">Ver todas <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="tg-alert-list">
+          @for (alert of demoAlerts; track alert.district) {
+            <div class="tg-alert-row"><span class="tg-alert-status" [class.critical]="alert.css === 'critical'" [class.high]="alert.css === 'high'" [class.medium]="alert.css === 'medium'"><i></i>{{alert.level}}</span>
+              <span class="tg-alert-district">— &nbsp; Distrito: {{alert.district}}</span><small>{{alert.time}}</small></div>
+          }
+        </div>
+      </article>
+      <article class="tg-card tg-harmony-card">
+        <div class="tg-card-titleline"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#districts"></use></svg>
+          <div><h2>Estado de armonización</h2><p>Integración y validación de datos NASA FIRMS con fuentes locales.</p></div>
+          <strong class="tg-harmony-value">87 %</strong>
+        </div>
+        <div class="tg-progress" role="img" aria-label="Progreso de demostración de armonización: 87 por ciento"><span></span></div>
+        <p class="tg-timestamp"><span class="tg-check">✓</span> Datos de ejemplo · actualizados en la maqueta</p>
+      </article>
+    </div>
   </div>
-  <div class="panel-grid">
-    <article class="panel"><h2>Mapa de focos</h2><p>El componente Leaflet se desarrollará en <code>features/map/components/hotspot-map/</code>. El mapa aún no está conectado.</p><a routerLink="/mapa">Ir al módulo de mapas →</a></article>
-    <article class="panel"><h2>Armonización científica</h2><p>El sistema conservará cada observación y registrará las reglas de coincidencia espacial y temporal.</p><a routerLink="/armonizacion">Ver módulo de armonización →</a></article>
+
+  <div class="tg-bottom-grid">
+    <article class="tg-card tg-trend-card">
+      <div class="tg-card-heading tg-tight">
+        <div class="tg-card-titleline"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#trend"></use></svg>
+          <div><h2>Tendencia semanal</h2><p>Evolución de focos de muestra (últimos 7 días).</p></div>
+        </div>
+      </div>
+      <div class="tg-chart" role="img" aria-label="Gráfica ilustrativa de 7 días: lunes 9, martes 15, miércoles 13, jueves 20, viernes 22, sábado 30 y domingo 24">
+        <svg viewBox="0 0 510 153" preserveAspectRatio="none" aria-hidden="true">
+          <defs><linearGradient id="tg-chart-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e86819" stop-opacity=".30"/><stop offset="100%" stop-color="#e86819" stop-opacity=".01"/></linearGradient></defs>
+          <g stroke="#d9d3c8" stroke-width=".7" stroke-dasharray="2 2"><path d="M35 10H497M35 42H497M35 74H497M35 106H497M35 138H497" /></g>
+          <path d="M35 138L35 106L108 87L181 93L254 72L327 67L400 43L473 61L473 138Z" fill="url(#tg-chart-fill)" />
+          <path d="M35 106L108 87L181 93L254 72L327 67L400 43L473 61" fill="none" stroke="#e6510d" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round" />
+          <g fill="#fff8ed" stroke="#e6510d" stroke-width="2.7"><circle cx="35" cy="106" r="4"/><circle cx="108" cy="87" r="4"/><circle cx="181" cy="93" r="4"/><circle cx="254" cy="72" r="4"/><circle cx="327" cy="67" r="4"/><circle cx="400" cy="43" r="4"/><circle cx="473" cy="61" r="4"/></g>
+          <g fill="#4c4c3f" font-size="13" text-anchor="end"><text x="27" y="141">0</text><text x="27" y="110">10</text><text x="27" y="78">20</text><text x="27" y="46">30</text><text x="27" y="14">40</text></g>
+          <g fill="#46473b" font-size="12.5" text-anchor="middle"><text x="35" y="151">Lun</text><text x="108" y="151">Mar</text><text x="181" y="151">Mié</text><text x="254" y="151">Jue</text><text x="327" y="151">Vie</text><text x="400" y="151">Sáb</text><text x="473" y="151">Dom</text></g>
+        </svg>
+      </div>
+    </article>
+    <article class="tg-card tg-detections-card">
+      <div class="tg-card-heading tg-tight">
+        <div class="tg-card-titleline"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#reports"></use></svg><h2>Últimas detecciones</h2></div>
+        <a class="tg-simple-link" routerLink="/historial">Ver historial <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="tg-table-scroll"><table>
+        <thead><tr><th>Fecha</th><th>Sensor</th><th>Área</th><th>Estado</th></tr></thead>
+        <tbody>
+          @for (item of recent(); track item.id; let ix = $index) {
+            <tr><td>{{ item.acquiredAtUtc | date:'dd/MM/y, HH:mm' }}</td>
+              <td>{{ item.sensor }} ({{ item.platform }})</td><td>Parque Tunari</td>
+              <td><span class="tg-severity" [class.critical]="ix === 0" [class.high]="ix === 1 || ix === 2" [class.medium]="ix === 3"><i></i>{{ ix === 0 ? 'Crítica' : (ix === 1 || ix === 2 ? 'Alta' : 'Media') }}</span></td></tr>
+          }
+        </tbody>
+      </table></div>
+    </article>
   </div>
+  <p class="tg-demo-disclaimer">* Métricas de precisión, distritos, progreso, alertas y tendencia ilustrativas para el diseño. No representan validación científica ni emergencias confirmadas.</p>
 </section>
