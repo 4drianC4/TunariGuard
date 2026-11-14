@@ -1,10 +1,37 @@
 
 <aside class="tg-sidebar">
+  <!-- Encabezado móvil independiente del diseño original de escritorio. -->
+  <div class="tg-mobile-bar">
+    <a class="tg-mobile-brand" routerLink="/inicio" (click)="closeMobile()" aria-label="TunariGuard - Inicio">
+      <img src="/assets/logos/SVG/LOGO_1.svg" alt="" aria-hidden="true" />
+      <span><b>TUNARI</b>GUARD</span>
+    </a>
+    <button class="tg-mobile-toggle" type="button" (click)="toggleMobile()"
+      [attr.aria-expanded]="mobileOpen()" aria-controls="tg-navigation-panel"
+      [attr.aria-label]="mobileOpen() ? 'Cerrar menú' : 'Abrir menú'">
+      @if (mobileOpen()) {
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>
+      } @else {
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      }
+    </button>
+  </div>
+  <button class="tg-mobile-overlay" type="button" tabindex="-1" (click)="closeMobile()" aria-label="Cerrar menú"></button>
+  <div class="tg-navigation-panel" id="tg-navigation-panel">
+    <button class="tg-collapse-btn" type="button" (click)="toggleDesktop()"
+      [attr.aria-expanded]="!collapsed()"
+      [attr.aria-label]="collapsed() ? 'Expandir menú lateral' : 'Comprimir menú lateral'"
+      [attr.title]="collapsed() ? 'Expandir menú' : 'Comprimir menú'">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg>
+    </button>
+    <button class="tg-panel-close" type="button" (click)="closeMobile()" aria-label="Cerrar menú">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>
+    </button>
 
   <!-- LOGO TUNARIGUARD -->
 
 <a
-  class="tg-brand"
+  class="tg-brand" (click)="closeMobile()"
   routerLink="/inicio"
   aria-label="TunariGuard - Ir al inicio"
 >
@@ -14,6 +41,7 @@
       src="/assets/logos/SVG/LOGOHORIZONTALWHITE.svg"
       alt="TunariGuard - Monitoreo satelital forestal"
     />
+      <img class="tg-brand__compact-logo" src="/assets/logos/SVG/LOGO_1.svg" alt="" aria-hidden="true" />
   </span>
 </a>
 
@@ -32,10 +60,10 @@
     @for (item of nav; track item.path) {
 
       <a
-        [routerLink]="item.path"
+        (click)="closeMobile()" [routerLink]="item.path"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }"
-        [attr.title]="item.label"
+        [attr.title]="item.label" [attr.aria-label]="item.label"
       >
 
         <span class="tg-nav-icon">
@@ -69,4 +97,5 @@
     MVP académico · Datos DEMO
   </div>
 
+  </div>
 </aside>

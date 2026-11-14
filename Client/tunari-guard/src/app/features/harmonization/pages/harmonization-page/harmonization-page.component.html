@@ -1,10 +1,74 @@
-<section class="page">
-  <div class="eyebrow">TUNARI GUARD / armonizacion</div>
-  <h1>Armonización MODIS–VIIRS</h1>
-  <p class="lead">Vinculación espacio-temporal reproducible conservando observaciones originales y procedencia.</p>
-  <div class="placeholder">
-    <strong>Estructura lista para implementar</strong>
-    <p>Los componentes de esta sección ya están generados en <code>features/harmonization/components/</code>.</p>
-    <p>Conectar a los servicios del directorio <code>application/services/</code> y los datos de <code>data-access/</code>.</p>
+<section class="harm-page">
+  <header class="harm-header">
+    <div class="harm-eyebrow">TUNARI GUARD / <span>armonización</span></div>
+    <h1>Armonización MODIS–VIIRS</h1>
+    <p>Vinculación espacio-temporal reproducible conservando observaciones originales y procedencia.</p>
+  </header>
+
+  <div class="harm-kpis" aria-label="Indicadores de demostración">
+    <article class="harm-kpi"><div class="harm-kpi-icon">◈</div><div><span>Detecciones MODIS</span><strong>12,458</strong></div><small>DEMO</small></article>
+    <article class="harm-kpi"><div class="harm-kpi-icon">◈</div><div><span>Detecciones VIIRS</span><strong>28,931</strong></div><small>DEMO</small></article>
+    <article class="harm-kpi harm-kpi-warm"><div class="harm-kpi-icon">🔗</div><div><span>Coincidencias armonizadas</span><strong>9,842</strong></div><small>DEMO</small></article>
+    <article class="harm-kpi"><div class="harm-kpi-icon">▦</div><div><span>Cobertura temporal</span><strong>2000–2026</strong></div><small>DEMO</small></article>
   </div>
+
+  <form class="harm-filters" (ngSubmit)="apply()">
+    <div class="harm-filter-heading"><span class="harm-filter-symbol">▽</span><strong>Filtros de análisis</strong></div>
+    <label class="harm-field harm-dates"><span>Rango de fechas</span><div class="harm-date-pair"><input aria-label="Fecha inicial" type="date" name="start" [(ngModel)]="startDate" /><span>—</span><input aria-label="Fecha final" type="date" name="end" [(ngModel)]="endDate" /></div></label>
+    <fieldset class="harm-field harm-sensors"><legend>Sensor</legend><label><input type="checkbox" name="modis" [(ngModel)]="modis" /> MODIS</label><label><input type="checkbox" name="viirs" [(ngModel)]="viirs" /> VIIRS</label></fieldset>
+    <label class="harm-field"><span>Distrito</span><select name="district" [(ngModel)]="district"><option *ngFor="let d of districts" [value]="d">{{d}}</option></select></label>
+    <label class="harm-field"><span>Severidad</span><select name="severity" [(ngModel)]="severity"><option value="Todas">Todas</option><option value="Baja">🟢 Baja</option><option value="Media">🟠 Media</option><option value="Alta">🔴 Alta</option></select></label>
+    <div class="harm-filter-actions"><button class="harm-apply" type="submit">⌕ &nbsp; Aplicar</button><button type="button" class="harm-reset" (click)="reset()">Restablecer</button></div>
+    <p *ngIf="startDate > endDate" class="harm-invalid">La fecha inicial debe ser anterior a la final.</p>
+  </form>
+
+  <div class="harm-grid">
+    <article class="harm-card harm-map-card">
+      <h2><span>◫</span> Mapa de focos armonizados – Tunari / Cochabamba <small>DEMO</small></h2>
+      <div class="harm-map-layout">
+        <div class="harm-map" role="img" aria-label="Mapa ilustrativo de focos de calor de demostración sobre imagen de referencia de Tunari">
+          <div class="harm-map-background" [style.transform]="'scale('+zoom+')'"></div>
+          <div class="harm-map-points" [style.transform]="'scale('+zoom+')'">
+            <span *ngFor="let e of filteredEvents; index as i" class="harm-hotspot" [class.high]="e.severity==='Alta'" [class.medium]="e.severity==='Media'" [style.left.%]="e.lat" [style.top.%]="e.lon" [attr.title]="e.district+' · '+e.severity"></span>
+            <span *ngFor="let e of filteredEvents; index as i" class="harm-hotspot harm-secondary" [style.left.%]="e.lat+((i%3)-1)*4" [style.top.%]="e.lon+((i%4)-2)*4"></span>
+          </div>
+          <div class="harm-map-caption">Parque Nacional Tunari</div><div class="harm-map-north">▲<br>N</div>
+          <div class="harm-map-zoom"><button type="button" (click)="changeZoom(.2)" aria-label="Acercar mapa">+</button><button type="button" (click)="changeZoom(-.2)" aria-label="Alejar mapa">−</button></div>
+          <div class="harm-map-scale">0 ━━━━━ 20 km</div>
+        </div>
+        <aside class="harm-map-legend"><strong>Focos armonizados<br>(severidad)</strong><div><i class="harm-dot high"></i> Alta (≥ 350 K)</div><div><i class="harm-dot medium"></i> Media (330–350 K)</div><div><i class="harm-dot low"></i> Baja (&lt; 330 K)</div><hr/><div><i class="harm-boundary"></i> Límite Tunari</div><small>Ubicaciones ilustrativas · no georreferenciadas</small></aside>
+      </div>
+    </article>
+    <article class="harm-card harm-process-card">
+      <h2><span>⚙</span> Proceso de armonización</h2>
+      <div class="harm-steps">
+        <div class="harm-step"><div class="harm-step-icon">▤</div><strong>Ingesta</strong><span>Carga de detecciones MODIS y VIIRS</span></div>
+        <div class="harm-step"><div class="harm-step-icon">▽</div><strong>Limpieza</strong><span>Control de calidad y filtrado</span></div>
+        <div class="harm-step"><div class="harm-step-icon">◎</div><strong>Matching espacial</strong><span>Vinculación por proximidad (radio)</span></div>
+        <div class="harm-step"><div class="harm-step-icon">◷</div><strong>Matching temporal</strong><span>Vinculación por ventana de tiempo</span></div>
+        <div class="harm-step"><div class="harm-step-icon harm-step-last">▱</div><strong>Salida armonizada</strong><span>Serie unificada con procedencia</span></div>
+      </div>
+      <div class="harm-method"><span>ⓘ</span><div><strong>Resumen metodológico</strong><p>Integra detecciones MODIS y VIIRS mediante limpieza de datos, emparejamiento espacial (p. ej., ≤ 1 km) y temporal (p. ej., ± 24 h), preservando observaciones originales y su procedencia. Parámetros ilustrativos.</p></div></div>
+    </article>
+    <article class="harm-card harm-chart-card">
+      <h2><span>⌁</span> Evolución temporal de detecciones <small>DEMO</small></h2>
+      <div class="harm-chart-legend"><span><i class="harm-line modis"></i>MODIS</span><span><i class="harm-line viirs"></i>VIIRS</span><span><i class="harm-line unified"></i>Armonizada</span></div>
+      <div class="harm-chart-scroll"><svg viewBox="0 0 620 196" role="img" aria-label="Gráfico ilustrativo de evolución anual de detecciones de 2000 a 2026">
+        <g transform="translate(43,12)"><line *ngFor="let tick of [0,500,1000,1500,2000,2500]" x1="0" x2="560" [attr.y1]="140-tick*140/2500" [attr.y2]="140-tick*140/2500" stroke="#e8e6dd" stroke-width="1"/>
+        <text *ngFor="let tick of [0,500,1000,1500,2000,2500]" x="-8" [attr.y]="144-tick*140/2500" text-anchor="end" font-size="10" fill="#4e4e47">{{tick}}</text>
+        <text *ngFor="let yr of years; index as i" [attr.x]="i*560/26" y="157" text-anchor="middle" font-size="9" fill="#4e4e47" [attr.display]="i%2===0?'block':'none'">{{yr}}</text>
+        <polyline [attr.points]="seriesPoints(modisSeries)" fill="none" stroke="#477c2d" stroke-width="2.2" stroke-linejoin="round"/>
+        <polyline [attr.points]="seriesPoints(viirsSeries)" fill="none" stroke="#f5b500" stroke-width="2.2" stroke-linejoin="round"/>
+        <polyline [attr.points]="seriesPoints(harmonizedSeries)" fill="none" stroke="#f46b17" stroke-width="2.5" stroke-linejoin="round"/>
+        </g></svg></div>
+    </article>
+    <article class="harm-card harm-table-card">
+      <h2><span>☷</span> Eventos armonizados recientes <small>DEMO</small></h2>
+      <div class="harm-table-scroll"><table><thead><tr><th>Fecha</th><th>Distrito</th><th>Sensores vinculados</th><th>Confianza</th><th>Estado</th></tr></thead><tbody>
+        <tr *ngFor="let e of filteredEvents; trackBy:trackEvent"><td>{{formatDate(e.date)}}</td><td>{{e.district}}</td><td><span *ngFor="let s of e.sensors" class="harm-sensor-tag" [class.viirs]="s==='VIIRS'">{{s}}</span></td><td>{{e.confidence.toFixed(2)}}</td><td><span class="harm-status" [class.single]="e.sensors.length===1">● &nbsp;{{e.sensors.length===2?'Armonizado':'Único ('+e.sensors[0]+')'}}</span></td></tr>
+        <tr *ngIf="filteredEvents.length===0"><td colspan="5" class="harm-empty">No hay eventos DEMO que coincidan con los filtros.</td></tr>
+      </tbody></table></div>
+    </article>
+  </div>
+  <footer class="harm-footer"><span>🔥</span><strong>Reduce duplicados, mejora continuidad histórica y fortalece el análisis multianual.</strong><small>VISTA DEMO · sin procesamiento satelital real</small></footer>
 </section>
