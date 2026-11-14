@@ -67,3 +67,456 @@ code {overflow-wrap:anywhere;color:#b35427;}
 @media(max-width:360px){.tg-kpis{grid-template-columns:1fr}.tg-map-button{font-size:11px}.tg-card-titleline{gap:7px}}
 
 /* TUNARIGUARD_DASHBOARD_GLOBAL_END */
+
+
+/* TUNARIGUARD_RESPONSIVE_V3_START
+ * Visual desktop intact: original sidebar layout via display:contents.
+ * Mobile drawer & icon-only desktop. No dashboard/layout data changes.
+ */
+app-sidebar.tg-responsive-v2 .tg-mobile-bar,
+app-sidebar.tg-responsive-v2 .tg-mobile-overlay,
+app-sidebar.tg-responsive-v2 .tg-panel-close,
+app-sidebar.tg-responsive-v2 .tg-brand__compact-logo {
+  display: none;
+}
+
+/* Shared icon button appearance: neutral and unobtrusive. */
+app-sidebar.tg-responsive-v2 .tg-collapse-btn,
+app-sidebar.tg-responsive-v2 .tg-mobile-toggle,
+app-sidebar.tg-responsive-v2 .tg-panel-close {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid rgba(250, 237, 206, .23);
+  border-radius: 10px;
+  color: #f8efd8;
+  background: rgba(42, 53, 28, .92);
+  cursor: pointer;
+  transition: background .16s ease, opacity .18s ease, transform .18s ease;
+}
+app-sidebar.tg-responsive-v2 .tg-collapse-btn svg,
+app-sidebar.tg-responsive-v2 .tg-mobile-toggle svg,
+app-sidebar.tg-responsive-v2 .tg-panel-close svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+app-sidebar.tg-responsive-v2 .tg-collapse-btn:hover,
+app-sidebar.tg-responsive-v2 .tg-mobile-toggle:hover,
+app-sidebar.tg-responsive-v2 .tg-panel-close:hover {
+  background: #50603a;
+}
+app-sidebar.tg-responsive-v2 button:focus-visible {
+  outline: 3px solid #f4c47b;
+  outline-offset: 3px;
+}
+
+/* Desktop: eliminate the wrapper from layout, restoring EXACT original flex children.
+   This fixes the giant spaces above/below the brand seen in V2. */
+@media (min-width: 801px) {
+  app-sidebar.tg-responsive-v2 .tg-navigation-panel { display: contents; }
+  app-sidebar.tg-responsive-v2 .tg-mobile-bar,
+  app-sidebar.tg-responsive-v2 .tg-mobile-toggle,
+  app-sidebar.tg-responsive-v2 .tg-mobile-overlay,
+  app-sidebar.tg-responsive-v2 .tg-panel-close { display: none !important; }
+
+  /* Desktop toggle is beside the logo, never in a separate row. */
+  app-sidebar.tg-responsive-v2 .tg-collapse-btn {
+    position: absolute;
+    z-index: 8;
+    top: 46px;
+    right: 13px;
+    width: 32px;
+    height: 32px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(5px);
+  }
+  /* Reveal only when hovering the brand/control, or navigating with keyboard. */
+  app-sidebar.tg-responsive-v2 .tg-sidebar:has(.tg-brand:hover) .tg-collapse-btn,
+  app-sidebar.tg-responsive-v2 .tg-collapse-btn:hover,
+  app-sidebar.tg-responsive-v2 .tg-collapse-btn:focus-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+  }
+  app-sidebar.tg-responsive-v2 .tg-main-nav { align-content: start; }
+  app-sidebar.tg-responsive-v2 .tg-brand { flex: 0 0 auto; }
+
+  /* Compact desktop: tight square logo and navigation; no blank spacer. */
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-sidebar {
+    padding: 16px 8px 17px;
+  }
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-brand {
+    width: 54px;
+    height: 62px;
+    min-height: 62px;
+    margin: 0 auto 18px;
+    padding: 2px;
+  }
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-brand__container {
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+  }
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-brand__logo { display: none; }
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-brand__compact-logo {
+    display: block;
+    width: 51px;
+    height: 51px;
+    object-fit: contain;
+  }
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-menu-heading,
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-nav-label,
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-mountain-art,
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-sidebar-foot { display: none; }
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-main-nav {
+    justify-items: center;
+    align-content: start;
+    gap: 6px;
+    overflow-x: hidden;
+  }
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-main-nav a {
+    justify-content: center;
+    width: 52px;
+    min-width: 52px;
+    min-height: 48px;
+    gap: 0;
+    padding: 6px 0;
+    border-left: 0;
+    border-radius: 12px;
+  }
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-main-nav a.active {
+    box-shadow: inset 3px 0 #e45a13;
+  }
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-nav-icon {
+    flex: 0 0 27px;
+    width: 27px;
+  }
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-nav-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+  /* Compact toggle is on SAME ROW as the logo, right-hand side. */
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-collapse-btn {
+    top: 34px;
+    right: 2px;
+    width: 27px;
+    height: 28px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(14, 24, 7, .3);
+  }
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-collapse-btn svg {
+    width: 17px;
+    height: 17px;
+  }
+  /* Move icon left only on hover so the toggle doesn't cover the logo. */
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-sidebar:has(.tg-brand:hover) .tg-brand__compact-logo {
+    transform: translateX(-8px) scale(.87);
+  }
+}
+
+/* Phone: fixed overlay drawer, 44px touch targets, no sideways menu. */
+@media (max-width: 800px) {
+  .app-layout app-sidebar.tg-responsive-v2 {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: block;
+    width: 100%;
+    height: 66px;
+    min-height: 66px;
+  }
+  app-sidebar.tg-responsive-v2 .tg-sidebar {
+    position: relative;
+    width: 100%;
+    height: 66px;
+    min-height: 66px;
+    padding: 0 13px;
+    overflow: visible;
+    border-right: none;
+  }
+  app-sidebar.tg-responsive-v2 .tg-mobile-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    height: 66px;
+  }
+  app-sidebar.tg-responsive-v2 .tg-mobile-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+    font-size: clamp(15px, 4.3vw, 20px);
+    font-weight: 850;
+    letter-spacing: -.05em;
+    white-space: nowrap;
+    color: #f6eedc;
+    text-decoration: none;
+  }
+  app-sidebar.tg-responsive-v2 .tg-mobile-brand img {
+    display: block;
+    width: 43px;
+    height: 43px;
+    object-fit: contain;
+  }
+  app-sidebar.tg-responsive-v2 .tg-mobile-brand b { color: #ef6530; }
+  app-sidebar.tg-responsive-v2 .tg-mobile-toggle {
+    display: grid;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+  }
+  app-sidebar.tg-responsive-v2 .tg-mobile-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 101;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: rgba(18, 23, 13, .58);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .22s ease, visibility .22s;
+  }
+  app-sidebar.tg-responsive-v2 .tg-navigation-panel {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 102;
+    display: flex;
+    flex-direction: column;
+    flex: none;
+    width: min(310px, 87vw);
+    height: 100dvh;
+    min-height: 0;
+    padding: 17px 15px 22px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: radial-gradient(ellipse 130% 76% at 30% 30%, #313b20 0%, #2d351e 36%, #252d1a 73%, #2b321e 100%);
+    box-shadow: 12px 0 28px rgba(0, 0, 0, .24);
+    transform: translateX(-105%);
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform .23s ease, visibility .23s;
+  }
+  app-sidebar.tg-responsive-v2.tg-mobile-open .tg-mobile-overlay {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  app-sidebar.tg-responsive-v2.tg-mobile-open .tg-navigation-panel {
+    transform: translateX(0);
+    visibility: visible;
+    pointer-events: auto;
+  }
+  /* Close X is ONLY visible inside an opened mobile drawer. */
+  app-sidebar.tg-responsive-v2 .tg-collapse-btn { display: none !important; }
+  app-sidebar.tg-responsive-v2 .tg-panel-close {
+    position: absolute;
+    top: 14px;
+    right: 12px;
+    z-index: 3;
+    display: grid;
+    width: 38px;
+    height: 38px;
+  }
+  app-sidebar.tg-responsive-v2 .tg-navigation-panel .tg-brand {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 250px;
+    height: 77px;
+    min-height: 77px;
+    margin: 0 0 15px;
+    padding: 5px 34px 5px 3px;
+  }
+  app-sidebar.tg-responsive-v2 .tg-navigation-panel .tg-brand__container {
+    width: 100%;
+    height: 100%;
+  }
+  app-sidebar.tg-responsive-v2 .tg-navigation-panel .tg-brand__logo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: left center;
+  }
+  app-sidebar.tg-responsive-v2 .tg-navigation-panel .tg-brand__compact-logo { display: none; }
+  app-sidebar.tg-responsive-v2 .tg-navigation-panel .tg-menu-heading {
+    display: flex;
+    margin: 0 10px 18px;
+    font-size: 10px;
+  }
+  app-sidebar.tg-responsive-v2 .tg-navigation-panel .tg-main-nav {
+    display: grid;
+    flex: 0 0 auto;
+    grid-auto-rows: minmax(46px, auto);
+    gap: 4px;
+    align-content: start;
+    overflow: visible;
+    padding: 0;
+  }
+  app-sidebar.tg-responsive-v2 .tg-navigation-panel .tg-main-nav a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    min-height: 46px;
+    padding: 6px 12px;
+    border-left: 4px solid transparent;
+    border-bottom: none;
+    border-radius: 13px;
+    font-size: 15px;
+  }
+  app-sidebar.tg-responsive-v2 .tg-navigation-panel .tg-main-nav a.active {
+    border-left-color: #e45a13;
+  }
+  app-sidebar.tg-responsive-v2 .tg-navigation-panel .tg-nav-icon {
+    width: 27px;
+    flex: 0 0 27px;
+  }
+  app-sidebar.tg-responsive-v2 .tg-navigation-panel .tg-nav-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+  app-sidebar.tg-responsive-v2 .tg-navigation-panel .tg-nav-label {
+    display: initial;
+    white-space: nowrap;
+  }
+  app-sidebar.tg-responsive-v2 .tg-navigation-panel .tg-mountain-art { display: none; }
+  app-sidebar.tg-responsive-v2 .tg-navigation-panel .tg-sidebar-foot {
+    display: block;
+    margin-top: auto;
+    padding-top: 16px;
+  }
+  .app-layout .main,
+  .app-layout .content { min-width: 0; max-width: 100%; }
+  .app-layout .content { padding: 18px 14px 28px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  app-sidebar.tg-responsive-v2 .tg-collapse-btn,
+  app-sidebar.tg-responsive-v2 .tg-mobile-overlay,
+  app-sidebar.tg-responsive-v2 .tg-navigation-panel { transition: none; }
+}
+/* TUNARIGUARD_RESPONSIVE_V3_END */
+
+/* TUNARIGUARD_MENU_V4_START */
+/* V4: only desktop sidebar refinements. Mobile behavior stays unchanged. */
+@media (min-width: 801px) {
+  /* A slightly wider sidebar prevents long labels from crowding the icon. */
+  .app-layout > app-sidebar.tg-responsive-v2:not(.tg-collapsed) {
+    width: 310px;
+    min-width: 310px;
+  }
+  .app-layout > app-sidebar.tg-responsive-v2.tg-collapsed {
+    width: 80px;
+    min-width: 80px;
+  }
+  /* Hide horizontal scrollbar; keep vertical navigation usable on short screens. */
+  app-sidebar.tg-responsive-v2 .tg-main-nav {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: hidden !important;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  app-sidebar.tg-responsive-v2 .tg-main-nav::-webkit-scrollbar { display: none; }
+  app-sidebar.tg-responsive-v2 .tg-main-nav a { min-width: 0; max-width: 100%; }
+  app-sidebar.tg-responsive-v2 .tg-nav-label { min-width: 0; }
+
+  /* Expanded: control lives at the top-right corner, ABOVE the logo. */
+  app-sidebar.tg-responsive-v2:not(.tg-collapsed) .tg-collapse-btn {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    left: auto;
+    z-index: 15;
+    width: 30px;
+    height: 30px;
+    transform: none;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  app-sidebar.tg-responsive-v2:not(.tg-collapsed) .tg-sidebar:has(.tg-brand:hover) .tg-collapse-btn,
+  app-sidebar.tg-responsive-v2:not(.tg-collapsed) .tg-sidebar:has(.tg-collapse-btn:hover) .tg-collapse-btn,
+  app-sidebar.tg-responsive-v2:not(.tg-collapsed) .tg-collapse-btn:focus-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  /* Collapsed: logo and expand control share ONE exact position. */
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-sidebar {
+    position: relative;
+  }
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-brand {
+    position: relative;
+    z-index: 2;
+    margin: 0 auto 18px;
+  }
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-brand__compact-logo {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: none !important;
+    transition: opacity .12s ease, visibility .12s ease;
+  }
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-collapse-btn {
+    position: absolute;
+    z-index: 16;
+    top: 24px;
+    right: 17px;
+    left: auto;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: none;
+    transition: opacity .12s ease, visibility .12s ease, background .12s ease;
+  }
+  /* Hovering the logo swaps it for the expand control. */
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-sidebar:has(.tg-brand:hover) .tg-brand__compact-logo,
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-sidebar:has(.tg-collapse-btn:hover) .tg-brand__compact-logo,
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-sidebar:has(.tg-collapse-btn:focus-visible) .tg-brand__compact-logo {
+    opacity: 0;
+    visibility: hidden;
+  }
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-sidebar:has(.tg-brand:hover) .tg-collapse-btn,
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-sidebar:has(.tg-collapse-btn:hover) .tg-collapse-btn,
+  app-sidebar.tg-responsive-v2.tg-collapsed .tg-collapse-btn:focus-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  /* Explicitly keep the mobile close button hidden on desktop. */
+  app-sidebar.tg-responsive-v2 .tg-panel-close { display: none !important; }
+}
+@media (min-width: 801px) and (max-width: 1100px) {
+  .app-layout > app-sidebar.tg-responsive-v2:not(.tg-collapsed) {
+    width: 290px;
+    min-width: 290px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  app-sidebar.tg-responsive-v2 .tg-brand__compact-logo,
+  app-sidebar.tg-responsive-v2 .tg-collapse-btn { transition: none !important; }
+}
+/* TUNARIGUARD_MENU_V4_END */
