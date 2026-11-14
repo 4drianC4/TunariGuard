@@ -1,96 +1,44 @@
-<section class="tg-history-table">
-  <header class="tg-history-table__header">
-    <div>
-      <h2>Registros históricos</h2>
-      <p>Detalle mensual de la actividad registrada.</p>
-    </div>
-
-    <div class="tg-history-table__filter">
+<section class="tg-card flex min-w-0 flex-col gap-4">
+  <header class="tg-card-heading">
+    <div class="tg-card-titleline"><div><h2>Registros históricos</h2><p>Detalle mensual de la actividad registrada.</p></div></div>
+    <div class="flex items-center gap-2 text-xs font-semibold text-[#555b43]">
       <label for="history-year">Año</label>
-
-      <select
-        id="history-year"
-        [value]="selectedYear()"
-        (change)="selectYear($any($event.target).value)"
-      >
+      <select id="history-year" class="max-w-[145px] rounded-lg border border-[#ded6ca] bg-[#fffcf7] px-3 py-2 text-sm text-[#303722] outline-none focus:border-[#526b4c] focus:ring-2 focus:ring-[#526b4c]/20" [value]="selectedYear()" (change)="selectYear($any($event.target).value)">
         <option value="ALL">Todos los años</option>
-
-        @for (year of years; track year) {
-          <option [value]="year">{{ year }}</option>
-        }
+        @for (year of years; track year) { <option [value]="year">{{ year }}</option> }
       </select>
     </div>
   </header>
 
-  <div class="tg-history-table__wrapper">
-    <table>
-      <thead>
-        <tr>
-          <th>Año</th>
-          <th>Mes</th>
-          <th>Fuente</th>
-          <th class="text-right">Actividad registrada</th>
-        </tr>
-      </thead>
-
-      <tbody>
+  <div class="w-full overflow-x-auto rounded-xl border border-[#e2dbcf]">
+    <table class="w-full min-w-[620px] border-collapse text-left text-sm">
+      <thead class="bg-[#eae0cd] text-[11px] font-extrabold uppercase tracking-wide text-[#555b43]"><tr>
+        <th class="px-4 py-3">Año</th><th class="px-4 py-3">Mes</th><th class="px-4 py-3">Fuente</th><th class="px-4 py-3 text-right">Actividad registrada</th>
+      </tr></thead>
+      <tbody class="divide-y divide-[#eee8de] bg-[#fffcf7]">
         @for (record of paginatedRecords(); track record.year + '-' + record.month) {
-          <tr>
-            <td class="year-cell">{{ record.year }}</td>
-            <td>{{ getMonthName(record.month) }}</td>
-            <td>
-              <span
-                class="source-badge"
-                [class.source-badge--harmonized]="record.source === 'HARMONIZED'"
-                [class.source-badge--modis]="record.source === 'MODIS'"
-                [class.source-badge--viirs]="record.source === 'VIIRS'"
-              >
-                {{ getSourceLabel(record.source) }}
-              </span>
-            </td>
-            <td class="activity-cell">
-              {{ record.activityCount | number }}
-            </td>
+          <tr class="transition-colors hover:bg-[#f7f3eb]">
+            <td class="px-4 py-3 font-bold tabular-nums text-[#424637]">{{ record.year }}</td>
+            <td class="px-4 py-3 text-[#555448]">{{ getMonthName(record.month) }}</td>
+            <td class="px-4 py-3"><span class="inline-flex rounded-full px-2.5 py-1 text-[11px] font-bold"
+              [class.bg-[#e4eadf]]="record.source === 'HARMONIZED'" [class.text-[#405c38]]="record.source === 'HARMONIZED'"
+              [class.bg-[#f7e8d7]]="record.source === 'MODIS'" [class.text-[#99551f]]="record.source === 'MODIS'"
+              [class.bg-[#e4eaf1]]="record.source === 'VIIRS'" [class.text-[#526b87]]="record.source === 'VIIRS'">{{ getSourceLabel(record.source) }}</span></td>
+            <td class="px-4 py-3 text-right font-semibold tabular-nums text-[#303722]">{{ record.activityCount | number }}</td>
           </tr>
         } @empty {
-          <tr>
-            <td colspan="4" class="empty-state">
-              No existen registros para el año seleccionado.
-            </td>
-          </tr>
+          <tr><td colspan="4" class="px-4 py-10 text-center text-sm text-[#737064]">No existen registros para el año seleccionado.</td></tr>
         }
       </tbody>
     </table>
   </div>
 
-  <footer class="tg-history-table__footer">
-    <span>
-      Mostrando {{ firstVisibleRecord() }}–{{ lastVisibleRecord() }}
-      de {{ totalRecords() }} registros
-    </span>
-
-    <div class="pagination">
-      <button
-        type="button"
-        (click)="previousPage()"
-        [disabled]="currentPage() === 1"
-        aria-label="Página anterior"
-      >
-        Anterior
-      </button>
-
-      <span>
-        {{ currentPage() }} / {{ totalPages() }}
-      </span>
-
-      <button
-        type="button"
-        (click)="nextPage()"
-        [disabled]="currentPage() === totalPages()"
-        aria-label="Página siguiente"
-      >
-        Siguiente
-      </button>
+  <footer class="flex flex-wrap items-center justify-between gap-3 text-xs text-[#737064]">
+    <span>Mostrando {{ firstVisibleRecord() }}–{{ lastVisibleRecord() }} de {{ totalRecords() }} registros</span>
+    <div class="flex items-center gap-2">
+      <button type="button" class="rounded-lg border border-[#ded6ca] bg-[#fffcf7] px-3 py-2 font-semibold text-[#526b4c] transition hover:bg-[#f1ecdf] disabled:cursor-not-allowed disabled:opacity-40" (click)="previousPage()" [disabled]="currentPage() === 1" aria-label="Página anterior">Anterior</button>
+      <span class="min-w-12 text-center font-semibold tabular-nums">{{ currentPage() }} / {{ totalPages() }}</span>
+      <button type="button" class="rounded-lg border border-[#ded6ca] bg-[#fffcf7] px-3 py-2 font-semibold text-[#526b4c] transition hover:bg-[#f1ecdf] disabled:cursor-not-allowed disabled:opacity-40" (click)="nextPage()" [disabled]="currentPage() === totalPages()" aria-label="Página siguiente">Siguiente</button>
     </div>
   </footer>
 </section>

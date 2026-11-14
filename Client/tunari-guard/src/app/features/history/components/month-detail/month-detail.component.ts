@@ -1,12 +1,12 @@
 
 import { Component, input } from '@angular/core';
-
+import { DecimalPipe } from '@angular/common';
 import { HistorySource } from '../../../../domain/models/historical-record.model';
 
 @Component({
   selector: 'app-month-detail',
   standalone: true,
-  imports: [],
+  imports: [DecimalPipe],
   templateUrl: './month-detail.component.html',
   styleUrl: './month-detail.component.scss',
 })

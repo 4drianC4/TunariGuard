@@ -1,5 +1,5 @@
 
-import { Component, computed, effect, inject, signal, } from '@angular/core';
+import { Component, HostListener, computed, effect, inject, signal } from '@angular/core';
 import { MonthDetailComponent } from '../month-detail/month-detail.component';
 import { MetricsService } from '../../../../application/services/metrics.service';
 
@@ -29,10 +29,53 @@ export class HistoryCalendarComponent {
     effect(() => {
       this.metrics.selectedSource();
       this.selectedCell.set(null);
+      this.currentPage.set(1);
     });
   }
 
   readonly popoverPosition = signal<PopoverPosition | null>(null);
+
+  /** Cierra el detalle al hacer clic fuera del popover.
+   * Los clics en otra celda se dejan pasar para poder cambiar de mes.
+   */
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.selectedCell()) return;
+
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    if (
+      target.closest('[data-history-popover]') ||
+      target.closest('[data-history-month-cell]')
+    ) {
+      return;
+    }
+
+    this.closeDetail();
+  }
+
+  /** Cierra el detalle cuando el usuario desplaza la página fuera del calendario. */
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    if (this.selectedCell()) {
+      this.closeDetail();
+    }
+  }
+
+  /** Navegación del calendario en bloques de cinco años. */
+  readonly currentPage = signal(1);
+  readonly yearsPerPage = 5;
+  readonly totalPages = computed(() => Math.ceil(this.years.length / this.yearsPerPage));
+  readonly visibleCalendar = computed(() => {
+    const start = (this.currentPage() - 1) * this.yearsPerPage;
+    return this.calendar().slice(start, start + this.yearsPerPage);
+  });
+  readonly visibleYearRange = computed(() => {
+    const rows = this.visibleCalendar();
+    if (!rows.length) return '';
+    return `${rows[0].year} – ${rows[rows.length - 1].year}`;
+  });
 
   readonly hasRecords = computed(
     () => this.metrics.records().length > 0,
@@ -105,6 +148,16 @@ export class HistoryCalendarComponent {
   closeDetail(): void {
     this.selectedCell.set(null);
     this.popoverPosition.set(null);
+  }
+
+  previousPeriod(): void {
+    this.closeDetail();
+    this.currentPage.update(page => Math.max(1, page - 1));
+  }
+
+  nextPeriod(): void {
+    this.closeDetail();
+    this.currentPage.update(page => Math.min(this.totalPages(), page + 1));
   }
 
 
