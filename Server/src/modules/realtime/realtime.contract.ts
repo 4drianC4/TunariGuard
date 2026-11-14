@@ -1,4 +1,5 @@
 import type { FeatureCollection, Point } from 'geojson';
+import type { AlertDto } from '../alerts/domain/alert-dto.js';
 import type { ObservationFeature } from '../observations/observations.service.js';
 
 /**
@@ -14,6 +15,8 @@ export const ServerEvents = {
   SyncStatus: 'sync:status',
   ReplayStatus: 'replay:status',
   DistrictsUpdated: 'districts:updated',
+  AlertNew: 'alert:new',
+  AlertUpdated: 'alert:updated',
 } as const;
 
 export const ClientEvents = {
@@ -80,6 +83,23 @@ export interface ReplayStatusPayload {
   truncated: boolean;
   simulatedTimeUtc: string | null;
   startedAtUtc: string | null;
+}
+
+/**
+ * Alertas operativas nuevas. Llega a todos los clientes. Para no saturar, trae como mucho
+ * MAX_ALERTS_PER_MESSAGE alertas; `count` es el total real (p. ej. para "3 alertas nuevas · Ver").
+ */
+export interface AlertNewPayload {
+  count: number;
+  alerts: AlertDto[];
+  truncated: boolean;
+  emittedAtUtc: string;
+}
+
+/** Una alerta cambió de estado (otro operador la revisó). Se puede actualizar la fila en su lugar. */
+export interface AlertUpdatedPayload {
+  alert: AlertDto;
+  emittedAtUtc: string;
 }
 
 export interface DistrictsUpdatedPayload {

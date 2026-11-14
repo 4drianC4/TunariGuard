@@ -210,6 +210,8 @@ Namespace `/realtime` en el mismo puerto de la API. Los tipos exactos están en 
 | --- | --- | --- | --- |
 | `subscribe` | cliente → servidor | Implementado | `{ districts?: string[] }` con ack `{ rooms }` o `{ error }`. Sin distritos = todo. |
 | `hotspots:new` | servidor → cliente | Implementado | `{ mode, simulated, batchId, dataset, emittedAtUtc, simulatedTimeUtc, collection }`; `mode` es `live` o `replay`; `collection` es un FeatureCollection con las mismas propiedades que `GET /observations?format=geojson`. Hasta 500 features por mensaje. |
+| `alert:new` | servidor → cliente | Implementado | `{ count, alerts, truncated, emittedAtUtc }`. Alertas operativas nuevas (importación o replay), hasta 100 por mensaje. Va a todos los clientes. |
+| `alert:updated` | servidor → cliente | Implementado | `{ alert, emittedAtUtc }`. Cambio de estado hecho con `PATCH /alertas/{id}`. |
 | `hotspots:removed` | servidor → cliente | Implementado | `{ reason: 'nrt_replaced_by_standard', batchId, dataset, removedIds, emittedAtUtc }`. NRT borradas porque llegó el dato estándar. Va a todos los clientes (también a los suscritos a distritos) y antes del `hotspots:new` del lote. Hasta 1000 ids por mensaje; con más de 5000 no se envían ids. |
 | `sync:status` | servidor → cliente | Implementado | `{ lastBatch }` con conteos del último lote, `announced` (false en importaciones masivas: recargar por REST), `upgradedToStandard` y `removedObsolete` (si son > 0 conviene recargar por REST). Se reenvía al conectarse. |
 | `replay:status` | servidor → cliente | Implementado | Progreso de la reproducción (`running`, `step`, `totalSteps`, `simulatedTimeUtc`…). Se reenvía al conectarse. |
@@ -243,7 +245,7 @@ Comportamiento implementado:
 1. **Datos** (lista): importar CSV, persistir observaciones, asignar distritos y exponer `GET /observations`.
 2. **Tiempo real** (lista): gateway con `hotspots:new` y modo de reproducción histórica.
 2b. **Análisis del equipo** (lista): esquema `fuego` instalado con sus SQL, módulo `analisis`, distritos desde `fuego.areas`, `detection_type` y reemplazo de NRT por rango de fechas.
-3. **Alertas:** reglas, `alert:new` y webhook a n8n.
+3. **Alertas** (lista): alertas operativas por pasada y área vigilada, con estado de revisión (`/alertas`), `alert:new` / `alert:updated` y contexto mensual con mensaje según `nivel_alerta`. Sin n8n.
 4. **Asistente:** IA con funciones, respuestas en fragmentos y límites.
 5. **FIRMS en vivo:** sincronización programada con `FIRMS_MAP_KEY`.
 

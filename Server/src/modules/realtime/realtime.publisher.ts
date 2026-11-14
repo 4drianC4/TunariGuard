@@ -1,8 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
+import type { AlertDto } from '../alerts/domain/alert-dto.js';
 import {
+  ALERT_UPDATED,
+  ALERTS_CREATED,
   BATCH_COMPLETED,
   DISTRICTS_UPDATED,
+  type AlertsCreatedEvent,
+  type AlertUpdatedEvent,
   type BatchCompletedEvent,
   type DistrictsUpdatedEvent,
 } from '../../shared/domain-events.js';
@@ -10,6 +15,8 @@ import { ObservationsService, type ObservationFeature } from '../observations/ob
 import { chunk, fanOutByDistrict } from './domain/fan-out.js';
 import {
   ServerEvents,
+  type AlertNewPayload,
+  type AlertUpdatedPayload,
   type DistrictsUpdatedPayload,
   type HotspotsNewPayload,
   type HotspotsRemovedPayload,
@@ -21,6 +28,8 @@ import { RealtimeGateway } from './realtime.gateway.js';
 /** Features por mensaje; un lote grande se envía en varios `hotspots:new`. */
 const FEATURES_PER_MESSAGE = 500;
 const IDS_PER_QUERY = 1000;
+/** Alertas completas por mensaje `alert:new`; el resto se cuenta en `count`. */
+const MAX_ALERTS_PER_MESSAGE = 100;
 /** Ids por mensaje `hotspots:removed`. */
 const REMOVED_IDS_PER_MESSAGE = 1000;
 
@@ -78,6 +87,26 @@ export class RealtimePublisher {
   @OnEvent(DISTRICTS_UPDATED)
   onDistrictsUpdated(event: DistrictsUpdatedEvent): void {
     this.gateway.emitToAll(ServerEvents.DistrictsUpdated, event satisfies DistrictsUpdatedPayload);
+  }
+
+  @OnEvent(ALERTS_CREATED)
+  onAlertsCreated(event: AlertsCreatedEvent): void {
+    const alerts = event.alerts as AlertDto[];
+    this.gateway.emitToAll(ServerEvents.AlertNew, {
+      count: alerts.length,
+      // Las más recientes primero, como la lista de la vista.
+      alerts: [...alerts].reverse().slice(0, MAX_ALERTS_PER_MESSAGE),
+      truncated: alerts.length > MAX_ALERTS_PER_MESSAGE,
+      emittedAtUtc: new Date().toISOString(),
+    } satisfies AlertNewPayload);
+  }
+
+  @OnEvent(ALERT_UPDATED)
+  onAlertUpdated(event: AlertUpdatedEvent): void {
+    this.gateway.emitToAll(ServerEvents.AlertUpdated, {
+      alert: event.alert as AlertDto,
+      emittedAtUtc: new Date().toISOString(),
+    } satisfies AlertUpdatedPayload);
   }
 
   publishHotspots(features: ObservationFeature[], meta: HotspotsMeta): void {

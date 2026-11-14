@@ -138,3 +138,65 @@ model Observation {
   @@index([geom], type: Gist)
   @@map("observations")
 }
+
+/// Gravedad de una alerta operativa (nombres de la vista /alertas: Crítica, Alta, Media).
+enum AlertSeverity {
+  CRITICAL
+  HIGH
+  MEDIUM
+}
+
+/// Estado de revisión que fija un operador (Pendiente, En revisión, En análisis, Verificada).
+enum AlertStatus {
+  PENDING
+  IN_REVIEW
+  IN_ANALYSIS
+  VERIFIED
+}
+
+/// LIVE: detecciones recién importadas · REPLAY: generada durante una reproducción (demo).
+enum AlertMode {
+  LIVE
+  REPLAY
+}
+
+/// Alerta operativa: detecciones de calor de una misma pasada satelital dentro de un área
+/// vigilada (Parque Tunari, sus sectores por municipio o los distritos de Cochabamba).
+/// No confirma un incendio: es una señal que un operador revisa.
+model Alert {
+  id              String           @id @default(uuid()) @db.Uuid
+  /// Número correlativo para mostrar como AL-0001.
+  number          Int              @unique @default(autoincrement())
+  /// Área + satélite + inicio de la pasada + modo: evita alertas repetidas al reimportar.
+  dedupeKey       String           @unique @map("dedupe_key")
+  mode            AlertMode
+  origin          DataOrigin
+  severity        AlertSeverity
+  status          AlertStatus      @default(PENDING)
+  areaId          String           @map("area_id")
+  areaName        String           @map("area_name")
+  inPark          Boolean          @map("in_park")
+  sensor          Sensor
+  platform        Platform
+  detectedAt      DateTime         @map("detected_at")
+  latitude        Float
+  longitude       Float
+  detectionCount  Int              @map("detection_count")
+  maxFrpMw        Float?           @map("max_frp_mw")
+  confidenceLevel ConfidenceLevel? @map("confidence_level")
+  /// Confianza original de la detección más fuerte (MODIS 0–100; VIIRS l/n/h).
+  confidenceRaw   String?          @map("confidence_raw")
+  message         String
+  note            String?
+  observationIds  String[]         @map("observation_ids") @db.Uuid
+  batchId         String?          @map("batch_id") @db.Uuid
+  statusChangedAt DateTime?        @map("status_changed_at")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  @@index([detectedAt])
+  @@index([severity, detectedAt])
+  @@index([status])
+  @@index([areaId, detectedAt])
+  @@map("alerts")
+}

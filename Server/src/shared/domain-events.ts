@@ -41,3 +41,23 @@ export interface DistrictsUpdatedEvent {
   reassigned: number;
   updatedAtUtc: string;
 }
+
+export const REPLAY_PASS = 'replay.pass';
+
+/** Una pasada emitida por la reproducción histórica (para generar alertas de demostración). */
+export interface ReplayPassEvent {
+  observationIds: string[];
+}
+
+export const ALERTS_CREATED = 'alerts.created';
+export const ALERT_UPDATED = 'alerts.updated';
+
+/** Alertas operativas nuevas (ya con la forma del DTO público). */
+export interface AlertsCreatedEvent {
+  alerts: unknown[];
+}
+
+/** Una alerta cambió de estado. */
+export interface AlertUpdatedEvent {
+  alert: unknown;
+}

@@ -3,7 +3,7 @@
 `SIMULADO_firms_viirs_2027.csv`: 1.109 detecciones VIIRS **inventadas** de 2027, en formato NASA FIRMS. Las preparó el equipo de datos para mostrar el tiempo real en la demo. **No son datos reales:** se importan siempre con `origin=SIMULATED` y la interfaz las marca como simuladas.
 
 ```bash
-npm run datos:demo     # con el servidor corriendo; imprime el comando de replay
+npm run datos:demo     # con el servidor corriendo; imprime el comando de replay (sin batchId: 2027 solo tiene datos simulados)
 ```
 
 Tramos con episodios para la reproducción histórica:

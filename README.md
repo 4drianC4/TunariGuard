@@ -17,7 +17,7 @@ Este documento es el informe de estado al **13 de noviembre de 2026**.
 | Backend: ingesta y distritos (Fase 1) | ✅ Lista y verificada |
 | Backend: tiempo real y demo (Fase 2) | ✅ Lista y verificada |
 | Backend: análisis del equipo de datos (esquema `fuego`) | ✅ Listo y verificado |
-| Backend: alertas + n8n (Fase 3) | ⏳ Pendiente |
+| Backend: alertas en tiempo real (Fase 3) | ✅ Lista y verificada (sin n8n) |
 | Backend: asistente con IA (Fase 4) | ⏳ Pendiente |
 | Backend: sincronización automática con NASA FIRMS (Fase 5) | ⏳ Pendiente |
 | Carga de CSV pesados (MinIO) | ✅ Lista y verificada |
@@ -220,7 +220,7 @@ Los detalles, los scripts y los ejemplos con `curl` están en [`Server/README.md
 
 | Fase | Contenido |
 | --- | --- |
-| 3. Alertas | Reglas configurables (foco nuevo en un distrito, confianza alta, FRP alto, detectado por ambos sensores, cercanía al Tunari), eventos `alert:new` / `alert:updated` y webhook a n8n. |
+| 3. Alertas ✅ | Alertas por pasada y área vigilada (parque, sectores, distritos) con severidad y estado de revisión, `GET/PATCH /alertas`, eventos `alert:new` / `alert:updated` y mensaje según `nivel_alerta` mensual. Ver `Server/README.md` §4.8. |
 | 4. Asistente IA | Chat por WebSocket con respuestas en fragmentos. El modelo consulta los datos mediante funciones (focos activos, resumen por distrito, alertas, métricas). Incluye límites de tokens y respaldo sin IA. |
 | 5. FIRMS en vivo | Sincronización programada con la API de NASA FIRMS (`FIRMS_MAP_KEY`). |
 | Después | Armonización MODIS/VIIRS, calendario histórico, métricas y anomalías. |

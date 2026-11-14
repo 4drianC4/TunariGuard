@@ -1,4 +1,6 @@
 import { BadRequestException, Injectable, Logger, type OnModuleDestroy } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { REPLAY_PASS, type ReplayPassEvent } from '../../shared/domain-events.js';
 import { ObservationsService, type ObservationFeature } from '../observations/observations.service.js';
 import type { ReplayStatusPayload } from '../realtime/realtime.contract.js';
 import { RealtimePublisher } from '../realtime/realtime.publisher.js';
@@ -22,7 +24,8 @@ const IDLE: ReplayStatusPayload = {
 
 /**
  * Reproduce observaciones ya guardadas como si llegaran en vivo, una pasada satelital por
- * intervalo. No escribe en la base: solo emite `hotspots:new` con mode=replay y simulated=true.
+ * intervalo. No escribe observaciones: emite `hotspots:new` con mode=replay y simulated=true, y un
+ * evento replay.pass para que el módulo de alertas genere alertas de demostración (mode=REPLAY).
  * Hay una sola reproducción a la vez para todos los clientes.
  */
 @Injectable()
@@ -35,6 +38,7 @@ export class ReplayService implements OnModuleDestroy {
   constructor(
     private readonly observations: ObservationsService,
     private readonly publisher: RealtimePublisher,
+    private readonly events: EventEmitter2,
   ) {}
 
   async start(body: StartReplayBody): Promise<ReplayStatusPayload> {
@@ -91,6 +95,9 @@ export class ReplayService implements OnModuleDestroy {
       dataset: null,
       simulatedTimeUtc: pass.simulatedTimeUtc,
     });
+    this.events.emit(REPLAY_PASS, {
+      observationIds: pass.features.map((f) => String(f.id ?? f.properties.id)),
+    } satisfies ReplayPassEvent);
     this.state = { ...this.state, step: this.state.step + 1, simulatedTimeUtc: pass.simulatedTimeUtc };
     this.publisher.publishReplayStatus(this.state);
   }

@@ -30,7 +30,6 @@ if (!archivos) fallar(`Conjunto desconocido: ${cual}. Usa historico o demo.`);
 await comprobarServidor();
 await avisarSiNoHayDistritos();
 
-let ultimoLote;
 for (const { file, dataset, origin } of archivos) {
   const form = new FormData();
   form.append('file', await openAsBlob(join(DATA, file), { type: 'text/csv' }), basename(file));
@@ -47,16 +46,16 @@ for (const { file, dataset, origin } of archivos) {
     `${body.inserted} nuevas, ${body.duplicates} ya estaban, ${body.rejected} rechazadas` +
       ` · ${a.assigned ?? 0} en distritos, ${a.outside ?? 0} fuera`,
   );
-  ultimoLote = body.batchId;
 }
 
 if (cual === 'demo') {
   console.log('\nPara verlo en tiempo real (con npm run realtime:watch abierto en otra terminal):');
+  // Sin batchId: 2027 solo tiene datos simulados, y así el comando sirve aunque se repita la carga.
   console.log(
     `  curl -X POST ${API}/replay/start -H "content-type: application/json" ` +
-      `-d '{"batchId":"${ultimoLote}","from":"2027-08-12","to":"2027-08-16","intervalMs":2000}'`,
+      `-d '{"from":"2027-08-12","to":"2027-08-16","intervalMs":2000}'`,
   );
-  console.log('  (o en Swagger: POST /replay/start con ese batchId). Otros tramos: 20–23 sep y 17–20 feb de 2027.');
+  console.log('  (o en Swagger: POST /replay/start con ese cuerpo). Otros tramos: 20–23 sep y 17–20 feb de 2027.');
 } else {
   console.log('\nListo. Repetirlo no duplica nada.');
 }

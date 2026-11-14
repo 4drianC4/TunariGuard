@@ -62,6 +62,19 @@ socket.on('sync:status', ({ lastBatch }) => {
   );
 });
 
+socket.on('alert:new', (msg) => {
+  const iconos = { Crítica: '🔴', Alta: '🟠', Media: '🟡' };
+  console.log(`[${hora()}] 🚨 alert:new  ${msg.count} alerta(s) nueva(s)${msg.truncated ? ` (se muestran ${msg.alerts.length})` : ''}`);
+  for (const a of msg.alerts.slice(0, 5)) {
+    console.log(`           ${iconos[a.severity] ?? '•'} ${a.id} ${a.severity} · ${a.district} · ${a.detectionCount} det. · ${a.detected}${a.simulated ? ' · SIMULADO' : ''}`);
+  }
+  if (msg.alerts.length > 5) console.log(`           … y ${msg.count - 5} más`);
+});
+
+socket.on('alert:updated', ({ alert }) => {
+  console.log(`[${hora()}] ✏️  alert:updated  ${alert.id} → ${alert.status}${alert.note ? ` ("${alert.note}")` : ''}`);
+});
+
 socket.on('replay:status', (s) => {
   const estado = s.running ? `paso ${s.step}/${s.totalSteps}` : 'detenida';
   console.log(`[${hora()}] ⏯  replay:status ${estado} · ${s.observationCount} observaciones · cada ${s.intervalMs} ms`);

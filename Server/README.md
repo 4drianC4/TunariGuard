@@ -272,7 +272,50 @@ Lo que el front debe tener en cuenta:
 - Muestra `notice` y `unit` junto al calendario y al gráfico.
 - Para el total del municipio usa `area_id=municipio-cochabamba`, no la suma de los distritos.
 
-### 4.8 Errores
+### 4.8 Alertas (vista `/alertas` del frontend)
+
+**Qué es una alerta:** las detecciones de calor de **una misma pasada satelital** (mismo satélite, a menos de 20 minutos) dentro de **un área vigilada**:
+- un distrito de Cochabamba;
+- un sector del Parque Tunari por municipio (por ejemplo, "Sector del Tunari en Tiquipaya");
+- el propio parque.
+
+Se generan **solas** al importar detecciones y durante el replay. Se guardan con un estado de revisión y se anuncian en tiempo real. Las detecciones fuera de esas áreas, o que no son de vegetación (tipo FIRMS distinto de 0), no generan alerta.
+
+| Severidad | Cuándo |
+| --- | --- |
+| **Crítica** | Dentro del parque con confianza alta o con 3 o más detecciones; 5 o más detecciones en cualquier área; o potencia (FRP) ≥ 50 MW |
+| **Alta** | Confianza alta, dentro del parque, 3 o más detecciones, o FRP ≥ 20 MW |
+| **Media** | El resto, dentro de un área vigilada |
+
+Son reglas operativas para priorizar la revisión, no el modelo estadístico. Están en `src/modules/alerts/domain/alert-rules.ts` (`THRESHOLDS`) y se pueden ajustar.
+
+| Endpoint | Qué hace |
+| --- | --- |
+| `GET /alertas` | Lista paginada, de la más reciente a la más antigua. Filtros: `desde`, `hasta` (días en hora de Bolivia), `area_id`, `severidad` (`Crítica`/`Alta`/`Media`), `estado`, `modo` (`live`/`replay`), `origen`, `page`, `limit`. Incluye `counts` por severidad y estado sobre todo el filtro (para las tarjetas de resumen) y `areas` con alertas (para el selector) |
+| `GET /alertas/{id}` | Una alerta, por uuid o por código `AL-0001` |
+| `PATCH /alertas/{id}` | Cambia el estado: `{ "status": "Verificada", "note": "…" }`. Estados: `Pendiente`, `En revisión`, `En análisis`, `Verificada`. Se guarda y se avisa a todos con `alert:updated` |
+| `GET /alertas/contexto-mensual` | El **nivel_alerta** del mes en curso por área, traducido a un mensaje (`area_id`, `solo_alertas=true`) |
+| `DELETE /alertas/demo` | Borra las alertas de demostración (del replay o de datos simulados) |
+
+Cada alerta tiene la forma que usa la vista: `id` (`AL-3194`), `district` (nombre del área), `severity`, `status`, `detected` (`"25 oct, 13:37"`, hora de Bolivia), `date`, `time`, `source` (`"VIIRS (NASA)"`), `confidence`, `lat` y `lng`. Además trae `message`, `satellite`, `confidenceLevel`, `detectionCount`, `maxFrpMw`, `inPark`, `areaId`, `simulated`, `observationIds` y `note`.
+
+`confidence` es un porcentaje **solo para MODIS**. VIIRS no da porcentaje, así que trae `null` y se usa `confidenceLevel` (`Alta`/`Nominal`/`Baja`).
+
+Ejemplo de `message`:
+> 2 detecciones de calor VIIRS (Suomi-NPP) en Sector del Tunari en Quillacollo, dentro del Parque Nacional Tunari, el 2026-10-25 a las 13:37 (hora de Bolivia). Confianza alta. Potencia radiativa máxima: 8.7 MW. Requiere verificación: una detección satelital no confirma un incendio.
+
+**Contexto mensual (`nivel_alerta`):** es el nivel que calcula el modelo del equipo de datos para el mes en curso. Va de `normal` y `elevada` a `alta` y `muy_alta`, más `sin_baseline` cuando no hay historia suficiente. El backend solo lo convierte en mensaje, por ejemplo:
+
+> Actividad extremadamente inusual en Parque Nacional Tunari: en los primeros 12 días de noviembre de 2026 se registraron 14 celdas-día de calor (NOAA-20), cuando lo esperable según el modelo era ~3.5. Un tramo así o más alto ocurre en el 1 % de los casos o menos (según el modelo). Es una señal estadística: requiere verificación y no confirma un incendio.
+
+Cambia como mucho una vez al día, al cargar un corte nuevo (`npm run fuego:alerta-mes`). Por eso **no tiene evento de tiempo real**: se consulta por REST, por ejemplo como un aviso arriba de la página.
+
+**Volumen:**
+- La primera carga de la historia (`datos:cargar`) genera unas 3.200 alertas de 2001 a 2026, que la vista filtra por fecha.
+- Reimportar no crea alertas nuevas.
+- Repetir un replay tampoco duplica sus alertas.
+
+### 4.9 Errores
 
 | Código | Cuándo |
 | --- | --- |
@@ -319,6 +362,8 @@ Sin tiempo real, el frontend tendría que preguntar cada pocos segundos si hay a
 
 | Evento | Cuándo llega | Qué trae |
 | --- | --- | --- |
+| `alert:new` | Al generarse alertas (importación o replay) | `count`: cuántas son. `alerts`: hasta 100, de la más reciente a la más antigua, con la misma forma que `GET /alertas`. `truncated`: si había más de 100. Llega a todos los clientes |
+| `alert:updated` | Cuando alguien cambia el estado de una alerta (`PATCH /alertas/{id}`) | `alert`: la alerta actualizada, para reemplazar esa fila en su lugar |
 | `hotspots:removed` | Cuando el dato estándar borra NRT provisionales, antes del `hotspots:new` del mismo lote | `removedIds`: ids a quitar del mapa. `reason`: `nrt_replaced_by_standard`. Llega a todos los clientes, aunque estén suscritos solo a algunos distritos |
 | `hotspots:new` | Al importarse focos nuevos, y en cada paso de la reproducción | `collection`: FeatureCollection GeoJSON de puntos, listo para agregar al mapa. `mode`: `live` (recién importado) o `replay` (demo). `simulated`: `true` si es demo o datos de prueba, y hay que mostrarlo. `simulatedTimeUtc`: en replay, el momento histórico reproducido. `dataset`, `batchId`, `emittedAtUtc` |
 | `sync:status` | Al terminar cada importación y al conectarse | `lastBatch`: nombre del dataset, filas nuevas, duplicadas y rechazadas, `announced`, `upgradedToStandard` y `removedObsolete`. Si `announced` es `false`, o si `upgradedToStandard`/`removedObsolete` son mayores que 0, conviene recargar con `GET /observations` |
@@ -341,6 +386,10 @@ Cada punto de `hotspots:new` tiene estas propiedades, las mismas que `GET /obser
   }
 }
 ```
+
+**Alertas en la vista `/alertas` (recomendado):**
+- **`alert:new`** no inserta filas en la lista, porque la haría saltar mientras alguien revisa. Conviene mostrar un aviso "🔴 3 alertas nuevas · Ver" y un contador en el menú; la lista se recarga con `GET /alertas` al pulsar "Ver" o al cambiar un filtro.
+- **`alert:updated`** sí puede reemplazar la fila en su lugar, porque no mueve nada.
 
 ### Mensajes que puede enviar el cliente
 
@@ -380,7 +429,7 @@ npm run realtime:watch -- distrito-09 distrito-13   # solo esos distritos
 La forma más vistosa para la demo es con los datos simulados de 2027:
 
 ```bash
-npm run datos:demo   # importa los simulados e imprime el comando de replay con su batchId
+npm run datos:demo   # importa los simulados e imprime el comando de replay
 ```
 
 Ese replay (12 al 16 de agosto de 2027) da 33 pasadas con 186 detecciones. Otras opciones:
@@ -462,6 +511,10 @@ socket.on('sync:status', ({ lastBatch }) => {
   // Última importación. Si lastBatch.announced === false, recarga GET /observations.
 });
 
+socket.on('alert:new', ({ count, alerts }) => {
+  // Aviso "N alertas nuevas · Ver" (no reordenar la lista sola). alerts[0] es la más reciente.
+});
+socket.on('alert:updated', ({ alert }) => { /* reemplazar la fila con alert.id por la nueva */ });
 socket.on('replay:status', (status) => { /* barra de progreso de la demo */ });
 socket.on('districts:updated', () => { /* recarga GET /districts y GET /observations */ });
 ```
@@ -542,7 +595,7 @@ Si quien sube el archivo está en otra computadora de la red, pon `S3_PUBLIC_END
 | `build` / `start:prod` | Compilar y ejecutar la versión de producción (`dist/`) |
 | `realtime:watch` | Oyente de consola del tiempo real (`-- distrito-09` para filtrar) |
 | `datos:cargar` | Carga en tu base las 11.923 detecciones reales del repo (con el servidor corriendo) |
-| `datos:demo` | Carga las detecciones simuladas de 2027 e imprime el comando de replay |
+| `datos:demo` | Carga las detecciones simuladas de 2027 e imprime el comando de replay (también genera alertas simuladas) |
 | `db:up` / `db:down` | Levantar o detener PostgreSQL y MinIO |
 | `db:doctor` | Diagnosticar problemas de conexión a la base |
 | `prisma:deploy` | Aplicar las migraciones |
@@ -637,6 +690,7 @@ Server/
       realtime/               gateway Socket.IO y publicación de eventos
       replay/                 reproducción histórica
       analisis/               lectura del esquema fuego
+      alerts/                 alertas operativas, estado de revisión y contexto mensual
 ```
 
 El diseño interno, los contratos completos y las fases están en [ARCHITECTURE.md](./ARCHITECTURE.md).
