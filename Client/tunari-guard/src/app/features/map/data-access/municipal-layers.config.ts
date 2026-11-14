@@ -28,6 +28,6 @@ export const MUNICIPAL_LAYERS: readonly MunicipalLayerDefinition[] = [
 ];
 
 /** Same-origin proxy; it must forward the GAMC key from server configuration. */
-export const MUNICIPAL_WMS_PROXY = '/api/gs/wms';
+export const MUNICIPAL_WMS_PROXY = 'https://serviciosgamc.cochabamba.bo/api/gs/wms';
 
-export const MUNICIPAL_API_KEY = '';
+export const MUNICIPAL_API_KEY = '8da30122933ced2174ebe3e8b03198731d9cae6dc3230d32';

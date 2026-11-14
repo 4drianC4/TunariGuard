@@ -10,6 +10,22 @@ To start a local development server, run:
 ng serve
 ```
 
+La configuración compartida del frontend está en `src/environments/`. Para desarrollo,
+`ng serve` usa `environment.development.ts`; allí se configura `apiBaseUrl` para todo el
+backend (por defecto `http://localhost:3000/api/v1`). Si el backend corre en otra máquina,
+cambien ese valor por la URL accesible desde los navegadores del equipo. No agreguen `/`
+al final. La configuración se versiona para que el equipo use el mismo valor.
+
+El mapa usa `mapDataOrigin: 'BACKEND'` para consultar la API; se puede cambiar a `'DEMO'`
+en el mismo archivo mientras el backend no esté disponible. En producción, `environment.ts`
+usa `/api/v1`, por lo que el servidor de despliegue debe servir esa ruta o configurarla como
+proxy al backend.
+
+La actualización en vivo usa Socket.IO en el namespace `/realtime` del mismo origen que
+`apiBaseUrl`. Si se usa un proxy, debe reenviar también `/socket.io/`, tanto HTTP como
+la actualización a WebSocket. Si frontend y backend tienen orígenes distintos, incluye
+el origen del frontend en `CORS_ORIGINS` del backend.
+
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
 ## Code scaffolding

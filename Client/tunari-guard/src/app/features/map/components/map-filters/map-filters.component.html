@@ -15,14 +15,12 @@
     </span>
     <select class="w-full rounded-md border border-[#526b24]/45 bg-[#526b24]/5 px-3 py-2 text-[#30351f] disabled:opacity-50"
       [value]="filters.minConfidence"
-      (change)="setConfidenceThreshold($event)"
-      [disabled]="!confidenceOptions.length">
+      (change)="setConfidenceThreshold($event)">
       <option value="">Cualquiera</option>
       <option value="LOW">Baja o superior</option>
       <option value="NOMINAL">Nominal o superior</option>
       <option value="HIGH">Solo alta</option>
     </select>
-    @if (!confidenceOptions.length) { <span class="block text-xs text-[#526b24]">Sin clases de confianza disponibles.</span> }
   </label>
 
   <label class="block space-y-1.5 text-xs text-[#424037]">
@@ -36,8 +34,8 @@
     </span>
     <input type="number" min="0" step="0.1" placeholder="Sin mínimo"
       class="w-full rounded-md border border-[#526b24]/45 bg-[#526b24]/5 px-3 py-2 text-[#30351f] placeholder:text-[#b84e20] disabled:opacity-50"
-      [value]="filters.minFrpMw ?? ''" (input)="setFrpThreshold($event)" [disabled]="!hasFrpValues">
-    @if (!hasFrpValues) { <span class="block text-xs text-[#526b24]">Sin valores FRP disponibles.</span> }
+      [value]="filters.minFrpMw ?? ''" (input)="setFrpThreshold($event)" [disabled]="!hasFrpValues && filters.minFrpMw === null">
+    @if (!hasFrpValues && filters.minFrpMw === null) { <span class="block text-xs text-[#526b24]">Sin valores FRP disponibles.</span> }
   </label>
 
   <label class="block space-y-1.5 text-xs text-[#424037]">
@@ -52,12 +50,12 @@
     <select class="w-full rounded-md border border-[#526b24]/45 bg-[#526b24]/5 px-3 py-2 text-[#30351f] disabled:opacity-50"
       [value]="filters.dayNight"
       (change)="setDayNight($event)"
-      [disabled]="!hasDayNightValues">
+      [disabled]="!hasDayNightValues && !filters.dayNight">
       <option value="">Día y noche</option>
-      <option value="D">Día</option>
-      <option value="N">Noche</option>
+      <option value="DAY">Día</option>
+      <option value="NIGHT">Noche</option>
     </select>
-    @if (!hasDayNightValues) { <span class="block text-xs text-[#526b24]">Sin este dato disponible.</span> }
+    @if (!hasDayNightValues && !filters.dayNight) { <span class="block text-xs text-[#526b24]">Sin este dato disponible.</span> }
   </label>
 
   <section class="space-y-2" aria-label="Filtro por satélite">
