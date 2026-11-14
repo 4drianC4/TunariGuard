@@ -1,5 +1,6 @@
 import { MapDataOrigin } from '../models/map-data.model';
+import { environment } from '../../../../environments/environment';
 
-/** Keep demo data active until the backend branch is running locally or deployed. */
-export const MAP_DATA_ORIGIN: MapDataOrigin = 'DEMO';
-export const MAP_API_BASE = 'http://localhost:3000/api/v1';
+/** Mapa alimentado por la configuración compartida del frontend. */
+export const MAP_DATA_ORIGIN: MapDataOrigin = environment.mapDataOrigin;
+export const MAP_API_BASE = environment.apiBaseUrl.replace(/\/$/, '');

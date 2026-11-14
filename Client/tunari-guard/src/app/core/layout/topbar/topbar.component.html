@@ -17,8 +17,18 @@
   <div class="topbar__actions">
     <span class="topbar__demo">
       <span class="topbar__demo-dot"></span>
-      <span class="demo-long">MODO DEMOSTRACIÓN</span>
-      <span class="demo-short">DEMO</span>
+      <span class="demo-long">
+        @if (liveUpdates.enabled) {
+    <span role="status">
+      @switch (liveUpdates.status()) {
+        @case ('connected') { En vivo }
+        @case ('connecting') { Conectando… }
+        @case ('offline') { Sin conexión en vivo }
+      }
+    </span>
+  }
+
+      </span>
     </span>
 
     <div class="notifications" #notificationContainer>

@@ -3,11 +3,13 @@ import {
   Component,
   ElementRef,
   HostListener,
+  inject,
   ViewChild
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { LiveUpdatesService } from '../../../application/services/live-updates.service';
 
 type NotificationType = 'alert' | 'success' | 'info';
 
@@ -28,6 +30,8 @@ interface TunariNotification {
   styleUrls: ['./topbar.component.scss']
 })
 export class TopbarComponent {
+  readonly liveUpdates = inject(LiveUpdatesService);
+
   @ViewChild('notificationContainer')
   notificationContainer?: ElementRef<HTMLElement>;
 
