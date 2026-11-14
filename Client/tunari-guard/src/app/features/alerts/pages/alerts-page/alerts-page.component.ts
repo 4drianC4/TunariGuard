@@ -1,6 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { catchError, distinctUntilChanged, map, of, startWith, switchMap } from 'rxjs';
+import { environment } from '../../../../../environments/environment';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 
 type Severity = 'Crítica' | 'Alta' | 'Media';
@@ -9,6 +13,19 @@ interface AlertEvent {
   id: string; district: string; severity: Severity; status: Status;
   detected: string; date: string; time: string; source: string;
   confidence: number; lat: number; lng: number; x: number; y: number;
+}
+interface AlertaEstadistica {
+  fecha_corte: string;
+  nivel_alerta: string;
+  satelite_base: string;
+  celdas_dia_observadas: number;
+  mediana_historica_tramo: number | null;
+  lectura: string;
+}
+interface ResumenAlerta {
+  estado: 'cargando' | 'disponible' | 'sin_corte' | 'error';
+  area?: string;
+  alerta?: AlertaEstadistica;
 }
 const seeds: Omit<AlertEvent, 'id' | 'date' | 'detected' | 'time'>[] = [
   { district: 'Tiquipaya', severity: 'Crítica', status: 'En revisión', source: 'VIIRS (NASA)', confidence: 94, lat: -17.3456, lng: -66.1823, x: 43, y: 33 },
@@ -33,12 +50,15 @@ const allAlerts: AlertEvent[] = Array.from({ length: 26 }, (_, i) => {
 @Component({
   selector: 'app-alerts-page',
   standalone: true,
-  imports: [FormsModule, RouterLink, PageHeaderComponent],
+  imports: [FormsModule, PageHeaderComponent],
   templateUrl: './alerts-page.component.html',
   styleUrl: './alerts-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AlertsPageComponent {
+  readonly resumen = signal<ResumenAlerta>({ estado: 'cargando' });
+  private readonly http = inject(HttpClient);
+  private readonly ruta = inject(ActivatedRoute);
   readonly alerts = allAlerts;
   readonly districts = ['Todos los distritos', 'Tiquipaya', 'Sacaba', 'Colcapirhua', 'Vinto', 'Quillacollo', 'Cochabamba', 'Sipe Sipe'];
   dateFrom = '2026-11-01'; dateTo = '2026-11-14'; district = 'Todos los distritos'; severity = 'Todas';
@@ -62,6 +82,27 @@ export class AlertsPageComponent {
     medium: this.filtered().filter(a => a.severity === 'Media').length,
     review: this.filtered().filter(a => (this.statuses()[a.id] ?? a.status) === 'En revisión').length,
   }));
+
+  constructor() {
+    this.ruta.queryParamMap.pipe(
+      map((params) => params.get('area') || 'parque-tunari'),
+      distinctUntilChanged(),
+      switchMap((areaId) => {
+        const areaUrl = `${environment.apiBaseUrl}/areas/${encodeURIComponent(areaId)}`;
+        return this.http.get<{ nombre_visible: string }>(areaUrl).pipe(
+          switchMap((area) => this.http.get<AlertaEstadistica[]>(`${areaUrl}/alerta-mes-en-curso`).pipe(
+            map((filas): ResumenAlerta => ({
+              estado: filas.length ? 'disponible' : 'sin_corte', area: area.nombre_visible, alerta: filas[0],
+            })),
+          )),
+          catchError((error: HttpErrorResponse) => of<ResumenAlerta>({ estado: error.status === 404 ? 'sin_corte' : 'error' })),
+          startWith<ResumenAlerta>({ estado: 'cargando' }),
+        );
+      }),
+      takeUntilDestroyed(),
+    ).subscribe((resumen) => this.resumen.set(resumen));
+  }
+
   applyFilters(): void {
     if (this.dateFrom > this.dateTo) { const old = this.dateFrom; this.dateFrom = this.dateTo; this.dateTo = old; }
     this.activeFrom.set(this.dateFrom); this.activeTo.set(this.dateTo);

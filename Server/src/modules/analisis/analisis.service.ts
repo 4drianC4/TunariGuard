@@ -36,6 +36,19 @@ export class AnalisisService {
     return formato === 'geojson' ? aFeatureCollection(filas) : filas;
   }
 
+  areasResumen() {
+    return this.repository.areasResumen({});
+  }
+
+  async fechaCorteSeries() {
+    const parametros = await this.repository.parametros();
+    return parametros.find((fila) => fila['clave'] === 'cobertura_hasta')?.['valor'];
+  }
+
+  mesesConDeteccionesProvisionales = this.porArea((id, primero: string, segundo: string) =>
+    this.repository.mesesConDeteccionesProvisionales(id, primero, segundo),
+  );
+
   async area(areaId: string) {
     const fila = await this.repository.area(areaId);
     if (!fila) throw noExisteArea(areaId);

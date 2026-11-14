@@ -1,179 +1,255 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { exportReport, type ExportFormat } from '../../data-access/report-export';
+import {
+  ReportsApiService, type ReportArea, type ReportData, type ReportFilters, type ReportKind,
+} from '../../data-access/reports-api.service';
 
-type Level = 'Crítica' | 'Alta' | 'Media' | 'Baja';
-type ExportFormat = 'PDF' | 'CSV' | 'Excel';
-interface ReportRow { district: string; count: number; level: 'Alto' | 'Medio' | 'Bajo'; change: number; }
-interface Detection { date: string; district: string; level: Level; source: 'MODIS' | 'VIIRS'; }
-interface DownloadRecord { title: string; date: string; format: ExportFormat; fileName: string; content: Blob; }
+const reportTypes: Record<ReportKind, string> = {
+  detections: 'Detecciones térmicas',
+  alerts: 'Resumen de anomalías',
+  districts: 'Reporte por distrito',
+  history: 'Tendencia mensual',
+  comparison: 'Comparación de sensores',
+};
+
+const sourceLabels = {
+  ALL: 'Todos los satélites',
+  HARMONIZED: 'Índice armonizado',
+  MODIS: 'MODIS',
+  VIIRS: 'VIIRS',
+};
+
+interface ReportView {
+  filters: ReportFilters;
+  area: string;
+  areaNotice: string | null;
+  data: ReportData;
+}
+
+interface DownloadRecord {
+  title: string;
+  date: string;
+  format: ExportFormat;
+  fileName: string;
+  blob: Blob;
+}
 
 @Component({
   selector: 'app-reports-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent],
+  imports: [DecimalPipe, FormsModule, PageHeaderComponent],
   templateUrl: './reports-page.component.html',
   styleUrl: './reports-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReportsPageComponent {
-  readonly districts = ['Todos los distritos', 'Tiquipaya', 'Sacaba', 'Vinto', 'Colcapirhua', 'Quillacollo'];
-  readonly levels: Level[] = ['Crítica', 'Alta', 'Media', 'Baja'];
-  readonly sourceOptions = ['Armonizada (MODIS + VIIRS)', 'MODIS', 'VIIRS'];
-  readonly reportTypes = ['Resumen de anomalías', 'Reporte por distrito', 'Tendencia temporal', 'Comparación de sensores'];
-  readonly demoRows: ReportRow[] = [
-    { district: 'Tiquipaya', count: 27, level: 'Alto', change: 4 },
-    { district: 'Sacaba', count: 17, level: 'Medio', change: 2 },
-    { district: 'Vinto', count: 12, level: 'Medio', change: 1 },
-    { district: 'Colcapirhua', count: 11, level: 'Bajo', change: 0 },
-    { district: 'Quillacollo', count: 9, level: 'Bajo', change: -1 },
-  ];
-  // Datos artificiales para mostrar el flujo completo de reportes sin una API conectada.
-  readonly records: Detection[] = Array.from({ length: 76 }, (_, index) => {
-    const day = 8 + Math.floor(index * 7 / 76);
-    const hour = 6 + index % 13;
-    const district = this.demoRows[index % this.demoRows.length].district;
-    return {
-      date: `2026-11-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:24:00`,
-      district,
-      level: (index < 12 ? 'Crítica' : index < 36 ? 'Alta' : index < 64 ? 'Media' : 'Baja') as Level,
-      source: index % 2 ? 'VIIRS' : 'MODIS',
-    };
-  });
-  startDate = '2026-11-01';
-  endDate = '2026-11-14';
-  selectedDistrict = 'Todos los distritos';
-  selectedSeverity = 'Todas';
-  selectedSource = 'Armonizada (MODIS + VIIRS)';
-  reportType = 'Resumen de anomalías';
-  format: ExportFormat = 'PDF';
-  filtersExpanded = false;
-  applied = { start: this.startDate, end: this.endDate, district: this.selectedDistrict, severity: this.selectedSeverity, source: this.selectedSource };
-  errorMessage = '';
-  successMessage = '';
-  recent: DownloadRecord[] = [];
-  readonly days = ['8 nov', '9 nov', '10 nov', '11 nov', '12 nov', '13 nov', '14 nov'];
+export class ReportsPageComponent implements OnInit, OnDestroy {
+  private readonly api = inject(ReportsApiService);
+  private request?: AbortController;
+  private defaults: ReportFilters = {
+    kind: 'detections', area: 'parque-tunari', from: '', to: '', source: 'ALL', confidence: '', alertLevel: '',
+  };
 
-  get filtered(): Detection[] {
-    return this.records.filter(r => r.date.slice(0,10) >= this.applied.start && r.date.slice(0,10) <= this.applied.end &&
-      (this.applied.district === 'Todos los distritos' || r.district === this.applied.district) &&
-      (this.applied.severity === 'Todas' || r.level === this.applied.severity) &&
-      (this.applied.source.startsWith('Armonizada') || r.source === this.applied.source));
+  readonly reportTypes = reportTypes;
+  readonly sourceLabels = sourceLabels;
+  readonly kinds = Object.keys(reportTypes) as ReportKind[];
+  readonly areas = signal<ReportArea[]>([]);
+  readonly coverage = signal('');
+  readonly view = signal<ReportView | null>(null);
+  readonly loading = signal(false);
+  readonly error = signal('');
+  readonly recent = signal<DownloadRecord[]>([]);
+  readonly coverageNotice = computed(() => {
+    const report = this.view();
+    const coverage = this.coverage();
+    if (!report || !coverage) return null;
+    const cutoff = report.filters.kind === 'detections' ? coverage : coverage.slice(0, 7);
+    if (report.filters.from > cutoff) {
+      return 'El período está fuera de la cobertura declarada del paquete.';
+    }
+    if (report.filters.to > cutoff) {
+      return 'El período supera la cobertura declarada del paquete. Los resultados pueden estar incompletos.';
+    }
+    return null;
+  });
+  readonly page = signal(0);
+  readonly pageSize = 15;
+  readonly pageCount = computed(() => Math.ceil((this.view()?.data.rows.length ?? 0) / this.pageSize));
+  readonly visibleRows = computed(() => {
+    const offset = this.page() * this.pageSize;
+    return this.view()?.data.rows.slice(offset, offset + this.pageSize) ?? [];
+  });
+  readonly chart = computed(() => {
+    const view = this.view();
+    if (!view) return null;
+    const { kind } = view.filters;
+    if (kind === 'alerts') return null;
+    let entries: { label: string; values: (number | null)[] }[];
+    if (view.data.detections) {
+      const counts = new Map<string, number>();
+      for (const detection of view.data.detections) {
+        const month = detection.fecha_bo.slice(0, 7);
+        counts.set(month, (counts.get(month) ?? 0) + 1);
+      }
+      entries = [...counts].map(([label, count]) => ({ label, values: [count] }));
+    } else {
+      const end = kind === 'comparison' ? 3 : 2;
+      entries = view.data.rows.map((row) => ({
+        label: String(row[0]),
+        values: row.slice(1, end).map((value) => typeof value === 'number' ? value : null),
+      }));
+    }
+    const displayed = kind === 'districts' ? entries : entries.slice(-12);
+    if (!displayed.some((entry) => entry.values.some((value) => value !== null))) return null;
+    const max = Math.max(1, ...displayed.flatMap((entry) => entry.values.map((value) => value ?? 0)));
+    return { entries: displayed, max, comparison: kind === 'comparison', shortened: entries.length > displayed.length };
+  });
+
+  filters = { ...this.defaults };
+  filtersExpanded = false;
+  format: ExportFormat = 'PDF';
+
+  get monthly(): boolean { return this.filters.kind !== 'detections'; }
+  showSource(kind: ReportKind): boolean {
+    return kind === 'detections' || kind === 'history' || kind === 'districts';
   }
-  get total(): number { return this.filtered.length; }
-  get activeDistricts(): number { return new Set(this.filtered.map(r => r.district)).size; }
-  get districtRows(): ReportRow[] {
-    return this.demoRows.map(row => {
-      const count = this.filtered.filter(r => r.district === row.district).length;
-      const level: ReportRow['level'] = count >= 18 ? 'Alto' : count >= 10 ? 'Medio' : 'Bajo';
-      return { ...row, count, level, change: count ? row.change : 0 };
-    }).filter(row => row.count > 0);
+
+  get formats(): ExportFormat[] {
+    return this.view()?.data.detections ? ['PDF', 'CSV', 'Excel', 'GeoJSON'] : ['PDF', 'CSV', 'Excel'];
   }
-  get breakdown(): { label: Level; count: number; color: string }[] {
-    return [
-      { label: 'Crítica' as Level, count: this.filtered.filter(r => r.level === 'Crítica').length, color: '#e82c35' },
-      { label: 'Alta' as Level, count: this.filtered.filter(r => r.level === 'Alta').length, color: '#fc8700' },
-      { label: 'Media' as Level, count: this.filtered.filter(r => r.level === 'Media').length, color: '#f8d756' },
-      { label: 'Baja' as Level, count: this.filtered.filter(r => r.level === 'Baja').length, color: '#80b51b' },
-    ];
+
+  ngOnInit(): void { void this.initialize(); }
+  ngOnDestroy(): void { this.request?.abort(); }
+
+  async initialize(): Promise<void> {
+    const controller = this.beginRequest();
+    try {
+      const [areas, coverage] = await Promise.all([
+        this.api.areas(controller.signal), this.api.coverage(controller.signal),
+      ]);
+      if (controller.signal.aborted) return;
+      if (!areas.length || !/^\d{4}-\d{2}-\d{2}$/.test(coverage)) {
+        throw new Error('El paquete de datos no informa áreas o fecha de cobertura.');
+      }
+      this.areas.set(areas);
+      this.coverage.set(coverage);
+      this.defaults = {
+        ...this.defaults,
+        area: areas.find((area) => area.area_id === 'parque-tunari')?.area_id ?? areas[0].area_id,
+        from: coverage.slice(0, 4) + '-01-01',
+        to: coverage,
+      };
+      this.filters = { ...this.defaults };
+      await this.apply();
+    } catch (error) {
+      this.finishError(error, controller);
+    }
   }
-  get donut(): string {
-    if (!this.total) return '#e9e7df';
-    let cursor = 0;
-    const stops = this.breakdown.map(s => {
-      const next = cursor + s.count / this.total * 100;
-      const stop = `${s.color} ${cursor.toFixed(2)}% ${next.toFixed(2)}%`;
-      cursor = next;
-      return stop;
-    });
-    return `conic-gradient(${stops.join(',')})`;
+
+  changeKind(kind: ReportKind): void {
+    const from = this.filters.from || this.defaults.from;
+    const to = this.filters.to || this.defaults.to;
+    this.filters = {
+      ...this.filters, kind,
+      from: kind === 'detections' ? (from.length === 7 ? from + '-01' : from) : from.slice(0, 7),
+      to: kind === 'detections' ? (to.length === 7 ? this.lastDayOf(to) : to) : to.slice(0, 7),
+      source: kind === 'detections' ? 'ALL' : 'HARMONIZED',
+      confidence: '', alertLevel: '',
+    };
+    void this.apply();
   }
-  get timeline(): number[] {
-    return Array.from({length:7}, (_,i) => this.filtered.filter(r => Number(r.date.slice(8,10)) === 8+i).length);
+
+  async apply(): Promise<void> {
+    const controller = this.beginRequest();
+    const filters = { ...this.filters };
+    try {
+      const pattern = this.monthly ? /^\d{4}-(0[1-9]|1[0-2])$/ : /^\d{4}-(0[1-9]|1[0-2])-\d{2}$/;
+      if (!pattern.test(filters.from) || !pattern.test(filters.to) || filters.from > filters.to) {
+        throw new Error('Selecciona un período válido. El inicio debe ser anterior o igual al fin.');
+      }
+      if (this.monthly && (filters.from < '2000-01' || filters.to > '2100-12')) {
+        throw new Error('Selecciona meses entre los años 2000 y 2100.');
+      }
+      const data = await this.api.load(filters, controller.signal);
+      if (controller.signal.aborted) return;
+      const selectedArea = this.areas().find((entry) => entry.area_id === filters.area);
+      const area = filters.kind === 'districts' ? 'Distritos de Cochabamba' : selectedArea?.nombre_visible ?? filters.area;
+      const areaNotice = filters.kind === 'districts' ? null : selectedArea?.advertencia ?? null;
+      this.view.set({ filters, area, areaNotice, data });
+      if (!this.formats.includes(this.format)) this.format = 'PDF';
+      this.loading.set(false);
+    } catch (error) {
+      this.finishError(error, controller);
+    }
   }
-  get linePoints(): string {
-    const values = this.timeline;
-    const max = Math.max(20,...values);
-    return values.map((v,i) => `${30+i*71},${174-v/max*145}`).join(' ');
-  }
-  get areaPoints(): string { return `30,174 ${this.linePoints} 456,174`; }
-  get latestReportCount(): number { return this.recent.length; }
-  apply(): void {
-    this.errorMessage = '';
-    if (this.startDate > this.endDate) { this.errorMessage = 'La fecha inicial debe ser anterior a la fecha final.'; return; }
-    this.applied = { start: this.startDate, end: this.endDate, district: this.selectedDistrict, severity: this.selectedSeverity, source: this.selectedSource };
-    this.successMessage = 'Filtros aplicados a las visualizaciones y exportaciones DEMO.';
-  }
+
   reset(): void {
-    this.startDate='2026-11-01'; this.endDate='2026-11-14'; this.selectedDistrict='Todos los distritos';
-    this.selectedSeverity='Todas'; this.selectedSource='Armonizada (MODIS + VIIRS)'; this.apply();
+    const kind = this.filters.kind;
+    this.filters = { ...this.defaults };
+    this.changeKind(kind);
   }
-  percentage(value:number):number { return this.total ? Math.round(100*value/this.total) : 0; }
-  districtPercent(value:number):number { return this.total ? Math.round(100*value/this.total) : 0; }
-  trend(value:number):string { return value > 0 ? `↑ +${value}` : value < 0 ? `↓ ${value}` : '= 0'; }
-  trackDistrict(_index:number,row:ReportRow):string { return row.district; }
-  get reportTitle(): string { return `${this.reportType} · TunariGuard DEMO`; }
-  private lines(): string[] {
-    return [
-      'TUNARIGUARD / REPORTE DEMOSTRATIVO',
-      this.reportType,
-      `Periodo: ${this.applied.start} al ${this.applied.end}`,
-      `Distrito: ${this.applied.district}`,
-      `Severidad: ${this.applied.severity}`,
-      `Fuente: ${this.applied.source}`,
-      `Anomalias DEMO: ${this.total}`,
-      `Distritos con actividad DEMO: ${this.activeDistricts}`,
-      '',
-      'Distrito | Anomalias | Porcentaje | Actividad',
-      ...this.districtRows.map(r => `${r.district} | ${r.count} | ${this.districtPercent(r.count)}% | ${r.level}`),
-      '',
-      'Severidad | Detecciones',
-      ...this.breakdown.map(b => `${b.label} | ${b.count}`),
-      '',
-      'IMPORTANTE: datos sinteticos DEMO, no verificaciones satelitales reales.',
+
+  generate(): void {
+    const view = this.view();
+    if (!view?.data.rows.length || !this.formats.includes(this.format)) return;
+    const { filters, data } = view;
+    const title = this.reportTypes[filters.kind];
+    const now = new Date();
+    const date = now.toLocaleString('es-BO', { timeZone: 'America/La_Paz' });
+    const coverageNotice = this.coverageNotice();
+    const details = [
+      'Tunari Guard · ' + title,
+      'Área: ' + view.area,
+      `Período: ${filters.from} a ${filters.to} (hora de Bolivia)`,
+      'Generado: ' + date,
+      'Fuente: NASA FIRMS · paquete de análisis fuego',
+      'Cobertura informada: ' + this.coverage(),
+      ...(this.showSource(filters.kind) ? ['Selección: ' + sourceLabels[filters.source]] : []),
+      ...(filters.confidence ? ['Confianza mínima: ' + filters.confidence] : []),
+      ...(filters.alertLevel ? ['Nivel de alerta: ' + filters.alertLevel.replaceAll('_', ' ')] : []),
+      `${data.headline.label}: ${data.headline.value ?? 'Sin cobertura'} ${data.headline.unit}`,
+      data.notice,
+      ...(coverageNotice ? [coverageNotice] : []),
+      ...(view.areaNotice ? [view.areaNotice] : []),
     ];
+    const { blob, extension } = exportReport(this.format, data, details);
+    const fileName = `TunariGuard_${filters.kind}_${filters.from}_${filters.to}.${extension}`;
+    const download = { title, date, format: this.format, fileName, blob };
+    this.download(download);
+    this.recent.update((records) => [download, ...records].slice(0, 6));
   }
-  private csvEscape(value:unknown):string { return `"${String(value).replace(/"/g,'""')}"`; }
-  private csvBlob(): Blob {
-    const rows = [['Fecha UTC', 'Distrito', 'Severidad', 'Fuente', 'Modo'], ...this.filtered.map(r => [r.date,r.district,r.level,r.source,'DEMO'])];
-    return new Blob(['\ufeff'+rows.map(r => r.map(v=>this.csvEscape(v)).join(';')).join('\r\n')], {type:'text/csv;charset=utf-8'});
+
+  download(record: DownloadRecord): void {
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(record.blob);
+    link.href = url;
+    link.download = record.fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 30000);
   }
-  private excelBlob(): Blob {
-    const escape=(s:string)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    const rows=[['Fecha UTC','Distrito','Severidad','Fuente','Modo'],...this.filtered.map(r=>[r.date,r.district,r.level,r.source,'DEMO'])];
-    const body=rows.map(r=>'<Row>'+r.map(c=>`<Cell><Data ss:Type="String">${escape(c)}</Data></Cell>`).join('')+'</Row>').join('');
-    const xml=`<?xml version="1.0" encoding="UTF-8"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Worksheet ss:Name="TunariGuard DEMO"><Table>${body}</Table></Worksheet></Workbook>`;
-    return new Blob([xml],{type:'application/vnd.ms-excel;charset=utf-8'});
+
+  private beginRequest(): AbortController {
+    this.request?.abort();
+    this.request = new AbortController();
+    this.loading.set(true);
+    this.error.set('');
+    this.view.set(null);
+    this.page.set(0);
+    return this.request;
   }
-  private pdfBlob(): Blob {
-    // PDF de una pagina, A4 horizontal, Helvetica ASCII para compatibilidad sin librerias.
-    const plain=(value:string)=>value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\x20-\x7e]/g,'?');
-    const escaped=(value:string)=>plain(value).replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');
-    const content=['BT','/F1 10 Tf','44 565 Td','14 TL',...this.lines().slice(0,35).flatMap((line,i)=>i===0?[`(${escaped(line)}) Tj`]:['T*',`(${escaped(line)}) Tj`]),'ET'].join('\n');
-    const objects=['<< /Type /Catalog /Pages 2 0 R >>','<< /Type /Pages /Kids [3 0 R] /Count 1 >>','<< /Type /Page /Parent 2 0 R /MediaBox [0 0 842 595] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>','<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',`<< /Length ${content.length} >>\nstream\n${content}\nendstream`];
-    let pdf='%PDF-1.4\n'; const offsets=[0];
-    objects.forEach((o,i)=>{ offsets.push(pdf.length); pdf+=`${i+1} 0 obj\n${o}\nendobj\n`; });
-    const xref=pdf.length;
-    pdf+=`xref\n0 ${objects.length+1}\n0000000000 65535 f \n`;
-    offsets.slice(1).forEach(offset=>{pdf+=`${String(offset).padStart(10,'0')} 00000 n \n`;});
-    pdf+=`trailer\n<< /Size ${objects.length+1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`;
-    return new Blob([pdf],{type:'application/pdf'});
+
+  private finishError(error: unknown, controller: AbortController): void {
+    if (controller.signal.aborted) return;
+    this.error.set(error instanceof Error ? error.message : 'No se pudo consultar la API.');
+    this.loading.set(false);
   }
-  private save(blob:Blob,fileName:string):void {
-    const url=URL.createObjectURL(blob);
-    const link=document.createElement('a'); link.href=url; link.download=fileName;
-    document.body.appendChild(link); link.click(); link.remove();
-    window.setTimeout(()=>URL.revokeObjectURL(url),30000);
+
+  private lastDayOf(month: string): string {
+    const day = new Date(Date.UTC(Number(month.slice(0, 4)), Number(month.slice(5)), 0)).getUTCDate();
+    return month + '-' + day;
   }
-  generate():void {
-    this.errorMessage='';
-    const blob=this.format==='CSV'?this.csvBlob():this.format==='Excel'?this.excelBlob():this.pdfBlob();
-    const ext=this.format==='Excel'?'xls':this.format.toLowerCase();
-    const fileName=`TunariGuard_DEMO_${new Date().toISOString().slice(0,10)}.${ext}`;
-    this.save(blob,fileName);
-    this.recent=[{title:this.reportTitle,date:new Date().toLocaleString('es-BO'),format:this.format,fileName,content:blob},...this.recent].slice(0,6);
-    this.successMessage=`Se generó un archivo ${this.format} con datos DEMO (${this.total} registros).`;
-  }
-  downloadPrevious(record:DownloadRecord):void { this.save(record.content,record.fileName); }
 }

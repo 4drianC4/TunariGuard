@@ -15,6 +15,6 @@ import { MetadatosController } from './metadatos.controller.js';
 @Module({
   controllers: [AreasController, DeteccionesController, HistorialController, MetadatosController],
   providers: [AnalisisService, HistorialService, AnalisisRepository],
-  exports: [AnalisisService],
+  exports: [AnalisisService, HistorialService],
 })
 export class AnalisisModule {}

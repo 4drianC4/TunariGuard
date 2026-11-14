@@ -5,6 +5,27 @@
     description="Detección, priorización y seguimiento de posibles incendios forestales."
   />
 
+  <section class="tg-alerts__panel tg-alerts__statistical" aria-live="polite" aria-labelledby="alerta-estadistica">
+    <h2 id="alerta-estadistica">Último corte de la alerta estadística</h2>
+    @let datos = resumen();
+    @if (datos.area) { <p>{{ datos.area }}</p> }
+    @if (datos.alerta; as alerta) {
+      <p>
+        <strong>{{ alerta.nivel_alerta.replace('_', ' ') }}</strong> ·
+        Corte <time [attr.datetime]="alerta.fecha_corte">{{ alerta.fecha_corte }}</time> ·
+        {{ alerta.celdas_dia_observadas }} celdas-día · {{ alerta.satelite_base }}
+        @if (alerta.mediana_historica_tramo !== null) { · Mediana del mismo tramo {{ alerta.mediana_historica_tramo }} }
+      </p>
+      <small>{{ alerta.lectura }}. La señal requiere verificación para confirmar un incendio.</small>
+    } @else if (datos.estado === 'cargando') {
+      <p>Consultando el último corte…</p>
+    } @else if (datos.estado === 'sin_corte') {
+      <p>Esta área no tiene un corte disponible.</p>
+    } @else {
+      <p>No se pudo consultar el último corte.</p>
+    }
+  </section>
+
   <div class="tg-alerts__kpis" aria-label="Resumen de alertas DEMO">
     <div class="tg-alerts__kpi critical"><span class="tg-alerts__kpi-symbol">🔥</span><div><strong>{{ counts().critical }}</strong><span>Alertas críticas</span><small>↑ Prioridad inmediata</small></div></div>
     <div class="tg-alerts__kpi high"><span class="tg-alerts__kpi-symbol">🔥</span><div><strong>{{ counts().high }}</strong><span>Alertas altas</span><small>↑ Requieren seguimiento</small></div></div>
