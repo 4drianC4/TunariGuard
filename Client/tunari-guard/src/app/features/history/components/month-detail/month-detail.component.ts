@@ -28,9 +28,7 @@ export class MonthDetailComponent {
 
   get sourceName(): string {
     const names: Record<HistorySource, string> = {
-      HARMONIZED: 'Armonizado',
-      MODIS: 'MODIS',
-      VIIRS: 'VIIRS',
+      HARMONIZED: 'Índice armonizado',      MODIS: 'MODIS',      VIIRS: 'VIIRS',
     };
 
     return names[this.source()];

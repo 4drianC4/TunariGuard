@@ -1,19 +1,20 @@
 <section class="tg-card flex h-full min-w-0 flex-1 flex-col gap-3">
   <header class="tg-card-heading shrink-0">
-    <div class="tg-card-titleline"><div><h2>Evolución histórica</h2><p>Comportamiento anual de la actividad registrada según la fuente seleccionada.</p></div></div>
-    <span class="shrink-0 rounded-full bg-[#eee7d9] px-3 py-1 text-xs font-bold text-[#526b4c]">2005 – 2026</span>
+    <div class="tg-card-titleline"><div><h2>Evolución histórica</h2><p>Evolución anual del índice mensual para el área seleccionada.</p></div></div>
+    <span class="shrink-0 rounded-full bg-[#eee7d9] px-3 py-1 text-xs font-bold text-[#526b4c]">Índice mensual</span>
   </header>
-  @if (hasRecords()) {
-    <div #chartContainer class="min-h-[280px] min-w-0 w-full flex-1" role="img" aria-label="Gráfica de evolución histórica de actividad por año"></div>
-  } @else {
-    <div class="flex min-h-[280px] flex-1 flex-col items-center justify-center gap-3 rounded-xl bg-[#f8f5ef] px-5 py-10 text-center">
-      <span class="text-3xl" aria-hidden="true">📈</span>
-      <h3 class="font-extrabold text-[#303722]">Sin datos para graficar</h3>
-      <p class="max-w-md text-sm text-[#737064]">No hay registros históricos disponibles para la fuente seleccionada.</p>
-    </div>
-  }
+  <div class="relative min-h-[280px] min-w-0 w-full flex-1">
+    <div #chartContainer class="h-full min-h-[280px] min-w-0 w-full" role="img" aria-label="Gráfica de evolución anual del índice mensual"></div>
+    @if (!hasRecords()) {
+      <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-xl bg-[#f8f5ef] px-5 py-10 text-center">
+        <span class="text-3xl" aria-hidden="true">📈</span>
+        <h3 class="font-extrabold text-[#303722]">Sin datos para graficar</h3>
+        <p class="max-w-md text-sm text-[#737064]">No hay registros históricos disponibles para el distrito y periodo seleccionados.</p>
+      </div>
+    }
+  </div>
   <footer class="flex shrink-0 items-start gap-2 border-t border-[#e5ded2] pt-3 text-xs leading-relaxed text-[#737064]">
     <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#526b4c]"></span>
-    <span>Los valores representan detecciones o actividad armonizada, según la fuente seleccionada.</span>
+    <span>Los valores representan un índice relativo mensual; no son detecciones ni hectáreas quemadas.</span>
   </footer>
 </section>
