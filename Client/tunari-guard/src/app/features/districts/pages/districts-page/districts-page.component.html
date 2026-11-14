@@ -1,10 +1,58 @@
-<section class="page">
-  <div class="eyebrow">TUNARI GUARD / distritos</div>
-  <h1>Análisis por distritos</h1>
-  <p class="lead">Distribución geográfica de focos para análisis territorial.</p>
-  <div class="placeholder">
-    <strong>Estructura lista para implementar</strong>
-    <p>Los componentes de esta sección ya están generados en <code>features/districts/components/</code>.</p>
-    <p>Conectar a los servicios del directorio <code>application/services/</code> y los datos de <code>data-access/</code>.</p>
+<section class="tg-districts">
+  <div class="tg-districts__crumb">TUNARIGUARD / <strong>Distritos</strong><span class="tg-districts__demo">DATOS DEMO</span></div>
+  <header class="tg-districts__hero">
+    <div class="tg-districts__hero-title"><div class="tg-districts__hero-icon">📍</div><div><h1>Análisis por distritos</h1><p>Distribución geográfica de anomalías térmicas y nivel de riesgo por distrito.</p></div></div>
+    <div class="tg-districts__tuni"><div class="tg-districts__bubble">Conoce qué distritos<br>presentan mayor<br>actividad térmica.</div><img src="/assets/tuni-piezas/tuni-cabeza.webp" alt="Mascota Tuni" /></div>
+  </header>
+  <div class="tg-districts__kpis" aria-label="Indicadores DEMO">
+    <div class="tg-districts__kpi red"><span class="tg-districts__kpi-icon">🔥</span><div><strong>{{ total() }}</strong><span>Anomalías detectadas</span><small>Datos ilustrativos</small></div></div>
+    <div class="tg-districts__kpi orange"><span class="tg-districts__kpi-icon">▱</span><div><strong>{{ activeCount() }}</strong><span>Distritos con actividad</span><small>En el conjunto DEMO</small></div></div>
+    <div class="tg-districts__kpi red"><span class="tg-districts__kpi-icon">⚠</span><div><strong>{{ highCount() }}</strong><span>Distritos en riesgo alto</span><small>Clasificación ilustrativa</small></div></div>
+    <div class="tg-districts__kpi green"><span class="tg-districts__kpi-icon">▥</span><div>@if (mostActive(); as best) {<strong class="tg-districts__best">{{ best.name }}</strong><span>Distrito con más anomalías</span><small>({{ best.count }} detecciones)</small>} @else {<strong>—</strong><span>Sin resultados</span>}</div></div>
   </div>
+  <button class="tg-districts__mobile-filter" type="button" (click)="toggleFilters()" [attr.aria-expanded]="mobileFiltersOpen()">☷ {{ mobileFiltersOpen() ? 'Ocultar filtros' : 'Mostrar filtros' }}</button>
+  <form class="tg-districts__filters" [class.tg-districts__filters-open]="mobileFiltersOpen()" (ngSubmit)="applyFilters()">
+    <div class="tg-districts__date-group"><label>Desde<input type="date" name="from" [(ngModel)]="dateFrom" /></label><label>Hasta<input type="date" name="to" [(ngModel)]="dateTo" /></label></div>
+    <label>Distrito<select name="district" [(ngModel)]="district"><option>Todos los distritos</option>@for (d of districts; track d.name) {<option [value]="d.name">{{ d.name }}</option>}</select></label>
+    <label>Severidad<select name="severity" [(ngModel)]="severity"><option>Todas</option><option>Alto</option><option>Medio</option><option>Bajo</option></select></label>
+    <div class="tg-districts__filter-actions"><button type="button" class="tg-districts__btn-outline" (click)="resetFilters()">✕ Limpiar</button><button type="submit" class="tg-districts__btn-primary">⌕ Aplicar filtros</button></div>
+  </form>
+  <div class="tg-districts__workspace">
+    <section class="tg-districts__panel tg-districts__map-panel" id="tg-districts-map"><h2>▧ Mapa por distritos <abbr title="Representación ilustrativa, no límites administrativos oficiales">ⓘ</abbr></h2>
+      <div class="tg-districts__map">
+        <div class="tg-districts__map-inner" [style.transform]="'scale(' + mapZoom() + ')'">
+          <svg viewBox="0 0 600 480" role="img" aria-label="Distritos ilustrativos, seleccionables">
+            @for (d of districts; track d.name) {
+              <g [attr.aria-label]="d.name + ', ' + d.count + ' anomalías DEMO'" role="button" tabindex="0" (click)="select(d.name)" (keydown.enter)="select(d.name)" (keydown.space)="select(d.name); $event.preventDefault()" [attr.opacity]="visibleDistricts().includes(d) ? 1 : .19" [class.tg-districts__selected-shape]="current()?.name === d.name">
+                <polygon [attr.points]="d.shape" [attr.fill]="d.color" stroke="#fff6da" stroke-width="3" stroke-linejoin="round" />
+                <text [attr.x]="d.x" [attr.y]="d.y" text-anchor="middle" class="tg-districts__svg-name">{{ d.name }}</text>
+                <text [attr.x]="d.x" [attr.y]="d.y+23" text-anchor="middle" class="tg-districts__svg-count">({{ d.count }})</text>
+              </g>
+            }
+          </svg>
+        </div>
+        <div class="tg-districts__map-controls"><button type="button" (click)="zoom(.15)" aria-label="Acercar">+</button><button type="button" (click)="zoom(-.15)" aria-label="Alejar">−</button><button type="button" (click)="resetZoom()" aria-label="Restablecer zoom">⌖</button></div>
+        <div class="tg-districts__map-legend"><strong>Nivel de actividad (DEMO)</strong><span><i class="red"></i> Alto (≥ 7)</span><span><i class="orange"></i> Medio (4–6)</span><span><i class="gold"></i> Bajo (1–3)</span><span><i class="green"></i> Sin actividad (0)</span></div>
+        <small class="tg-districts__scale">Escala ilustrativa · no cartográfica</small>
+      </div>
+    </section>
+    <div class="tg-districts__right">
+      <section class="tg-districts__panel tg-districts__chart-panel"><div class="tg-districts__panel-heading"><h2>▧ Evolución de anomalías por distrito</h2><label class="tg-districts__period">Periodo<select [ngModel]="period()" (ngModelChange)="period.set($event)" name="period"><option value="7">Últimos 7 días</option><option value="8">Últimos 8 días</option></select></label></div>
+        <div class="tg-districts__chart"><svg viewBox="0 0 590 255" role="img" aria-label="Serie temporal ilustrativa de detecciones por distrito">
+          @for (tick of [0,2,4,6,8,10]; track tick) {<line x1="44" [attr.y1]="206-tick*18" x2="563" [attr.y2]="206-tick*18" class="tg-districts__gridline"/><text x="28" [attr.y]="210-tick*18" class="tg-districts__axis" text-anchor="end">{{ tick }}</text>}
+          @for (day of chartDays(); track day; let i=$index) {<text [attr.x]="xAt(i,chartDays().length)" y="237" class="tg-districts__axis" text-anchor="middle">{{ day }}</text>}
+          @for (line of chartSeries(); track line.name) {<polyline [attr.points]="line.points" [attr.stroke]="line.color" fill="none" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />@for (v of line.values; track $index; let i=$index) {<circle [attr.cx]="xAt(i,line.values.length)" [attr.cy]="yAt(v)" r="4.2" [attr.fill]="line.color"/>}}
+        </svg></div>
+        <div class="tg-districts__chart-legend">@for (d of visibleDistricts(); track d.name) {<button type="button" (click)="select(d.name)" [class.active]="current()?.name === d.name"><i [style.background]="d.color"></i>{{ d.name }}</button>}</div>
+      </section>
+      <div class="tg-districts__lower">
+        <section class="tg-districts__panel tg-districts__table-panel"><h2>▤ Resumen por distrito ({{ visibleDistricts().length }})</h2><div class="tg-districts__tablewrap"><table><thead><tr><th>Distrito</th><th>Anomalías</th><th>Nivel de riesgo</th><th>Tendencia (7 días)</th></tr></thead><tbody>
+          @for (d of visibleDistricts(); track d.name) {<tr tabindex="0" (click)="select(d.name)" (keydown.enter)="select(d.name)" [class.active]="current()?.name === d.name"><td><span class="tg-districts__dot" [style.background]="d.color"></span><strong>{{ d.name }}</strong></td><td>{{ d.count }}</td><td><span class="tg-districts__risk" [class]="'tg-districts__risk ' + d.className">{{ d.risk }}</span></td><td [class.tg-districts__trend-down]="d.delta < 0">{{ d.delta > 0 ? '↑ +' : d.delta < 0 ? '↓ ' : '= ' }}{{ d.delta }}</td></tr>}
+          @empty {<tr><td colspan="4" class="tg-districts__empty">No hay distritos DEMO con estos filtros.</td></tr>}
+        </tbody></table></div></section>
+        <aside class="tg-districts__panel tg-districts__detail"><h2>▧ Detalle del distrito</h2>@if (current(); as d) {<h3><span class="tg-districts__dot" [style.background]="d.color"></span>{{ d.name }}</h3><dl><div><dt>Anomalías</dt><dd><strong>{{ d.count }}</strong></dd></div><div><dt>Nivel de riesgo</dt><dd><span class="tg-districts__risk" [class]="'tg-districts__risk ' + d.className">{{ d.risk }}</span></dd></div><div><dt>Última detección</dt><dd>{{ d.last }}</dd></div><div><dt>Fuentes ilustrativas</dt><dd>{{ d.sources }}</dd></div><div><dt>Estado</dt><dd>En seguimiento DEMO</dd></div></dl><button class="tg-districts__btn-primary tg-districts__view-map" type="button" (click)="viewOnMap()">▧ Ver en mapa</button>} @else {<p class="tg-districts__empty">Selecciona otro filtro para ver resultados.</p>}</aside>
+      </div>
+    </div>
+  </div>
+  <p class="tg-districts__disclaimer">MVP académico · Datos, tendencias y polígonos DEMO. La superposición gráfica NO corresponde a límites distritales oficiales ni a mediciones satelitales reales.</p>
 </section>
