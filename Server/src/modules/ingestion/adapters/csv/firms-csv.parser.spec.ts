@@ -1,4 +1,21 @@
-import { parseFirmsCsv } from './firms-csv.parser.js';
+import { createHash } from 'node:crypto';
+import { Readable } from 'node:stream';
+import type { NormalizedObservation } from '../../domain/normalized-observation.js';
+import { CsvFormatError, readFirmsCsv, type FirmsCsvOptions } from './firms-csv.parser.js';
+
+/** Lee todo el CSV y junta los bloques, para comparar resultados completos. */
+async function parseFirmsCsv(content: string | Readable, options: Partial<FirmsCsvOptions> = {}) {
+  const observations: NormalizedObservation[] = [];
+  const chunks: number[] = [];
+  const summary = await readFirmsCsv(content, {
+    ...options,
+    onChunk: async (chunk) => {
+      chunks.push(chunk.length);
+      observations.push(...chunk);
+    },
+  });
+  return { ...summary, observations, chunks };
+}
 
 const MODIS_CSV = `latitude,longitude,brightness,scan,track,acq_date,acq_time,satellite,instrument,confidence,version,bright_t31,frp,daynight
 -17.3895,-66.1568,318.4,1.0,1.0,2024-09-10,1420,Terra,MODIS,85,6.1NRT,295.2,12.7,D
@@ -11,9 +28,9 @@ const VIIRS_CSV = `latitude,longitude,bright_ti4,scan,track,acq_date,acq_time,sa
 -17.39,-66.15,320.0,0.4,0.37,2024-09-10,1802,1,VIIRS,l,2.0NRT,291.0,1.5,D
 `;
 
-describe('parseFirmsCsv', () => {
-  it('normaliza MODIS: plataforma, hora UTC y clases de confianza', () => {
-    const { rowsTotal, observations, errors } = parseFirmsCsv(MODIS_CSV);
+describe('readFirmsCsv', () => {
+  it('normaliza MODIS: plataforma, hora UTC y clases de confianza', async () => {
+    const { rowsTotal, observations, errors } = await parseFirmsCsv(MODIS_CSV);
     expect(rowsTotal).toBe(2);
     expect(errors).toEqual([]);
 
@@ -36,8 +53,8 @@ describe('parseFirmsCsv', () => {
     expect(terra?.raw['confidence']).toBe('85');
   });
 
-  it('normaliza VIIRS: alias de satélite, l/n/h y horas sin ceros a la izquierda', () => {
-    const { observations, errors } = parseFirmsCsv(VIIRS_CSV);
+  it('normaliza VIIRS: alias de satélite, l/n/h y horas sin ceros a la izquierda', async () => {
+    const { observations, errors } = await parseFirmsCsv(VIIRS_CSV);
     expect(errors).toEqual([]);
     expect(observations.map((o) => o.platform)).toEqual(['SNPP', 'NOAA20', 'NOAA20']);
     expect(observations.map((o) => o.confidenceLevel)).toEqual(['HIGH', 'NOMINAL', 'LOW']);
@@ -45,21 +62,21 @@ describe('parseFirmsCsv', () => {
     expect(observations[0]?.brightnessK).toBe(330.2);
   });
 
-  it('genera la misma huella para la misma detección, independiente de decimales extra', () => {
-    const a = parseFirmsCsv(VIIRS_CSV).observations[0];
-    const b = parseFirmsCsv(VIIRS_CSV.replace('-17.38951', '-17.389510')).observations[0];
+  it('genera la misma huella para la misma detección, independiente de decimales extra', async () => {
+    const a = (await parseFirmsCsv(VIIRS_CSV)).observations[0];
+    const b = (await parseFirmsCsv(VIIRS_CSV.replace('-17.38951', '-17.389510'))).observations[0];
     expect(a?.dedupeKey).toBe(b?.dedupeKey);
     expect(a?.dedupeKey).toBe('VIIRS|SNPP|2024-09-10T05:45:00.000Z|-17.38951|-66.15682');
   });
 
-  it('reporta filas inválidas o repetidas con su línea sin detener el lote', () => {
+  it('reporta filas inválidas o repetidas con su línea sin detener el lote', async () => {
     const csv =
       MODIS_CSV +
       '-95,-66.1,300,1,1,2024-09-10,1200,Terra,MODIS,50,6.1,290,1,D\n' +
       '-17.3,-66.1,300,1,1,2024-02-30,1200,Terra,MODIS,50,6.1,290,1,D\n' +
       '-17.3,-66.1,300,1,1,2024-09-10,1200,N,MODIS,50,6.1,290,1,D\n' +
       '-17.3895,-66.1568,318.4,1.0,1.0,2024-09-10,1420,Terra,MODIS,85,6.1NRT,295.2,12.7,D\n';
-    const { rowsTotal, observations, errors } = parseFirmsCsv(csv);
+    const { rowsTotal, observations, errors } = await parseFirmsCsv(csv);
     expect(rowsTotal).toBe(6);
     expect(observations).toHaveLength(2);
     expect(errors.map((e) => e.line)).toEqual([4, 5, 6, 7]);
@@ -69,11 +86,30 @@ describe('parseFirmsCsv', () => {
     expect(errors[3]?.message).toMatch(/repetida/);
   });
 
-  it('rechaza archivos que no son FIRMS', () => {
-    expect(() => parseFirmsCsv('nombre,valor\na,1\n')).toThrow(/faltan columnas/);
+  it('rechaza archivos que no son FIRMS o no son CSV', async () => {
+    await expect(parseFirmsCsv('nombre,valor\na,1\n')).rejects.toThrow(/faltan columnas/);
+    await expect(parseFirmsCsv(MODIS_CSV + '"sin cerrar,1\n')).rejects.toBeInstanceOf(CsvFormatError);
   });
 
-  it('acepta un archivo vacío', () => {
-    expect(parseFirmsCsv('')).toEqual({ rowsTotal: 0, observations: [], errors: [] });
+  it('acepta un archivo vacío', async () => {
+    const result = await parseFirmsCsv('');
+    expect(result).toMatchObject({ rowsTotal: 0, accepted: 0, rejected: 0, observations: [], errors: [] });
+  });
+
+  it('entrega bloques del tamaño pedido desde un stream y calcula la huella del archivo', async () => {
+    const [header, ...rows] = VIIRS_CSV.trim().split('\n');
+    const pieces = [`${header}\n`, ...rows.map((row) => `${row}\n`)];
+    const result = await parseFirmsCsv(Readable.from(pieces), { chunkSize: 2 });
+    expect(result.chunks).toEqual([2, 1]);
+    expect(result.accepted).toBe(3);
+    expect(result.bytes).toBe(Buffer.byteLength(VIIRS_CSV));
+    expect(result.checksum).toBe(createHash('sha256').update(VIIRS_CSV).digest('hex'));
+  });
+
+  it('cuenta todas las filas rechazadas aunque solo guarde el detalle de las primeras', async () => {
+    const bad = '-95,-66.1,300,1,1,2024-09-10,1200,Terra,MODIS,50,6.1,290,1,D\n'.repeat(5);
+    const result = await parseFirmsCsv(MODIS_CSV + bad, { maxErrors: 2 });
+    expect(result.rejected).toBe(5);
+    expect(result.errors).toHaveLength(2);
   });
 });

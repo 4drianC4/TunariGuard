@@ -46,6 +46,8 @@ export interface SyncStatusPayload {
     inserted: number;
     duplicates: number;
     rejected: number;
+    /** false: importación masiva sin `hotspots:new`; recargar con GET /observations. */
+    announced: boolean;
     completedAtUtc: string;
   } | null;
 }

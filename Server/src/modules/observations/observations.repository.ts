@@ -24,7 +24,11 @@ export type ObservationRecord = Prisma.ObservationGetPayload<{ include: typeof o
 export class ObservationsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  /** Inserta ignorando huellas ya existentes. Devuelve los ids de las filas nuevas. */
+  /**
+   * Inserta ignorando huellas ya existentes y devuelve los ids de las filas nuevas.
+   * Una sola sentencia por bloque (jsonb_to_recordset) que además calcula `geom`: Prisma no
+   * escribe columnas geometry y createMany era ~25 veces más lento con CSV grandes.
+   */
   async insertMany(
     batchId: string,
     origin: DataOrigin,
@@ -32,20 +36,49 @@ export class ObservationsRepository {
   ): Promise<string[]> {
     const inserted: string[] = [];
     for (let i = 0; i < observations.length; i += INSERT_CHUNK) {
-      const chunk = observations.slice(i, i + INSERT_CHUNK);
-      const rows = await this.prisma.observation.createManyAndReturn({
-        data: chunk.map((o) => ({ ...o, batchId, origin })),
-        skipDuplicates: true,
-        select: { id: true },
-      });
-      inserted.push(...rows.map((row) => row.id));
+      const rows = JSON.stringify(
+        observations.slice(i, i + INSERT_CHUNK).map((o) => ({
+          dedupe_key: o.dedupeKey,
+          sensor: o.sensor,
+          platform: o.platform,
+          latitude: o.latitude,
+          longitude: o.longitude,
+          // timestamp sin zona guarda la hora UTC, igual que Prisma.
+          acquired_at: o.acquiredAt.toISOString(),
+          confidence_raw: o.confidenceRaw,
+          confidence_level: o.confidenceLevel,
+          brightness_k: o.brightnessK,
+          brightness_aux_k: o.brightnessAuxK,
+          frp_mw: o.frpMw,
+          scan: o.scan,
+          track: o.track,
+          day_night: o.dayNight,
+          product_version: o.productVersion,
+          raw: o.raw,
+        })),
+      );
+      const ids = await this.prisma.$queryRaw<{ id: string }[]>`
+        INSERT INTO observations (
+          id, dedupe_key, sensor, platform, latitude, longitude, geom, acquired_at,
+          confidence_raw, confidence_level, brightness_k, brightness_aux_k, frp_mw, scan, track,
+          day_night, product_version, origin, raw, batch_id
+        )
+        SELECT
+          gen_random_uuid(), r.dedupe_key, r.sensor::"Sensor", r.platform::"Platform",
+          r.latitude, r.longitude, ST_SetSRID(ST_MakePoint(r.longitude, r.latitude), 4326),
+          r.acquired_at, r.confidence_raw, r.confidence_level::"ConfidenceLevel", r.brightness_k,
+          r.brightness_aux_k, r.frp_mw, r.scan, r.track, r.day_night::"DayNight",
+          r.product_version, ${origin}::"DataOrigin", r.raw, ${batchId}::uuid
+        FROM jsonb_to_recordset(${rows}::jsonb) AS r(
+          dedupe_key text, sensor text, platform text, latitude float8, longitude float8,
+          acquired_at timestamp(3), confidence_raw text, confidence_level text,
+          brightness_k float8, brightness_aux_k float8, frp_mw float8, scan float8, track float8,
+          day_night text, product_version text, raw jsonb
+        )
+        ON CONFLICT (dedupe_key) DO NOTHING
+        RETURNING id`;
+      inserted.push(...ids.map((row) => row.id));
     }
-
-    // Prisma no escribe columnas geometry: se derivan de lat/lon en la base.
-    await this.prisma.$executeRaw`
-      UPDATE observations
-      SET geom = ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)
-      WHERE batch_id = ${batchId}::uuid AND geom IS NULL`;
     return inserted;
   }
 

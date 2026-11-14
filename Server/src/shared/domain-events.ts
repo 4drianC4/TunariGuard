@@ -14,8 +14,16 @@ export interface BatchCompletedEvent {
   inserted: number;
   duplicates: number;
   rejected: number;
-  /** Ids de las observaciones nuevas; las duplicadas no se vuelven a anunciar. */
+  /**
+   * Ids de las observaciones nuevas; las duplicadas no se vuelven a anunciar. Vacío si
+   * `announced` es false.
+   */
   insertedIds: string[];
+  /**
+   * false en importaciones masivas (más focos nuevos de los que conviene empujar por socket):
+   * los clientes deben recargar con GET /observations en lugar de esperar `hotspots:new`.
+   */
+  announced: boolean;
   completedAtUtc: string;
 }
 

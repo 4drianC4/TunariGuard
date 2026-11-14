@@ -9,13 +9,6 @@ import {
 } from './observations.repository.js';
 import type { ListObservationsQuery } from './observations.schemas.js';
 
-export interface RegisterBatchResult {
-  inserted: number;
-  duplicates: number;
-  insertedIds: string[];
-  assignment: AssignmentSummary;
-}
-
 export type ObservationDto = ReturnType<typeof toDto>;
 export type ObservationFeature = Feature<Point, Omit<ObservationDto, 'position'>>;
 
@@ -24,19 +17,14 @@ export type ObservationFeature = Feature<Point, Omit<ObservationDto, 'position'>
 export class ObservationsService {
   constructor(private readonly repository: ObservationsRepository) {}
 
-  async registerBatch(
-    batchId: string,
-    origin: DataOrigin,
-    observations: NormalizedObservation[],
-  ): Promise<RegisterBatchResult> {
-    const insertedIds = await this.repository.insertMany(batchId, origin, observations);
-    const assignment = await this.repository.assignDistricts(batchId);
-    return {
-      inserted: insertedIds.length,
-      duplicates: observations.length - insertedIds.length,
-      insertedIds,
-      assignment,
-    };
+  /** Inserta un bloque de un lote; devuelve solo los ids nuevos (las duplicadas se omiten). */
+  insertChunk(batchId: string, origin: DataOrigin, observations: NormalizedObservation[]): Promise<string[]> {
+    return this.repository.insertMany(batchId, origin, observations);
+  }
+
+  /** Asigna distritos a todo un lote, una vez insertados todos sus bloques. */
+  assignBatchDistricts(batchId: string): Promise<AssignmentSummary> {
+    return this.repository.assignDistricts(batchId);
   }
 
   /** Recalcula la asignación de todas las observaciones (tras cambiar los distritos). */

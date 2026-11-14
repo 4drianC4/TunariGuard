@@ -17,5 +17,28 @@ services:
       timeout: 3s
       retries: 10
 
+  # Almacenamiento de objetos compatible con S3 para los CSV pesados del equipo de datos.
+  # Las imágenes oficiales de MinIO dejaron de publicarse; pgsty/minio es el fork comunitario
+  # (misma API S3 y consola). El backend usa el SDK S3 estándar, así que es intercambiable.
+  minio:
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z
+    container_name: tunari-guard-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:-tunari}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-tunari_dev_secret}
+    ports:
+      - '${MINIO_API_PORT:-9000}:9000'
+      - '${MINIO_CONSOLE_PORT:-9001}:9001'
+    volumes:
+      - tunari-guard-minio:/data
+    healthcheck:
+      test: ['CMD', 'curl', '-fs', 'http://localhost:9000/minio/health/ready']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
 volumes:
   tunari-guard-pgdata:
+  tunari-guard-minio:

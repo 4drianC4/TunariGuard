@@ -23,7 +23,8 @@ export class ImportCsvController {
     summary: 'Importa un CSV de NASA FIRMS (MODIS o VIIRS)',
     description:
       'Idempotente: reimportar el mismo archivo no duplica observaciones. Las filas inválidas se ' +
-      'reportan con su número de línea sin detener el lote. Asigna distritos al terminar.',
+      'reportan con su número de línea sin detener el lote. Asigna distritos al terminar. ' +
+      'Para archivos de más de unos pocos MB usa el flujo de MinIO (POST /ingestion/uploads).',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -46,6 +47,6 @@ export class ImportCsvController {
     file: Express.Multer.File,
     @Body(new SchemaPipe(importCsvBodySchema)) body: ImportCsvBody,
   ) {
-    return this.importCsv.import(file, body);
+    return this.importCsv.import({ stream: file.buffer, fileName: file.originalname || null }, body);
   }
 }

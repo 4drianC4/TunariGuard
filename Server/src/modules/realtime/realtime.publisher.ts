@@ -49,7 +49,11 @@ export class RealtimePublisher {
           simulatedTimeUtc: null,
         });
       }
-      this.gateway.logSummary(`Lote ${event.batchId}: ${insertedIds.length} focos nuevos anunciados`);
+      this.gateway.logSummary(
+        event.announced
+          ? `Lote ${event.batchId}: ${insertedIds.length} focos nuevos anunciados`
+          : `Lote ${event.batchId}: importación masiva (${event.inserted} focos), solo sync:status`,
+      );
     } catch (error) {
       this.logger.error(`No se pudo anunciar el lote ${event.batchId}`, error as Error);
     }

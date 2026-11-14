@@ -5,10 +5,15 @@ import type { DataOrigin, RowError } from '../../domain/normalized-observation.j
 export interface NewBatch {
   source: 'CSV' | 'FIRMS_API';
   fileName: string | null;
-  checksum: string;
   dataset: string;
   origin: DataOrigin;
+}
+
+export interface BatchTotals {
+  checksum: string;
   rowsTotal: number;
+  inserted: number;
+  duplicates: number;
   rejected: number;
   errors: RowError[];
 }
@@ -17,19 +22,18 @@ export interface NewBatch {
 export class ImportBatchRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  /** El lote se crea al empezar para que las observaciones lo referencien desde el primer bloque. */
   create(batch: NewBatch) {
     return this.prisma.importBatch.create({
-      data: {
-        ...batch,
-        errors: batch.errors.map(({ line, message }) => ({ line, message })),
-        inserted: 0,
-        duplicates: 0,
-      },
+      data: { ...batch, checksum: '', rowsTotal: 0, inserted: 0, duplicates: 0, rejected: 0 },
     });
   }
 
-  complete(id: string, { inserted, duplicates }: { inserted: number; duplicates: number }) {
-    return this.prisma.importBatch.update({ where: { id }, data: { inserted, duplicates } });
+  complete(id: string, totals: BatchTotals) {
+    return this.prisma.importBatch.update({
+      where: { id },
+      data: { ...totals, errors: totals.errors.map(({ line, message }) => ({ line, message })) },
+    });
   }
 
   delete(id: string) {

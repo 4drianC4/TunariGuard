@@ -16,11 +16,13 @@ Server/
     infrastructure/
       config/
       database/
+      storage/        # MinIO / S3
     modules/
       ingestion/
         domain/
         features/
           import-csv/
+          import-object/  # CSV desde MinIO
           sync-firms/
         adapters/
           csv/
@@ -98,8 +100,11 @@ La composición se realizará en los módulos NestJS. Un módulo sencillo podrá
 
 | Endpoint | Propósito |
 | --- | --- |
-| `GET /api/v1/health` | Estado de la API y versión de PostGIS. |
-| `POST /api/v1/ingestion/csv` | Importa un CSV FIRMS (multipart: `file`, `dataset`, `origin`, `sensor`). Idempotente. |
+| `GET /api/v1/health` | Estado de la API, versión de PostGIS y bucket de MinIO. |
+| `POST /api/v1/ingestion/csv` | Importa un CSV FIRMS (multipart: `file`, `dataset`, `origin`, `sensor`). Idempotente. Pensado para archivos pequeños (≤ 100 MB, pasan por memoria). |
+| `POST /api/v1/ingestion/uploads` | Devuelve una URL firmada (`uploadUrl`, `method`, `headers`, `objectKey`) para subir un CSV directo a MinIO sin pasar por el backend (JSON: `fileName`, `expiresInSeconds`). |
+| `GET /api/v1/ingestion/uploads` | Archivos del bucket, los más recientes primero (`prefix`, `limit`). |
+| `POST /api/v1/ingestion/uploads/import` | Importa un CSV que ya está en MinIO, leyéndolo por streaming (JSON: `objectKey`, `dataset`, `origin`, `sensor`). Idempotente. |
 | `GET /api/v1/ingestion/batches` | Procedencia: lotes importados con conteos de nuevas, duplicadas y rechazadas. |
 | `GET /api/v1/ingestion/batches/:id` | Un lote con sus errores de fila. |
 | `GET /api/v1/observations` | Detecciones con filtros (`sensor`, `platform`, `from`, `to`, `district`, `assignment`, `minConfidence`, `origin`, `batchId`, `bbox`), paginación por cursor (`limit` ≤ 1000, `cursor` → `nextCursor`) y `format=geojson`. |
@@ -110,6 +115,24 @@ La composición se realizará en los módulos NestJS. Un módulo sencillo podrá
 | `POST /api/v1/replay/stop` / `GET /api/v1/replay/status` | Detiene o consulta la reproducción. |
 
 La respuesta de observaciones sigue el modelo `SatelliteObservation` del frontend (`position {lat,lng}`, `acquiredAtUtc`, `brightnessKelvin`, `frpMw`, `source`, `dataset`) y agrega `confidenceLevel`, `district`, `districtAssignment` y `batchId`. La de distritos sigue `District` (`id` = código, `name`, `hotspotCount`, `areaKm2`).
+
+### CSV pesados vía MinIO
+
+El equipo de datos sube los archivos al almacenamiento de objetos y el backend los importa desde allí:
+
+```text
+cliente ──POST /ingestion/uploads──▶ backend ──firma──▶ { uploadUrl, objectKey }
+cliente ──PUT uploadUrl (archivo)──────────────────────▶ MinIO        (no pasa por el backend)
+cliente ──POST /ingestion/uploads/import { objectKey }─▶ backend ──stream──▶ MinIO
+                                                         └─ parser CSV ─▶ bloques de 2000 ─▶ PostGIS
+```
+
+- También se puede arrastrar el archivo a la consola de MinIO (`http://localhost:9001`) e importarlo con su clave.
+- **Streaming de punta a punta:** el CSV no se carga entero en memoria; el parser respeta la contrapresión mientras se inserta cada bloque. Cada bloque es una sola sentencia `INSERT … SELECT FROM jsonb_to_recordset … ON CONFLICT DO NOTHING` que también calcula `geom`. Con un CSV de 25 MB (300 000 filas) la importación tarda unos 20 s.
+- **Atomicidad:** el lote se crea al empezar; si algo falla a mitad, se borra y con él (cascade) lo ya insertado.
+- **Importaciones masivas:** con más de 5000 focos nuevos no se emite `hotspots:new` (inundaría al navegador); `sync:status` llega con `announced: false` y el frontend recarga por REST.
+- **Almacenamiento:** `StorageService` (`src/infrastructure/storage`) usa el SDK S3 estándar (`@aws-sdk/client-s3`), así que funciona con MinIO, AWS S3, Cloudflare R2 u otro compatible cambiando solo variables de entorno. Crea el bucket al arrancar si falta. Las imágenes oficiales de MinIO dejaron de publicarse en 2025; `docker-compose.yml` usa el fork comunitario `pgsty/minio` con versión fijada.
+- `S3_PUBLIC_ENDPOINT` define el host con el que se firman las URLs. Debe ser alcanzable desde la máquina que sube (p. ej. la IP de la LAN), no solo desde el backend.
 
 Validación: esquemas Zod con `StandardSchemaValidationPipe`, que `@nestjs/swagger` 12 documenta automáticamente. En formularios multipart se valida con `SchemaPipe` para que Swagger conserve el campo del archivo.
 
@@ -164,7 +187,7 @@ Namespace `/realtime` en el mismo puerto de la API. Los tipos exactos están en 
 | --- | --- | --- | --- |
 | `subscribe` | cliente → servidor | Implementado | `{ districts?: string[] }` con ack `{ rooms }` o `{ error }`. Sin distritos = todo. |
 | `hotspots:new` | servidor → cliente | Implementado | `{ mode, simulated, batchId, dataset, emittedAtUtc, simulatedTimeUtc, collection }`; `mode` es `live` o `replay`; `collection` es un FeatureCollection con las mismas propiedades que `GET /observations?format=geojson`. Hasta 500 features por mensaje. |
-| `sync:status` | servidor → cliente | Implementado | `{ lastBatch }` con conteos del último lote. Se reenvía al conectarse. |
+| `sync:status` | servidor → cliente | Implementado | `{ lastBatch }` con conteos del último lote y `announced` (false en importaciones masivas: recargar por REST). Se reenvía al conectarse. |
 | `replay:status` | servidor → cliente | Implementado | Progreso de la reproducción (`running`, `step`, `totalSteps`, `simulatedTimeUtc`…). Se reenvía al conectarse. |
 | `districts:updated` | servidor → cliente | Implementado | Cambiaron los límites o las asignaciones: recargar distritos y observaciones por REST. |
 | `alert:new` / `alert:updated` | servidor → cliente | Fase 3 | `FireAlert`, igual al modelo del frontend. |

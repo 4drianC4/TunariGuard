@@ -19,11 +19,12 @@ Este documento es el informe de estado al **13 de noviembre de 2026**.
 | Backend: alertas + n8n (Fase 3) | ⏳ Pendiente |
 | Backend: asistente con IA (Fase 4) | ⏳ Pendiente |
 | Backend: sincronización automática con NASA FIRMS (Fase 5) | ⏳ Pendiente |
-| Control de versiones | ⚠️ Todo el backend está **sin commit** |
+| Carga de CSV pesados (MinIO) | ✅ Lista y verificada |
+| Control de versiones | Rama `server-workflow` en GitHub (sin PR a `main`) |
 
 Qué ya se puede hacer:
 
-1. Subir un CSV de NASA FIRMS (MODIS o VIIRS). El backend lo valida, lo normaliza y lo guarda; si se sube dos veces, no duplica datos.
+1. Subir un CSV de NASA FIRMS (MODIS o VIIRS). El backend lo valida, lo normaliza y lo guarda; si se sube dos veces, no duplica datos. Los archivos pesados se suben a MinIO, desde su consola web o con una URL firmada, y el backend los importa por streaming.
 2. Subir los límites de los distritos en GeoJSON. Cada foco se asigna automáticamente a su distrito con PostGIS.
 3. Consultar los focos por API con filtros: sensor, fechas, distrito, confianza y área visible del mapa. La respuesta sale en JSON o en GeoJSON.
 4. Recibir los focos nuevos **en vivo** por WebSocket, apenas se importan, con filtro por distrito.
@@ -74,6 +75,7 @@ TunariGuard/
 | --- | --- |
 | Aplicación | NestJS 12 + TypeScript (ESM) sobre Node.js 24 |
 | Base de datos espacial | PostgreSQL 17 + PostGIS 3.5 (Docker Compose) |
+| Archivos pesados | MinIO (fork `pgsty/minio`) con SDK S3 |
 | Acceso a datos | Prisma 7.10 con `@prisma/adapter-pg` |
 | Validación | Zod 4 (esquemas compartidos por HTTP, WebSocket y Swagger) |
 | Documentación de la API | OpenAPI / Swagger en `/api/docs` |
@@ -129,6 +131,14 @@ Nunca se asigna un foco al "distrito más cercano" por aproximación. Al cargar 
 - Paginación por cursor (hasta 1000 por página) y `format=geojson` para Leaflet.
 - La respuesta tiene la misma forma que el modelo `SatelliteObservation` del frontend.
 
+**CSV pesados vía MinIO** (`POST /api/v1/ingestion/uploads`, `POST /api/v1/ingestion/uploads/import`)
+- MinIO corre en Docker junto a PostGIS. La consola web está en `http://localhost:9001`, donde el equipo de datos arrastra sus archivos.
+- El archivo se sube directo a MinIO con una URL firmada, sin pasar por el backend. Luego se importa indicando su clave.
+- El backend lo lee por streaming y lo inserta en bloques de 2000 filas; no lo carga entero en memoria. Prueba: 300 000 filas (25 MB) en unos 20 s.
+- Si la importación falla a mitad, se deshace completa.
+- Con más de 5000 focos nuevos no se inundan los sockets: se avisa con `sync:status` (`announced: false`) y el front recarga.
+- Usa el SDK S3 estándar: se puede cambiar a AWS S3 o Cloudflare R2 solo con variables de entorno.
+
 **Procedencia** (`GET /api/v1/ingestion/batches`): qué archivo se importó, cuándo y cuántas filas resultaron nuevas, duplicadas o rechazadas.
 
 ### Fase 2: tiempo real ✅
@@ -173,7 +183,7 @@ Requisitos: Node.js 24 y Docker en ejecución.
 cd Server
 cp .env.example .env
 npm install
-npm run db:up          # PostGIS en Docker
+npm run db:up          # PostGIS y MinIO en Docker
 npm run prisma:deploy  # crea las tablas
 npm run start:dev      # http://localhost:3000/api/docs
 ```
@@ -206,14 +216,14 @@ Los detalles, los scripts y los ejemplos con `curl` están en [`Server/README.md
 
 - [ ] **Cartografía oficial de los 16 distritos** (GeoJSON o shapefile), con fuente y versión.
 - [ ] **Datos reales de MODIS y VIIRS** y el periodo de análisis.
-- [ ] **Cómo entrega los datos el equipo de ingeniería de datos:** CSV, escritura directa en la base o el endpoint de ingesta.
 - [ ] **Proveedor de IA y clave** para el asistente.
 - [ ] **¿Alertas fuera de la app?** Si se quieren por Telegram o WhatsApp, entra n8n.
 - [ ] **Clave `MAP_KEY` de NASA FIRMS** para la Fase 5.
 
 ### Tareas técnicas
 
-- [ ] Hacer commit del backend (Fases 0 a 2).
+- [ ] Abrir el PR de `server-workflow` hacia `main`.
+- [ ] Pantalla de carga de CSV en Angular (URL firmada → PUT a MinIO → importar).
 - [ ] Conectar el frontend: reemplazar los datos simulados por `GET /observations` y el socket `/realtime`.
 - [ ] Agregar tests de integración contra PostGIS y Socket.IO.
 - [ ] Completar los documentos de `Docs/`, hoy vacíos.
