@@ -27,7 +27,7 @@ interface PopoverPosition {
 export class HistoryCalendarComponent {
   constructor() {
     effect(() => {
-      this.metrics.selectedSource();
+      this.metrics.records();
       this.selectedCell.set(null);
       this.currentPage.set(1);
     });
@@ -66,7 +66,7 @@ export class HistoryCalendarComponent {
   /** Navegación del calendario en bloques de cinco años. */
   readonly currentPage = signal(1);
   readonly yearsPerPage = 5;
-  readonly totalPages = computed(() => Math.ceil(this.years.length / this.yearsPerPage));
+  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.years().length / this.yearsPerPage)));
   readonly visibleCalendar = computed(() => {
     const start = (this.currentPage() - 1) * this.yearsPerPage;
     return this.calendar().slice(start, start + this.yearsPerPage);
@@ -171,10 +171,13 @@ export class HistoryCalendarComponent {
       && selected?.month === cell.month;
   }
 
-  readonly years = Array.from(
-    { length: 22 },
-    (_, index) => 2005 + index,
-  );
+  readonly years = computed(() => {
+    const records = this.metrics.records();
+    if (!records.length) return [];
+    const min = Math.min(...records.map(record => record.year));
+    const max = Math.max(...records.map(record => record.year));
+    return Array.from({ length: max - min + 1 }, (_, index) => min + index);
+  });
 
   readonly months = [
     'Ene', 'Feb', 'Mar', 'Abr',
@@ -203,7 +206,7 @@ export class HistoryCalendarComponent {
   readonly calendar = computed(() => {
     const records = this.metrics.records();
 
-    return this.years.map(year => ({
+    return this.years().map(year => ({
       year,
       cells: this.months.map((_, index): CalendarCell => {
         const month = index + 1;
@@ -241,12 +244,16 @@ export class HistoryCalendarComponent {
   });
 
   readonly availableMonths = computed(() =>
-    this.metrics.records().length,
+    this.metrics.records().filter(record => true).length,
   );
 
-  readonly unavailableMonths = computed(() =>
-    22 * 12 - this.availableMonths(),
-  );
+  readonly unavailableMonths = computed(() => {
+    const fromYear = this.metrics.selectedFromYear();
+    const toYear = this.metrics.selectedToYear();
+    if (fromYear === null || toYear === null) return 0;
+    const monthsInRange = (toYear - fromYear + 1) * 12;
+    return Math.max(0, monthsInRange - this.availableMonths());
+  });
 
   getMonthName(month: number): string {
     return this.months[month - 1];

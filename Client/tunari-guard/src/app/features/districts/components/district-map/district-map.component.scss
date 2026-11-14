@@ -1,0 +1,25 @@
+.district-map {
+  position: relative;
+  height: clamp(280px, 48vh, 490px);
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid #ded6ca;
+  border-radius: 14px;
+  background: #e6e9df;
+}
+.map-canvas { height: 100%; }
+.reset-map {
+  position: absolute;
+  z-index: 1000;
+  top: .625rem;
+  right: .625rem;
+  border: 1px solid #ded6ca;
+  border-radius: 999px;
+  background: #fffcf7;
+  padding: .375rem .625rem;
+  font-size: .75rem;
+  font-weight: 700;
+}
+.legend { display: flex; flex-wrap: wrap; gap: .5rem 1rem; padding: .75rem 0 0; font-size: .75rem; }
+.legend li { display: inline-flex; align-items: center; gap: .375rem; }
+.legend span { width: .75rem; height: .75rem; border-radius: 50%; }

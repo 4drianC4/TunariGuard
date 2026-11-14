@@ -1,0 +1,124 @@
+<section class="tg-card analysis" aria-label="Análisis del distrito seleccionado">
+  <header class="analysis-heading">
+    <div class="district-heading">
+      <div>
+        <h2>{{ district().name }}</h2>
+        <div class="district-summary">
+          <span class="activity" [style.--activity-color]="district().color">{{ district().risk }}</span>
+          <strong>{{ district().count | number }} detecciones en el período</strong>
+        </div>
+      </div>
+      <button type="button" (click)="mapFocus.emit()">Ver en mapa</button>
+    </div>
+    <dl class="district-facts">
+      <div><dt>Última detección</dt><dd>{{ (district().last | date:'dd/MM/yyyy HH:mm':'-0400') ?? 'Sin detecciones' }}</dd></div>
+      <div><dt>Sensores</dt><dd>{{ district().sources || 'Sin detecciones' }}</dd></div>
+      @if (district().areaKm2 != null) { <div><dt>Superficie</dt><dd>{{ district().areaKm2 | number:'1.0-2' }} km²</dd></div> }
+      <div><dt>Límite</dt><dd>{{ district().provisional ? 'Provisional' : 'Registrado' }}</dd></div>
+      @if (district().boundarySource) { <div><dt>Fuente del límite</dt><dd>{{ district().boundarySource }}</dd></div> }
+    </dl>
+    <div class="sections" role="group" aria-label="Sección del análisis">
+      @for (item of sections; track item) {
+        <button type="button" [attr.aria-pressed]="section() === item" (click)="section.set(item)">{{ item }}</button>
+      }
+    </div>
+  </header>
+  @if (section() === 'Detecciones') {
+    <article>
+      <h2>Distribución de las detecciones</h2>
+      <div class="density">
+        <strong>{{ density() == null ? 'Sin superficie' : (density() | number:'1.0-3') }}</strong>
+        <span>Detecciones por km² <app-map-info topic="la densidad" text="Conteo del período dividido entre la superficie del distrito. Sirve para comparar áreas de distinto tamaño." /></span>
+      </div>
+      @if (district().count) {
+        <div class="breakdown">
+          @for (group of breakdown(); track group.title) {
+            <section>
+              <h3>{{ group.title }}</h3>
+              <dl>@for (entry of group.entries; track entry.name) {
+                <div><dt>{{ entry.name }}</dt><dd>{{ entry.count | number }}</dd></div>
+              }</dl>
+            </section>
+          }
+        </div>
+      }
+    </article>
+  } @else if (section() === 'Potencia y confianza') {
+    <article>
+      <h2>Potencia y confianza</h2>
+      <h3>Potencia radiativa (FRP) <app-map-info topic="la potencia radiativa" text="Potencia estimada del foco térmico en megavatios. El promedio y el máximo usan las detecciones con un valor registrado." /></h3>
+      <p>{{ quality().reportedFrp }} de {{ district().count }} con FRP</p>
+      @if (quality().reportedFrp) {
+        <dl><div><dt>Promedio</dt><dd>{{ quality().mean | number:'1.0-2' }} MW</dd></div>
+          <div><dt>Máximo</dt><dd>{{ quality().max | number:'1.0-2' }} MW</dd></div></dl>
+      }
+      <h3>Confianza del producto</h3>
+      <p>{{ quality().reportedConfidence }} de {{ district().count }} clasificadas</p>
+      <dl>@for (entry of quality().confidence; track entry.name) {
+        <div><dt>{{ entry.name }}</dt><dd>{{ entry.count | number }}</dd></div>
+      }</dl>
+    </article>
+  } @else {
+    <article>
+      <h2>Actividad mensual histórica</h2>
+      @if (monthly.isLoading()) { <p role="status">Cargando serie mensual…</p> }
+      @else if (monthly.error()) { <p>La serie mensual no está disponible para este distrito.</p> <button type="button" (click)="monthly.reload()">Reintentar</button> }
+      @else if (monthly.hasValue() && activeYear(); as selectedYear) {
+        <label class="year">Año <select #selection [value]="selectedYear" (change)="year.set(+selection.value); inspectedMonth.set(null)">
+          @for (item of years(); track item) { <option [value]="item" [selected]="item === selectedYear">{{ item }}</option> }
+        </select></label>
+        <p class="caption">Índice armonizado · {{ monthly.value()?.unit }} <app-map-info topic="el índice mensual" text="Compara la actividad térmica entre meses en una escala común. Un valor más alto indica detecciones en más zonas, durante más días o ambas cosas." /></p>
+        <div class="month-chart" role="group" aria-label="Índice por mes">
+          @for (month of months(); track $index; let index = $index) {
+            @let value = month.value == null ? 'Sin dato' : (month.value | number:'1.0-2');
+            <button type="button" [class.unavailable]="month.value == null" [class.active]="month === activeMonth()"
+              [attr.aria-label]="month.label + ': ' + value" [attr.aria-pressed]="month === activeMonth()"
+              (pointerenter)="inspectedMonth.set(index)" (focus)="inspectedMonth.set(index)" (click)="inspectedMonth.set(index)">
+              <span class="bar-area" aria-hidden="true"><span class="bar" [style.height.%]="month.percent"></span></span>
+              <span>{{ month.label }}</span>
+            </button>
+          }
+        </div>
+        @if (activeMonth(); as month) {
+          <p class="month-value">{{ month.label }} · {{ month.value == null ? 'Sin dato' : (month.value | number:'1.0-2') }}</p>
+        }
+      } @else { <p>Sin meses con un índice comparable.</p> }
+    </article>
+
+    <article class="historical-trends">
+      <h2>Tendencias históricas <app-map-info topic="las tendencias históricas" text="El backend estima la pendiente de Sen por año y su intervalo de confianza del 90 %. El valor p corresponde a la prueba de tendencia de Kendall." /></h2>
+      @if (trends.isLoading()) { <p role="status">Cargando tendencias…</p> }
+      @else if (trends.error()) { <p>Las tendencias no están disponibles para este distrito.</p> <button type="button" (click)="trends.reload()">Reintentar</button> }
+      @else if (trends.hasValue()) {
+        @for (trend of trends.value(); track trend.serie) {
+          <section class="trend">
+            <h3>{{ trendLabel(trend.serie) }}</h3>
+            <p class="caption">{{ trend.anios }} · {{ trend.n }} observaciones de la serie</p>
+            <dl>
+              <div><dt>Pendiente por año</dt><dd>{{ (trend.pendiente_sen_por_anio | number:'1.0-3') ?? 'Sin dato' }}</dd></div>
+              @if (trend.ic90_inferior != null && trend.ic90_superior != null) {
+                <div><dt>Intervalo del 90 %</dt><dd>{{ trend.ic90_inferior | number:'1.0-3' }} a {{ trend.ic90_superior | number:'1.0-3' }}</dd></div>
+              }
+              <div><dt>Tau de Kendall</dt><dd>{{ (trend.tau_kendall | number:'1.0-3') ?? 'Sin dato' }}</dd></div>
+              <div><dt>Valor p</dt><dd>{{ (trend.p_valor | number:'1.0-4') ?? 'Sin dato' }}</dd></div>
+            </dl>
+          </section>
+        } @empty {
+          @if (annualComparison(); as comparison) {
+            <h3>Variación interanual del índice</h3>
+            <p class="caption">Compara dos años consecutivos con 12 meses disponibles.</p>
+            <dl class="annual-summary">
+              <div><dt>{{ comparison.previous.year }}</dt><dd>{{ comparison.previous.total | number:'1.0-2' }}</dd></div>
+              <div><dt>{{ comparison.latest.year }}</dt><dd>{{ comparison.latest.total | number:'1.0-2' }}</dd></div>
+              <div><dt>Diferencia</dt><dd>{{ comparison.change > 0 ? '+' : '' }}{{ comparison.change | number:'1.0-2' }}</dd></div>
+            </dl>
+          } @else if (monthly.isLoading()) {
+            <p role="status">Cargando datos para la comparación anual…</p>
+          } @else {
+            <p>Sin tendencias precalculadas ni dos años consecutivos con datos mensuales completos.</p>
+          }
+        }
+      }
+    </article>
+  }
+</section>

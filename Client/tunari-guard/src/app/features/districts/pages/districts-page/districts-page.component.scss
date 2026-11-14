@@ -1,1 +1,57 @@
-/* Districts dashboard global styles are isolated under .tg-districts in src/styles.scss. */
+:host {
+  display: block;
+  min-width: 0;
+  container-type: inline-size;
+}
+
+.tg-districts__workspace {
+  gap: .875rem;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  align-items: start;
+}
+
+.tg-districts__table-panel, app-district-analysis { grid-column: 1 / -1; }
+
+.tg-districts__risk {
+  background: color-mix(in srgb, var(--district-color) 22%, #fff);
+  border: 1px solid var(--district-color);
+  color: #30351f;
+}
+
+.tg-districts__map-panel h2,
+.tg-districts__table-panel h2 { padding: 0 0 .625rem; }
+
+.tg-districts__kpis { grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); }
+.tg-districts__filters { grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr)); }
+.tg-districts__date-group { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.tg-districts__filter-actions { grid-column: 1 / -1; justify-content: flex-end; flex-wrap: wrap; }
+
+.tg-districts__panel-heading { flex-wrap: wrap; padding: 0; }
+.tg-districts__period { font-size: .75rem; }
+.tg-districts__period select { max-width: 100%; }
+
+.tg-districts__chart-panel .tg-districts__chart-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .375rem;
+  margin: .625rem 0 .25rem;
+  color: #545d51;
+}
+
+.tg-districts__chart-legend { justify-content: start; padding: 0; }
+.tg-districts__chart-legend button { border: 1px solid transparent; border-radius: 999px; padding: .25rem .5rem; }
+.tg-districts__chart-legend button.active { border-color: var(--district-color); background: #fffcf7; }
+
+app-district-map { display: block; }
+
+@container (max-width: 780px) {
+  .tg-districts__workspace { grid-template-columns: minmax(0, 1fr); }
+  .tg-districts__filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tg-districts__date-group { grid-column: 1 / -1; }
+}
+
+@container (max-width: 400px) {
+  .tg-districts__kpis,
+  .tg-districts__filters { grid-template-columns: minmax(0, 1fr); }
+}

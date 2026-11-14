@@ -1,1 +1,9 @@
-<p>district-map works!</p>
+<div class="district-map">
+  <div #mapContainer class="map-canvas" aria-label="Mapa geográfico de actividad por distrito"></div>
+  <button class="reset-map" type="button" (click)="resetZoom()">Ver todos los límites</button>
+</div>
+<ul class="legend" aria-label="Nivel de actividad por detecciones">
+  @for (activity of levels; track activity.level) {
+    <li><span [style.background-color]="activity.color" aria-hidden="true"></span>{{ activity.level }} ({{ activity.range }})</li>
+  }
+</ul>

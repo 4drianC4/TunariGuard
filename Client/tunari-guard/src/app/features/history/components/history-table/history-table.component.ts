@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -24,10 +25,15 @@ export class HistoryTableComponent {
   readonly currentPage = signal(1);
   readonly pageSize = 10;
 
-  readonly years = Array.from(
-    { length: 2026 - 2005 + 1 },
-    (_, index) => 2026 - index,
-  );
+  constructor() {
+    effect(() => {
+      this.metrics.records();
+      this.selectedYear.set('ALL');
+      this.currentPage.set(1);
+    });
+  }
+
+  readonly years = computed(() => [...new Set(this.metrics.records().map(record => record.year))].sort((a, b) => b - a));
 
   readonly monthNames = [
     'Enero',
@@ -107,5 +113,15 @@ export class HistoryTableComponent {
     };
 
     return labels[source] ?? source;
+  }
+
+  formatQuality(quality: string): string {
+    const labels: Record<string, string> = {
+      aproximado_factor_transferido: 'Aproximado · Factor transferido',
+      no_comparable: 'No comparable',
+      calibrado_localmente_en_tunari: 'Calibrado localmente en Tunari',
+    };
+
+    return labels[quality] ?? quality.replace(/_/g, ' ');
   }
 }
