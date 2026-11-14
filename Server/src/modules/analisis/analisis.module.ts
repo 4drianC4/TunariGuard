@@ -6,6 +6,7 @@ import { DeteccionesController } from './detecciones.controller.js';
 import { HistorialController } from './historial.controller.js';
 import { HistorialService } from './historial.service.js';
 import { MetadatosController } from './metadatos.controller.js';
+import { ProyeccionController } from './proyeccion.controller.js';
 
 /**
  * Lectura del análisis ya calculado por el equipo de datos (esquema `fuego`): áreas, calendario,
@@ -13,7 +14,7 @@ import { MetadatosController } from './metadatos.controller.js';
  * Se instala con `npm run fuego:setup`. No recalcula nada: el índice y las alertas llegan hechos.
  */
 @Module({
-  controllers: [AreasController, DeteccionesController, HistorialController, MetadatosController],
+  controllers: [AreasController, DeteccionesController, HistorialController, MetadatosController, ProyeccionController],
   providers: [AnalisisService, HistorialService, AnalisisRepository],
   exports: [AnalisisService, HistorialService],
 })

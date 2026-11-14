@@ -4,11 +4,12 @@ import { ImportBatchRepository } from './adapters/persistence/import-batch.repos
 import { ImportCsvController } from './features/import-csv/import-csv.controller.js';
 import { ImportCsvService } from './features/import-csv/import-csv.service.js';
 import { ImportObjectController } from './features/import-object/import-object.controller.js';
+import { SimulatedController } from './features/simulated/simulated.controller.js';
 import { ListBatchesController } from './features/list-batches/list-batches.controller.js';
 
 @Module({
   imports: [ObservationsModule],
-  controllers: [ImportCsvController, ImportObjectController, ListBatchesController],
+  controllers: [ImportCsvController, ImportObjectController, ListBatchesController, SimulatedController],
   providers: [ImportCsvService, ImportBatchRepository],
 })
 export class IngestionModule {}

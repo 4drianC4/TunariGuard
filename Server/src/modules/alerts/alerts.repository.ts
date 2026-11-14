@@ -51,11 +51,16 @@ export class AlertsRepository {
    * Con el paquete fuego: distrito de Cochabamba si cae en uno; si no, el sector del Tunari por
    * municipio (solo dentro del parque) o el parque. Sin el paquete: los distritos de la app.
    */
-  async detections(scope: { batchId: string } | { observationIds: string[] }, useFuego: boolean): Promise<DetectionForAlert[]> {
-    const filter =
+  async detections(
+    scope: ({ batchId: string } | { observationIds: string[] }) & { upTo?: Date },
+    useFuego: boolean,
+  ): Promise<DetectionForAlert[]> {
+    const base =
       'batchId' in scope
         ? Prisma.sql`o.batch_id = ${scope.batchId}::uuid`
         : Prisma.sql`o.id = ANY (${scope.observationIds}::uuid[])`;
+    // Solo lo que ya ocurrió: una detección simulada del futuro todavía no genera alerta.
+    const filter = scope.upTo ? Prisma.sql`${base} AND o.acquired_at <= ${scope.upTo}` : base;
 
     const rows = useFuego
       ? await this.prisma.$queryRaw<DetectionRow[]>`
@@ -161,6 +166,25 @@ export class AlertsRepository {
       data: { status, statusChangedAt: new Date(), ...(note !== undefined ? { note } : {}) },
     });
     return row as AlertRecord;
+  }
+
+  /** Ids de observaciones simuladas adquiridas en (desde, hasta]. */
+  async simulatedBetween(desde: Date, hasta: Date): Promise<string[]> {
+    const rows = await this.prisma.$queryRaw<{ id: string }[]>`
+      SELECT id FROM observations
+      WHERE origin = 'SIMULATED' AND acquired_at > ${desde} AND acquired_at <= ${hasta}
+      ORDER BY acquired_at`;
+    return rows.map((r) => r.id);
+  }
+
+  /** Borra las alertas simuladas que incluyen alguna de esas observaciones. Devuelve uuid y código. */
+  async deleteSimulatedFor(observationIds: string[]): Promise<{ uuid: string; code: string }[]> {
+    if (!observationIds.length) return [];
+    const rows = await this.prisma.$queryRaw<{ id: string; number: number }[]>`
+      DELETE FROM alerts
+      WHERE origin = 'SIMULATED' AND observation_ids && ${observationIds}::uuid[]
+      RETURNING id, number`;
+    return rows.map((r) => ({ uuid: r.id, code: `AL-${String(r.number).padStart(4, '0')}` }));
   }
 
   /** Borra las alertas de demostración: generadas en un replay o de datos simulados. */

@@ -45,7 +45,7 @@ socket.on('hotspots:removed', (msg) => {
   const muestra = msg.removedIds.slice(0, 3).join(', ');
   console.log(
     `[${hora()}] 🧹 hotspots:removed  ${msg.removedIds.length} focos quitados del mapa · ${msg.reason} · ` +
-      `"${msg.dataset}" (${muestra}${msg.removedIds.length > 3 ? ', …' : ''})`,
+      `${msg.dataset ? `"${msg.dataset}" ` : ''}(${muestra}${msg.removedIds.length > 3 ? ', …' : ''})`,
   );
 });
 
@@ -69,6 +69,10 @@ socket.on('alert:new', (msg) => {
     console.log(`           ${iconos[a.severity] ?? '•'} ${a.id} ${a.severity} · ${a.district} · ${a.detectionCount} det. · ${a.detected}${a.simulated ? ' · SIMULADO' : ''}`);
   }
   if (msg.alerts.length > 5) console.log(`           … y ${msg.count - 5} más`);
+});
+
+socket.on('alert:removed', ({ alertIds }) => {
+  console.log(`[${hora()}] 🗑  alert:removed  ${alertIds.length} alerta(s) quitada(s): ${alertIds.slice(0, 5).join(', ')}${alertIds.length > 5 ? ', …' : ''}`);
 });
 
 socket.on('alert:updated', ({ alert }) => {
