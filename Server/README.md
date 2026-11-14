@@ -88,6 +88,8 @@ npm run db:up            # recrea los contenedores si cambió docker-compose.yml
 
 Si `npm run fuego:setup` dice que el contenedor no ve el paquete, recréalo una vez con `docker compose up -d --force-recreate db`. Los datos se conservan.
 
+El cliente de Prisma (`src/generated/`) no está en Git: se genera desde `prisma/schema.prisma`. `npm install`, `npm run build` y `npm run start:dev` lo regeneran solos. Si ves errores como `'detectionType' does not exist in type 'ObservationWhereInput'`, tu cliente quedó viejo; ejecuta `npm run prisma:generate`.
+
 ---
 
 ## 3. Comprobar que funciona
@@ -521,6 +523,7 @@ Revisa `.env`, el contenedor y a qué servidor llega la conexión, y dice qué c
 | Las tablas no existen | No se aplicaron las migraciones, o se borró `prisma/migrations` | `git pull` y `npm run prisma:deploy` |
 | `503` en `/areas` o `/detecciones` | Falta el esquema `fuego` | `npm run fuego:setup` |
 | `no configuration file provided` o npm no encuentra `package.json` | El comando se ejecutó fuera de `Server/` | `cd Server` |
+| `'detectionType' does not exist in type 'ObservationWhereInput'` (u otro campo nuevo) al compilar | El cliente de Prisma generado es anterior al último `schema.prisma` | `npm run prisma:generate` (ya lo hace `start:dev` al arrancar) |
 
 ### El tiempo real
 
