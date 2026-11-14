@@ -181,12 +181,14 @@ Requisitos: Node.js 24 y Docker en ejecución.
 
 ```bash
 cd Server
-cp .env.example .env
+cp .env.example .env    # Windows (cmd): copy .env.example .env
 npm install
 npm run db:up          # PostGIS y MinIO en Docker
 npm run prisma:deploy  # crea las tablas
 npm run start:dev      # http://localhost:3000/api/docs
 ```
+
+La base queda en el puerto **5433** del equipo, para no chocar con un PostgreSQL instalado en Windows. Si la conexión falla (por ejemplo, "contraseña incorrecta para el usuario tunari"), ejecuta `npm run db:doctor`: indica la causa y cómo corregirla.
 
 Los detalles, los scripts y los ejemplos con `curl` están en [`Server/README.md`](Server/README.md).
 
