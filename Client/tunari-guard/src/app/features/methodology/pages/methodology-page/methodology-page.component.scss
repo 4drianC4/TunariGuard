@@ -1,0 +1,4 @@
+/* Metodologia V1: estilos de la pantalla limitados al bloque
+   TUNARIGUARD_METHODOLOGY_RESPONSIVE_V1 en src/styles.scss.
+   Se evita exceder el presupuesto de estilos por componente. */
+:host { display: block; min-width: 0; }
