@@ -210,7 +210,8 @@ Namespace `/realtime` en el mismo puerto de la API. Los tipos exactos están en 
 | --- | --- | --- | --- |
 | `subscribe` | cliente → servidor | Implementado | `{ districts?: string[] }` con ack `{ rooms }` o `{ error }`. Sin distritos = todo. |
 | `hotspots:new` | servidor → cliente | Implementado | `{ mode, simulated, batchId, dataset, emittedAtUtc, simulatedTimeUtc, collection }`; `mode` es `live` o `replay`; `collection` es un FeatureCollection con las mismas propiedades que `GET /observations?format=geojson`. Hasta 500 features por mensaje. |
-| `sync:status` | servidor → cliente | Implementado | `{ lastBatch }` con conteos del último lote y `announced` (false en importaciones masivas: recargar por REST). Se reenvía al conectarse. |
+| `hotspots:removed` | servidor → cliente | Implementado | `{ reason: 'nrt_replaced_by_standard', batchId, dataset, removedIds, emittedAtUtc }`. NRT borradas porque llegó el dato estándar. Va a todos los clientes (también a los suscritos a distritos) y antes del `hotspots:new` del lote. Hasta 1000 ids por mensaje; con más de 5000 no se envían ids. |
+| `sync:status` | servidor → cliente | Implementado | `{ lastBatch }` con conteos del último lote, `announced` (false en importaciones masivas: recargar por REST), `upgradedToStandard` y `removedObsolete` (si son > 0 conviene recargar por REST). Se reenvía al conectarse. |
 | `replay:status` | servidor → cliente | Implementado | Progreso de la reproducción (`running`, `step`, `totalSteps`, `simulatedTimeUtc`…). Se reenvía al conectarse. |
 | `districts:updated` | servidor → cliente | Implementado | Cambiaron los límites o las asignaciones: recargar distritos y observaciones por REST. |
 | `alert:new` / `alert:updated` | servidor → cliente | Fase 3 | `FireAlert`, igual al modelo del frontend. |
@@ -221,7 +222,7 @@ Namespace `/realtime` en el mismo puerto de la API. Los tipos exactos están en 
 
 Comportamiento implementado:
 
-- **Salas:** al conectarse, el cliente entra a `all`. Con `subscribe { districts: ['D1'] }` pasa a recibir solo los focos de esos distritos; los focos sin distrito (`OUTSIDE`, `AMBIGUOUS`, `PENDING`) solo llegan a `all`.
+- **Salas:** al conectarse, el cliente entra a `all`. Con `subscribe { districts: ['distrito-01'] }` (sala `district:distrito-01`) pasa a recibir solo los focos de esos distritos; los focos sin distrito (`OUTSIDE`, `AMBIGUOUS`, `PENDING`) solo llegan a `all`.
 - **Solo novedades:** después de una importación se anuncian únicamente las observaciones nuevas; reimportar un archivo no repite focos, aunque sí actualiza `sync:status`.
 - **Replay:** `POST /api/v1/replay/start` reproduce observaciones guardadas en orden cronológico, agrupadas en pasadas (detecciones a menos de `passWindowMinutes` de la primera del grupo), una pasada cada `intervalMs`. No escribe en la base y todos sus mensajes llevan `mode: 'replay'` y `simulated: true`. Hay una sola reproducción a la vez, compartida por todos los clientes; máximo 20 000 observaciones.
 - **Flujo interno:** ingesta emite `ingestion.batch-completed` y distritos emite `districts.updated` (`src/shared/domain-events.ts`); `RealtimePublisher` los traduce en mensajes. Alertas se suscribirá a los mismos eventos.

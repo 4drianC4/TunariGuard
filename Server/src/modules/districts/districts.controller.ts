@@ -24,7 +24,9 @@ import {
 } from './districts.schemas.js';
 
 const importFuegoQuerySchema = z.object({
-  replace: queryBoolean.default(true).describe('Borra los distritos que no vienen de fuego.areas (evita solapes)'),
+  replace: queryBoolean
+    .default(false)
+    .describe('true: borra los distritos que no vienen de fuego.areas. Sin él, si existen, responde 409 y no toca nada'),
 });
 
 @ApiTags('districts')
@@ -76,7 +78,8 @@ export class DistrictsController {
     summary: 'Usa los 15 distritos del paquete de datos (fuego.areas) como límites',
     description:
       'Códigos distrito-01 … distrito-15, los mismos del análisis, así ambos mundos se cruzan por distrito. ' +
-      'Reasigna todas las observaciones. Se hace solo al arrancar si no hay distritos.',
+      'Reasigna todas las observaciones. Se hace solo al arrancar si no hay distritos. Si ya hay distritos con ' +
+      'otros códigos responde 409 sin modificar nada, salvo que se pase replace=true.',
   })
   importFuego(@Query({ schema: importFuegoQuerySchema }) query: z.infer<typeof importFuegoQuerySchema>) {
     return this.districts.importFromFuego(query.replace);

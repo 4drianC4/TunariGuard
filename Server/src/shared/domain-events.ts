@@ -24,6 +24,12 @@ export interface BatchCompletedEvent {
    * los clientes deben recargar con GET /observations en lugar de esperar `hotspots:new`.
    */
   announced: boolean;
+  /** Filas NRT existentes que pasaron a dato estándar en su lugar (mismo id; cambian sus datos). */
+  upgradedToStandard: number;
+  /** Filas NRT borradas porque el dato estándar las dejó obsoletas. */
+  removedObsolete: number;
+  /** Ids de esas filas borradas, para quitarlas del mapa. Vacío si son demasiadas (ver removedObsolete). */
+  removedIds: string[];
   completedAtUtc: string;
 }
 

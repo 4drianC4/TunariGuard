@@ -147,7 +147,10 @@ Qué garantiza la importación:
 - **No duplica.** Cada detección tiene una huella (sensor, satélite, instante, coordenadas). Reimportar el mismo archivo da 0 filas nuevas.
 - **No se detiene por filas malas.** Las rechaza indicando la línea y el motivo.
 - **Distingue datos de prueba.** Con `origin=SIMULATED` los focos llegan marcados como simulados y nunca se confunden con reales.
-- **Datos provisionales.** Los datos NRT de FIRMS se publican rápido pero son provisionales. Cuando llega el dato estándar del mismo periodo, las filas NRT se reemplazan (ver `nrt` en la respuesta).
+- **Datos provisionales.** Los datos NRT de FIRMS se publican rápido pero son provisionales. Cuando llega el dato estándar, reemplaza a las NRT (ver `nrt` en la respuesta):
+  - si una NRT tiene la misma huella que una fila estándar del **mismo origen**, se actualiza en su lugar y conserva su id y su lote;
+  - las demás NRT se borran, pero **solo** las del mismo satélite, el mismo origen (`REAL`/`SIMULATED`), los mismos días y dentro del rectángulo que cubre el archivo. Un archivo de Santa Cruz no toca las NRT de Cochabamba, y un archivo simulado no toca datos reales;
+  - el borrado por rango asume que el estándar es un archivo **completo** de esa zona y periodo. Con un extracto parcial, envía `replaceNrt=false`: no se borra nada, aunque las NRT con la misma huella igual pasan a estándar.
 - **Si algo falla a mitad**, se deshace toda la importación.
 
 ### 4.3 Detecciones en vivo (`/observations`)
@@ -177,7 +180,7 @@ Filtros de `GET /observations`:
 | --- | --- |
 | `GET /districts` | Distritos con su cantidad de focos y área en km². Con `format=geojson` incluye los polígonos |
 | `POST /districts/import` | Carga límites propios desde un GeoJSON (por ejemplo, la cartografía oficial cuando la tengamos) |
-| `POST /districts/import-fuego` | Usa los 15 distritos del paquete de datos (`distrito-01` … `distrito-15`). Se hace solo al arrancar si no hay distritos |
+| `POST /districts/import-fuego` | Usa los 15 distritos del paquete de datos (`distrito-01` … `distrito-15`). Se hace solo al arrancar si no hay distritos. Si ya hay distritos con otros códigos responde `409` sin tocar nada; `?replace=true` los reemplaza |
 
 Cada foco se asigna al distrito cuyo polígono lo contiene. El borde cuenta como dentro. Nunca se asigna al distrito "más cercano" por aproximación: si queda fuera es `OUTSIDE`, y si cae en dos distritos es `AMBIGUOUS`. Al cambiar los distritos, se recalculan todas las asignaciones y se avisa por tiempo real.
 
@@ -311,8 +314,9 @@ Sin tiempo real, el frontend tendría que preguntar cada pocos segundos si hay a
 
 | Evento | Cuándo llega | Qué trae |
 | --- | --- | --- |
+| `hotspots:removed` | Cuando el dato estándar borra NRT provisionales, antes del `hotspots:new` del mismo lote | `removedIds`: ids a quitar del mapa. `reason`: `nrt_replaced_by_standard`. Llega a todos los clientes, aunque estén suscritos solo a algunos distritos |
 | `hotspots:new` | Al importarse focos nuevos, y en cada paso de la reproducción | `collection`: FeatureCollection GeoJSON de puntos, listo para agregar al mapa. `mode`: `live` (recién importado) o `replay` (demo). `simulated`: `true` si es demo o datos de prueba, y hay que mostrarlo. `simulatedTimeUtc`: en replay, el momento histórico reproducido. `dataset`, `batchId`, `emittedAtUtc` |
-| `sync:status` | Al terminar cada importación y al conectarse | `lastBatch`: nombre del dataset, filas nuevas, duplicadas y rechazadas, y `announced`. Si `announced` es `false` fue una importación masiva: hay que recargar con `GET /observations` |
+| `sync:status` | Al terminar cada importación y al conectarse | `lastBatch`: nombre del dataset, filas nuevas, duplicadas y rechazadas, `announced`, `upgradedToStandard` y `removedObsolete`. Si `announced` es `false`, o si `upgradedToStandard`/`removedObsolete` son mayores que 0, conviene recargar con `GET /observations` |
 | `replay:status` | En cada paso de la reproducción, al detenerse y al conectarse | `running`, `step`, `totalSteps`, `intervalMs`, `loop`, `observationCount`, `simulatedTimeUtc` |
 | `districts:updated` | Cuando cambian los límites de los distritos | `imported`, `reassigned`. Hay que recargar `GET /districts` y `GET /observations` |
 
@@ -345,6 +349,7 @@ Los tipos exactos de cada evento están en [`src/modules/realtime/realtime.contr
 
 - Un lote grande se divide en varios `hotspots:new` de hasta 500 puntos cada uno.
 - Si una importación trae **más de 5000 focos nuevos**, no se envían por socket: llega solo `sync:status` con `announced: false` y el frontend recarga por REST. Así pasa al cargar históricos completos.
+- Igual con los borrados: `hotspots:removed` lleva hasta 1000 ids por mensaje, y con más de 5000 no se envían ids (queda `removedObsolete` en `sync:status`).
 
 ---
 
@@ -434,6 +439,10 @@ socket.on('connect', async () => {
 socket.on('hotspots:new', (msg) => {
   // msg.collection es un FeatureCollection: agrégalo a la capa del mapa.
   // Si msg.simulated es true, muestra la etiqueta "simulado".
+});
+
+socket.on('hotspots:removed', ({ removedIds }) => {
+  // Quita esos ids de la capa del mapa (NRT reemplazadas por el dato estándar).
 });
 
 socket.on('sync:status', ({ lastBatch }) => {

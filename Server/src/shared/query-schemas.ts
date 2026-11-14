@@ -5,6 +5,14 @@ export const queryBoolean = z
   .enum(['true', 'false', '1', '0'])
   .transform((value) => value === 'true' || value === '1');
 
+/**
+ * Booleano que puede llegar como texto (formulario multipart: "true"/"false") o como booleano
+ * (cuerpo JSON). Así el mismo esquema sirve para POST /ingestion/csv y /ingestion/uploads/import.
+ */
+export const formBoolean = z
+  .union([z.boolean(), z.enum(['true', 'false', '1', '0'])])
+  .transform((value) => value === true || value === 'true' || value === '1');
+
 /** Día calendario YYYY-MM-DD; se conserva como texto para pasarlo a columnas `date` sin zona horaria. */
 export const isoDay = z.iso.date();
 

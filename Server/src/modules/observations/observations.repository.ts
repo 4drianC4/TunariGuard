@@ -13,10 +13,15 @@ export interface InsertResult {
 }
 
 /** Días UTC (YYYY-MM-DD, inclusive) cubiertos por dato estándar de una plataforma. */
+/** Lo que cubre el dato estándar de una plataforma: días UTC (YYYY-MM-DD, inclusive) y rectángulo. */
 export interface NrtRange {
   platform: string;
   from: string;
   to: string;
+  minLat: number;
+  maxLat: number;
+  minLon: number;
+  maxLon: number;
 }
 
 export interface AssignmentSummary {
@@ -42,8 +47,10 @@ export class ObservationsRepository {
    * Una sola sentencia por bloque (jsonb_to_recordset) que además calcula `geom`: Prisma no
    * escribe columnas geometry y createMany era ~25 veces más lento con CSV grandes.
    *
-   * Si la huella ya existe como NRT (provisional) y la fila nueva es dato estándar, la fila
-   * se actualiza en su lugar (`upgraded`): el estándar reemplaza al provisional sin duplicar.
+   * Si la huella ya existe como NRT (provisional) del MISMO origen y la fila nueva es dato
+   * estándar, la fila se actualiza en su lugar (`upgraded`): el estándar reemplaza al provisional
+   * sin duplicar. Conserva su lote original: si esta importación falla y se borra su lote, la
+   * fila no se pierde con él.
    */
   async insertMany(
     batchId: string,
@@ -104,10 +111,10 @@ export class ObservationsRepository {
           day_night = EXCLUDED.day_night,
           product_version = EXCLUDED.product_version,
           detection_type = EXCLUDED.detection_type,
-          raw = EXCLUDED.raw,
-          batch_id = EXCLUDED.batch_id
+          raw = EXCLUDED.raw
         WHERE observations.product_version ILIKE '%NRT%'
           AND COALESCE(EXCLUDED.product_version, '') NOT ILIKE '%NRT%'
+          AND observations.origin = EXCLUDED.origin
         RETURNING id, (xmax = 0) AS inserted`;
       for (const row of ids) {
         if (row.inserted) inserted.push(row.id);
@@ -118,20 +125,26 @@ export class ObservationsRepository {
   }
 
   /**
-   * Borra las observaciones NRT (provisionales) que el dato estándar deja obsoletas: mismas
-   * plataformas y mismo rango de días UTC, de otros lotes. Se hace por rango y no por huella
-   * porque parte de las NRT no coincide con su versión estándar (recomendación del paquete fuego).
+   * Borra las observaciones NRT (provisionales) que el dato estándar deja obsoletas: misma
+   * plataforma, mismo origen (REAL/SIMULATED), mismo rango de días UTC y dentro del rectángulo
+   * que cubre el archivo, de otros lotes. Se hace por rango y no por huella porque parte de las
+   * NRT no coincide con su versión estándar (recomendación del paquete fuego). Devuelve los ids.
    */
-  async deleteObsoleteNrt(batchId: string, ranges: NrtRange[]): Promise<number> {
-    let deleted = 0;
-    for (const { platform, from, to } of ranges) {
-      deleted += await this.prisma.$executeRaw`
+  async deleteObsoleteNrt(batchId: string, origin: DataOrigin, ranges: NrtRange[]): Promise<string[]> {
+    const deleted: string[] = [];
+    for (const r of ranges) {
+      const rows = await this.prisma.$queryRaw<{ id: string }[]>`
         DELETE FROM observations
-        WHERE platform = ${platform}::"Platform"
+        WHERE platform = ${r.platform}::"Platform"
+          AND origin = ${origin}::"DataOrigin"
           AND product_version ILIKE '%NRT%'
-          AND acquired_at >= ${from}::date
-          AND acquired_at < (${to}::date + 1)
-          AND batch_id <> ${batchId}::uuid`;
+          AND acquired_at >= ${r.from}::date
+          AND acquired_at < (${r.to}::date + 1)
+          AND latitude BETWEEN ${r.minLat} AND ${r.maxLat}
+          AND longitude BETWEEN ${r.minLon} AND ${r.maxLon}
+          AND batch_id <> ${batchId}::uuid
+        RETURNING id`;
+      deleted.push(...rows.map((row) => row.id));
     }
     return deleted;
   }

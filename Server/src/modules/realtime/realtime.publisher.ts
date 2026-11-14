@@ -12,6 +12,7 @@ import {
   ServerEvents,
   type DistrictsUpdatedPayload,
   type HotspotsNewPayload,
+  type HotspotsRemovedPayload,
   type ReplayStatusPayload,
   type SyncStatusPayload,
 } from './realtime.contract.js';
@@ -20,6 +21,8 @@ import { RealtimeGateway } from './realtime.gateway.js';
 /** Features por mensaje; un lote grande se envía en varios `hotspots:new`. */
 const FEATURES_PER_MESSAGE = 500;
 const IDS_PER_QUERY = 1000;
+/** Ids por mensaje `hotspots:removed`. */
+const REMOVED_IDS_PER_MESSAGE = 1000;
 
 type HotspotsMeta = Omit<HotspotsNewPayload, 'collection' | 'emittedAtUtc'>;
 
@@ -36,7 +39,20 @@ export class RealtimePublisher {
   @OnEvent(BATCH_COMPLETED, { async: true })
   async onBatchCompleted(event: BatchCompletedEvent): Promise<void> {
     try {
-      const { insertedIds, ...lastBatch } = event;
+      const { insertedIds, removedIds, ...lastBatch } = event;
+
+      // Primero lo que se quitó, para que el mapa no muestre a la vez la NRT y su reemplazo.
+      const emittedAtUtc = new Date().toISOString();
+      for (const ids of chunk(removedIds, REMOVED_IDS_PER_MESSAGE)) {
+        this.gateway.emitToAll(ServerEvents.HotspotsRemoved, {
+          reason: 'nrt_replaced_by_standard',
+          batchId: event.batchId,
+          dataset: event.dataset,
+          removedIds: ids,
+          emittedAtUtc,
+        } satisfies HotspotsRemovedPayload);
+      }
+
       this.gateway.emitSticky(ServerEvents.SyncStatus, { lastBatch } satisfies SyncStatusPayload);
 
       for (const ids of chunk(insertedIds, IDS_PER_QUERY)) {
@@ -51,7 +67,7 @@ export class RealtimePublisher {
       }
       this.gateway.logSummary(
         event.announced
-          ? `Lote ${event.batchId}: ${insertedIds.length} focos nuevos anunciados`
+          ? `Lote ${event.batchId}: ${insertedIds.length} focos nuevos anunciados, ${removedIds.length} quitados`
           : `Lote ${event.batchId}: importación masiva (${event.inserted} focos), solo sync:status`,
       );
     } catch (error) {

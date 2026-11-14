@@ -10,13 +10,14 @@ export const REALTIME_NAMESPACE = 'realtime';
 
 export const ServerEvents = {
   HotspotsNew: 'hotspots:new',
+  HotspotsRemoved: 'hotspots:removed',
   SyncStatus: 'sync:status',
   ReplayStatus: 'replay:status',
   DistrictsUpdated: 'districts:updated',
 } as const;
 
 export const ClientEvents = {
-  /** Cambia las salas: `{ districts: ['D1','D2'] }` o `{}` para recibir todo. Responde con ack. */
+  /** Cambia las salas: `{ districts: ['distrito-01','distrito-02'] }` o `{}` para recibir todo. Responde con ack. */
   Subscribe: 'subscribe',
 } as const;
 
@@ -36,6 +37,18 @@ export interface HotspotsNewPayload {
   collection: FeatureCollection<Point, ObservationFeature['properties']>;
 }
 
+/**
+ * Observaciones que ya no existen: el dato estándar reemplazó a las NRT provisionales. Llega a
+ * TODOS los clientes (también a los suscritos a distritos) y antes del `hotspots:new` del lote.
+ */
+export interface HotspotsRemovedPayload {
+  reason: 'nrt_replaced_by_standard';
+  batchId: string;
+  dataset: string;
+  removedIds: string[];
+  emittedAtUtc: string;
+}
+
 export interface SyncStatusPayload {
   lastBatch: {
     batchId: string;
@@ -48,6 +61,10 @@ export interface SyncStatusPayload {
     rejected: number;
     /** false: importación masiva sin `hotspots:new`; recargar con GET /observations. */
     announced: boolean;
+    /** NRT que pasaron a estándar en su lugar. Si > 0, conviene recargar por REST. */
+    upgradedToStandard: number;
+    /** NRT borradas por el dato estándar. Si > 0 y no llegó `hotspots:removed`, recargar por REST. */
+    removedObsolete: number;
     completedAtUtc: string;
   } | null;
 }

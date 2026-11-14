@@ -60,6 +60,15 @@ export class DistrictsRepository {
     return this.prisma.district.count();
   }
 
+  /** Códigos de distritos cargados que no vienen de fuego.areas (p. ej. D1…D15 de otro GeoJSON). */
+  async codesOutsideFuego(): Promise<string[]> {
+    const rows = await this.prisma.$queryRaw<{ code: string }[]>`
+      SELECT code FROM districts
+      WHERE code NOT IN (SELECT area_id FROM fuego.areas WHERE tipo = 'distrito')
+      ORDER BY code`;
+    return rows.map((row) => row.code);
+  }
+
   /**
    * Copia los 15 distritos de fuego.areas (código distrito-01 … distrito-15, el mismo que usa el
    * análisis). Con `replace`, borra los distritos que no vengan de ahí para que no se solapen.
