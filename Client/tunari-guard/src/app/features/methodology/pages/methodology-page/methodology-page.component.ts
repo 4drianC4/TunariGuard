@@ -1,19 +1,17 @@
+
 import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  signal
+  PLATFORM_ID,
 } from '@angular/core';
 
 import {
   DOCUMENT,
-  isPlatformBrowser
+  isPlatformBrowser,
 } from '@angular/common';
 
-import { PLATFORM_ID } from '@angular/core';
-
-import { PageHeaderComponent } from
-  '../../../../shared/components/page-header/page-header.component';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 
 // ==========================================
 // TIPOS
@@ -27,19 +25,15 @@ type MethodSection =
 
 type MethodTab = 'summary' | MethodSection;
 
-// ==========================================
-// INTERFACES
-// ==========================================
-
-interface SensorCard {
+interface MethodSensor {
   name: string;
   satellites: string;
-  spatialResolution: string;
-  temporalResolution: string;
-  className: string;
+  resolution: string;
+  status: string;
+  className: 'modis' | 'viirs';
 }
 
-interface Stage {
+interface MethodStage {
   number: number;
   title: string;
   detail: string;
@@ -47,9 +41,15 @@ interface Stage {
   className: string;
 }
 
-interface ValidationMetric {
+interface MethodMetric {
   value: string;
   label: string;
+}
+
+interface MethodDocument {
+  name: string;
+  detail: string;
+  file: string;
 }
 
 // ==========================================
@@ -62,7 +62,7 @@ interface ValidationMetric {
   imports: [PageHeaderComponent],
   templateUrl: './methodology-page.component.html',
   styleUrl: './methodology-page.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MethodologyPageComponent {
 
@@ -70,120 +70,184 @@ export class MethodologyPageComponent {
   private readonly platformId = inject(PLATFORM_ID);
 
   // ========================================
-  // SENSORES
+  // NAVEGACIÓN
   // ========================================
-
-  readonly sensors: readonly SensorCard[] = [
-    {
-      name: 'MODIS',
-      satellites: 'Terra / Aqua',
-      spatialResolution: '~ 1 km',
-      temporalResolution: 'Según sobrepaso',
-      className: 'modis'
-    },
-    {
-      name: 'VIIRS',
-      satellites: 'Suomi NPP / NOAA-20 / NOAA-21',
-      spatialResolution: '~ 375 m',
-      temporalResolution: 'Según sobrepaso',
-      className: 'viirs'
-    }
-  ];
-
-  // ========================================
-  // ETAPAS DE ARMONIZACIÓN
-  // ========================================
-
-  readonly stages: readonly Stage[] = [
-    {
-      number: 1,
-      title: 'Obtención de datos',
-      detail: 'MODIS y VIIRS (NASA FIRMS)',
-      icon: '◈',
-      className: 'ingest'
-    },
-    {
-      number: 2,
-      title: 'Filtrado de calidad',
-      detail: 'Integridad, confianza y nubes',
-      icon: '▽',
-      className: 'quality'
-    },
-    {
-      number: 3,
-      title: 'Coincidencia y fusión',
-      detail: 'Espacio y tiempo',
-      icon: '↗',
-      className: 'match'
-    },
-    {
-      number: 4,
-      title: 'Detecciones armonizadas',
-      detail: 'Conjunto con procedencia',
-      icon: '▱',
-      className: 'harmonized'
-    },
-    {
-      number: 5,
-      title: 'Análisis y reportes',
-      detail: 'Mapas, alertas y tendencias',
-      icon: '▥',
-      className: 'analysis'
-    }
-  ];
-
-  // ========================================
-  // MÉTRICAS DEMOSTRATIVAS
-  // ========================================
-
-  readonly metrics: readonly ValidationMetric[] = [
-    {
-      value: '94 %',
-      label: 'Consistencia espacial'
-    },
-    {
-      value: '91 %',
-      label: 'Consistencia temporal'
-    },
-    {
-      value: '88 %',
-      label: 'Reducción de duplicados'
-    }
-  ];
-
-  // ========================================
-  // LIMITACIONES
-  // ========================================
-
-  readonly limitations: readonly string[] = [
-    'Se analizan anomalías térmicas; no son incendios confirmados.',
-    'Nubes, humo, cobertura vegetal y horas de paso pueden impedir detecciones.',
-    'MODIS (~1 km) y VIIRS (~375 m) observan con resoluciones distintas.',
-    'Los emparejamientos deben validarse con datos independientes y, cuando sea posible, verificación de campo.'
-  ];
-
-  // ========================================
-  // ESTADO DE NAVEGACIÓN
-  // ========================================
-
-  // Se mantienen propiedades convencionales para
-  // conservar la compatibilidad con el HTML actual.
 
   activeTab: MethodTab = 'summary';
 
   expandedMobile: MethodSection | null = null;
 
   // ========================================
-  // SELECCIONAR PESTAÑA
+  // FUENTES SATELITALES
+  // ========================================
+
+  readonly sensors: readonly MethodSensor[] = [
+    {
+      name: 'MODIS',
+      satellites: 'Terra / Aqua',
+      resolution: '≈ 1 km',
+      status: 'Fuente de referencia',
+      className: 'modis',
+    },
+    {
+      name: 'VIIRS',
+      satellites: 'Suomi-NPP / NOAA-20 / NOAA-21',
+      resolution: '≈ 375 m',
+      status: 'NOAA-20 y NOAA-21 activos*',
+      className: 'viirs',
+    },
+  ];
+
+  // ========================================
+  // ETAPAS DEL PROCESAMIENTO
+  // ========================================
+
+  readonly stages: readonly MethodStage[] = [
+    {
+      number: 1,
+      title: 'Descarga FIRMS',
+      detail: 'Productos MODIS y VIIRS',
+      icon: '↓',
+      className: 'ingest',
+    },
+    {
+      number: 2,
+      title: 'Filtro de calidad',
+      detail: 'Tipo 0; confianza no baja',
+      icon: '◇',
+      className: 'quality',
+    },
+    {
+      number: 3,
+      title: 'Grilla de Bolivia',
+      detail: 'Celdas de 1 km · UTC−4',
+      icon: '▦',
+      className: 'match',
+    },
+    {
+      number: 4,
+      title: 'Normalización',
+      detail: 'VIIRS ÷ 2,8715',
+      icon: '÷',
+      className: 'harmonized',
+    },
+    {
+      number: 5,
+      title: 'Resultados',
+      detail: 'Alertas, series y conglomerados',
+      icon: '▥',
+      className: 'analysis',
+    },
+  ];
+
+  // ========================================
+  // VALIDACIÓN 2022–2025
+  // ========================================
+
+  readonly metrics: readonly MethodMetric[] = [
+    {
+      value: '27,0 %',
+      label: 'Error trimestral (WAPE)',
+    },
+    {
+      value: '16,3 %',
+      label: 'Error anual (WAPE)',
+    },
+    {
+      value: '+0,7 %',
+      label: 'Sesgo medio',
+    },
+  ];
+
+  // ========================================
+  // SUPUESTOS Y LIMITACIONES
+  // ========================================
+
+  readonly limitations: readonly string[] = [
+    'Una anomalía térmica detectada por satélite no confirma por sí sola un incendio forestal.',
+
+    'Nubes, humo, cobertura vegetal y hora de paso pueden afectar las observaciones.',
+
+    'MODIS y VIIRS tienen distintas resoluciones; sus detecciones no son directamente comparables.',
+
+    'El factor 2,8715 fue ajustado con datos de 2013–2025 y debe revisarse con datos de 2026.',
+
+    'Se conserva la procedencia original de cada detección; no se fusionan puntos individuales.',
+
+    'Las detecciones NRT son provisionales y pueden ser reemplazadas por productos estándar.',
+
+    'Las alertas representan actividad térmica inusual, no la gravedad de un incendio confirmado.',
+  ];
+
+  // ========================================
+  // DOCUMENTACIÓN PDF
+  // ========================================
+
+  readonly documents: readonly MethodDocument[] = [
+    {
+      name: 'Fuentes de datos',
+      detail: 'Satélites, horarios y cobertura',
+      file: '01_Fuentes_de_datos_con_horas.pdf',
+    },
+    {
+      name: 'Armonización',
+      detail: 'Factor, grilla y método RMA',
+      file: '02_Armonizacion.pdf',
+    },
+    {
+      name: 'Validación 2022–2025',
+      detail: 'Indicadores y pruebas estadísticas',
+      file: '03_Validacion.pdf',
+    },
+    {
+      name: 'Supuestos y límites',
+      detail: 'Alcance e incertidumbre',
+      file: '04_Supuestos_y_limites.pdf',
+    },
+    {
+      name: 'Documentación del método',
+      detail: 'Procedimiento y referencias',
+      file: '05_Documentacion_del_metodo.pdf',
+    },
+  ];
+
+  // ========================================
+  // URL DE DOCUMENTOS
+  // ========================================
+
+  documentUrl(file: string): string {
+    return `/assets/metodologia/${file}`;
+  }
+
+  // Documento principal para descargar
+  readonly mainDocument =
+    '05_Documentacion_del_metodo.pdf';
+
+  // ========================================
+  // ACORDEONES MÓVILES
+  // ========================================
+
+  sectionOpen(tab: MethodSection): boolean {
+    return this.expandedMobile === tab;
+  }
+
+  toggleMobile(tab: MethodSection): void {
+    this.expandedMobile =
+      this.expandedMobile === tab ? null : tab;
+
+    this.activeTab =
+      this.expandedMobile ?? 'summary';
+  }
+
+  // ========================================
+  // NAVEGACIÓN POR SECCIONES
   // ========================================
 
   selectTab(tab: MethodTab): void {
-
     this.activeTab = tab;
 
-    if (tab !== 'summary') {
-      this.expandedMobile = tab;
-    }
+    this.expandedMobile =
+      tab === 'summary' ? null : tab;
 
     if (!isPlatformBrowser(this.platformId)) {
       return;
@@ -191,43 +255,26 @@ export class MethodologyPageComponent {
 
     const windowRef = this.document.defaultView;
 
-    if (!windowRef || windowRef.innerWidth <= 760) {
+    if (!windowRef) {
       return;
     }
 
-    const targetId =
+    // En móvil se utiliza el acordeón.
+    if (windowRef.innerWidth <= 760) {
+      return;
+    }
+
+    const sectionId =
       tab === 'summary'
         ? 'method-page-top'
         : `method-${tab}`;
 
-    const target = this.document.getElementById(targetId);
+    const target =
+      this.document.getElementById(sectionId);
 
     target?.scrollIntoView({
       behavior: 'smooth',
-      block: 'start'
+      block: 'start',
     });
-  }
-
-  // ========================================
-  // ACORDEÓN RESPONSIVE
-  // ========================================
-
-  toggleMobile(tab: MethodSection): void {
-
-    this.expandedMobile =
-      this.expandedMobile === tab
-        ? null
-        : tab;
-
-    this.activeTab =
-      this.expandedMobile ?? 'summary';
-  }
-
-  // ========================================
-  // CONSULTAR SECCIÓN ABIERTA
-  // ========================================
-
-  sectionOpen(tab: MethodSection): boolean {
-    return this.expandedMobile === tab;
   }
 }

@@ -1,110 +1,294 @@
-<section class="method-page" id="method-page-top" aria-labelledby="method-page-title">
 
+<section class="method-page" id="method-page-top" aria-label="Metodología TunariGuard">
 
-   <app-page-header
+  <app-page-header
     section="Metodología"
     title="Método y fuentes"
-    description="Datos NASA FIRMS, método de armonización, supuestos, límites y validación científica."
+    description="Cómo TunariGuard transforma observaciones MODIS y VIIRS en conteos comparables para el monitoreo forestal."
   />
 
-  <nav class="method-tabs" aria-label="Secciones de metodología">
-    <button type="button" [class.is-active]="activeTab === 'summary'" (click)="selectTab('summary')"><span aria-hidden="true">▱</span> Resumen</button>
-    <button type="button" [class.is-active]="activeTab === 'sources'" (click)="selectTab('sources')"><span aria-hidden="true">✧</span> Fuentes de datos</button>
-    <button type="button" [class.is-active]="activeTab === 'harmonization'" (click)="selectTab('harmonization')"><span aria-hidden="true">⌘</span> Armonización</button>
-    <button type="button" [class.is-active]="activeTab === 'validation'" (click)="selectTab('validation')"><span aria-hidden="true">▥</span> Validación</button>
-    <button type="button" [class.is-active]="activeTab === 'limits'" (click)="selectTab('limits')"><span aria-hidden="true">ⓘ</span> Supuestos y límites</button>
-  </nav>
+  <!-- NAVEGACIÓN MÓVIL -->
+  <nav class="method-mobile-accordions" aria-label="Secciones de metodología">
+    <button type="button"
+      [attr.aria-expanded]="sectionOpen('sources')"
+      aria-controls="method-sources"
+      (click)="toggleMobile('sources')">
+      <span>Fuentes de datos</span>
+      <span>{{ sectionOpen('sources') ? '−' : '+' }}</span>
+    </button>
 
-  <nav class="method-mobile-accordions" aria-label="Abrir sección metodológica en móvil">
-    <button type="button" [attr.aria-expanded]="sectionOpen('sources')" aria-controls="method-sources" (click)="toggleMobile('sources')"><span>✧ &nbsp; Fuentes de datos</span><span aria-hidden="true">{{ sectionOpen('sources') ? '−' : '⌄' }}</span></button>
-    <button type="button" [attr.aria-expanded]="sectionOpen('harmonization')" aria-controls="method-harmonization" (click)="toggleMobile('harmonization')"><span>⌘ &nbsp; Armonización</span><span aria-hidden="true">{{ sectionOpen('harmonization') ? '−' : '⌄' }}</span></button>
-    <button type="button" [attr.aria-expanded]="sectionOpen('validation')" aria-controls="method-validation" (click)="toggleMobile('validation')"><span>▥ &nbsp; Validación</span><span aria-hidden="true">{{ sectionOpen('validation') ? '−' : '⌄' }}</span></button>
-    <button type="button" [attr.aria-expanded]="sectionOpen('limits')" aria-controls="method-limits" (click)="toggleMobile('limits')"><span>ⓘ &nbsp; Supuestos y límites</span><span aria-hidden="true">{{ sectionOpen('limits') ? '−' : '⌄' }}</span></button>
+    <button type="button"
+      [attr.aria-expanded]="sectionOpen('harmonization')"
+      aria-controls="method-harmonization"
+      (click)="toggleMobile('harmonization')">
+      <span>Armonización</span>
+      <span>{{ sectionOpen('harmonization') ? '−' : '+' }}</span>
+    </button>
+
+    <button type="button"
+      [attr.aria-expanded]="sectionOpen('validation')"
+      aria-controls="method-validation"
+      (click)="toggleMobile('validation')">
+      <span>Validación</span>
+      <span>{{ sectionOpen('validation') ? '−' : '+' }}</span>
+    </button>
+
+    <button type="button"
+      [attr.aria-expanded]="sectionOpen('limits')"
+      aria-controls="method-limits"
+      (click)="toggleMobile('limits')">
+      <span>Supuestos y límites</span>
+      <span>{{ sectionOpen('limits') ? '−' : '+' }}</span>
+    </button>
   </nav>
 
   <div class="method-grid">
-    <article class="method-card method-sources" id="method-sources" [class.method-mobile-open]="sectionOpen('sources')">
-      <h2><span class="method-title-icon" aria-hidden="true">✧</span> Fuentes de datos (NASA FIRMS)</h2>
+
+    <!-- 1. FUENTES SATELITALES -->
+    <article
+      class="method-card method-sources"
+      id="method-sources"
+      [class.method-mobile-open]="sectionOpen('sources')">
+
+      <div class="method-card-heading">
+        <h2>
+          <span class="method-title-icon">✧</span>
+          Fuentes satelitales
+        </h2>
+        <span class="tg-method-label">NASA FIRMS</span>
+      </div>
+
       <div class="method-sensors">
         @for (sensor of sensors; track sensor.name) {
-          <div class="method-sensor" [class.method-modis]="sensor.className === 'modis'" [class.method-viirs]="sensor.className === 'viirs'">
+          <div
+            class="method-sensor"
+            [class.method-modis]="sensor.className === 'modis'"
+            [class.method-viirs]="sensor.className === 'viirs'">
+
             <div class="method-sensor-head">
-              <span class="method-satellite" aria-hidden="true">◈</span>
-              <div><strong>{{ sensor.name }}</strong><span>{{ sensor.satellites }}</span></div>
+              <span class="method-satellite">◈</span>
+              <div>
+                <strong>{{ sensor.name }}</strong>
+                <span>{{ sensor.satellites }}</span>
+              </div>
             </div>
+
             <div class="method-specs">
-              <div><span aria-hidden="true">◷</span><div><strong>Frecuencia de observación</strong><small>{{ sensor.temporalResolution }}</small></div></div>
-              <div><span aria-hidden="true">▦</span><div><strong>Resolución espacial</strong><small>{{ sensor.spatialResolution }}</small></div></div>
+              <div>
+                <strong>Resolución nominal</strong>
+                <small>{{ sensor.resolution }}</small>
+              </div>
+              <div>
+                <strong>Estado</strong>
+                <small>{{ sensor.status }}</small>
+              </div>
             </div>
           </div>
         }
       </div>
-      <p class="method-footnote">Resoluciones nominales de los productos de incendios activos. La frecuencia real depende de la órbita, ubicación y disponibilidad de observaciones.</p>
+
+      <p class="method-footnote">
+        Según el registro del proyecto, la última detección de
+        Suomi-NPP fue el 01/11/2026. La disponibilidad varía
+        según el producto y la fecha.
+      </p>
     </article>
 
-    <article class="method-card method-definition" id="method-harmonization" [class.method-mobile-open]="sectionOpen('harmonization')">
-      <h2><span class="method-title-icon" aria-hidden="true">▱</span> ¿Qué es la armonización?</h2>
-      <p>Proceso que integra las detecciones de MODIS y VIIRS para obtener un conjunto más consistente de anomalías térmicas, reduciendo duplicados y preservando el origen de cada observación.</p>
-      <div class="method-outcome"><span class="method-check" aria-hidden="true">✓</span><span><strong>Resultado:</strong> detecciones armonizadas con procedencia y reglas de vinculación reproducibles.</span></div>
-      <small class="method-footnote">Descripción metodológica propuesta para TunariGuard; no implica validación científica automática.</small>
+    <!-- 2. ARMONIZACIÓN -->
+    <article
+      class="method-card method-definition"
+      id="method-harmonization"
+      [class.method-mobile-open]="sectionOpen('harmonization')">
+
+      <div class="method-card-heading">
+        <h2>
+          <span class="method-title-icon">⚖</span>
+          ¿Qué significa armonizar?
+        </h2>
+      </div>
+
+      <p class="method-description">
+        MODIS y VIIRS observan anomalías térmicas con diferentes
+        resoluciones. TunariGuard
+        <strong>no une detecciones una a una</strong>.
+        Agrupa las observaciones por
+        <strong>celda de 1 km y día</strong>
+        y convierte sus conteos a una escala comparable a MODIS.
+      </p>
+
+      <div class="tg-method-formula">
+        <span>Normalización de conteos</span>
+        <strong>VIIRS ÷ 2,8715</strong>
+        <small>Índice MODIS-equivalente</small>
+      </div>
+
+      <div class="method-outcome">
+        <span class="method-check">✓</span>
+        <span>
+          Cada observación conserva su satélite de origen
+          para garantizar la trazabilidad.
+        </span>
+      </div>
     </article>
 
-    <article class="method-card method-pipeline" [class.method-mobile-open]="sectionOpen('harmonization')">
-      <h2><span class="method-title-icon" aria-hidden="true">⌘</span> Flujo metodológico</h2>
-      <div class="method-steps" aria-label="Cinco pasos del proceso">
+    <!-- 3. PROCESO -->
+    <article
+      class="method-card method-pipeline"
+      [class.method-mobile-open]="sectionOpen('harmonization')">
+
+      <div class="method-card-heading">
+        <h2>
+          <span class="method-title-icon">▦</span>
+          Del satélite al análisis
+        </h2>
+        <span class="tg-method-label">5 etapas</span>
+      </div>
+
+      <div class="method-steps" aria-label="Etapas del procesamiento">
         @for (step of stages; track step.number) {
-          <div class="method-step" [class]="'method-step method-step-' + step.className">
-            <div class="method-step-mark" aria-hidden="true">{{ step.icon }}</div>
+          <div [class]="'method-step method-step-' + step.className">
+            <div class="method-step-mark">{{ step.icon }}</div>
             <strong>{{ step.number }}. {{ step.title }}</strong>
             <span>{{ step.detail }}</span>
           </div>
-          @if (!$last) { <span class="method-step-arrow" aria-hidden="true">→</span> }
+
+          @if (!$last) {
+            <span class="method-step-arrow" aria-hidden="true">→</span>
+          }
         }
       </div>
-      <p class="method-footnote">El emparejamiento espacial y temporal requiere umbrales documentados, revisiones de calidad y conservación de la información de origen.</p>
+
+      <p class="method-footnote">
+        Grilla UTM 20S (EPSG:32720). Se utiliza el día de Bolivia
+        (UTC−4) y la unidad celda-día.
+      </p>
     </article>
 
-    <article class="method-card method-validation" id="method-validation" [class.method-mobile-open]="sectionOpen('validation')">
-      <h2><span class="method-title-icon" aria-hidden="true">▥</span> Validación <span class="method-demo">(DEMO)</span></h2>
+    <!-- 4. VALIDACIÓN -->
+    <article
+      class="method-card method-validation"
+      id="method-validation"
+      [class.method-mobile-open]="sectionOpen('validation')">
+
+      <div class="method-card-heading">
+        <h2>
+          <span class="method-title-icon">▥</span>
+          Resultados de la prueba
+        </h2>
+        <span class="tg-method-label">2022–2025</span>
+      </div>
+
       <div class="method-metrics">
         @for (metric of metrics; track metric.label) {
-          <div class="method-metric"><span class="method-metric-check" aria-hidden="true">✓</span><strong>{{ metric.value }}</strong><span>{{ metric.label }}</span></div>
+          <div class="method-metric">
+            <strong>{{ metric.value }}</strong>
+            <span>{{ metric.label }}</span>
+          </div>
         }
       </div>
-      <p class="method-footnote">Valores ilustrativos, no obtenidos de una evaluación científica. No se deben interpretar como métricas reales del sistema.</p>
+
+      <p class="method-footnote">
+        Evaluación de la armonización: WAPE trimestral 27,0 %,
+        WAPE anual 16,3 % y sesgo medio +0,7 %.
+        No representan exactitud de detección.
+      </p>
+
+      <a
+        class="method-inline-link"
+        href="/assets/metodologia/03_Validacion.pdf"
+        target="_blank"
+        rel="noopener noreferrer">
+        Consultar validación completa ↗
+      </a>
     </article>
 
-    <article class="method-card method-limits" id="method-limits" [class.method-mobile-open]="sectionOpen('limits')">
-      <h2><span class="method-title-icon method-warning" aria-hidden="true">⚠</span> Supuestos y límites</h2>
+    <!-- 5. SUPUESTOS Y LÍMITES -->
+    <article
+      class="method-card method-limits"
+      id="method-limits"
+      [class.method-mobile-open]="sectionOpen('limits')">
+
+      <div class="method-card-heading">
+        <h2>
+          <span class="method-title-icon method-warning">⚠</span>
+          Qué debes tener en cuenta
+        </h2>
+      </div>
+
       <ul>
         @for (item of limitations; track item; let i = $index) {
-          <li><span class="method-limit-dot" [class.is-orange]="i < 2" aria-hidden="true"></span>{{ item }}</li>
+          <li>
+            <span
+              class="method-limit-dot"
+              [class.is-orange]="i < 2"
+              aria-hidden="true">
+            </span>
+            <span>{{ item }}</span>
+          </li>
         }
       </ul>
-    </article>
 
-    <article class="method-card method-resources" [class.method-mobile-open]="sectionOpen('sources')">
-      <h2><span class="method-title-icon" aria-hidden="true">▣</span> Fuentes y documentación</h2>
-      <a href="https://firms.modaps.eosdis.nasa.gov/" target="_blank" rel="noopener noreferrer" class="method-resource">
-        <span class="method-resource-symbol method-nasa">NASA</span><span><strong>NASA FIRMS</strong><small>Fire Information for Resource Management System</small></span><span class="method-external" aria-hidden="true">↗</span>
-      </a>
-      <a href="/assets/metodologia/Metodologia_TunariGuard_DEMO.pdf" download="Metodologia_TunariGuard_DEMO.pdf" class="method-resource">
-        <span class="method-resource-symbol method-document">▤</span><span><strong>Documentación del método</strong><small>Proceso propuesto, límites y fuentes (PDF)</small></span><span class="method-external" aria-hidden="true">↓</span>
+      <a
+        class="method-inline-link"
+        href="/assets/metodologia/04_Supuestos_y_limites.pdf"
+        target="_blank"
+        rel="noopener noreferrer">
+        Ver supuestos y límites ↗
       </a>
     </article>
 
-    <article class="method-download" [class.method-mobile-open]="sectionOpen('limits')">
-      <div class="method-download-art" aria-hidden="true"></div>
-      <div class="method-download-content"><h2>Metodología aplicada a TunariGuard</h2><p>Documento técnico para consulta y revisión.</p>
-        <a href="/assets/metodologia/Metodologia_TunariGuard_DEMO.pdf" download="Metodologia_TunariGuard_DEMO.pdf" class="method-download-btn">↓ &nbsp; Descargar documento (PDF)</a>
+    <!-- 6. FUENTES Y DOCUMENTOS -->
+    <article
+      class="method-card method-resources"
+      [class.method-mobile-open]="sectionOpen('sources')">
+
+      <div class="method-card-heading">
+        <h2>
+          <span class="method-title-icon">▤</span>
+          Fuentes y documentos
+        </h2>
+        <span class="tg-method-label">5 PDF</span>
+      </div>
+
+      <div class="method-resource-grid">
+
+        <a
+          href="https://firms.modaps.eosdis.nasa.gov/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="method-resource">
+          <span class="method-resource-symbol method-nasa">NASA</span>
+          <span class="method-resource-copy">
+            <strong>NASA FIRMS</strong>
+            <small>Portal oficial de datos satelitales</small>
+          </span>
+          <span class="method-external" aria-hidden="true">↗</span>
+        </a>
+
+        @for (doc of documents; track doc.file) {
+          <a
+            [href]="documentUrl(doc.file)"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="method-resource">
+            <span class="method-resource-symbol method-document">▤</span>
+            <span class="method-resource-copy">
+              <strong>{{ doc.name }}</strong>
+              <small>{{ doc.detail }} · PDF</small>
+            </span>
+            <span class="method-external" aria-hidden="true">↗</span>
+          </a>
+        }
       </div>
     </article>
+
   </div>
 
-  <div class="method-mobile-bottom">
-    <div class="method-mobile-outcome"><span class="method-check" aria-hidden="true">✓</span><div><strong>Resultado</strong><span>Detecciones armonizadas con mayor consistencia y procedencia.</span></div></div>
-    <a href="/assets/metodologia/Metodologia_TunariGuard_DEMO.pdf" download="Metodologia_TunariGuard_DEMO.pdf" class="method-download-btn">↓ &nbsp; Descargar metodología (PDF)</a>
-  </div>
 
-  <p class="method-disclaimer">MODO DEMOSTRACIÓN · La metodología describe un flujo propuesto y no sustituye la verificación de campo ni la validación científica independiente.</p>
+
+  <p class="method-disclaimer">
+    Datos de análisis hasta el 31 de octubre de 2026.
+    Una anomalía térmica no equivale a un incendio confirmado.
+  </p>
+
 </section>

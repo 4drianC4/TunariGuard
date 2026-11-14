@@ -1,4 +1,910 @@
-/* Metodologia V1: estilos de la pantalla limitados al bloque
-   TUNARIGUARD_METHODOLOGY_RESPONSIVE_V1 en src/styles.scss.
-   Se evita exceder el presupuesto de estilos por componente. */
-:host { display: block; min-width: 0; }
+
+/* ==========================================
+   TUNARIGUARD — METODOLOGÍA
+   DISEÑO DEFINITIVO RESPONSIVE
+   ========================================== */
+
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.method-page {
+  --tg-green: #294725;
+  --tg-dark: #223b20;
+  --tg-muted: #6c7967;
+  --tg-border: #e6e8df;
+  --tg-orange: #d97727;
+
+  width: 100%;
+  max-width: 1600px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 16px 20px 24px;
+  color: var(--tg-dark);
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  a:focus-visible,
+  button:focus-visible {
+    outline: 3px solid #8db77b;
+    outline-offset: 3px;
+  }
+}
+
+/* ==========================================
+   GRID PRINCIPAL
+   ========================================== */
+
+.method-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-auto-flow: row;
+  gap: 14px;
+  align-items: stretch;
+  margin-top: 16px;
+}
+
+.method-sources {
+  grid-column: span 6;
+}
+
+.method-definition {
+  grid-column: span 6;
+}
+
+.method-pipeline {
+  grid-column: span 8;
+}
+
+.method-validation {
+  grid-column: span 4;
+}
+
+.method-limits {
+  grid-column: span 5;
+}
+
+.method-resources {
+  grid-column: span 7;
+}
+
+/* ==========================================
+   TARJETAS
+   ========================================== */
+
+.method-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  min-width: 0;
+  min-height: 0;
+  height: auto;
+  margin: 0;
+  padding: 20px;
+
+  background: #ffffff;
+  border: 1px solid var(--tg-border);
+  border-radius: 15px;
+
+  box-shadow: 0 4px 18px rgba(35, 52, 29, 0.035);
+}
+
+.method-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.method-card h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin: 0;
+  color: var(--tg-dark);
+  font-size: 15px;
+  font-weight: 750;
+  line-height: 1.4;
+}
+
+.method-title-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 22px;
+  height: 22px;
+
+  color: #56724c;
+  font-size: 17px;
+}
+
+.method-warning {
+  color: #d68c28;
+}
+
+.tg-method-label {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 4px 8px;
+  border-radius: 7px;
+  background: #fff0df;
+
+  color: #aa632e;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.035em;
+  white-space: nowrap;
+}
+
+/* ==========================================
+   FUENTES SATELITALES
+   ========================================== */
+
+.method-sensors {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 11px;
+}
+
+.method-sensor {
+  min-width: 0;
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.method-modis {
+  background: #fff3e7;
+  border: 1px solid #f0dfca;
+}
+
+.method-viirs {
+  background: #edf5e8;
+  border: 1px solid #dce9d4;
+}
+
+.method-sensor-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 13px;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  strong {
+    color: #284525;
+    font-size: 18px;
+    line-height: 1.2;
+  }
+
+  span {
+    color: #64715d;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+}
+
+.method-satellite {
+  flex-shrink: 0;
+  color: #657f58;
+  font-size: 19px;
+}
+
+.method-specs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    min-width: 0;
+    padding: 10px 9px;
+
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid #e6e8df;
+    border-radius: 9px;
+  }
+
+  strong {
+    font-size: 10px;
+    line-height: 1.35;
+  }
+
+  small {
+    color: #52624c;
+    font-size: 10px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* ==========================================
+   ARMONIZACIÓN
+   ========================================== */
+
+.method-description {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.tg-method-formula {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  min-height: 105px;
+  padding: 15px;
+
+  border: 1px solid #e0e8d6;
+  border-radius: 12px;
+
+  background: linear-gradient(
+    115deg,
+    #eef5e8 0%,
+    #fafaf4 100%
+  );
+
+  text-align: center;
+
+  > span {
+    color: #637950;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  > strong {
+    color: #294b23;
+    font-size: clamp(22px, 2vw, 30px);
+    line-height: 1.2;
+  }
+
+  > small {
+    color: #73816b;
+    font-size: 11px;
+  }
+}
+
+.method-outcome {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 12px;
+  border-radius: 10px;
+  background: #f4f7e9;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.method-check {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 24px;
+
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+
+  background: #58c52e;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* ==========================================
+   ETAPAS
+   ========================================== */
+
+.method-steps {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  width: 100%;
+}
+
+.method-step {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-width: 0;
+  min-height: 142px;
+  padding: 12px 7px;
+
+  border-radius: 11px;
+  text-align: center;
+
+  strong {
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  > span {
+    color: #64705f;
+    font-size: 10px;
+    line-height: 1.4;
+  }
+}
+
+.method-step-mark {
+  display: grid;
+  place-items: center;
+
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.48);
+  color: #3b5c35;
+  font-size: 18px;
+}
+
+.method-step-arrow {
+  align-self: center;
+  flex: 0 0 auto;
+
+  color: #8d9a87;
+  font-size: 16px;
+}
+
+.method-step-ingest {
+  background: #e7f1ff;
+}
+
+.method-step-quality {
+  background: #f0e9ff;
+}
+
+.method-step-match {
+  background: #fff2dd;
+}
+
+.method-step-harmonized {
+  background: #eaf4e7;
+}
+
+.method-step-analysis {
+  background: #ffebeb;
+}
+
+/* ==========================================
+   VALIDACIÓN
+   ========================================== */
+
+.method-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.method-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-width: 0;
+  min-height: 142px;
+  padding: 12px 5px;
+
+  border: 1px solid #e7eade;
+  border-radius: 11px;
+  background: #f8f9f3;
+  text-align: center;
+
+  strong {
+    color: #284d29;
+    font-size: clamp(16px, 1.7vw, 25px);
+    white-space: nowrap;
+  }
+
+  span {
+    color: #64725f;
+    font-size: 10px;
+    line-height: 1.4;
+  }
+}
+
+.method-inline-link {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+
+  margin-top: auto;
+  color: #386a32;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* ==========================================
+   SUPUESTOS Y LÍMITES
+   ========================================== */
+
+.method-limits ul {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.method-limits li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  font-size: 12px;
+  line-height: 1.55;
+
+  > span:last-child {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.method-limit-dot {
+  flex: 0 0 7px;
+  width: 7px;
+  height: 7px;
+  margin-top: 6px;
+
+  border-radius: 50%;
+  background: #efa91f;
+
+  &.is-orange {
+    background: #f36d20;
+  }
+}
+
+/* ==========================================
+   DOCUMENTOS
+   ========================================== */
+
+.method-resource-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  align-content: start;
+}
+
+.method-resource {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  min-width: 0;
+  min-height: 68px;
+  padding: 11px 12px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7dd;
+  border-radius: 11px;
+
+  color: #283a25;
+  text-decoration: none;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    background: #f7faf3;
+    border-color: #b2c5a7;
+    transform: translateY(-1px);
+  }
+}
+
+.method-resource-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+
+  min-width: 0;
+
+  strong {
+    font-size: 12px;
+    line-height: 1.3;
+  }
+
+  small {
+    color: #798474;
+    font-size: 10px;
+    line-height: 1.4;
+  }
+}
+
+.method-resource-symbol {
+  display: grid;
+  place-items: center;
+  flex: 0 0 34px;
+
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+}
+
+.method-nasa {
+  background: #165aaa;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.method-document {
+  background: #edf3e8;
+  color: #426c3a;
+  font-size: 18px;
+}
+
+.method-external {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: #5b7752;
+  font-size: 16px;
+}
+
+/* ==========================================
+   NOTAS
+   ========================================== */
+
+.method-footnote {
+  margin: 0;
+  color: #7b8575;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.method-disclaimer {
+  margin: 14px 0 0;
+  color: #858e80;
+  font-size: 10px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* ==========================================
+   DESCARGA
+   ========================================== */
+
+.method-download {
+  margin-top: 14px;
+  padding: 17px 20px;
+
+  background: #edf4e8;
+  border: 1px solid #dce8d5;
+  border-radius: 14px;
+}
+
+.method-download-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  h2 {
+    margin: 0 0 4px;
+    color: #294725;
+    font-size: 15px;
+  }
+
+  p {
+    margin: 0;
+    color: #6a7b62;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+}
+
+.method-download-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex-shrink: 0;
+
+  min-height: 43px;
+  padding: 12px 18px;
+
+  border: 0;
+  border-radius: 9px;
+  background: #294b23;
+
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 750;
+  text-decoration: none;
+  white-space: nowrap;
+
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: #37672f;
+  }
+}
+
+/* ==========================================
+   NAVEGACIÓN MÓVIL
+   ========================================== */
+
+.method-mobile-accordions {
+  display: none;
+}
+
+/* ==========================================
+   TABLET
+   ========================================== */
+
+@media (max-width: 1200px) {
+  .method-page {
+    padding: 14px 16px 22px;
+  }
+
+  .method-grid {
+    gap: 12px;
+  }
+
+  .method-card {
+    padding: 16px;
+  }
+
+  .method-pipeline,
+  .method-validation {
+    grid-column: 1 / -1;
+  }
+
+  .method-limits,
+  .method-resources {
+    grid-column: span 6;
+  }
+
+  .method-metric {
+    min-height: 105px;
+  }
+
+  .method-step {
+    min-height: 120px;
+  }
+
+  .method-resource-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================
+   TABLET PEQUEÑA
+   ========================================== */
+
+@media (max-width: 900px) {
+  .method-sources,
+  .method-definition,
+  .method-pipeline,
+  .method-validation,
+  .method-limits,
+  .method-resources {
+    grid-column: 1 / -1;
+  }
+
+  .method-resource-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ==========================================
+   MÓVIL
+   ========================================== */
+
+@media (max-width: 760px) {
+  .method-page {
+    padding: 12px;
+  }
+
+  .method-mobile-accordions {
+    display: grid;
+    gap: 8px;
+    margin-top: 14px;
+
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+
+      width: 100%;
+      min-height: 45px;
+      padding: 11px 13px;
+
+      background: #fff;
+      border: 1px solid #e1e7d9;
+      border-radius: 10px;
+
+      color: #294725;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+
+      &[aria-expanded='true'] {
+        background: #edf4e7;
+        border-color: #b7cba9;
+      }
+
+      span:last-child {
+        font-size: 17px;
+      }
+    }
+  }
+
+  .method-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .method-grid > .method-card {
+    display: none;
+  }
+
+  .method-grid > .method-card.method-mobile-open {
+    display: flex;
+  }
+
+  .method-card {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .method-card h2 {
+    font-size: 13px;
+  }
+
+  .method-sensors {
+    grid-template-columns: 1fr;
+  }
+
+  .method-specs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .method-description {
+    font-size: 12px;
+  }
+
+  .tg-method-formula {
+    min-height: 90px;
+  }
+
+  .method-steps {
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .method-step {
+    flex: 0 0 auto;
+    min-height: 85px;
+    padding: 11px;
+  }
+
+  .method-step-arrow {
+    transform: rotate(90deg);
+  }
+
+  .method-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .method-metric {
+    min-height: 95px;
+    padding: 8px 4px;
+
+    strong {
+      font-size: 17px;
+    }
+
+    span {
+      font-size: 9px;
+    }
+  }
+
+  .method-resource-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .method-resource {
+    min-height: 62px;
+  }
+
+  .method-limits ul {
+    gap: 10px;
+  }
+
+  .method-download {
+    padding: 15px;
+  }
+
+  .method-download-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .method-download-btn {
+    width: 100%;
+  }
+
+  .method-disclaimer {
+    font-size: 10px;
+  }
+}
+
+/* ==========================================
+   PANTALLAS MUY PEQUEÑAS
+   ========================================== */
+
+@media (max-width: 380px) {
+  .method-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .method-metric {
+    min-height: 68px;
+  }
+
+  .method-specs {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================
+   ACCESIBILIDAD
+   ========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .method-resource,
+  .method-download-btn {
+    transition: none;
+  }
+
+  .method-resource:hover {
+    transform: none;
+  }
+}
