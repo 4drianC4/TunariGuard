@@ -1,3 +1,4 @@
+import { MapInfoComponent } from '../map-info.component';
 import { AfterViewInit, Component, DestroyRef, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LiveUpdatesService } from '../../../../application/services/live-updates.service';
@@ -13,13 +14,12 @@ import { MunicipalCartographyService, MunicipalFeatureInfo } from '../../data-ac
 import { MapDataSet, MapDataStatus } from '../../models/map-data.model';
 import { MapEntitySelection } from '../../../../domain/models/map-entity-selection.model';
 import { DEMO_MAP_PERIOD, MapPeriod } from '../../models/map-period.model';
-import { Observation } from '../../models/observation.model';
+import { Observation, SatellitePlatform } from '../../models/observation.model';
 import { DEFAULT_MAP_OBSERVATION_FILTERS, MapObservationFilters } from '../../models/map-observation-filters.model';
 import { SensorType } from '../../../../domain/enums/sensor-type.enum';
 import { MunicipalLayerControlComponent, MunicipalLayerControlItem } from '../municipal-layer-control/municipal-layer-control.component';
 import { filterObservations } from '../../utils/map-observation-filter';
 import { MapFiltersComponent } from '../map-filters/map-filters.component';
-import { MapLayerSwitcherComponent } from '../map-layer-switcher/map-layer-switcher.component';
 import { MapTimelineComponent } from '../map-timeline/map-timeline.component';
 import { MapQueryControlsComponent } from '../map-query-controls/map-query-controls.component';
 import { HotspotPopupComponent } from '../hotspot-popup/hotspot-popup.component';
@@ -30,7 +30,7 @@ registerLocaleData(localeEsBo);
 @Component({
   selector: 'app-hotspot-map',
   standalone: true,
-  imports: [CommonModule, MunicipalLayerControlComponent, MapFiltersComponent, MapLayerSwitcherComponent, MapTimelineComponent, HotspotPopupComponent, MapQueryControlsComponent],
+  imports: [MapInfoComponent, CommonModule, MunicipalLayerControlComponent, MapFiltersComponent, MapTimelineComponent, HotspotPopupComponent, MapQueryControlsComponent],
   templateUrl: './hotspot-map.component.html',
   styleUrl: './hotspot-map.component.scss',
   host: { class: 'block min-w-0 text-[#30351f]' }
@@ -48,10 +48,42 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   readonly boundaryError = signal('');
   readonly layerError = signal('');
   readonly polygon = signal<Geometry | undefined>(undefined);
+  readonly overlayDetail = signal<{ layer: MapOverlay; title: string; fields: { key: string; label: string; value: string }[] } | null>(null);
+  readonly municipalInfoLoading = signal(false);
+  private municipalQuery = 0;
+  private resizeObserver?: ResizeObserver;
+  private resizingMap = false;
   readonly detailError = signal('');
   private detailRequest?: AbortController;
   readonly layerLabels: Record<MapOverlay, string> = {
     districts: 'Distritos operativos', recurrencia: 'Recurrencia histórica', 'puntos-calientes': 'Puntos calientes Gi*',
+  };
+  private readonly overlayFieldLabels: Record<string, string> = {
+    area_id: 'Área de referencia',
+    cell_id: 'Celda de 1 km',
+    ranking: 'Posición por recurrencia',
+    detecciones_total: 'Detecciones en la celda',
+    dias_con_deteccion: 'Días con detecciones',
+    primer_anio: 'Primer año con detecciones',
+    ultimo_anio: 'Último año con detecciones',
+    anios_con_fuego_2001_2025: 'Años con detecciones (2001–2025)',
+    anios_con_fuego_viirs_2013_2025: 'Años con detecciones VIIRS (2013–2025)',
+    anios_temporada_viirs_2013_2025: 'Años con detecciones VIIRS de julio a octubre',
+    pct_anios_2001_2025: '% de años con detecciones (2001–2025)',
+    pct_anios_viirs_2013_2025: '% de años con detecciones VIIRS (2013–2025)',
+    clase_recurrencia_viirs: 'Nivel de recurrencia VIIRS',
+    mes_pico: 'Mes con más detecciones (1–12)',
+    unidad_principal: 'Municipio o distrito predominante',
+    fuente_persistente_probable: 'Posible fuente fija de calor',
+    celdas_dia_viirs_2013_2025: 'Días con detecciones VIIRS (2013–2025)',
+    z_gi_estrella: 'Puntuación Z de Gi*',
+    p_ajustado_bh: 'Valor p ajustado',
+    punto_caliente: 'Concentración alta significativa',
+    punto_frio: 'Concentración baja significativa',
+    conglomerado: 'Grupo de celdas vecinas',
+    name: 'Nombre',
+    code: 'Código',
+    provisional: 'Límite provisional',
   };
   readonly overlays: MapOverlay[] = ['districts', 'recurrencia', 'puntos-calientes'];
   readonly activeOverlays = signal<MapOverlay[]>([]);
@@ -72,7 +104,8 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
   @ViewChild('mapContainer', { static: true }) private mapContainer!: ElementRef<HTMLDivElement>;
 
-  /** Calendar contract: inclusive local-date range; this module has no period controls of its own. */
+  /** Inclusive range of local calendar dates shared with the page. */
+  @Input() compact = false;
   @Input() areaId = 'parque-tunari';
   @Input() period: MapPeriod = { ...DEMO_MAP_PERIOD };
   @Output() readonly contextChange = new EventEmitter<{ areaId: string; period: MapPeriod }>();
@@ -81,7 +114,10 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   @Output() readonly selectionChange = new EventEmitter<MapEntitySelection | null>();
   @Output() readonly areaOfInterestChange = new EventEmitter<ReturnType<L.Polygon['toGeoJSON']> | null>();
 
-  readonly SensorType = SensorType;
+  @ViewChild('detailPanel') private detailPanel?: ElementRef<HTMLElement>;
+
+  readonly isModisPlatform = (platform: SatellitePlatform): boolean => platform === 'TERRA' || platform === 'AQUA';
+  readonly isViirsPlatform = (platform: SatellitePlatform): boolean => !this.isModisPlatform(platform);
   readonly filtersOpen = signal(true);
   readonly dataSet = signal<MapDataSet>({ origin: this.mapData.origin, observations: [] });
   readonly dataStatus = signal<MapDataStatus>('loading');
@@ -94,7 +130,6 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   readonly selectedArea = signal<L.Polygon | null>(null);
   private readonly areaRevision = signal(0);
 
-  visibleSensors: SensorType[] = [SensorType.VIIRS, SensorType.MODIS];
   observationFilters: MapObservationFilters = { ...DEFAULT_MAP_OBSERVATION_FILTERS, platforms: [] };
   readonly selectedObservation = signal<Observation | null>(null);
 
@@ -112,7 +147,8 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   private areaRefreshFrame = 0;
 
   get areaLabel(): string {
-    if (!this.areaId) return 'Todas las áreas';
+    if (!this.backendEnabled) return 'Parque Nacional Tunari y alrededores';
+    if (!this.areaId) return 'Sin área de referencia';
     return this.areas().find((area) => area.area_id === this.areaId)?.nombre_visible ?? this.areaId;
   }
 
@@ -126,8 +162,6 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     const polygon = this.selectedArea();
     return filterObservations(observations, {
       period: this.period,
-      showViirs: this.visibleSensors.includes(SensorType.VIIRS),
-      showModis: this.visibleSensors.includes(SensorType.MODIS),
       ...this.observationFilters,
       includesArea: (observation) => {
         const { lat, lng } = observation.position;
@@ -151,19 +185,9 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     }));
   }
 
-  get hasRightSidebarContent(): boolean {
-    const hasMunicipalInfo = !!this.municipalFeatureInfo()?.some(
-      (layer) => !!layer.result.features?.length
-    );
-
-    // TODO: incluir aquí los resultados analíticos cuando estén conectados.
-    return this.selectedObservation() !== null ||
-      hasMunicipalInfo ||
-      !!this.municipalFeatureInfoError();
-  }
-
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['areaId'] && this.map && this.backendEnabled) {
+      this.overlayDetail.set(null);
       if (!this.areaId) this.activeOverlays.update((layers) => layers.filter((layer) => layer === 'districts'));
       void this.loadArea();
       void this.loadOverlays();
@@ -175,14 +199,22 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   ngAfterViewInit(): void {
     // Start with the whole Cochabamba/Tunari analysis area in view so the first
     // backend bbox query includes detections outside the city center.
-    this.map = L.map(this.mapContainer.nativeElement).setView([-17.25, -66.3], 9);
-    this.map.zoomControl.setPosition('bottomleft');
+    if (this.compact && this.backendEnabled) this.archive.set(true);
+    this.map = L.map(this.mapContainer.nativeElement, { scrollWheelZoom: !this.compact }).setView([-17.25, -66.3], 9);
+    this.resizeObserver = new ResizeObserver(() => {
+      this.resizingMap = true;
+      this.map?.invalidateSize({ pan: false });
+      this.resizingMap = false;
+    });
+    this.resizeObserver.observe(this.mapContainer.nativeElement);
     L.control.scale({ imperial: false, position: 'topright' }).addTo(this.map);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(this.map);
+    this.map.createPane('map-detections').style.zIndex = '410';
     this.canvasRenderer = L.canvas({
+      pane: 'map-detections',
       padding: 0.5,
       tolerance: 8
     });
@@ -191,17 +223,17 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.spatialLayers.addTo(this.map);
     this.replayLayer.addTo(this.map);
     this.drawnItems.addTo(this.map);
-    this.initializeDrawing();
+    if (!this.compact) this.initializeDrawing();
     this.map.on('click', (event: L.LeafletMouseEvent) => void this.queryMunicipalFeatureInfo(event));
     this.map.on('moveend', () => {
-      if (!this.selectedArea()) this.scheduleDetectionReload();
+      if (!this.compact && !this.resizingMap && !this.selectedArea()) this.scheduleDetectionReload();
     });
     this.renderDetections();
     if (this.backendEnabled) {
-      void this.loadAreaCatalog();
+      if (!this.compact) void this.loadAreaCatalog();
       void this.loadArea();
     }
-    if (this.liveUpdates.enabled) {
+    if (this.liveUpdates.enabled && !this.compact) {
       this.liveUpdates.observationsChanged$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
         if (this.activeOverlays().includes('districts')) void this.loadOverlays();
         if (this.archive()) return;
@@ -220,11 +252,13 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
         this.renderReplay();
       });
     }
-    void this.loadDetections();
+    if (!this.compact || !this.backendEnabled) void this.loadDetections();
     requestAnimationFrame(() => this.map?.invalidateSize());
   }
 
   ngOnDestroy(): void {
+    this.resizeObserver?.disconnect();
+    this.municipalQuery++;
     this.lifetime.abort();
     this.areaRequest?.abort();
     this.layerRequest?.abort();
@@ -255,6 +289,7 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   toggleOverlay(layer: MapOverlay, visible: boolean): void {
+    if (!visible && this.overlayDetail()?.layer === layer) this.overlayDetail.set(null);
     this.activeOverlays.update((layers) => visible ? [...layers, layer] : layers.filter((item) => item !== layer));
     void this.loadOverlays();
   }
@@ -284,10 +319,15 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       if (request.signal.aborted || !area.geometria) return;
       this.areaLayer.addData(area.geometria);
       const bounds = this.areaLayer.getBounds();
-      if (bounds.isValid()) this.selectedAreaBoundary = bounds;
+      if (bounds.isValid()) {
+        this.selectedAreaBoundary = bounds;
+        if (this.compact) this.map?.fitBounds(bounds, { padding: [14, 14], animate: false });
+      }
       this.renderDetections();
     } catch (error) {
       if (!request.signal.aborted) this.boundaryError.set(this.errorMessage(error));
+    } finally {
+      if (this.compact && !request.signal.aborted) void this.loadDetections();
     }
   }
 
@@ -309,14 +349,20 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       const vector = L.geoJSON(data, {
         style: { color: colors[layer], weight: 2, fillOpacity: layer === 'districts' ? 0.04 : 0.24 },
         onEachFeature: (feature, item) => {
-          const content = document.createElement('div');
-          for (const [key, value] of Object.entries(feature.properties ?? {})) {
-            if (value == null || typeof value === 'object') continue;
-            const field = document.createElement('div');
-            field.textContent = key.replaceAll('_', ' ') + ': ' + String(value);
-            content.append(field);
-          }
-          item.bindPopup(content, { maxHeight: 230 });
+          item.on('click', (event: L.LeafletMouseEvent) => {
+            if (this.isDrawingArea) return;
+            L.DomEvent.stopPropagation(event);
+            this.closeMunicipalInfo();
+            const fields = Object.entries(feature.properties ?? {}).flatMap(([key, value]) =>
+              value == null || typeof value === 'object' ? [] :
+                [{
+                  key,
+                  label: this.overlayFieldLabels[key] ?? key.replaceAll('_', ' '),
+                  value: this.formatOverlayValue(key, value),
+                }],
+            );
+            this.overlayDetail.set({ layer, title: this.layerLabels[layer], fields });
+          });
         },
       });
       vector.addTo(this.spatialLayers);
@@ -326,13 +372,23 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       ? [this.layerLabels[layers[index]] + ': ' + this.errorMessage(result.reason)] : []).join(' · '));
   }
 
+  private formatOverlayValue(key: string, value: unknown): string {
+    if (typeof value === 'boolean') return value ? 'Sí' : 'No';
+    if (key === 'area_id') return this.areaLabel;
+    if (key === 'clase_recurrencia_viirs') return String(value).replaceAll('_', ' ');
+    return String(value);
+  }
+
   private errorMessage(error: unknown): string {
     return error instanceof Error ? error.message : 'No se pudo completar la consulta.';
   }
 
+  focusDetectionDetail(): void {
+    this.detailPanel?.nativeElement.focus();
+  }
+
   toggleFilters(): void {
     this.filtersOpen.update((open) => !open);
-    requestAnimationFrame(() => this.map?.invalidateSize());
   }
 
   onFilterChanges(changes: Partial<MapObservationFilters>): void {
@@ -341,15 +397,7 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     else this.renderDetections();
   }
 
-  onSensorVisibilityChange(change: { sensor: SensorType; visible: boolean }): void {
-    this.visibleSensors = change.visible
-      ? [...new Set([...this.visibleSensors, change.sensor])]
-      : this.visibleSensors.filter((sensor) => sensor !== change.sensor);
-    this.renderDetections();
-  }
-
   clearFilters(): void {
-    this.visibleSensors = [SensorType.VIIRS, SensorType.MODIS];
     this.observationFilters = { ...DEFAULT_MAP_OBSERVATION_FILTERS, platforms: [] };
     this.scheduleDetectionReload();
   }
@@ -358,8 +406,7 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.drawnItems.clearLayers();
     this.selectedArea.set(null);
     this.polygon.set(undefined);
-    this.selectedObservation.set(null);
-    this.selectionChange.emit(null);
+    this.selectObservation(null);
     this.areaOfInterestChange.emit(null);
     this.scheduleDetectionReload();
   }
@@ -381,6 +428,10 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   selectObservation(observation: Observation | null): void {
+    if (observation) {
+      this.overlayDetail.set(null);
+      this.closeMunicipalInfo();
+    }
     this.detailRequest?.abort();
     this.detailError.set('');
     this.selectedObservation.set(observation);
@@ -389,9 +440,6 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       observation ? { kind: 'observation', id: observation.id } : null
     );
 
-    requestAnimationFrame(() => {
-      this.map?.invalidateSize({ pan: false });
-    });
     if (observation && this.dataSet().origin === 'BACKEND') void this.loadDetail(observation.id);
   }
 
@@ -422,7 +470,7 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       layer.addTo(this.map);
     } else {
       this.map.removeLayer(layer);
-      if (this.municipalFeatureInfo()) this.municipalFeatureInfo.set(null);
+      this.closeMunicipalInfo();
     }
   }
 
@@ -445,6 +493,8 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   closeMunicipalInfo(): void {
+    this.municipalQuery++;
+    this.municipalInfoLoading.set(false);
     this.municipalFeatureInfo.set(null);
     this.municipalFeatureInfoError.set(null);
   }
@@ -465,7 +515,9 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     try {
       // Query the complete AOI envelope even when it extends beyond the viewport.
       // The exact polygon filter is still applied client-side below.
-      const bounds = this.selectedArea()?.getBounds() ?? this.map.getBounds();
+      const bounds = this.selectedArea()?.getBounds()
+        ?? (this.compact ? this.selectedAreaBoundary : undefined)
+        ?? this.map.getBounds();
       const west = Math.max(-180, bounds.getWest());
       const east = Math.min(180, bounds.getEast());
       const south = Math.max(-90, bounds.getSouth());
@@ -530,7 +582,11 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.detectionLayer.clearLayers();
     this.renderReplay();
 
-    for (const observation of this.filteredObservations) {
+    const observations = this.filteredObservations;
+    const selected = this.selectedObservation();
+    if (selected && !observations.some(({ id }) => id === selected.id)) this.selectObservation(null);
+
+    for (const observation of observations) {
       const fillColor =
         observation.sensor === SensorType.VIIRS
           ? '#DC2626'
@@ -538,6 +594,7 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
       const marker = L.circleMarker([observation.position.lat, observation.position.lng], {
         renderer: this.canvasRenderer,
+        pane: 'map-detections',
         radius: 8,
         color: '#F3E8D4',
         opacity: 0.95,
@@ -565,7 +622,9 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
         }
       });
 
-      marker.on('click', () => this.selectObservation(observation));
+      marker.on('click', () => {
+        if (!this.isDrawingArea) this.selectObservation(observation);
+      });
       marker.addTo(this.detectionLayer);
     }
   }
@@ -576,6 +635,7 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     for (const { position } of this.applyFilters([...this.replayObservations.values()])) {
       L.circleMarker([position.lat, position.lng], {
         renderer: this.canvasRenderer,
+        pane: 'map-detections',
         radius: 11,
         color: '#6d28d9',
         weight: 3,
@@ -590,14 +650,20 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.map.addControl(new L.Control.Draw({
       position: 'topright',
       draw: {
-        polygon: { allowIntersection: false, showArea: true, shapeOptions: { color: '#526b24', weight: 3, fillOpacity: 0.14 } },
-        rectangle: { shapeOptions: { color: '#526b24', weight: 3, fillOpacity: 0.14 } },
+        polygon: { allowIntersection: false, showArea: true, shapeOptions: { color: '#526b24', weight: 3, fillOpacity: 0.14, className: 'map-drawn-area' } },
+        rectangle: { shapeOptions: { color: '#526b24', weight: 3, fillOpacity: 0.14, className: 'map-drawn-area' } },
         polyline: false, circle: false, circlemarker: false, marker: false
       },
       edit: { featureGroup: this.drawnItems, edit: {}, remove: true }
     }));
-    this.map.on('draw:drawstart draw:editstart draw:deletestart', () => this.isDrawingArea = true);
-    this.map.on('draw:drawstop draw:editstop draw:deletestop', () => this.isDrawingArea = false);
+    this.map.on('draw:drawstart draw:editstart draw:deletestart', () => {
+      this.isDrawingArea = true;
+      this.mapContainer.nativeElement.classList.add('map-drawing');
+    });
+    this.map.on('draw:drawstop draw:editstop draw:deletestop', () => {
+      this.isDrawingArea = false;
+      this.mapContainer.nativeElement.classList.remove('map-drawing');
+    });
     this.map.on(L.Draw.Event.CREATED, (event: L.LeafletEvent) => {
       const drawEvent = event as L.DrawEvents.Created;
       if (!(drawEvent.layer instanceof L.Polygon)) return;
@@ -605,8 +671,7 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       this.drawnItems.addLayer(drawEvent.layer);
       this.selectedArea.set(drawEvent.layer);
       this.areaRevision.update((revision) => revision + 1);
-      this.selectedObservation.set(null);
-      this.selectionChange.emit(null);
+      this.selectObservation(null);
       this.emitAreaOfInterest();
       this.scheduleDetectionReload();
     });
@@ -686,13 +751,13 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   private async queryMunicipalFeatureInfo(event: L.LeafletMouseEvent): Promise<void> {
-    this.municipalFeatureInfo.set(null);
-    this.municipalFeatureInfoError.set(null);
-
     if (!this.map || this.isDrawingArea) return;
     const visible = MUNICIPAL_LAYERS.filter((definition) => this.isMunicipalLayerVisible(definition.id));
     if (!visible.length) return;
-    this.municipalFeatureInfoError.set(null);
+    this.overlayDetail.set(null);
+    this.closeMunicipalInfo();
+    const query = this.municipalQuery;
+    this.municipalInfoLoading.set(true);
 
     const size = this.map.getSize();
     const bounds = this.map.getBounds();
@@ -717,10 +782,12 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
 
     const rejected = requests.some((request) => request.status === 'rejected');
 
-    this.municipalFeatureInfo.set(fulfilled.length ? fulfilled : null);
+    if (query !== this.municipalQuery) return;
+    this.municipalInfoLoading.set(false);
+    this.municipalFeatureInfo.set(fulfilled);
     this.municipalFeatureInfoError.set(
       rejected
-        ? 'No se pudo consultar GetFeatureInfo en una o más capas municipales.'
+        ? 'No se pudo obtener información de una o más capas municipales.'
         : null
     );
   }
@@ -745,7 +812,6 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
         areaId: this.areaId || null,
         excludePersistent: this.archive() && this.excludePersistent(),
         includeAllDetectionTypes: !this.archive() && this.includeAllTypes(),
-        visibleSensors: this.visibleSensors,
         minFrpMw: this.observationFilters.minFrpMw,
         dayNight: this.observationFilters.dayNight || null,
         platforms: this.observationFilters.platforms,

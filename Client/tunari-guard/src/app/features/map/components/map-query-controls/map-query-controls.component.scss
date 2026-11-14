@@ -1,34 +1,45 @@
 .query-controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: end;
+  display: grid;
   gap: .75rem;
   color: #424037;
 }
 
-label {
-  display: grid;
+label, h3 {
+  display: inline;
   min-width: 0;
-  gap: .375rem;
 }
 
-input, select, button {
+input, select { display: block; width: 100%; }
+select, input, button {
   min-height: 2rem;
   max-width: 100%;
-  padding: .375rem .75rem;
-  border: 1px solid rgb(82 107 36 / 45%);
-  border-radius: .375rem;
-  background-color: rgb(82 107 36 / 5%);
+  margin-bottom: .25rem;
+  padding: .375rem .625rem;
+  border: 1px solid #ded6ca;
+  border-radius: .5rem;
+  background: #fffcf7;
   color: #30351f;
 }
 
 button {
-  background-color: transparent;
-  font-weight: 500;
+  border-radius: 999px;
+  background: #f7f3eb;
+  font-weight: 700;
 }
 
-button:hover {
-  background-color: rgb(82 107 36 / 10%);
+button:hover { background: #e9eee4; }
+
+button.apply-period {
+  border-color: #526b4c;
+  background: #526b4c;
+  color: #fff;
+}
+
+button.apply-period:hover { background: #40543a; }
+
+:is(button, input, select):focus-visible {
+  outline: 2px solid #526b4c;
+  outline-offset: 2px;
 }
 
 .period-error {

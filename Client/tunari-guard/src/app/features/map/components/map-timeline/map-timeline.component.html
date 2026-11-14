@@ -1,6 +1,6 @@
 <section class="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 border-l border-[#526b24]/30 pl-4 max-[720px]:pl-2" aria-label="Período aplicado">
   <span class="text-[9px] font-extrabold tracking-widest text-[#b84e20]">PERÍODO APLICADO</span>
   <strong class="text-xs font-semibold text-[#30351f]">
-    {{ period.from | date:'mediumDate':'-0400':'es-BO' }} — {{ period.to | date:'mediumDate':'-0400':'es-BO' }}
+    {{ period.from | date:'mediumDate':'UTC':'es-BO' }} — {{ period.to | date:'mediumDate':'UTC':'es-BO' }}
   </strong>
 </section>

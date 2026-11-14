@@ -1,3 +1,4 @@
+import { MapInfoComponent } from '../map-info.component';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Observation, SatellitePlatform } from '../../models/observation.model';
@@ -6,7 +7,7 @@ import { MapObservationFilters } from '../../models/map-observation-filters.mode
 @Component({
   selector: 'app-map-filters',
   standalone: true,
-  imports: [CommonModule],
+  imports: [MapInfoComponent, CommonModule],
   templateUrl: './map-filters.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -30,9 +31,13 @@ export class MapFiltersComponent {
     return this.observations.some((observation) => observation.dayNight != null);
   }
 
-  get platformOptions(): SatellitePlatform[] {
-    return ['AQUA', 'NOAA20', 'NOAA21', 'SNPP', 'TERRA'];
-  }
+  readonly platformOptions: ReadonlyArray<{ value: SatellitePlatform; label: string; color: string }> = [
+    { value: 'TERRA', label: 'MODIS · Terra', color: '#2563EB' },
+    { value: 'AQUA', label: 'MODIS · Aqua', color: '#2563EB' },
+    { value: 'SNPP', label: 'VIIRS · Suomi NPP', color: '#DC2626' },
+    { value: 'NOAA20', label: 'VIIRS · NOAA-20', color: '#DC2626' },
+    { value: 'NOAA21', label: 'VIIRS · NOAA-21', color: '#DC2626' },
+  ];
 
   togglePlatform(platform: SatellitePlatform, event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;

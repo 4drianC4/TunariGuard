@@ -1,46 +1,123 @@
+:host {
+  container-type: inline-size;
+}
+
 .map-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  min-height: min(76vh, 760px);
-  background: white;
+  gap: .75rem;
 
   &.has-filters {
-    grid-template-columns: minmax(235px, 278px) minmax(0, 1fr);
+    grid-template-columns: clamp(210px, 23%, 278px) minmax(0, 1fr);
   }
 
   &.has-detail {
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 350px);
+    grid-template-columns: minmax(0, 1fr) clamp(240px, 28%, 350px);
   }
 
   &.has-filters.has-detail {
-    grid-template-columns: minmax(235px, 278px) minmax(0, 1fr) minmax(280px, 350px);
-  }
-
-  @media (max-width: 1120px) {
-    &.has-detail {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    &.has-filters, &.has-filters.has-detail {
-      grid-template-columns: 230px minmax(0, 1fr);
-    }
-  }
-
-  @media (max-width: 720px) {
-    display: flex;
-    flex-direction: column;
+    grid-template-columns: clamp(210px, 23%, 278px) minmax(0, 1fr) clamp(240px, 28%, 350px);
   }
 }
 
-.map-content {
-  display: grid;
-  min-width: 0;
-  grid-template-rows: minmax(400px, 1fr) auto;
-  gap: .5rem;
-  padding-bottom: .75rem;
+.map-territorial-detail { grid-column: 1 / -1; }
 
-  @media (max-width: 720px) {
-    grid-template-rows: minmax(380px, 1fr) auto;
-    order: 1;
+.map-filters, .map-detail {
+  min-width: 0;
+  max-height: calc(max(460px, min(76vh, 760px)) + 3rem);
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+
+.map-detail {
+  border: 1px solid #ded6ca;
+  border-radius: 19px;
+  box-shadow: 0 4px 9px rgb(60 45 25 / 10%);
+}
+
+.map-toolbar { display: grid; gap: .625rem; }
+
+.map-action {
+  border: 1px solid #ded6ca;
+  border-radius: 999px;
+  background: #f7f3eb;
+  padding: .375rem .75rem;
+  color: #424637;
+  font-size: .75rem;
+  font-weight: 700;
+
+  &:hover:not(:disabled) { background: #e9eee4; }
+}
+
+:is(.map-action, .tg-map-button, .map-detail):focus-visible {
+  outline: 2px solid #526b4c;
+  outline-offset: 2px;
+}
+
+.map-content {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: .5rem;
+  padding: .5rem;
+}
+
+// The drawn polygon receives clicks only while Leaflet Draw is active.
+.map-canvas:not(.map-drawing) ::ng-deep .map-drawn-area,
+.map-canvas.map-drawing ::ng-deep .leaflet-map-detections-pane canvas {
+  pointer-events: none;
+}
+
+.map-detail-link { display: none; }
+
+@container (max-width: 860px) {
+  .map-layout.has-filters.has-detail .map-detail-link { display: block; }
+
+  .map-layout.has-filters, .map-layout.has-filters.has-detail {
+    grid-template-columns: minmax(190px, 28%) minmax(0, 1fr);
+
+    .map-detail {
+      grid-column: 2;
+      max-height: none;
+    }
+
+    .map-filters {
+      grid-row: span 2;
+    }
   }
+}
+
+@container (max-width: 580px) {
+  .map-layout.has-detail .map-detail-link { display: block; }
+  .map-layout, .map-layout.has-filters, .map-layout.has-detail, .map-layout.has-filters.has-detail {
+    grid-template-columns: minmax(0, 1fr);
+
+    .map-filters, .map-detail {
+      grid-area: auto;
+      max-height: none;
+    }
+  }
+
+  .map-filters { max-height: 15rem; }
+}
+
+.is-compact .map-content { padding: 0; }
+
+.is-compact .map-viewport {
+  height: clamp(245px, 32vh, 330px);
+  min-height: 0;
+}
+
+.is-compact .map-detail {
+  max-height: 18rem;
+  box-shadow: none;
+}
+
+.map-preview-caption {
+  background: #e9eee4;
+  border-radius: .5rem;
+  padding: .375rem .625rem;
+  color: #465e3f;
+  font-size: .75rem;
+  font-weight: 600;
 }

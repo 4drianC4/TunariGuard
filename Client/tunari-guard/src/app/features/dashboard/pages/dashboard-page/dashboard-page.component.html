@@ -32,13 +32,11 @@
     <article class="tg-card tg-map-card">
       <div class="tg-card-heading">
         <div class="tg-card-titleline"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#map"></use></svg>
-          <div><h2>Mapa rápido de focos</h2><p>Focos de calor detectados en la zona Tunari – Cochabamba.</p></div>
+          <div><h2>Mapa rápido de focos</h2><p>Detecciones satelitales del Parque Nacional Tunari.</p></div>
         </div>
         <a class="tg-map-button" routerLink="/mapa">Ver mapa completo <svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#external"></use></svg></a>
       </div>
-      <a class="tg-map-picture" routerLink="/mapa" aria-label="Ir a mapa de focos (vista de referencia demostrativa)">
-        <img src="/assets/tunari-ui/mapa-referencia.webp" alt="Vista referencial del Parque Tunari con focos de calor simulados" />
-      </a>
+      <app-hotspot-map areaId="parque-tunari" [compact]="true" />
     </article>
     <div class="tg-right-grid">
       <article class="tg-card tg-alert-card">

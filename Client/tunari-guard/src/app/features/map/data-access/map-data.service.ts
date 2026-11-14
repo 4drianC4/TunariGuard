@@ -69,6 +69,7 @@ export class MapDataService {
         to: this.localDayBoundary(period.to, true),
         bbox: query.bbox,
         format: 'geojson',
+        origin: 'REAL',
         limit: '1000',
         detectionType: query.includeAllTypes ? 'all' : 'vegetation',
       });

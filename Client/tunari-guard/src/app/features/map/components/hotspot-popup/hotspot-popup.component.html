@@ -13,18 +13,18 @@
 
     <dl class="grid grid-cols-2 gap-3">
       <div><dt class="text-[10px] font-medium text-[#526b24]">Identificador</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.id }}</dd></div>
-      <div><dt class="text-[10px] font-medium text-[#526b24]">Origen / dataset</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.source }} · {{ selected.dataset }}</dd></div>
-      <div><dt class="text-[10px] font-medium text-[#526b24]">Fecha y hora UTC</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.acquiredAtUtc | date:'medium':'UTC':'es-BO' }} UTC</dd></div>
+      <div><dt class="text-[10px] font-medium text-[#526b24]">Fuente y producto</dt><dd class="m-0 break-words text-xs font-semibold">{{ sourceLabels[selected.source] }} · {{ selected.dataset }}</dd></div>
+      <div><dt class="text-[10px] font-medium text-[#526b24]">Fecha y hora de Bolivia</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.acquiredAtUtc | date:'dd/MM/yyyy HH:mm':'-0400':'es-BO' }}</dd></div>
       <div><dt class="text-[10px] font-medium text-[#526b24]">Coordenadas</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.position.lat }}, {{ selected.position.lng }}</dd></div>
       @if (selected.confidenceRaw != null || selected.confidenceLevel) {
-        <div><dt class="text-[10px] font-medium text-[#526b24]">Confianza original / clase</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.confidenceRaw ?? '—' }} · {{ selected.confidenceLevel || 'Sin clasificación' }}</dd></div>
+        <div><dt class="text-[10px] font-medium text-[#526b24]">Confianza <app-map-info topic="la confianza" text="Valor original del producto satelital y su nivel agrupado. Una confianza alta no confirma un incendio." /></dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.confidenceRaw ?? '—' }} · {{ confidenceLabels[selected.confidenceLevel ?? ''] || 'Sin clasificación' }}</dd></div>
       }
       @if (selected.frpMw != null) {
-        <div><dt class="text-[10px] font-medium text-[#526b24]">FRP</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.frpMw }} MW</dd></div>
+        <div><dt class="text-[10px] font-medium text-[#526b24]">FRP <app-map-info topic="FRP" text="Potencia radiativa estimada del foco térmico, en megavatios (MW)." /></dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.frpMw }} MW</dd></div>
       }
-      @if (selected.brightnessKelvin != null) { <div><dt class="text-[10px] font-medium text-[#526b24]">Temperatura de brillo</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.brightnessKelvin }} K</dd></div> }
-      @if (selected.dayNight) { <div><dt class="text-[10px] font-medium text-[#526b24]">Día / noche</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.dayNight }}</dd></div> }
-      @if (selected.districtAssignment) { <div><dt class="text-[10px] font-medium text-[#526b24]">Asignación territorial</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.districtAssignment }}</dd></div> }
+      @if (selected.brightnessKelvin != null) { <div><dt class="text-[10px] font-medium text-[#526b24]">Temperatura de brillo <app-map-info topic="la temperatura de brillo" text="Temperatura estimada a partir de la radiación medida por el sensor, en kelvin." /></dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.brightnessKelvin }} K</dd></div> }
+      @if (selected.dayNight) { <div><dt class="text-[10px] font-medium text-[#526b24]">Día / noche</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.dayNight === 'DAY' ? 'Día' : 'Noche' }}</dd></div> }
+      @if (selected.districtAssignment) { <div><dt class="text-[10px] font-medium text-[#526b24]">Asignación territorial</dt><dd class="m-0 break-words text-xs font-semibold">{{ districtLabels[selected.districtAssignment] }}</dd></div> }
       @if (selected.archive; as archive) {
         <div><dt class="text-[10px] font-medium text-[#526b24]">Origen en el archivo</dt><dd class="m-0 text-xs">{{ archive.origin }}</dd></div>
         @if (archive.persistent) { <div class="text-xs">Posible fuente fija de calor</div> }
@@ -32,11 +32,11 @@
       }
       @if (selected.district) { <div><dt class="text-[10px] font-medium text-[#526b24]">Distrito</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.district.name }} ({{ selected.district.code }})</dd></div> }
       @if (selected.batchId) { <div><dt class="text-[10px] font-medium text-[#526b24]">Lote de ingesta</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.batchId }}</dd></div> }
-      @if (selected.detectionType != null) { <div><dt class="text-[10px] font-medium text-[#526b24]">Tipo FIRMS</dt><dd class="m-0 text-xs">{{ selected.detectionType }}</dd></div> }
+      @if (selected.detectionType != null) { <div><dt class="text-[10px] font-medium text-[#526b24]">Tipo FIRMS</dt><dd class="m-0 text-xs">{{ detectionTypeLabels[selected.detectionType] ?? selected.detectionType }}</dd></div> }
     </dl>
     @if (selected.raw) {
       <details class="text-xs">
-        <summary class="cursor-pointer font-medium">Fila original</summary>
+        <summary class="cursor-pointer font-medium">Registro original (JSON)</summary>
         <pre class="mt-2 overflow-auto whitespace-pre-wrap break-all">{{ selected.raw | json }}</pre>
       </details>
     }

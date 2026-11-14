@@ -1,19 +1,28 @@
-<section class="space-y-5 p-4 text-sm text-[#30351f]" aria-label="Filtros de detecciones">
+<section class="space-y-3 text-sm text-[#30351f]" aria-label="Filtros de detecciones">
   <header class="border-b border-[#526b24]/30 pb-3">
-    <p class="text-xs font-semibold uppercase tracking-widest text-[#526b24]">Exploración</p>
-    <h2 class="mt-1 text-base font-semibold text-[#30351f]">Filtros de detección</h2>
+    <h2 class="text-sm font-semibold text-[#30351f]">Filtros de detección</h2>
   </header>
 
-  <label class="block space-y-1.5 text-xs text-[#424037]">
-    <span class="group relative inline-flex items-center gap-1">
-      Confianza mínima
-      <span tabindex="0" aria-label="Información sobre confianza" class="cursor-help text-[#526b24]">ⓘ
-        <span role="tooltip" class="pointer-events-none invisible absolute left-0 top-full z-50 mt-2 w-60 rounded-lg border border-[#526b24]/30 bg-[#30351f] p-3 text-xs font-normal leading-5 text-[#fffcf7] shadow-xl group-hover:visible group-focus:visible">
-          Clase asignada por el producto satelital; no es la probabilidad de que exista un incendio.
-        </span>
-      </span>
-    </span>
-    <select class="w-full rounded-md border border-[#526b24]/45 bg-[#526b24]/5 px-3 py-2 text-[#30351f] disabled:opacity-50"
+  <section class="space-y-2" aria-label="Filtro por sensor y satélite">
+    <h3 class="text-xs font-medium text-[#424037]">Sensor y satélite
+      <app-map-info topic="el filtro de sensor y satélite" text="Marca las combinaciones que quieras consultar. Si no marcas ninguna, se incluyen todos los sensores y satélites." />
+    </h3>
+    <div class="space-y-1 rounded-md border border-[#ded6ca] bg-[#fffcf7] p-2">
+      @for (platform of platformOptions; track platform.value) {
+        <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-xs text-[#424037] hover:bg-[#526b24]/10">
+          <input type="checkbox" class="size-4 shrink-0 accent-[#526b4c]" [checked]="filters.platforms.includes(platform.value)"
+            (change)="togglePlatform(platform.value, $event)">
+          <span class="size-2 shrink-0 rounded-full" [style.background-color]="platform.color" aria-hidden="true"></span>
+          <span>{{ platform.label }}</span>
+        </label>
+      }
+    </div>
+  </section>
+
+  <div class="space-y-1.5 text-xs text-[#424037]">
+    <label for="map-confidence">Confianza mínima</label>
+    <app-map-info topic="la confianza" text="Clase asignada por el sensor según las características de la detección. No indica la probabilidad de un incendio." />
+    <select id="map-confidence" class="w-full rounded-md border border-[#ded6ca] bg-[#fffcf7] px-3 py-2 text-[#30351f] disabled:opacity-50"
       [value]="filters.minConfidence"
       (change)="setConfidenceThreshold($event)">
       <option value="">Cualquiera</option>
@@ -21,33 +30,21 @@
       <option value="NOMINAL">Nominal o superior</option>
       <option value="HIGH">Solo alta</option>
     </select>
-  </label>
+  </div>
 
-  <label class="block space-y-1.5 text-xs text-[#424037]">
-    <span class="group relative inline-flex items-center gap-1">
-      FRP mínimo (MW)
-      <span tabindex="0" aria-label="Información sobre FRP" class="cursor-help text-[#526b24]">ⓘ
-        <span role="tooltip" class="pointer-events-none invisible absolute left-0 top-full z-50 mt-2 w-60 rounded-lg border border-[#526b24]/30 bg-[#30351f] p-3 text-xs font-normal leading-5 text-[#fffcf7] shadow-xl group-hover:visible group-focus:visible">
-          Estimación de la potencia radiativa del píxel. No mide el área quemada.
-        </span>
-      </span>
-    </span>
-    <input type="number" min="0" step="0.1" placeholder="Sin mínimo"
-      class="w-full rounded-md border border-[#526b24]/45 bg-[#526b24]/5 px-3 py-2 text-[#30351f] placeholder:text-[#b84e20] disabled:opacity-50"
+  <div class="space-y-1.5 text-xs text-[#424037]">
+    <label for="map-frp">Potencia radiativa mínima (FRP)</label>
+    <app-map-info topic="la potencia radiativa" text="Estimación en megavatios (MW) de la energía emitida en forma de radiación por el foco térmico." />
+    <input id="map-frp" type="number" min="0" step="0.1" placeholder="Sin mínimo"
+      class="w-full rounded-md border border-[#ded6ca] bg-[#fffcf7] px-3 py-2 text-[#30351f] placeholder:text-[#b84e20] disabled:opacity-50"
       [value]="filters.minFrpMw ?? ''" (input)="setFrpThreshold($event)" [disabled]="!hasFrpValues && filters.minFrpMw === null">
     @if (!hasFrpValues && filters.minFrpMw === null) { <span class="block text-xs text-[#526b24]">Sin valores FRP disponibles.</span> }
-  </label>
+  </div>
 
-  <label class="block space-y-1.5 text-xs text-[#424037]">
-    <span class="group relative inline-flex items-center gap-1">
-      Momento de detección
-      <span tabindex="0" aria-label="Información sobre día y noche" class="cursor-help text-[#526b24]">ⓘ
-        <span role="tooltip" class="pointer-events-none invisible absolute left-0 top-full z-50 mt-2 w-60 rounded-lg border border-[#526b24]/30 bg-[#30351f] p-3 text-xs font-normal leading-5 text-[#fffcf7] shadow-xl group-hover:visible group-focus:visible">
-          Indica si el satélite registró la detección durante el día o la noche.
-        </span>
-      </span>
-    </span>
-    <select class="w-full rounded-md border border-[#526b24]/45 bg-[#526b24]/5 px-3 py-2 text-[#30351f] disabled:opacity-50"
+  <div class="space-y-1.5 text-xs text-[#424037]">
+    <label for="map-day-night">Momento de detección</label>
+    <app-map-info topic="el momento de detección" text="Día o noche según las condiciones de iluminación al paso del satélite." />
+    <select id="map-day-night" class="w-full rounded-md border border-[#ded6ca] bg-[#fffcf7] px-3 py-2 text-[#30351f] disabled:opacity-50"
       [value]="filters.dayNight"
       (change)="setDayNight($event)"
       [disabled]="!hasDayNightValues && !filters.dayNight">
@@ -56,24 +53,7 @@
       <option value="NIGHT">Noche</option>
     </select>
     @if (!hasDayNightValues && !filters.dayNight) { <span class="block text-xs text-[#526b24]">Sin este dato disponible.</span> }
-  </label>
-
-  <section class="space-y-2" aria-label="Filtro por satélite">
-    <h3 class="text-xs font-medium text-[#424037]">Plataformas @if (filters.platforms.length) { <span class="text-[#526b24]">({{ filters.platforms.length }})</span> }</h3>
-    @if (platformOptions.length) {
-      <div class="max-h-40 space-y-1 overflow-y-auto rounded-md border border-[#526b24]/45 bg-[#526b24]/5 p-2">
-        @for (platform of platformOptions; track platform) {
-          <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-xs text-[#424037] hover:bg-[#526b24]/10">
-            <input type="checkbox" class="size-4 accent-[#b84e20]" [checked]="filters.platforms.includes(platform)"
-              (change)="togglePlatform(platform, $event)">
-            <span>{{ platform }}</span>
-          </label>
-        }
-      </div>
-    } @else {
-      <p class="text-xs text-[#526b24]">No hay satélites disponibles en los datos recibidos.</p>
-    }
-  </section>
+  </div>
 
   <footer class="border-t border-[#526b24]/30 pt-3">
     <button type="button" class="text-xs font-semibold text-[#b84e20] hover:text-[#30351f]" (click)="reset.emit()">Restablecer filtros</button>

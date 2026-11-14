@@ -11,6 +11,7 @@ import { RouterLink } from '@angular/router';
 import { HotspotStoreService } from '../../../../application/services/hotspot-store.service';
 import { Severity } from '../../../../domain/enums/severity.enum';
 
+import { HotspotMapComponent } from '../../../map/components/hotspot-map/hotspot-map.component';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 
 @Component({
@@ -19,7 +20,8 @@ import { PageHeaderComponent } from '../../../../shared/components/page-header/p
   imports: [
     RouterLink,
     DatePipe,
-    PageHeaderComponent
+    PageHeaderComponent,
+    HotspotMapComponent,
   ],
   templateUrl: './dashboard-page.component.html',
   styleUrl: './dashboard-page.component.scss',

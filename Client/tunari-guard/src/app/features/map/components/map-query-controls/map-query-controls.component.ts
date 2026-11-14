@@ -1,9 +1,11 @@
+import { MapInfoComponent } from '../map-info.component';
 import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 import type { AnalysisArea } from '../../data-access/map-analysis.service';
 import type { MapPeriod } from '../../models/map-period.model';
 
 @Component({
   selector: 'app-map-query-controls',
+  imports: [MapInfoComponent],
   templateUrl: './map-query-controls.component.html',
   styleUrl: './map-query-controls.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

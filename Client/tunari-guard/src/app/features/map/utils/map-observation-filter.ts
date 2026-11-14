@@ -1,4 +1,3 @@
-import { SensorType } from '../../../domain/enums/sensor-type.enum';
 import { Observation } from '../models/observation.model';
 import { MapPeriod } from '../models/map-period.model';
 import { MapObservationFilters } from '../models/map-observation-filters.model';
@@ -7,8 +6,6 @@ const boliviaDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/La_Paz
 
 export interface MapLayerVisibility {
   period: MapPeriod;
-  showViirs: boolean;
-  showModis: boolean;
 }
 
 export function filterObservations(
@@ -21,8 +18,6 @@ export function filterObservations(
   return observations.filter((observation) => {
     const date = boliviaDate.format(new Date(observation.acquiredAtUtc));
     if (date < filters.period.from || date > filters.period.to) return false;
-    if (observation.sensor === SensorType.VIIRS && !filters.showViirs) return false;
-    if (observation.sensor === SensorType.MODIS && !filters.showModis) return false;
     if (!filters.includesArea(observation)) return false;
 
     const confidence = observation.confidenceLevel;
