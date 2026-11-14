@@ -16,7 +16,7 @@ interface ObservationFeatureCollection {
 }
 
 export interface MapObservationQuery {
-  bbox: string;
+  bbox?: string;
   minConfidence: '' | ConfidenceLevel;
   platforms: SatellitePlatform[];
   includeAllTypes: boolean;
@@ -67,7 +67,7 @@ export class MapDataService {
       const params = new URLSearchParams({
         from: this.localDayBoundary(period.from, false),
         to: this.localDayBoundary(period.to, true),
-        bbox: query.bbox,
+        ...(query.bbox ? { bbox: query.bbox } : {}),
         format: 'geojson',
         origin: 'REAL',
         limit: '1000',

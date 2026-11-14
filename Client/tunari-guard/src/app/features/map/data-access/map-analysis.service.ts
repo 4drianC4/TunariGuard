@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import type { FeatureCollection, Geometry } from 'geojson';
+import type { FeatureCollection, Geometry, MultiPolygon, Polygon } from 'geojson';
 import { SensorType } from '../../../domain/enums/sensor-type.enum';
 import type { MapPeriod } from '../models/map-period.model';
 import type { Observation, SatellitePlatform } from '../models/observation.model';
@@ -10,6 +10,27 @@ export interface AnalysisArea {
   nombre_visible: string;
   geometria: Geometry | null;
 }
+export type DistrictBoundaries = FeatureCollection<Polygon | MultiPolygon, {
+  id: string; name: string; provisional: boolean;
+  areaKm2: number | null; source: string | null; version: string | null;
+}>;
+export interface DistrictMonthlyActivity {
+  unit: string;
+  notice: string;
+  records: { year: number; month: number; activityCount: number | null }[];
+}
+
+export interface DistrictTrend {
+  serie: string;
+  anios: string;
+  n: number;
+  tau_kendall: number | null;
+  p_valor: number | null;
+  pendiente_sen_por_anio: number | null;
+  ic90_inferior: number | null;
+  ic90_superior: number | null;
+}
+
 export type MapOverlay = 'districts' | 'recurrencia' | 'puntos-calientes';
 const sources: Record<SatellitePlatform, string> = {
   TERRA: 'MODIS-Terra', AQUA: 'MODIS-Aqua', SNPP: 'VIIRS-Suomi-NPP',
@@ -43,8 +64,21 @@ export class MapAnalysisService {
     return this.json<AnalysisArea>(this.areaPath(id), signal);
   }
 
+  districts(signal: AbortSignal): Promise<DistrictBoundaries> {
+    return this.json('/districts?format=geojson', signal);
+  }
+
+  districtMonthlyActivity(id: string, signal: AbortSignal): Promise<DistrictMonthlyActivity> {
+    const params = new URLSearchParams({ area_id: id, fuente: 'HARMONIZED' });
+    return this.json('/historial?' + params, signal);
+  }
+
+  districtTrends(id: string, signal: AbortSignal): Promise<DistrictTrend[]> {
+    return this.json(this.areaPath(id) + '/tendencias', signal);
+  }
+
   async overlay(id: string, layer: MapOverlay, exclude: boolean, signal: AbortSignal): Promise<FeatureCollection> {
-    if (layer === 'districts') return this.json('/districts?format=geojson', signal);
+    if (layer === 'districts') return this.districts(signal);
     const path = this.areaPath(id) + '/' + layer;
     if (layer === 'recurrencia') {
       return this.json(path + '?excluir_fuentes_persistentes=' + exclude, signal);
@@ -52,8 +86,15 @@ export class MapAnalysisService {
     return (await this.json<{ celdas: FeatureCollection }>(path, signal)).celdas;
   }
 
+  async latestDetectionDate(id: string, signal: AbortSignal): Promise<string | undefined> {
+    const params = new URLSearchParams({ area_id: id, limite: '1', orden: 'fecha_desc' });
+    const [row] = await this.json<ArchiveDetection[]>('/detecciones?' + params, signal);
+    return row && new Intl.DateTimeFormat('en-CA', { timeZone: 'America/La_Paz' })
+      .format(new Date(row.fecha_hora_utc));
+  }
+
   async detections(
-    id: string, period: MapPeriod, bbox: string, polygon: Geometry | undefined,
+    id: string, period: MapPeriod, bbox: string | undefined, polygon: Geometry | undefined,
     platforms: SatellitePlatform[], confidence: string, exclude: boolean, signal: AbortSignal,
   ): Promise<Observation[]> {
     const selectedSources = platforms.map((platform) => sources[platform]);
@@ -66,7 +107,7 @@ export class MapAnalysisService {
       for (const row of matches) rows.push(row);
     } else {
       const params = new URLSearchParams({
-        ...periodQuery, ...(id ? { area_id: id } : {}), bbox, limite: '10000',
+        ...periodQuery, ...(id ? { area_id: id } : {}), ...(bbox ? { bbox } : {}), limite: '10000',
         excluir_fuentes_persistentes: String(exclude),
       });
       if (confidence === 'HIGH') params.set('confianza_minima', 'alta');
@@ -115,8 +156,8 @@ export class MapAnalysisService {
 function toObservation(row: ArchiveDetection): Observation | null {
   const platform = (Object.keys(sources) as SatellitePlatform[]).find((key) => sources[key] === row.fuente);
   if (!platform || !row.fecha_hora_utc || !Number.isFinite(row.lat) || !Number.isFinite(row.lon)) return null;
-  const district = row.distrito_area_id && row.distrito
-    ? { code: row.distrito_area_id, name: row.distrito, provisional: true } : null;
+  const district = row.distrito_area_id
+    ? { code: row.distrito_area_id, name: row.distrito ?? row.distrito_area_id, provisional: true } : null;
   return {
     id: row.id_deteccion,
     sensor: platform === 'TERRA' || platform === 'AQUA' ? SensorType.MODIS : SensorType.VIIRS,

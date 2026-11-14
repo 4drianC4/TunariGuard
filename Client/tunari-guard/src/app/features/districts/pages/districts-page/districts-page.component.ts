@@ -1,81 +1,188 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { DistrictAnalysisComponent } from '../../components/district-analysis/district-analysis.component';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { MapInfoComponent } from '../../../map/components/map-info.component';
+import { MapAnalysisService, type DistrictBoundaries } from '../../../map/data-access/map-analysis.service';
+import { MapDataService } from '../../../map/data-access/map-data.service';
+import { DEMO_MAP_PERIOD } from '../../../map/models/map-period.model';
+import { Observation } from '../../../map/models/observation.model';
+import { DistrictMapComponent } from '../../components/district-map/district-map.component';
+import { ACTIVITY, DistrictActivity } from '../../district-activity';
 
-type Risk = 'Alto' | 'Medio' | 'Bajo';
-type SeverityFilter = 'Todas' | Risk;
-interface District {
-  name: string; count: number; delta: number; risk: Risk; color: string; className: string;
-  x: number; y: number; shape: string; history: number[]; sources: string; last: string;
+const boliviaDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/La_Paz' });
+const shortDate = new Intl.DateTimeFormat('es-BO', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+const DEFAULT_ARCHIVE_FROM = DEMO_MAP_PERIOD.from;
+
+function shiftDate(date: string, days: number): string {
+  const value = new Date(date + 'T00:00:00Z');
+  value.setUTCDate(value.getUTCDate() + days);
+  return value.toISOString().slice(0, 10);
 }
-const DISTRICTS: District[] = [
-  { name: 'Tiquipaya', count: 9, delta: 3, risk: 'Alto', color: '#e52d21', className: 'red', x: 277, y: 173,
-    shape: '200,99 230,80 251,90 263,53 285,57 304,96 330,110 353,148 326,183 354,204 324,241 281,230 260,258 226,224 196,223 178,185 198,147',
-    history: [4,5,4,6,5,8,8,8], sources: 'MODIS, VIIRS', last:'14 nov 2026, 10:24' },
-  { name: 'Sacaba', count: 5, delta: 1, risk: 'Medio', color: '#ff891c', className: 'orange', x: 428, y: 245,
-    shape: '354,148 393,160 417,144 460,154 485,182 525,180 538,222 520,258 529,289 495,325 459,321 430,300 400,311 367,278 324,241 354,204 326,183',
-    history: [2,3,3,4,4,5,5,5], sources: 'VIIRS', last:'14 nov 2026, 09:57' },
-  { name: 'Vinto', count: 4, delta: 1, risk: 'Medio', color: '#ffd43b', className: 'yellow', x: 277, y: 349,
-    shape: '260,258 281,230 324,241 367,278 400,311 380,350 363,389 322,399 297,373 273,402 250,373 227,329',
-    history: [0,1,1,2,2,3,4,4], sources: 'MODIS, VIIRS', last:'13 nov 2026, 16:40' },
-  { name: 'Colcapirhua', count: 3, delta: 0, risk: 'Bajo', color: '#f9c92a', className: 'gold', x: 190, y: 275,
-    shape: '171,238 196,223 226,224 260,258 227,329 199,333 169,315 146,297',
-    history: [1,1,2,2,2,3,3,3], sources: 'VIIRS', last:'12 nov 2026, 14:30' },
-  { name: 'Quillacollo', count: 3, delta: 1, risk: 'Bajo', color: '#ffb80d', className: 'gold', x: 104, y: 242,
-    shape: '91,190 127,182 178,185 196,223 171,238 146,297 169,315 133,330 97,309 78,279 50,260 59,228',
-    history: [0,1,0,1,1,1,2,3], sources: 'MODIS, VIIRS', last:'11 nov 2026, 11:05' },
-  { name: 'Sipe Sipe', count: 1, delta: -1, risk: 'Bajo', color: '#91ce62', className: 'green', x: 456, y: 377,
-    shape: '400,311 430,300 459,321 495,325 503,365 473,397 440,422 407,409 380,350',
-    history: [2,2,1,2,1,1,1,1], sources: 'VIIRS', last:'10 nov 2026, 08:12' },
-];
 
 @Component({
   selector: 'app-districts-page',
-  standalone: true,
-  imports: [FormsModule , PageHeaderComponent],
+  imports: [FormsModule, PageHeaderComponent, MapInfoComponent, DistrictMapComponent, DistrictAnalysisComponent],
   templateUrl: './districts-page.component.html',
   styleUrl: './districts-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DistrictsPageComponent {
-  readonly districts = DISTRICTS;
-  readonly selectedName = signal('Tiquipaya');
-  readonly fromActive = signal('2026-11-01');
-  readonly toActive = signal('2026-11-14');
-  readonly districtActive = signal('Todos los distritos');
-  readonly severityActive = signal<SeverityFilter>('Todas');
-  readonly period = signal('7');
-  readonly mapZoom = signal(1);
+  private readonly analysis = inject(MapAnalysisService);
+  private readonly mapData = inject(MapDataService);
+  private request?: AbortController;
+  private latestArchiveDate?: string;
+
+  readonly levels = ACTIVITY;
+  readonly boundaries = signal<DistrictBoundaries | null>(null);
+  readonly observations = signal<Observation[]>([]);
+  readonly selectedId = signal('');
+  readonly applied = signal({ from: DEFAULT_ARCHIVE_FROM, to: boliviaDate.format(new Date()), source: 'archive', district: '', level: '' });
+  readonly period = signal(7);
   readonly mobileFiltersOpen = signal(false);
-  dateFrom = '2026-11-01'; dateTo = '2026-11-14'; district = 'Todos los distritos'; severity: SeverityFilter = 'Todas';
-  readonly visibleDistricts = computed(() => this.districts.filter(d =>
-    (this.districtActive() === 'Todos los distritos' || d.name === this.districtActive()) &&
-    (this.severityActive() === 'Todas' || d.risk === this.severityActive()) &&
-    this.toActive() >= '2026-11-01' && this.fromActive() <= '2026-11-14'));
-  readonly total = computed(() => this.visibleDistricts().reduce((sum, d) => sum + d.count, 0));
-  readonly activeCount = computed(() => this.visibleDistricts().filter(d => d.count > 0).length);
-  readonly highCount = computed(() => this.visibleDistricts().filter(d => d.risk === 'Alto').length);
-  readonly mostActive = computed(() => [...this.visibleDistricts()].sort((a,b) => b.count - a.count)[0] ?? null);
-  readonly current = computed(() => this.visibleDistricts().find(d => d.name === this.selectedName()) ?? this.visibleDistricts()[0] ?? null);
-  readonly chartDays = computed(() => this.period() === '7' ? ['8 nov','9 nov','10 nov','11 nov','12 nov','13 nov','14 nov'] : ['7 nov','8 nov','9 nov','10 nov','11 nov','12 nov','13 nov','14 nov']);
-  readonly chartSeries = computed(() => this.visibleDistricts().map(d => ({
-    ...d, values: this.period() === '7' ? d.history.slice(1) : d.history,
-    points: this.chartPoints(this.period() === '7' ? d.history.slice(1) : d.history),
-  })));
-  select(name: string): void { this.selectedName.set(name); }
-  applyFilters(): void {
-    if (this.dateFrom > this.dateTo) { [this.dateFrom,this.dateTo] = [this.dateTo,this.dateFrom]; }
-    this.fromActive.set(this.dateFrom); this.toActive.set(this.dateTo);
-    this.districtActive.set(this.district); this.severityActive.set(this.severity);
-    this.mobileFiltersOpen.set(false);
-    if (!this.visibleDistricts().some(d => d.name === this.selectedName())) this.selectedName.set(this.visibleDistricts()[0]?.name ?? '');
+  readonly loading = signal(false);
+  readonly error = signal('');
+  readonly validation = signal('');
+  readonly focusRequest = signal(0);
+
+  dateFrom = this.applied().from;
+  dateTo = this.applied().to;
+  source = this.applied().source;
+  district = '';
+  level = '';
+
+  private readonly days = computed(() => {
+    const { from, to } = this.applied();
+    return Array.from({ length: this.period() }, (_, index) => shiftDate(to, index - this.period() + 1))
+      .filter((day) => day >= from);
+  });
+  readonly chartDays = computed(() => this.days().map((day) => shortDate.format(new Date(day))));
+
+  readonly districts = computed<DistrictActivity[]>(() => {
+    const { from, to } = this.applied();
+    const latestWeek = shiftDate(to, -6);
+    const previousWeek = shiftDate(to, -13);
+    const days = this.days();
+    const dated = new Map<string, { row: Observation; day: string }[]>();
+    for (const row of this.observations()) {
+      if (!row.district) continue;
+      const code = row.district.code;
+      const entry = { row, day: boliviaDate.format(new Date(row.acquiredAtUtc)) };
+      const existing = dated.get(code);
+      if (existing) existing.push(entry);
+      else dated.set(code, [entry]);
+    }
+    return (this.boundaries()?.features ?? []).map(({ properties }) => {
+      const { id, name, provisional } = properties;
+      const rows = dated.get(id) ?? [];
+      const inRange = rows.filter(({ day }) => day >= from && day <= to);
+      const currentWeekCount = rows.filter(({ day }) => day >= latestWeek && day <= to).length;
+      const previousWeekCount = rows.filter(({ day }) => day >= previousWeek && day < latestWeek).length;
+      const activity = ACTIVITY.filter(({ minimum }) => inRange.length >= minimum).at(-1) ?? ACTIVITY[0];
+      const dailyCounts = new Map<string, number>();
+      const sources = new Set<string>();
+      let last: string | null = null;
+      for (const { row, day } of inRange) {
+        dailyCounts.set(day, (dailyCounts.get(day) ?? 0) + 1);
+        sources.add(row.sensor);
+        if (!last || Date.parse(row.acquiredAtUtc) > Date.parse(last)) last = row.acquiredAtUtc;
+      }
+      return {
+        id, name, provisional, areaKm2: properties.areaKm2, boundarySource: properties.source, count: inRange.length, delta: currentWeekCount - previousWeekCount,
+        risk: activity.level, color: activity.color,
+        observations: inRange.map(({ row }) => row), history: days.map((day) => dailyCounts.get(day) ?? 0), sources: [...sources].sort().join(', '), last,
+      };
+    }).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'es', { numeric: true }));
+  });
+
+  readonly visibleDistricts = computed(() => {
+    const { district, level } = this.applied();
+    return this.districts().filter((row) => (!district || row.id === district) && (!level || row.risk === level));
+  });
+  readonly total = computed(() => this.visibleDistricts().reduce((sum, row) => sum + row.count, 0));
+  readonly activeCount = computed(() => this.visibleDistricts().filter((row) => row.count > 0).length);
+  readonly highCount = computed(() => this.visibleDistricts().filter((row) => row.risk === 'Alto').length);
+  readonly mostActive = computed(() => this.visibleDistricts().find((row) => row.count > 0));
+  readonly current = computed(() => this.visibleDistricts().find((row) => row.id === this.selectedId()) ?? this.visibleDistricts()[0]);
+  readonly chartTicks = computed(() => {
+    const max = Math.max(0, ...(this.current()?.history ?? []));
+    const step = Math.max(1, Math.ceil(max / 5));
+    return Array.from({ length: 6 }, (_, i) => i * step);
+  });
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => this.request?.abort());
+    void this.load(true);
   }
-  resetFilters(): void { this.dateFrom='2026-11-01'; this.dateTo='2026-11-14'; this.district='Todos los distritos'; this.severity='Todas'; this.applyFilters(); }
-  toggleFilters(): void { this.mobileFiltersOpen.update(v => !v); }
-  zoom(delta: number): void { this.mapZoom.update(v => Math.max(1, Math.min(1.6, +(v+delta).toFixed(1)))); }
-  resetZoom(): void { this.mapZoom.set(1); }
-  chartPoints(values: number[]): string { return values.map((v,i) => `${44 + (i*512/Math.max(1,values.length-1))},${206-v*18}`).join(' '); }
-  xAt(i: number, length: number): number { return 44 + (i*512/Math.max(1,length-1)); }
-  yAt(v: number): number { return 206-v*18; }
-  viewOnMap(): void { document.getElementById('tg-districts-map')?.scrollIntoView({ behavior:'smooth', block:'center' }); }
+
+  applyFilters(): void {
+    if (!this.dateFrom || !this.dateTo || this.dateFrom > this.dateTo) {
+      this.validation.set('Selecciona un rango de fechas válido.');
+      return;
+    }
+    this.validation.set('');
+    const previous = this.applied();
+    this.applied.set({ from: this.dateFrom, to: this.dateTo, source: this.source, district: this.district, level: this.level });
+    this.mobileFiltersOpen.set(false);
+    if (previous.from !== this.dateFrom || previous.to !== this.dateTo || previous.source !== this.source || this.error()) {
+      void this.load();
+    }
+  }
+
+  resetFilters(): void {
+    this.dateFrom = DEFAULT_ARCHIVE_FROM;
+    this.dateTo = this.latestArchiveDate ?? boliviaDate.format(new Date());
+    this.source = 'archive';
+    this.district = '';
+    this.level = '';
+    this.applyFilters();
+  }
+
+  async load(useLatestArchiveDate = false): Promise<void> {
+    this.request?.abort();
+    const request = new AbortController();
+    this.request = request;
+    this.error.set('');
+    this.loading.set(true);
+    this.observations.set([]);
+    try {
+      if (useLatestArchiveDate && this.applied().source === 'archive') {
+        const latest = await this.analysis.latestDetectionDate('municipio-cochabamba', request.signal);
+        if (request.signal.aborted) return;
+        if (latest && latest >= this.applied().from) {
+          this.latestArchiveDate = latest;
+          if (this.dateTo === this.applied().to) this.dateTo = latest;
+          this.applied.update((filters) => ({ ...filters, to: latest }));
+        }
+      }
+      const { from, to, source } = this.applied();
+      const compareFrom = shiftDate(to, -13);
+      const range = { from: from < compareFrom ? from : compareFrom, to };
+      const boundaries = this.boundaries() ?? this.analysis.districts(request.signal);
+      const [geometry, rows] = await Promise.all([
+        boundaries,
+        source === 'archive'
+          ? this.analysis.detections('municipio-cochabamba', range, undefined, undefined, [], '', false, request.signal)
+          : this.mapData.loadObservations(range, { minConfidence: '', platforms: [], includeAllTypes: false }, request.signal)
+            .then(({ observations }) => observations),
+      ]);
+      if (request.signal.aborted) return;
+      this.boundaries.set(geometry);
+      this.observations.set(rows);
+    } catch {
+      if (!request.signal.aborted) this.error.set('No se pudieron cargar los distritos y sus detecciones.');
+    } finally {
+      if (!request.signal.aborted) this.loading.set(false);
+    }
+  }
+
+  select(id: string): void { this.selectedId.set(id); }
+  toggleFilters(): void { this.mobileFiltersOpen.update((open) => !open); }
+  chartPoints(values: number[]): string { return values.map((v, i) => `${this.xAt(i, values.length)},${this.yAt(v)}`).join(' '); }
+  xAt(i: number, length: number): number { return length === 1 ? 300 : 44 + i * 512 / Math.max(1, length - 1); }
+  yAt(v: number): number { return 206 - v * 180 / this.chartTicks()[5]; }
+  viewOnMap(): void {
+    this.focusRequest.update((value) => value + 1);
+    document.getElementById('tg-districts-map')?.scrollIntoView({ block: 'nearest' });
+  }
 }
