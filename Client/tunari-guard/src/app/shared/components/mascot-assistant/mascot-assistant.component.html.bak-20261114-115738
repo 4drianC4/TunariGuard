@@ -1,0 +1,137 @@
+<!-- Tuni V14: burbuja compacta; estados animados originales recuperados -->
+<div class="tuni-chat-v14"
+     [class.is-open]="abierto()"
+     [class.is-paused]="!movimiento()"
+     [class.is-greet]="estado() === 'saludo' || estado() === 'bienvenida'"
+     [class.is-alert]="estado() === 'alerta'"
+     [class.is-sat]="estado() === 'satelite'"
+     [class.is-help]="estado() === 'ayuda'">
+  <link rel="stylesheet" href="/assets/tuni-v14/tuni-motion.css">
+  @if (abierto()) {
+    <section id="tuni-chat-panel" class="chat-panel" role="dialog" aria-label="Chat de ayuda de Tuni">
+      <header class="chat-header">
+        <span class="chat-avatar" aria-hidden="true">
+          <img src="/assets/tuni-piezas/tuni-cabeza.webp" alt="" draggable="false">
+        </span>
+        <div class="chat-identity">
+          <strong>Tuni · Guardián forestal</strong>
+          <small>ASISTENTE IA · DATOS EN VIVO NO CONECTADOS</small>
+        </div>
+        <button class="chat-close" type="button" (click)="cerrar()" aria-label="Cerrar chat de Tuni">×</button>
+      </header>
+
+      <div class="chat-content" aria-live="polite" aria-atomic="true">
+        @if (estado() === 'alerta') {
+          <p class="simulation-note">SIMULACIÓN VISUAL · NO ES UNA ALERTA REAL</p>
+        }
+        <p class="chat-subheading">
+          @if (estado() === 'saludo' || estado() === 'bienvenida') { <span>👋 </span> }
+          @if (estado() === 'alerta') { <span>🚨 </span> }
+          @if (estado() === 'satelite') { <span>🛰️ </span> }
+          @if (estado() === 'ayuda') { <span>✦ </span> }
+          {{ titulo() }}
+        </p>
+        <div class="chat-messages">
+          @for (item of chat(); track $index) {
+            <div class="chat-message" [class.from-tuni]="item.role === 'tuni'" [class.from-user]="item.role === 'user'">
+              <span class="message-author">{{ item.role === 'tuni' ? 'Tuni' : 'Tú' }}</span>
+              <p>{{ item.text }}</p>
+            </div>
+          }
+        </div>
+        <!-- TUNARIGUARD_TUNI_GUIDE_CONTEXT_V1_START -->
+        @if (estado() === 'ayuda') {
+          <div class="tuni-guide-v1__chat-context">
+            <strong>Ayuda de esta sección: {{ consejoActual().titulo }}</strong>
+            <p>{{ consejoActual().texto }}</p>
+          </div>
+        }
+        <!-- TUNARIGUARD_TUNI_GUIDE_CONTEXT_V1_END -->
+      </div>
+
+      <!-- TUNI_AI_V1 -->
+      <section class="tuni-ai" aria-label="Preguntar a Tuni con inteligencia artificial">
+        <p class="tuni-ai-caption">IA · Respuestas generales. Las alertas en tiempo real aún no están conectadas.</p>
+        @for (item of respuestas(); track $index) {
+          <div class="tuni-ai-message" [class.tuni-ai-user]="item.role === 'user'">
+            <strong>{{ item.role === 'user' ? 'Tú' : 'Tuni IA' }}</strong>
+            <p>{{ item.text }}</p>
+            @if (item.role === 'assistant') { <button type="button" (click)="escuchar(item.text)" aria-label="Escuchar respuesta">🔊 Escuchar</button> }
+          </div>
+        }
+        @if (procesando()) { <p role="status">Tuni está procesando...</p> }
+        @if (errorIA()) { <p class="tuni-ai-error" role="alert">{{ errorIA() }}</p> }
+        <form class="tuni-ai-input" (submit)="$event.preventDefault(); enviarPregunta()">
+          <input aria-label="Escribe una pregunta a Tuni" placeholder="Pregunta a Tuni..." [value]="pregunta()" (input)="pregunta.set($any($event.target).value)" maxlength="1500">
+          <button type="button" (click)="alternarGrabacion()" [attr.aria-label]="grabando() ? 'Detener grabación' : 'Grabar pregunta'">{{ grabando() ? '⏹' : '🎙️' }}</button>
+          <button type="submit" [disabled]="procesando() || !pregunta().trim()" aria-label="Enviar pregunta">➤</button>
+        </form>
+        <small>Voz generada mediante inteligencia artificial.</small>
+      </section>
+
+      <div class="chat-actions" aria-label="Opciones de ayuda de Tuni">
+        <button type="button" (click)="elegir('saludo')" [class.selected]="estado() === 'saludo'">👋 Inicio</button>
+        <button type="button" (click)="elegir('alerta')" [class.selected]="estado() === 'alerta'">🚨 Alerta</button>
+        <button type="button" (click)="elegir('satelite')" [class.selected]="estado() === 'satelite'">🛰️ Satélite</button>
+        <button type="button" (click)="elegir('ayuda')" [class.selected]="estado() === 'ayuda'">ℹ️ Ayuda</button>
+      </div>
+
+      <footer class="chat-footer">
+        <button type="button" (click)="alternarMovimiento()" [attr.aria-pressed]="!movimiento()">
+          {{ movimiento() ? '⏸ Pausar animación' : '▶ Animar a Tuni' }}
+        </button>
+        <a routerLink="/mapa" (click)="cerrar()">Ver mapa ↗</a>
+      </footer>
+    </section>
+
+    <!-- Solo al abrir, renderizar piezas originales de Tuni V12 y sus gestos -->
+    <div class="tuni-animated" aria-hidden="true">
+      <div class="tuni-stage">
+        <div class="tuni-back-radar"><span class="tuni-ring tr1"></span><span class="tuni-ring tr2"></span><span class="tuni-ring tr3"></span></div>
+        <img class="tuni-part tuni-hologram" src="/assets/tuni-piezas/tuni-holograma.webp" alt="" draggable="false">
+        <img class="tuni-part tuni-tail" src="/assets/tuni-piezas/tuni-cola.webp" alt="" draggable="false">
+        <div class="tuni-torso">
+          <img class="tuni-part tuni-body" src="/assets/tuni-piezas/tuni-cuerpo-sin-brazo.webp" alt="" draggable="false">
+          <span class="tuni-joint"></span>
+          <img class="tuni-part tuni-arm" src="/assets/tuni-piezas/tuni-brazo.webp" alt="" draggable="false">
+        </div>
+        <div class="tuni-face">
+          <img class="tuni-part tuni-head" src="/assets/tuni-piezas/tuni-cabeza.webp" alt="" draggable="false">
+          <span class="tuni-eyelid"></span>
+          <span class="tuni-eye-wide"></span>
+          <span class="tuni-sweat">💧</span>
+        </div>
+        <img class="tuni-part tuni-pompom" src="/assets/tuni-piezas/tuni-pompon.webp" alt="" draggable="false">
+        <div class="tuni-tablet-radar">
+          <span class="tuni-tablet-ring r1"></span><span class="tuni-tablet-ring r2"></span><span class="tuni-tablet-sweep"></span>
+        </div>
+        <span class="tuni-alert-mark">!</span>
+        <span class="tuni-sparkle sp1">✦</span><span class="tuni-sparkle sp2">✧</span>
+      </div>
+    </div>
+  }
+
+  <!-- TUNARIGUARD_TUNI_GUIDE_V1_START -->
+  @if (consejoVisible() && !abierto()) {
+    <aside class="tuni-guide-v1" role="status" aria-label="Consejo contextual de Tuni">
+      <div class="tuni-guide-v1__top">
+        <span class="tuni-guide-v1__eyebrow"><span aria-hidden="true">✦</span> TUNI TE AYUDA</span>
+        <button type="button" class="tuni-guide-v1__close" (click)="cerrarConsejo()" aria-label="Cerrar consejo de Tuni" title="Cerrar consejo">×</button>
+      </div>
+      <strong class="tuni-guide-v1__title">{{ consejoActual().titulo }}</strong>
+      <p class="tuni-guide-v1__text">{{ consejoActual().texto }}</p>
+      <button type="button" class="tuni-guide-v1__action" (click)="abrirAyudaDeEstaVista()">Ver ayuda en el chat <span aria-hidden="true">→</span></button>
+      <div class="tuni-guide-v1__timer" [class.tuni-guide-v1__timer--alterno]="secuenciaConsejo() % 2 === 1" aria-hidden="true"></div>
+    </aside>
+  }
+  <!-- TUNARIGUARD_TUNI_GUIDE_V1_END -->
+
+  <button type="button" class="chat-bubble"
+          (click)="alternar()"
+          [attr.aria-expanded]="abierto()"
+          aria-controls="tuni-chat-panel"
+          [attr.aria-label]="abierto() ? 'Cerrar chat de Tuni' : 'Abrir chat de Tuni'">
+    <img src="/assets/tuni-piezas/tuni-cabeza.webp" alt="" aria-hidden="true" draggable="false">
+    @if (!abierto()) { <span class="bubble-dot" aria-hidden="true"></span> }
+  </button>
+</div>

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { TuniModule } from './modules/tuni/tuni.module.js';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { envSchema } from './infrastructure/config/env.schema.js';
@@ -25,6 +26,7 @@ import { ReplayModule } from './modules/replay/replay.module.js';
     RealtimeModule,
     ReplayModule,
     AnalisisModule,
+    TuniModule,
   ],
 })
 export class AppModule {}
