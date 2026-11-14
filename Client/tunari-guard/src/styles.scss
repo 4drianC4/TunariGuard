@@ -932,3 +932,64 @@ app-sidebar.tg-responsive-v2 button:focus-visible {
   .tuni-chat-v14 .tuni-guide-v1,.tuni-chat-v14 .tuni-guide-v1__timer { animation:none!important; }
 }
 /* TUNARIGUARD_TUNI_GUIDE_V1_END */
+
+/* TUNARIGUARD_TUNI_VOICE_RADAR_V2_START */
+.tuni-chat-v14 .chat-actions { display:none !important; }
+.tuni-chat-v14 .tuni-v2-voice-status {
+  display:flex;align-items:center;gap:9px;margin:6px 13px 9px;padding:9px 11px;
+  background:#eff5e9;border:1px solid #c8dfb6;border-radius:11px;
+  font-size:12px;font-weight:700;line-height:1.35;color:#294724;min-height:39px;
+  box-shadow:0 2px 8px rgba(29,50,21,.07);
+}
+.tuni-chat-v14 .tuni-v2-voice-status[hidden] {display:none!important}
+.tuni-chat-v14 .tuni-v2-voice-dot {display:block;flex:0 0 12px;width:12px;height:12px;background:#82a163;border-radius:50%}
+.tuni-chat-v14 .tuni-v2-voice-status[data-state="requesting"] {background:#f7f1df;border-color:#e0d3a0}
+.tuni-chat-v14 .tuni-v2-voice-status[data-state="listening"] {background:#fff0eb;border-color:#f4b3a0;color:#9a301b}
+.tuni-chat-v14 .tuni-v2-voice-status[data-state="listening"] .tuni-v2-voice-dot {background:#e73d22;animation:tuniV2Pulse 1s ease-out infinite}
+.tuni-chat-v14 .tuni-v2-voice-status[data-state="error"] {background:#fff1eb;border-color:#f2b29b;color:#a64225}
+.tuni-chat-v14 [data-tuni-voice-v2="true"][aria-pressed="true"] {background:#c34124!important;color:white!important;box-shadow:0 0 0 3px rgba(237,79,42,.23)}
+@keyframes tuniV2Pulse {0%,100%{box-shadow:0 0 0 0 rgba(228,67,39,.4)}50%{box-shadow:0 0 0 6px rgba(228,67,39,0)}}
+.tuni-chat-v14 .tuni-v2-radar {
+  position:absolute;right:0;bottom:calc(100% + 15px);width:340px;max-width:calc(100vw - 22px);
+  z-index:30;display:flex;align-items:center;gap:11px;padding:14px 35px 14px 14px;
+  border-radius:18px;border:1px solid #d2dfb9;background:linear-gradient(133deg,#fcfff6,#f3f7e8);
+  box-shadow:0 15px 35px rgba(28,42,20,.25);pointer-events:auto;color:#2e4227;
+}
+.tuni-chat-v14 .tuni-v2-radar__sweep {position:relative;flex:0 0 64px;width:64px;height:64px;overflow:hidden;border-radius:50%;border:3px solid #698c42;
+  background:repeating-radial-gradient(circle,transparent 0 13px,rgba(82,126,54,.28) 14px 15px),linear-gradient(140deg,#f0f8dd,#dcecc3)}
+.tuni-chat-v14 .tuni-v2-radar__sweep:before {content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgba(67,141,63,.55),transparent 95deg,transparent 360deg);animation:tuniV2Sweep 3s linear infinite}
+.tuni-chat-v14 .tuni-v2-radar__spot {position:absolute;left:62%;top:26%;width:8px;height:8px;border-radius:50%;background:#ea552a;box-shadow:0 0 0 4px rgba(234,85,42,.2)}
+.tuni-chat-v14 .tuni-v2-radar__info {min-width:0;flex:1}
+.tuni-chat-v14 .tuni-v2-radar__info strong {font-size:13px;display:block;line-height:1.2}
+.tuni-chat-v14 .tuni-v2-radar__info small {display:block;font-size:11px;margin-top:4px;color:#566940}
+.tuni-chat-v14 .tuni-v2-radar__info p {margin:5px 0;font-size:10px;line-height:1.3;color:#6b5033}
+.tuni-chat-v14 .tuni-v2-radar__info a {color:#3e632b;font-weight:800;font-size:11px}
+.tuni-chat-v14 .tuni-v2-radar__close {position:absolute;right:9px;top:7px;cursor:pointer;border:0;border-radius:6px;background:transparent;font-size:22px;color:#5b694f;pointer-events:auto}
+@keyframes tuniV2Sweep {to{transform:rotate(360deg)}}
+.tuni-chat-v14:has(.tuni-v2-radar) .tuni-guide-v1 {display:none}
+@media(max-width:600px){
+  .tuni-chat-v14 .tuni-v2-radar {bottom:calc(100% + 12px);width:min(325px,calc(100vw - 24px));padding:10px 30px 10px 10px}
+  .tuni-chat-v14 .tuni-v2-radar__sweep {width:52px;height:52px;flex-basis:52px}
+  .tuni-chat-v14 .tuni-v2-voice-status {font-size:11px;margin-inline:9px}
+}
+@media(prefers-reduced-motion:reduce){.tuni-chat-v14 .tuni-v2-radar__sweep:before,.tuni-chat-v14 .tuni-v2-voice-dot{animation:none!important}}
+ .tuni-chat-v14 .tuni-v2-inline-radar{margin:10px 0 4px;padding:11px 12px;border:1px solid #b5d4a5;background:#eff8e8;border-radius:12px;color:#2c5125;font-size:11px;line-height:1.4}
+ .tuni-chat-v14 .tuni-v2-inline-radar strong{display:block;font-size:12px}
+ .tuni-chat-v14 .tuni-v2-inline-radar p{margin:6px 0;color:#4c583d}
+ .tuni-chat-v14 .tuni-v2-inline-radar a{color:#3f6e21;font-weight:800}
+/* TUNARIGUARD_TUNI_VOICE_RADAR_V2_END */
+
+/* TUNARIGUARD_TUNI_SABINA_V22_STYLES_START */
+/* Cambia solo el indicador del boton Escuchar dentro del chat. */
+.tuni-chat-v14 .chat-panel button[data-tuni-sabina-playing="true"] {
+  color: #aa3f15;
+  font-size: 0 !important;
+}
+.tuni-chat-v14 .chat-panel button[data-tuni-sabina-playing="true"] > * { display: none !important; }
+.tuni-chat-v14 .chat-panel button[data-tuni-sabina-playing="true"]::after {
+  content: "■ Detener";
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+}
+/* TUNARIGUARD_TUNI_SABINA_V22_STYLES_END */
