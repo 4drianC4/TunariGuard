@@ -1,4 +1,155 @@
-<header class="tg-topbar">
-  <span>Centro de monitoreo de anomalías térmicas</span>
-  <span class="tg-demo-tag"><span class="tg-demo-dot" aria-hidden="true"></span> MODO DEMOSTRACIÓN</span>
+
+<header class="topbar">
+  <div class="topbar__identity">
+    <span class="topbar__eyebrow">
+      <span class="topbar__live-dot"></span>
+      TUNARIGUARD / MONITOREO FORESTAL
+    </span>
+
+    <div class="topbar__title-row">
+      <h1>Centro de monitoreo</h1>
+      <span class="topbar__subtitle">
+        Anomalías térmicas satelitales
+      </span>
+    </div>
+  </div>
+
+  <div class="topbar__actions">
+    <span class="topbar__demo">
+      <span class="topbar__demo-dot"></span>
+      <span class="demo-long">MODO DEMOSTRACIÓN</span>
+      <span class="demo-short">DEMO</span>
+    </span>
+
+    <div class="notifications" #notificationContainer>
+      <button
+        type="button"
+        class="notifications__trigger"
+        [class.notifications__trigger--active]="notificationsOpen"
+        [attr.aria-expanded]="notificationsOpen"
+        aria-label="Abrir notificaciones"
+        aria-haspopup="true"
+        (click)="toggleNotifications()"
+      >
+        <svg viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round"
+             aria-hidden="true">
+          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
+          <path d="M10 21h4"/>
+        </svg>
+
+        <span
+          *ngIf="unreadCount > 0"
+          class="notifications__count"
+        >
+          {{ unreadCount > 9 ? '9+' : unreadCount }}
+        </span>
+      </button>
+
+      <section
+        *ngIf="notificationsOpen"
+        class="notifications__panel"
+        aria-label="Panel de notificaciones"
+      >
+        <div class="notifications__header">
+          <div>
+            <h2>Notificaciones</h2>
+            <p>{{ unreadCount }} sin leer</p>
+          </div>
+
+          <button
+            type="button"
+            class="notifications__close"
+            aria-label="Cerrar notificaciones"
+            (click)="closeNotifications()"
+          >
+            &times;
+          </button>
+        </div>
+
+        <div class="notifications__toolbar">
+          <span>Actividad reciente</span>
+          <button
+            type="button"
+            [disabled]="unreadCount === 0"
+            (click)="markAllAsRead()"
+          >
+            Marcar todas como leídas
+          </button>
+        </div>
+
+        <div class="notifications__list">
+          <button
+            *ngFor="let item of notifications; trackBy: trackNotification"
+            type="button"
+            class="notification-item"
+            [class.notification-item--unread]="!item.read"
+            (click)="openNotification(item)"
+          >
+            <span
+              class="notification-item__icon"
+              [ngClass]="'notification-item__icon--' + item.type"
+            >
+              <svg *ngIf="item.type === 'alert'"
+                   viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2"
+                   aria-hidden="true">
+                <path d="M12 3 2 21h20L12 3Z"/>
+                <path d="M12 9v5M12 18h.01"/>
+              </svg>
+
+              <svg *ngIf="item.type === 'success'"
+                   viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2"
+                   aria-hidden="true">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="m8 12 3 3 5-6"/>
+              </svg>
+
+              <svg *ngIf="item.type === 'info'"
+                   viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2"
+                   aria-hidden="true">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M12 11v5M12 7h.01"/>
+              </svg>
+            </span>
+
+            <span class="notification-item__content">
+              <span class="notification-item__title">
+                {{ item.title }}
+              </span>
+              <span class="notification-item__message">
+                {{ item.message }}
+              </span>
+              <span class="notification-item__time">
+                {{ item.time }}
+              </span>
+            </span>
+
+            <span
+              *ngIf="!item.read"
+              class="notification-item__unread-dot"
+            ></span>
+          </button>
+
+          <div
+            *ngIf="notifications.length === 0"
+            class="notifications__empty"
+          >
+            No hay notificaciones disponibles.
+          </div>
+        </div>
+
+        <div class="notifications__footer">
+          <span>Datos de demostración</span>
+          <button type="button" (click)="goToAlerts()">
+            Ver alertas
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      </section>
+    </div>
+  </div>
 </header>
