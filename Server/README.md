@@ -62,14 +62,19 @@ Qué hace cada paso:
 5. **`fuego:setup`**: ejecuta los SQL del paquete de datos (`data/fuego/`). Ver [sección 8](#8-datos-del-equipo-esquema-fuego).
 6. **`start:dev`**: arranca el servidor y lo reinicia solo cuando cambias el código. La primera vez copia los 15 distritos del paquete a nuestra tabla de distritos.
 
-Opcional, para tener la historia completa en el mapa en vivo (11.923 detecciones de 2001 a 2026), con el servidor ya corriendo:
+Después, **con el servidor ya corriendo**, en otra terminal carga las detecciones en tu base. Cada uno tiene su propia base en Docker, así que todos deben hacer este paso:
 
 ```bash
-curl -F file=@data/fuego/formato_firms/firms_modis_cochabamba.csv -F dataset="FIRMS MODIS Cochabamba 2001-2026" http://localhost:3000/api/v1/ingestion/csv
-curl -F file=@data/fuego/formato_firms/firms_viirs_cochabamba.csv -F dataset="FIRMS VIIRS Cochabamba 2012-2026" http://localhost:3000/api/v1/ingestion/csv
+npm run datos:cargar   # 11.923 detecciones reales de 2001 a 2026 (MODIS y VIIRS)
+npm run datos:demo     # opcional: 1.109 detecciones SIMULADAS de 2027 para la demo en tiempo real
 ```
 
-También se pueden subir desde Swagger (`POST /ingestion/csv`). Repetir la carga no duplica nada.
+- Los CSV están en el repo: `data/fuego/formato_firms/` (reales) y `data/demo/` (simulados).
+- Repetirlo no duplica nada.
+- Si falta el servidor o no hay distritos, el script lo avisa.
+- Resultado esperado de `datos:cargar`: 11.923 nuevas, 0 rechazadas y 680 en distritos.
+
+Cuando el equipo de datos entregue CSV nuevos, se agregan a esas carpetas con un commit, y cada compañero solo hace `git pull` y vuelve a correr el comando.
 
 ### El día a día
 
@@ -370,7 +375,15 @@ npm run realtime:watch                          # todos los distritos
 npm run realtime:watch -- distrito-09 distrito-13   # solo esos distritos
 ```
 
-**Hazlo reaccionar** desde una tercera terminal o desde Swagger:
+**Hazlo reaccionar** desde una tercera terminal o desde Swagger.
+
+La forma más vistosa para la demo es con los datos simulados de 2027:
+
+```bash
+npm run datos:demo   # importa los simulados e imprime el comando de replay con su batchId
+```
+
+Ese replay (12 al 16 de agosto de 2027) da 33 pasadas con 186 detecciones. Otras opciones:
 
 ```bash
 # A) Reproducción histórica: una pasada cada 2 s
@@ -396,7 +409,7 @@ Lo que verás en el oyente:
            distrito-02: 1 · distrito-09: 1
 ```
 
-La reproducción necesita detecciones guardadas en ese periodo. Si no ves pasadas, importa primero los CSV de `data/fuego/formato_firms/` (ver [Primera vez](#primera-vez)).
+La reproducción necesita detecciones guardadas en ese periodo. Si no ves pasadas, carga primero los datos con `npm run datos:cargar` o `npm run datos:demo`.
 
 ---
 
@@ -528,6 +541,8 @@ Si quien sube el archivo está en otra computadora de la red, pon `S3_PUBLIC_END
 | `start:dev` | Servidor con recarga automática (API + tiempo real) |
 | `build` / `start:prod` | Compilar y ejecutar la versión de producción (`dist/`) |
 | `realtime:watch` | Oyente de consola del tiempo real (`-- distrito-09` para filtrar) |
+| `datos:cargar` | Carga en tu base las 11.923 detecciones reales del repo (con el servidor corriendo) |
+| `datos:demo` | Carga las detecciones simuladas de 2027 e imprime el comando de replay |
 | `db:up` / `db:down` | Levantar o detener PostgreSQL y MinIO |
 | `db:doctor` | Diagnosticar problemas de conexión a la base |
 | `prisma:deploy` | Aplicar las migraciones |
@@ -587,7 +602,7 @@ Revisa `.env`, el contenedor y a qué servidor llega la conexión, y dice qué c
 | `realtime:watch` dice "no se pudo conectar" | El servidor no está corriendo, o usa otro puerto | `npm run start:dev`; si usas otro puerto: `API_URL=http://localhost:PUERTO npm run realtime:watch` |
 | El navegador muestra un error de CORS | El frontend corre en una dirección que no está en `CORS_ORIGINS` (ojo: `localhost` y `127.0.0.1` cuentan como distintas) | Agrégala en `.env` y reinicia el backend |
 | Me conecto pero no llega nada | Nadie importó ni inició una reproducción, o estás suscrito a otros distritos | Inicia un replay; revisa la sala que imprime `realtime:watch` |
-| La reproducción no emite pasadas | No hay detecciones guardadas en ese periodo | Importa los CSV de `data/fuego/formato_firms/` o cambia `from`/`to` |
+| La reproducción no emite pasadas | No hay detecciones guardadas en ese periodo | `npm run datos:cargar` o `npm run datos:demo`, o cambia `from`/`to` |
 | Importé un CSV grande y no llegaron puntos | Más de 5000 focos nuevos: por diseño solo llega `sync:status` | El frontend debe recargar `GET /observations` |
 
 ---
@@ -607,8 +622,9 @@ Revisa `.env`, el contenedor y a qué servidor llega la conexión, y dice qué c
 ```text
 Server/
   data/fuego/                 paquete de datos del equipo (SQL, CSV, contrato OpenAPI)
+  data/demo/                  detecciones simuladas de 2027 para la demo
   prisma/                     schema.prisma y migraciones (no borrar)
-  scripts/                    db-doctor, fuego (SQL del paquete), realtime-watch
+  scripts/                    db-doctor, fuego (SQL del paquete), realtime-watch, cargar-datos
   src/
     main.ts                   arranque: prefijo /api/v1, CORS, Swagger, Socket.IO
     infrastructure/           configuración, base de datos, MinIO, adaptador de WebSocket
