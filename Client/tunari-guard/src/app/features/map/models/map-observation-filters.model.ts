@@ -1,10 +1,10 @@
-import { ConfidenceLevel } from './observation.model';
+import { ConfidenceLevel, DayNight, SatellitePlatform } from './observation.model';
 
 export interface MapObservationFilters {
   minConfidence: '' | ConfidenceLevel;
   minFrpMw: number | null;
-  dayNight: '' | 'D' | 'N';
-  platforms: string[];
+  dayNight: '' | DayNight;
+  platforms: SatellitePlatform[];
 }
 
 export const DEFAULT_MAP_OBSERVATION_FILTERS: Readonly<MapObservationFilters> = {

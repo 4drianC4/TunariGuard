@@ -2,6 +2,7 @@ import { SensorType } from '../../../domain/enums/sensor-type.enum';
 
 /** Observation DTO returned by Server/src/modules/observations/observations.service.ts. */
 export type ConfidenceLevel = 'LOW' | 'NOMINAL' | 'HIGH';
+export type DayNight = 'DAY' | 'NIGHT';
 export type DistrictAssignment = 'PENDING' | 'ASSIGNED' | 'OUTSIDE' | 'AMBIGUOUS';
 export type ObservationSource = 'NASA_FIRMS' | 'IMPORTED' | 'SIMULATED';
 export type SatellitePlatform = 'TERRA' | 'AQUA' | 'SNPP' | 'NOAA20' | 'NOAA21';
@@ -26,7 +27,7 @@ export interface Observation {
   frpMw: number | null;
   scan: number | null;
   track: number | null;
-  dayNight: 'D' | 'N' | null;
+  dayNight: DayNight | null;
   productVersion: string | null;
   source: ObservationSource;
   dataset: string;
