@@ -7,10 +7,12 @@ import { HistoryCalendarComponent } from '../../components/history-calendar/hist
 import { HistoryChartComponent } from '../../components/history-chart/history-chart.component';
 import { HistoryTableComponent } from '../../components/history-table/history-table.component';
 import { DataOrigin } from '../../../../domain/enums/data-origin.enum';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+
 @Component({
   selector: 'app-history-page',
   standalone: true,
-  imports: [DecimalPipe, HistoryCalendarComponent, HistoryChartComponent, HistoryTableComponent],
+  imports: [DecimalPipe, HistoryCalendarComponent, HistoryChartComponent, HistoryTableComponent, PageHeaderComponent],
   templateUrl: './history-page.component.html',
   styleUrl: './history-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

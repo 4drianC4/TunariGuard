@@ -4,10 +4,11 @@ import type * as L from 'leaflet';
 import { HotspotMapComponent } from '../../components/hotspot-map/hotspot-map.component';
 import { MapStateService } from '../../../../application/services/map-state.service';
 import { MapEntitySelection } from '../../../../domain/models/map-entity-selection.model';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 
 @Component({
   selector: 'app-map-page', standalone: true,
-  imports: [HotspotMapComponent],
+  imports: [HotspotMapComponent, PageHeaderComponent],
   templateUrl: './map-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

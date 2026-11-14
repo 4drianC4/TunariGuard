@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 
 type Risk = 'Alto' | 'Medio' | 'Bajo';
 type SeverityFilter = 'Todas' | Risk;
@@ -31,7 +32,7 @@ const DISTRICTS: District[] = [
 @Component({
   selector: 'app-districts-page',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule , PageHeaderComponent],
   templateUrl: './districts-page.component.html',
   styleUrl: './districts-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

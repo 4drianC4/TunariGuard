@@ -1,9 +1,9 @@
 <section class="tg-districts">
-  <div class="tg-districts__crumb">TUNARIGUARD / <strong>Distritos</strong><span class="tg-districts__demo">DATOS DEMO</span></div>
-  <header class="tg-districts__hero">
-    <div class="tg-districts__hero-title"><div class="tg-districts__hero-icon">📍</div><div><h1>Análisis por distritos</h1><p>Distribución geográfica de anomalías térmicas y nivel de riesgo por distrito.</p></div></div>
-    <div class="tg-districts__tuni"><div class="tg-districts__bubble">Conoce qué distritos<br>presentan mayor<br>actividad térmica.</div><img src="/assets/tuni-piezas/tuni-cabeza.webp" alt="Mascota Tuni" /></div>
-  </header>
+    <app-page-header
+    section="Distritos"
+    title="Análisis por distritos"
+    description="Conoce qué distritos presentan mayor actividad térmica."
+  />
   <div class="tg-districts__kpis" aria-label="Indicadores DEMO">
     <div class="tg-districts__kpi red"><span class="tg-districts__kpi-icon">🔥</span><div><strong>{{ total() }}</strong><span>Anomalías detectadas</span><small>Datos ilustrativos</small></div></div>
     <div class="tg-districts__kpi orange"><span class="tg-districts__kpi-icon">▱</span><div><strong>{{ activeCount() }}</strong><span>Distritos con actividad</span><small>En el conjunto DEMO</small></div></div>

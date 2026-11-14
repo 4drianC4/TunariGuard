@@ -1,8 +1,10 @@
 <section class="tr-page" aria-label="Reportes y exportación">
-  <header class="tr-intro">
-    <div class="tr-intro-text"><div class="tr-breadcrumb">TUNARIGUARD / Reportes <small>DEMO</small></div><div class="tr-heading"><div class="tr-heading-icon">▥</div><div><h1>Reportes y exportación</h1><p>Genera reportes, analiza tendencias y exporta información del monitoreo satelital.</p></div></div></div>
-    <div class="tr-tuni-tip"><div class="tr-speech">¡Crea y descarga reportes<br> de anomalías térmicas<br> por periodo, distrito o severidad!</div><div class="tr-tuni" aria-label="Tuni, mascota de TunariGuard">🦊</div></div>
-  </header>
+
+   <app-page-header
+    section="Reportes"
+    title="Reportes"
+    description="¡Crea y descarga reportes de anomalías térmicas por periodo, distrito o severidad!"
+  />
   <div class="tr-kpis" aria-label="Indicadores DEMO">
     <article class="tr-kpi critical"><div class="tr-kpi-icon">♨</div><div><strong>{{total}}</strong><span>Anomalías térmicas</span><small>DEMO · Datos simulados</small></div></article>
     <article class="tr-kpi amber"><div class="tr-kpi-icon">▱</div><div><strong>{{activeDistricts}}</strong><span>Distritos con actividad</span><small>DEMO · Periodo seleccionado</small></div></article>

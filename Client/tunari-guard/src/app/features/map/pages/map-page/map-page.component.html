@@ -1,10 +1,11 @@
 <section class="min-w-0 space-y-4" aria-labelledby="map-page-title">
-    <header class="tg-dash-intro">
-    <div class="tg-dash-mountain" aria-hidden="true"></div>
-    <div class="tg-breadcrumb">TUNARI GUARD / observación territorial</div>
-    <h1>Actividad térmica en Cochabamba</h1>
-    <p>Explora detecciones satelitales MODIS y VIIRS en el Parque Nacional Tunari y su entorno.</p>
-  </header>
+ 
+
+   <app-page-header
+    section="observación territorial"
+    title="Observación territorial"
+    description="Explora detecciones satelitales MODIS y VIIRS en el Parque Nacional Tunari y su entorno."
+  />
 
   <app-hotspot-map
     (selectionChange)="onSelectionChange($event)"

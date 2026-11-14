@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 
 type Severity = 'Crítica' | 'Alta' | 'Media';
 type Status = 'En revisión' | 'Pendiente' | 'En análisis' | 'Verificada';
@@ -32,7 +33,7 @@ const allAlerts: AlertEvent[] = Array.from({ length: 26 }, (_, i) => {
 @Component({
   selector: 'app-alerts-page',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, PageHeaderComponent],
   templateUrl: './alerts-page.component.html',
   styleUrl: './alerts-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

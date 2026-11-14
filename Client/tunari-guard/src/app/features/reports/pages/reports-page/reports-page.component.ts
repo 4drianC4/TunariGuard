@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 
 type Level = 'Crítica' | 'Alta' | 'Media' | 'Baja';
 type ExportFormat = 'PDF' | 'CSV' | 'Excel';
@@ -11,7 +12,7 @@ interface DownloadRecord { title: string; date: string; format: ExportFormat; fi
 @Component({
   selector: 'app-reports-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PageHeaderComponent],
   templateUrl: './reports-page.component.html',
   styleUrl: './reports-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

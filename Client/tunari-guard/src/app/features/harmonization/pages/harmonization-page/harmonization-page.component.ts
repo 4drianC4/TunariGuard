@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 
 type Sensor = 'MODIS' | 'VIIRS';
 type Severity = 'Alta' | 'Media' | 'Baja';
@@ -9,7 +10,7 @@ interface EventRow { date: string; district: string; sensors: Sensor[]; confiden
 @Component({
   selector: 'app-harmonization-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PageHeaderComponent],
   templateUrl: './harmonization-page.component.html',
   styleUrl: './harmonization-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

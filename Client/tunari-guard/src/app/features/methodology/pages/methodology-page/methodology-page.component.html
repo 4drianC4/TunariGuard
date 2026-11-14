@@ -1,22 +1,11 @@
 <section class="method-page" id="method-page-top" aria-labelledby="method-page-title">
-  <header class="method-intro">
-    <div class="method-crumb">TUNARI GUARD <span>/</span> Metodología</div>
-    <div class="method-intro-content">
-      <div class="method-heading">
-        <div class="method-heading-icon" aria-hidden="true">
-          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M24 12c-6-5-12-6-18-4v29c6-2 12-1 18 4 6-5 12-6 18-4V8c-6-2-12-1-18 4Z"/><path d="M24 12v29"/></svg>
-        </div>
-        <div class="method-heading-copy">
-          <h1 id="method-page-title">Método y fuentes</h1>
-          <p>Datos NASA FIRMS, método de armonización, supuestos, límites y validación científica.</p>
-        </div>
-      </div>
-      <aside class="method-tuni" aria-label="Mensaje de Tuni sobre metodología">
-        <div class="method-speech">Aquí te explico de forma simple cómo obtenemos, combinamos y validamos los datos satelitales.</div>
-        <img src="/assets/tuni-piezas/tuni-cabeza.webp" alt="Tuni, mascota de TunariGuard" loading="lazy" />
-      </aside>
-    </div>
-  </header>
+
+
+   <app-page-header
+    section="Metodología"
+    title="Método y fuentes"
+    description="Datos NASA FIRMS, método de armonización, supuestos, límites y validación científica."
+  />
 
   <nav class="method-tabs" aria-label="Secciones de metodología">
     <button type="button" [class.is-active]="activeTab === 'summary'" (click)="selectTab('summary')"><span aria-hidden="true">▱</span> Resumen</button>
