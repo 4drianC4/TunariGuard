@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { HealthIndicatorService } from '@nestjs/terminus';
+import { describeDbError } from '../../infrastructure/database/describe-db-error.js';
 import { PrismaService } from '../../infrastructure/database/prisma.service.js';
 
 @Injectable()
@@ -22,8 +23,9 @@ export class DatabaseHealthIndicator {
         ? indicator.up({ postgis })
         : indicator.down('PostGIS no está instalado; ejecuta las migraciones');
     } catch (error) {
-      this.logger.warn(`Base de datos no disponible: ${String(error)}`);
-      return indicator.down('Sin conexión con la base de datos (¿ejecutaste npm run db:up?)');
+      const message = describeDbError(error, this.prisma.connectionString);
+      this.logger.warn(message);
+      return indicator.down(message);
     }
   }
 }

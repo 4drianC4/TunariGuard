@@ -113,7 +113,7 @@ Reimportar el mismo CSV no duplica filas. Los datos de demostración deben envia
 Requisitos: Node.js 24 y Docker con el daemon en ejecución.
 
 ```bash
-cp .env.example .env     # ajustar si el puerto 5432 está ocupado
+cp .env.example .env     # Windows (cmd): copy .env.example .env
 npm install              # también genera el cliente Prisma
 npm run db:up            # levanta PostGIS y MinIO y espera a que estén sanos
 npm run prisma:deploy    # aplica las migraciones (habilita PostGIS)
@@ -136,9 +136,29 @@ npm run start:dev
 | `test` | Tests unitarios con Vitest |
 | `lint` | oxlint con reglas que usan los tipos |
 | `db:up` / `db:down` | Levantar o detener PostGIS y MinIO |
+| `db:doctor` | Diagnosticar la conexión a la base (puerto, contraseña, contenedor) |
 | `prisma:migrate` | Crear una migración nueva en desarrollo |
 | `prisma:deploy` | Aplicar las migraciones existentes |
 | `prisma:studio` | Explorar la base de datos |
+
+## Problemas de conexión a la base de datos
+
+Si al arrancar aparece *password authentication failed for user "tunari"* o "contraseña incorrecta", ejecuta:
+
+```bash
+npm run db:doctor
+```
+
+El script revisa `.env`, el contenedor y a qué servidor llega `DATABASE_URL`, y dice qué corregir. Causas habituales:
+
+| Síntoma | Causa | Solución |
+| --- | --- | --- |
+| Contraseña rechazada en el puerto 5432, sobre todo en Windows | Hay un PostgreSQL instalado en el equipo que ocupa 5432; la app se conecta a ese y no al de Docker | Usar el puerto 5433, que ya viene por defecto: copia `DB_PORT` y `DATABASE_URL` de `.env.example` a tu `.env` y ejecuta `docker compose up -d --force-recreate db` |
+| Contraseña rechazada aunque el puerto es correcto | Se cambió `POSTGRES_PASSWORD` después de crear el volumen; Postgres solo la aplica la primera vez | `docker compose down -v` (borra los datos locales), luego `npm run db:up` y `npm run prisma:deploy` |
+| `ECONNREFUSED` / nada responde | Docker Desktop cerrado o contenedor detenido | Abrir Docker Desktop y ejecutar `npm run db:up` |
+| No existe el archivo `.env` | No se copió la plantilla | `cp .env.example .env` (Windows: `copy .env.example .env`) |
+
+En Windows, usa `127.0.0.1` en lugar de `localhost` dentro de `DATABASE_URL`, que es como viene en `.env.example`. Para ver qué programa ocupa el puerto 5432: `netstat -ano | findstr :5432`.
 
 ## Variables de entorno
 

@@ -23,6 +23,7 @@
     "prebuild": "prisma generate",
     "db:up": "docker compose up -d --wait db minio",
     "db:down": "docker compose down",
+    "db:doctor": "node scripts/db-doctor.mjs",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",

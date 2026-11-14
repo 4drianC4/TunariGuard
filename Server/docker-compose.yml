@@ -8,7 +8,9 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tunari_dev}
       POSTGRES_DB: ${POSTGRES_DB:-tunari_guard}
     ports:
-      - '${DB_PORT:-5432}:5432'
+      # 5433 en el host: en Windows es común tener PostgreSQL instalado en 5432, y entonces la
+      # app se conecta a ese servidor (donde no existe el usuario tunari) en vez de a este.
+      - '${DB_PORT:-5433}:5432'
     volumes:
       - tunari-guard-pgdata:/var/lib/postgresql/data
     healthcheck:
