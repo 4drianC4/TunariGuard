@@ -19,12 +19,19 @@ export interface MapObservationQuery {
   bbox: string;
   minConfidence: '' | ConfidenceLevel;
   platforms: SatellitePlatform[];
+  includeAllTypes: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
 export class MapDataService {
   get origin(): MapDataOrigin {
     return MAP_DATA_ORIGIN;
+  }
+
+  async observation(id: string, signal: AbortSignal): Promise<Observation> {
+    const response = await fetch(`${MAP_API_BASE}/observations/${encodeURIComponent(id)}`, { signal });
+    if (!response.ok) throw new Error(`No se pudo actualizar el detalle (HTTP ${response.status}).`);
+    return response.json() as Promise<Observation>;
   }
 
   async loadObservations(period: MapPeriod, query: MapObservationQuery, signal: AbortSignal): Promise<MapDataSet> {
@@ -63,6 +70,7 @@ export class MapDataService {
         bbox: query.bbox,
         format: 'geojson',
         limit: '1000',
+        detectionType: query.includeAllTypes ? 'all' : 'vegetation',
       });
       if (query.minConfidence) params.set('minConfidence', query.minConfidence);
       if (platform) params.set('platform', platform);

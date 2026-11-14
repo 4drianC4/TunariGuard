@@ -17,7 +17,7 @@ interface ReplayFrame {
 }
 
 interface ServerEvents {
-  'sync:status': (payload: { lastBatch: { batchId: string; inserted: number } | null }) => void;
+  'sync:status': (payload: { lastBatch: { batchId: string } | null }) => void;
   'districts:updated': () => void;
   'hotspots:new': (payload: ReplayFrame) => void;
   'replay:status': (payload: { running: boolean }) => void;
@@ -52,14 +52,15 @@ export class RealtimeClientService {
     this.socket.on('sync:status', ({ lastBatch }) => {
       if (!lastBatch || lastBatch.batchId === this.lastBatchId) return;
       this.lastBatchId = lastBatch.batchId;
-      if (lastBatch.inserted > 0) this.changes.next();
+      // A standard batch can replace or remove NRT records without inserting new IDs.
+      this.changes.next();
     });
     this.socket.on('districts:updated', () => this.changes.next());
     this.socket.on('hotspots:new', (frame) => {
       if (frame.mode === 'replay') this.replay.next(frame);
     });
-    this.socket.on('replay:status', ({ running }) => {
-      if (!running) this.replay.next(null);
+    this.socket.on('replay:status', (status) => {
+      if (!status.running) this.replay.next(null);
     });
     inject(DestroyRef).onDestroy(() => {
       this.socket.removeAllListeners();

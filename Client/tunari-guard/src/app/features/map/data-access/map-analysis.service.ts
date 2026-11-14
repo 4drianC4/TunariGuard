@@ -1,0 +1,137 @@
+import { Injectable } from '@angular/core';
+import type { FeatureCollection, Geometry } from 'geojson';
+import { SensorType } from '../../../domain/enums/sensor-type.enum';
+import type { MapPeriod } from '../models/map-period.model';
+import type { Observation, SatellitePlatform } from '../models/observation.model';
+import { MAP_API_BASE } from './map-data.config';
+
+export interface AnalysisArea {
+  area_id: string;
+  nombre_visible: string;
+  geometria: Geometry | null;
+}
+export type MapOverlay = 'districts' | 'recurrencia' | 'puntos-calientes';
+const sources: Record<SatellitePlatform, string> = {
+  TERRA: 'MODIS-Terra', AQUA: 'MODIS-Aqua', SNPP: 'VIIRS-Suomi-NPP',
+  NOAA20: 'VIIRS-NOAA-20', NOAA21: 'VIIRS-NOAA-21',
+};
+interface ArchiveDetection {
+  id_deteccion: string;
+  fuente: string;
+  fecha_hora_utc: string;
+  lat: number;
+  lon: number;
+  confianza_original: string | null;
+  confianza_clase: string | null;
+  frp_mw: number | null;
+  dia_noche: string | null;
+  distrito: string | null;
+  distrito_area_id: string | null;
+  fuente_persistente_probable: boolean;
+  origen_dato: string;
+  evento_id_tunari: string | null;
+  evento_id_cbba: string | null;
+}
+
+@Injectable({ providedIn: 'root' })
+export class MapAnalysisService {
+  areas(signal: AbortSignal) {
+    return this.json<Omit<AnalysisArea, 'geometria'>[]>('/areas', signal);
+  }
+
+  area(id: string, signal: AbortSignal) {
+    return this.json<AnalysisArea>(this.areaPath(id), signal);
+  }
+
+  async overlay(id: string, layer: MapOverlay, exclude: boolean, signal: AbortSignal): Promise<FeatureCollection> {
+    if (layer === 'districts') return this.json('/districts?format=geojson', signal);
+    const path = this.areaPath(id) + '/' + layer;
+    if (layer === 'recurrencia') {
+      return this.json(path + '?excluir_fuentes_persistentes=' + exclude, signal);
+    }
+    return (await this.json<{ celdas: FeatureCollection }>(path, signal)).celdas;
+  }
+
+  async detections(
+    id: string, period: MapPeriod, bbox: string, polygon: Geometry | undefined,
+    platforms: SatellitePlatform[], confidence: string, exclude: boolean, signal: AbortSignal,
+  ): Promise<Observation[]> {
+    const selectedSources = platforms.map((platform) => sources[platform]);
+    const periodQuery = this.range(period);
+    const rows: ArchiveDetection[] = [];
+    if (polygon) {
+      const matches = await this.json<ArchiveDetection[]>('/detecciones/buscar', signal, {
+        poligono: polygon, ...periodQuery, fuentes: selectedSources.length ? selectedSources : undefined,
+      });
+      for (const row of matches) rows.push(row);
+    } else {
+      const params = new URLSearchParams({
+        ...periodQuery, ...(id ? { area_id: id } : {}), bbox, limite: '10000',
+        excluir_fuentes_persistentes: String(exclude),
+      });
+      if (confidence === 'HIGH') params.set('confianza_minima', 'alta');
+      if (confidence === 'NOMINAL') params.set('confianza_minima', 'nominal');
+      for (const source of selectedSources) params.append('fuente', source);
+      let offset = 0;
+      while (true) {
+        params.set('offset', String(offset));
+        const response = await this.request('/detecciones?' + params, signal);
+        for (const row of await response.json() as ArchiveDetection[]) rows.push(row);
+        const next = response.headers.get('X-Next-Offset');
+        if (next === null) break;
+        const nextOffset = Number(next);
+        if (!Number.isSafeInteger(nextOffset) || nextOffset <= offset) throw new Error('Paginación de detecciones inválida.');
+        offset = nextOffset;
+      }
+    }
+    return rows.filter((row) => !exclude || !row.fuente_persistente_probable)
+      .flatMap((row) => {
+        const observation = toObservation(row);
+        return observation ? [observation] : [];
+      });
+  }
+
+  private areaPath(id: string): string { return '/areas/' + encodeURIComponent(id); }
+  private range(period: MapPeriod) { return { desde: period.from, hasta: period.to }; }
+
+  private async json<T>(path: string, signal: AbortSignal, body?: object): Promise<T> {
+    return (await this.request(path, signal, body)).json() as Promise<T>;
+  }
+
+  private async request(path: string, signal: AbortSignal, body?: object): Promise<Response> {
+    const response = await fetch(MAP_API_BASE + path, {
+      signal,
+      ...(body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {}),
+    });
+    if (!response.ok) {
+      const details = await response.json().catch(() => null);
+      const message = typeof details?.message === 'string' ? details.message : 'HTTP ' + response.status;
+      throw new Error(message);
+    }
+    return response;
+  }
+}
+
+function toObservation(row: ArchiveDetection): Observation | null {
+  const platform = (Object.keys(sources) as SatellitePlatform[]).find((key) => sources[key] === row.fuente);
+  if (!platform || !row.fecha_hora_utc || !Number.isFinite(row.lat) || !Number.isFinite(row.lon)) return null;
+  const district = row.distrito_area_id && row.distrito
+    ? { code: row.distrito_area_id, name: row.distrito, provisional: true } : null;
+  return {
+    id: row.id_deteccion,
+    sensor: platform === 'TERRA' || platform === 'AQUA' ? SensorType.MODIS : SensorType.VIIRS,
+    platform, position: { lat: row.lat, lng: row.lon }, acquiredAtUtc: row.fecha_hora_utc,
+    confidenceRaw: row.confianza_original,
+    confidenceLevel: row.confianza_clase === 'alta' ? 'HIGH' : row.confianza_clase === 'nominal' ? 'NOMINAL' : row.confianza_clase === 'baja' ? 'LOW' : null,
+    dayNight: row.dia_noche === 'D' ? 'DAY' : row.dia_noche === 'N' ? 'NIGHT' : null,
+    frpMw: row.frp_mw, brightnessKelvin: null, brightnessAuxKelvin: null,
+    scan: null, track: null, productVersion: null,
+    source: 'NASA_FIRMS', dataset: row.fuente, batchId: '',
+    district, districtAssignment: district ? 'ASSIGNED' : null,
+    archive: {
+      origin: row.origen_dato,
+      persistent: row.fuente_persistente_probable,
+      events: [row.evento_id_tunari, row.evento_id_cbba].filter((event): event is string => !!event),
+    },
+  };
+}
