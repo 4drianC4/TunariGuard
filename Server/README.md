@@ -218,7 +218,53 @@ Implementa el contrato que entregó el equipo de datos ([`data/fuego/docs/openap
 | `GET /casos-documentados` | Siete incendios publicados en prensa, usados para validar |
 | `GET /metadatos` | Parámetros, fecha de cobertura y las **advertencias obligatorias** que deben mostrarse junto a cada cifra |
 
-### 4.7 Errores
+### 4.7 Historial (vista `/historial` del frontend)
+
+Actividad **mensual** con la misma forma que `HistoricalRecord` del front (`year`, `month`, `source`, `activityCount`, `origin`), lista para reemplazar `history.mock.ts`.
+
+| Endpoint | Qué devuelve |
+| --- | --- |
+| `GET /historial` | Los meses de un área (`area_id`, por defecto `parque-tunari`) con un `summary`: total, promedio mensual y mes pico |
+| `GET /historial/distritos` | **Vistazo general:** los 15 distritos a la vez, cada uno con sus `records` y su `summary`, más un `ranking` por actividad total |
+
+Parámetros (los dos endpoints):
+
+| Parámetro | Valores | Qué hace |
+| --- | --- | --- |
+| `fuente` | `HARMONIZED` (por defecto), `MODIS`, `VIIRS` | **HARMONIZED:** el índice armonizado del paquete. **MODIS / VIIRS:** conteo bruto de ese sensor, sin armonizar ni aplicar factores, con todos sus satélites |
+| `medida` | `celdas_dia` (por defecto), `detecciones` | Solo MODIS/VIIRS: qué va en `activityCount`. Las celdas-día no cuentan dos veces un fuego visto por dos satélites |
+| `desde_anio` / `hasta_anio` | `2013`, `2024` | Recorta el periodo |
+
+```bash
+curl "http://localhost:3000/api/v1/historial?area_id=parque-tunari&fuente=VIIRS&desde_anio=2024&hasta_anio=2024"
+```
+```json
+{
+  "area": { "area_id": "parque-tunari", "nombre_visible": "Parque Nacional Tunari", "metodo_indice": "mixto_calibrado" },
+  "source": "VIIRS",
+  "unit": "celdas-día VIIRS",
+  "notice": "Una detección satelital de calor no es un incendio confirmado. Conteo bruto de VIIRS, sin armonizar…",
+  "summary": { "total": 197, "monthsWithData": 12, "monthlyAverage": 16.42, "peak": { "year": 2024, "month": 9, "activityCount": 49 } },
+  "records": [
+    { "year": 2024, "month": 8, "source": "VIIRS", "activityCount": 47, "origin": "NASA_FIRMS",
+      "detections": 107, "cellDays": 47, "bySatellite": { "VIIRS-Suomi-NPP": 59, "VIIRS-NOAA-20": 48 }, "provisional": false }
+  ]
+}
+```
+
+Lo que el front debe tener en cuenta:
+- **`activityCount` puede ser `null`** en `HARMONIZED`: fuera del Parque Tunari no hay índice comparable antes de febrero de 2012. Se pinta en gris, nunca como cero. El `summary` ya ignora esos meses.
+- **MODIS y VIIRS en bruto no se comparan entre sí.** VIIRS (375 m) detecta unas 2,87 veces más que MODIS (1 km). Para compararlos está `HARMONIZED`.
+- **Cobertura:**
+  - Cada área empieza donde empiezan sus datos (el parque, en agosto de 2001).
+  - VIIRS empieza en febrero de 2012.
+  - El armonizado llega hasta la cobertura del análisis (octubre de 2026).
+  - MODIS y VIIRS incluyen además las novedades NRT posteriores, que pueden ser un mes parcial.
+- **`provisional: true`** marca meses con datos NRT que NASA todavía puede corregir.
+- Muestra `notice` y `unit` junto al calendario y al gráfico.
+- Para el total del municipio usa `area_id=municipio-cochabamba`, no la suma de los distritos.
+
+### 4.8 Errores
 
 | Código | Cuándo |
 | --- | --- |

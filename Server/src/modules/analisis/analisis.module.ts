@@ -3,6 +3,8 @@ import { AnalisisRepository } from './analisis.repository.js';
 import { AnalisisService } from './analisis.service.js';
 import { AreasController } from './areas.controller.js';
 import { DeteccionesController } from './detecciones.controller.js';
+import { HistorialController } from './historial.controller.js';
+import { HistorialService } from './historial.service.js';
 import { MetadatosController } from './metadatos.controller.js';
 
 /**
@@ -11,8 +13,8 @@ import { MetadatosController } from './metadatos.controller.js';
  * Se instala con `npm run fuego:setup`. No recalcula nada: el índice y las alertas llegan hechos.
  */
 @Module({
-  controllers: [AreasController, DeteccionesController, MetadatosController],
-  providers: [AnalisisService, AnalisisRepository],
+  controllers: [AreasController, DeteccionesController, HistorialController, MetadatosController],
+  providers: [AnalisisService, HistorialService, AnalisisRepository],
   exports: [AnalisisService],
 })
 export class AnalisisModule {}
