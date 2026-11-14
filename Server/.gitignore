@@ -1,0 +1,12 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Secretos locales (usar .env.example como plantilla)
+.env
+.env.*
+!.env.example
+
+# Cliente Prisma generado (npm run prisma:generate)
+/src/generated/
