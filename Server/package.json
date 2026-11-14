@@ -28,6 +28,7 @@
     "fuego:novedades": "node scripts/fuego.mjs novedades",
     "fuego:alerta-mes": "node scripts/fuego.mjs alerta-mes",
     "fuego:status": "node scripts/fuego.mjs status",
+    "realtime:watch": "node scripts/realtime-watch.mjs",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
