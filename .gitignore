@@ -1,0 +1,11 @@
+
+# Respaldos locales de TunariGuard
+/.tuni-*-backup/
+
+# Instaladores temporales de Tuni
+/TUNI-CHAT-V*/
+
+# Instaladores anteriores de diseño
+/TUNARIGUARD-LOGO-V*/
+/tunariguard-diseno-parche/
+

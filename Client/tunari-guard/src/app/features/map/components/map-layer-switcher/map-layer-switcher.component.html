@@ -1,1 +1,13 @@
-<p>map-layer-switcher works!</p>
+<section class="space-y-3" aria-label="Capas de detecciones">
+  <h3 class="text-xs font-semibold uppercase tracking-wide text-[#424037]">Sensores satelitales</h3>
+  @for (layer of sensors; track layer.sensor) {
+    <label class="flex cursor-pointer items-center gap-3 rounded-lg border border-[#526b24]/30 bg-[#526b24]/5 px-3 py-2 text-sm hover:bg-[#526b24]/10">
+      <input type="checkbox" class="size-4 accent-[#b84e20]" [checked]="isVisible(layer.sensor)"
+        (change)="toggle(layer.sensor, $event)">
+      <span class="size-2.5 rounded-full" [ngClass]="layer.colorClass" aria-hidden="true"></span>
+      <span class="font-medium text-[#30351f]">{{ layer.sensor }}</span>
+      <span class="ml-auto text-xs text-[#526b24]">{{ count(layer.sensor) }}</span>
+    </label>
+  }
+  <p class="m-0 text-xs leading-5 text-[#595a4c]">Los conteos MODIS y VIIRS corresponden a sensores distintos y no son directamente equivalentes.</p>
+</section>

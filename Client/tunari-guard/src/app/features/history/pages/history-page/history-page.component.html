@@ -1,10 +1,151 @@
-<section class="page">
-  <div class="eyebrow">TUNARI GUARD / historial</div>
-  <h1>Historial de detecciones</h1>
-  <p class="lead">Evolución temporal y diferencias entre sensores.</p>
-  <div class="placeholder">
-    <strong>Estructura lista para implementar</strong>
-    <p>Los componentes de esta sección ya están generados en <code>features/history/components/</code>.</p>
-    <p>Conectar a los servicios del directorio <code>application/services/</code> y los datos de <code>data-access/</code>.</p>
-  </div>
-</section>
+
+<main class="tg-history">
+
+  <!-- Encabezado -->
+  <header class="tg-history__header">
+    <div>
+      <div class="tg-history__breadcrumb">
+        <span>Monitoreo</span>
+        <span>/</span>
+        <span>Historial</span>
+      </div>
+
+      <h1>Historial de actividad de quema</h1>
+
+      <p>
+        Explora el comportamiento histórico de las detecciones
+        térmicas en el Parque Nacional Tunari.
+      </p>
+    </div>
+
+    <span class="tg-history__demo">
+      <span class="tg-history__demo-dot"></span>
+      Datos de demostración
+    </span>
+  </header>
+
+  <!-- Selector de fuente -->
+  <section class="tg-history__source-section">
+    <div>
+      <h2>Fuente de información</h2>
+      <p>Selecciona los datos que deseas analizar.</p>
+    </div>
+
+    <div class="tg-history__source-selector">
+      @for (source of sources; track source.value) {
+        <button
+          type="button"
+          class="tg-history__source-button"
+          [class.tg-history__source-button--active]="
+            metrics.selectedSource() === source.value
+          "
+          [attr.aria-pressed]="
+            metrics.selectedSource() === source.value
+          "
+          (click)="selectSource(source.value)"
+        >
+          {{ source.label }}
+        </button>
+      }
+    </div>
+  </section>
+
+  <!-- Indicadores -->
+  <section class="tg-history__stats">
+
+    <article class="tg-history__stat-card">
+      <span class="tg-history__stat-label">
+        Actividad registrada
+      </span>
+
+      <strong class="tg-history__stat-value">
+        {{ metrics.totalActivity() | number }}
+      </strong>
+
+      <span class="tg-history__stat-caption">
+        Detecciones acumuladas en el periodo
+      </span>
+    </article>
+
+    <article class="tg-history__stat-card">
+      <span class="tg-history__stat-label">
+        Años disponibles
+      </span>
+
+      <strong class="tg-history__stat-value">
+        {{ yearsCovered() }}
+      </strong>
+
+      <span class="tg-history__stat-caption">
+        De 2005 a 2026, según cobertura simulada
+      </span>
+    </article>
+
+    <article class="tg-history__stat-card">
+      <span class="tg-history__stat-label">
+        Mes de mayor actividad
+      </span>
+
+      <strong class="tg-history__stat-value tg-history__stat-value--date">
+        {{ peakMonthLabel() }}
+      </strong>
+
+      <span class="tg-history__stat-caption">
+        Mayor cantidad de detecciones registradas
+      </span>
+    </article>
+
+    <article class="tg-history__stat-card">
+      <span class="tg-history__stat-label">
+        Promedio mensual
+      </span>
+
+      <strong class="tg-history__stat-value">
+        {{ monthlyAverage() | number }}
+      </strong>
+
+      <span class="tg-history__stat-caption">
+        Actividad media por mes con registro
+      </span>
+    </article>
+
+  </section>
+
+  <!-- Calendario histórico -->
+  <section class="tg-history__panel">
+
+    <div class="tg-history__panel-header">
+      <div>
+        <h2>Calendario histórico</h2>
+        <p>
+          Distribución mensual de actividad:
+          {{ sourceLabel() }}
+        </p>
+      </div>
+
+      <span class="tg-history__period">
+        2005 – 2026
+      </span>
+    </div>
+
+    <div class="tg-history__calendar-placeholder">
+      <div class="tg-history__placeholder-icon">▦</div>
+
+      <h3>Calendario histórico</h3>
+
+      <p>
+        En el siguiente paso construiremos la matriz
+        de actividad mensual por año.
+      </p>
+    </div>
+
+  </section>
+
+  <!-- Información de los datos -->
+  <footer class="tg-history__footer">
+    <span>ⓘ</span>
+    Los valores actuales son simulados y no representan
+    mediciones oficiales de NASA FIRMS.
+  </footer>
+
+</main>

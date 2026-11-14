@@ -1,0 +1,232 @@
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.tg-history {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 28px;
+  color: #283b30;
+}
+
+.tg-history__header,
+.tg-history__source-section,
+.tg-history__panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.tg-history__breadcrumb {
+  display: flex;
+  gap: 9px;
+  margin-bottom: 12px;
+  color: #8b9588;
+  font-size: 12px;
+}
+
+.tg-history__header h1 {
+  margin: 0;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.tg-history__header p,
+.tg-history__source-section p,
+.tg-history__panel-header p {
+  margin: 8px 0 0;
+  color: #788477;
+  font-size: 13px;
+}
+
+.tg-history__demo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 13px;
+  border-radius: 20px;
+  background: #f6e8d9;
+  color: #a66532;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.tg-history__demo-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d28a4e;
+}
+
+.tg-history__source-section h2,
+.tg-history__panel h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.tg-history__source-selector {
+  display: flex;
+  gap: 5px;
+  padding: 5px;
+  border: 1px solid #e6e2d8;
+  border-radius: 12px;
+  background: #eeeae1;
+}
+
+.tg-history__source-button {
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #69766b;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.tg-history__source-button:hover {
+  color: #314d38;
+  background: #e5e5d9;
+}
+
+.tg-history__source-button--active {
+  background: #526b4c;
+  color: #fff;
+  box-shadow: 0 2px 5px #00000012;
+}
+
+.tg-history__source-button--active:hover {
+  background: #526b4c;
+  color: #fff;
+}
+
+.tg-history__stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.tg-history__stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 125px;
+  padding: 20px;
+  border: 1px solid #e9e5db;
+  border-radius: 15px;
+  background: #fffefa;
+}
+
+.tg-history__stat-label {
+  color: #7c887c;
+  font-size: 12px;
+}
+
+.tg-history__stat-value {
+  color: #344c39;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.tg-history__stat-value--date {
+  font-size: 21px;
+}
+
+.tg-history__stat-caption {
+  color: #929b8e;
+  font-size: 11px;
+}
+
+.tg-history__panel {
+  padding: 24px;
+  border: 1px solid #e9e5db;
+  border-radius: 16px;
+  background: #fffefa;
+}
+
+.tg-history__period {
+  padding: 7px 12px;
+  border-radius: 8px;
+  background: #edf0e7;
+  color: #526b4c;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tg-history__calendar-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+  margin-top: 22px;
+  border: 1px dashed #d9ddcf;
+  border-radius: 12px;
+  background: #faf9f4;
+  text-align: center;
+}
+
+.tg-history__placeholder-icon {
+  color: #7b906e;
+  font-size: 36px;
+}
+
+.tg-history__calendar-placeholder h3 {
+  margin: 12px 0 0;
+  font-size: 15px;
+}
+
+.tg-history__calendar-placeholder p {
+  max-width: 350px;
+  color: #879083;
+  font-size: 12px;
+}
+
+.tg-history__footer {
+  display: flex;
+  gap: 9px;
+  color: #8a927f;
+  font-size: 11px;
+}
+
+@media (max-width: 1100px) {
+  .tg-history__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .tg-history {
+    padding: 16px;
+  }
+
+  .tg-history__header,
+  .tg-history__source-section,
+  .tg-history__panel-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .tg-history__source-selector {
+    width: 100%;
+  }
+
+  .tg-history__source-button {
+    flex: 1;
+    padding: 10px 8px;
+  }
+
+  .tg-history__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .tg-history__header h1 {
+    font-size: 22px;
+  }
+}

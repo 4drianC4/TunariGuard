@@ -1,9 +1,17 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { Observation } from '../../models/observation.model';
+import { MapDataOrigin } from '../../models/map-data.model';
 
 @Component({
-  imports: [],
   selector: 'app-hotspot-popup',
-  styleUrl: './hotspot-popup.component.scss',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './hotspot-popup.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HotspotPopupComponent {}
+export class HotspotPopupComponent {
+  @Input() observation: Observation | null = null;
+  @Input() origin: MapDataOrigin = 'DEMO';
+  @Output() readonly close = new EventEmitter<void>();
+}

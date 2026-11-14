@@ -1,10 +1,16 @@
-<section class="page">
-  <div class="eyebrow">TUNARI GUARD / mapa</div>
-  <h1>Mapa de focos calientes</h1>
-  <p class="lead">Capas MODIS/VIIRS, filtros espaciales y cronología de detecciones.</p>
-  <div class="placeholder">
-    <strong>Estructura lista para implementar</strong>
-    <p>Los componentes de esta sección ya están generados en <code>features/map/components/</code>.</p>
-    <p>Conectar a los servicios del directorio <code>application/services/</code> y los datos de <code>data-access/</code>.</p>
-  </div>
+<section class="min-w-0 space-y-4" aria-labelledby="map-page-title">
+    <header class="tg-dash-intro">
+    <div class="tg-dash-mountain" aria-hidden="true"></div>
+    <div class="tg-breadcrumb">TUNARI GUARD / observación territorial</div>
+    <h1>Actividad térmica en Cochabamba</h1>
+    <p>Explora detecciones satelitales MODIS y VIIRS en el Parque Nacional Tunari y su entorno.</p>
+  </header>
+
+  <app-hotspot-map
+    (selectionChange)="onSelectionChange($event)"
+    (areaOfInterestChange)="onAreaOfInterestChange($event)" />
+
+  <p class="m-0 rounded-xl border border-[#dfd8cd] bg-[#fffcf8] px-4 py-3 text-xs leading-5 text-[#595a4c]">
+    Una detección satelital es una señal térmica y no confirma un incendio. El período lo proporciona el módulo de calendario; esta página no añade controles temporales propios.
+  </p>
 </section>

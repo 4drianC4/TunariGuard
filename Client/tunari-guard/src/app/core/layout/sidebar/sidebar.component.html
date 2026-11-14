@@ -1,10 +1,72 @@
-<aside class="side">
-  <div class="brand"><span class="brand-mark">♨</span><div><strong>TUNARI GUARD</strong><small>NASA Space Apps · Bolivia</small></div></div>
-  <div class="nav-caption">MONITOREO SATELITAL</div>
-  <nav aria-label="Menú principal">
+
+<aside class="tg-sidebar">
+
+  <!-- LOGO TUNARIGUARD -->
+
+<a
+  class="tg-brand"
+  routerLink="/inicio"
+  aria-label="TunariGuard - Ir al inicio"
+>
+  <span class="tg-brand__container">
+    <img
+      class="tg-brand__logo"
+      src="/assets/logos/SVG/LOGOHORIZONTALWHITE.svg"
+      alt="TunariGuard - Monitoreo satelital forestal"
+    />
+  </span>
+</a>
+
+
+  <!-- TÍTULO DEL MENÚ -->
+  <div class="tg-menu-heading">
+    <span>MONITOREO SATELITAL</span>
+    <span class="tg-heading-line"></span>
+  </div>
+
+  <!-- NAVEGACIÓN PRINCIPAL -->
+  <nav
+    class="tg-main-nav"
+    aria-label="Menú principal"
+  >
     @for (item of nav; track item.path) {
-      <a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}"><span class="nav-icon">{{item.icon}}</span>{{item.label}}</a>
+
+      <a
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        [attr.title]="item.label"
+      >
+
+        <span class="tg-nav-icon">
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <use
+              [attr.href]="'/assets/tunari-ui/iconos.svg#' + item.icon"
+            ></use>
+          </svg>
+        </span>
+
+        <span class="tg-nav-label">
+          {{ item.label }}
+        </span>
+
+      </a>
+
     }
   </nav>
-  <div class="side-note">MVP académico · Datos DEMO</div>
+
+  <!-- DECORACIÓN INFERIOR -->
+  <div
+    class="tg-mountain-art"
+    aria-hidden="true"
+  ></div>
+
+  <!-- PIE DEL SIDEBAR -->
+  <div class="tg-sidebar-foot">
+    MVP académico · Datos DEMO
+  </div>
+
 </aside>

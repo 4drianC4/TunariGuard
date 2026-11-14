@@ -1,9 +1,16 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { MapPeriod } from '../../../../domain/models/map-period.model';
 
+/** Read-only period summary; the calendar feature owns all period controls. */
 @Component({
-  imports: [],
   selector: 'app-map-timeline',
-  styleUrl: './map-timeline.component.scss',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './map-timeline.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MapTimelineComponent {}
+export class MapTimelineComponent {
+  @Input({ required: true }) areaId = '';
+  @Input({ required: true }) period: MapPeriod = { from: '', to: '' };
+}
