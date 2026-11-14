@@ -1,10 +1,40 @@
-<section class="page">
-  <div class="eyebrow">TUNARI GUARD / reportes</div>
-  <h1>Reportes y exportación</h1>
-  <p class="lead">Indicadores, tablas, CSV y reportes PDF.</p>
-  <div class="placeholder">
-    <strong>Estructura lista para implementar</strong>
-    <p>Los componentes de esta sección ya están generados en <code>features/reports/components/</code>.</p>
-    <p>Conectar a los servicios del directorio <code>application/services/</code> y los datos de <code>data-access/</code>.</p>
+<section class="tr-page" aria-label="Reportes y exportación">
+  <header class="tr-intro">
+    <div class="tr-intro-text"><div class="tr-breadcrumb">TUNARIGUARD / Reportes <small>DEMO</small></div><div class="tr-heading"><div class="tr-heading-icon">▥</div><div><h1>Reportes y exportación</h1><p>Genera reportes, analiza tendencias y exporta información del monitoreo satelital.</p></div></div></div>
+    <div class="tr-tuni-tip"><div class="tr-speech">¡Crea y descarga reportes<br> de anomalías térmicas<br> por periodo, distrito o severidad!</div><div class="tr-tuni" aria-label="Tuni, mascota de TunariGuard">🦊</div></div>
+  </header>
+  <div class="tr-kpis" aria-label="Indicadores DEMO">
+    <article class="tr-kpi critical"><div class="tr-kpi-icon">♨</div><div><strong>{{total}}</strong><span>Anomalías térmicas</span><small>DEMO · Datos simulados</small></div></article>
+    <article class="tr-kpi amber"><div class="tr-kpi-icon">▱</div><div><strong>{{activeDistricts}}</strong><span>Distritos con actividad</span><small>DEMO · Periodo seleccionado</small></div></article>
+    <article class="tr-kpi yellow"><div class="tr-kpi-icon">⚠</div><div><strong>{{breakdown[0].count + breakdown[1].count}}</strong><span>Alertas generadas</span><small>Severidad crítica y alta · DEMO</small></div></article>
+    <article class="tr-kpi green"><div class="tr-kpi-icon">✓</div><div><strong>{{latestReportCount}}</strong><span>Reportes exportados</span><small>En esta sesión</small></div></article>
+  </div>
+  <button class="tr-mobile-filters" type="button" (click)="filtersExpanded=!filtersExpanded" [attr.aria-expanded]="filtersExpanded">⚲ &nbsp; Filtros <span>{{filtersExpanded?'Cerrar ▲':'Mostrar ▼'}}</span></button>
+  <form class="tr-filters" [class.tr-open]="filtersExpanded" (ngSubmit)="apply()">
+    <label class="tr-field tr-date"><span>▦ &nbsp; Rango de fecha</span><div class="tr-date-inputs"><input type="date" name="startDate" aria-label="Fecha inicial" [(ngModel)]="startDate"><span>—</span><input type="date" name="endDate" aria-label="Fecha final" [(ngModel)]="endDate"></div></label>
+    <label class="tr-field"><span>▱ &nbsp; Distrito</span><select name="district" [(ngModel)]="selectedDistrict"><option *ngFor="let district of districts" [value]="district">{{district}}</option></select></label>
+    <label class="tr-field"><span>♨ &nbsp; Severidad</span><select name="severity" [(ngModel)]="selectedSeverity"><option value="Todas">Todas</option><option *ngFor="let severity of levels" [value]="severity">{{severity}}</option></select></label>
+    <label class="tr-field"><span>◈ &nbsp; Fuente</span><select name="source" [(ngModel)]="selectedSource"><option *ngFor="let source of sourceOptions" [value]="source">{{source}}</option></select></label>
+    <div class="tr-filter-actions"><button class="tr-clear" type="button" (click)="reset()">✕ &nbsp; Limpiar</button><button class="tr-primary" type="submit">⌕ &nbsp; Aplicar filtros</button></div>
+  </form>
+  <p class="tr-notice tr-error" *ngIf="errorMessage" role="alert">{{errorMessage}}</p><p class="tr-notice tr-success" *ngIf="successMessage" role="status">{{successMessage}}</p>
+  <div class="tr-content">
+    <div class="tr-analytics">
+      <article class="tr-card tr-curve"><h2><span>▥</span> Evolución de anomalías térmicas <small>DEMO</small></h2><svg viewBox="0 0 490 222" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Gráfico de las detecciones DEMO por fecha">
+        <defs><linearGradient id="tr-area" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#fb8b17" stop-opacity=".45"/><stop offset="1" stop-color="#fb8b17" stop-opacity=".02"/></linearGradient></defs>
+        <g class="tr-grid"><line x1="30" y1="29" x2="456" y2="29"/><line x1="30" y1="65" x2="456" y2="65"/><line x1="30" y1="102" x2="456" y2="102"/><line x1="30" y1="138" x2="456" y2="138"/><line x1="30" y1="174" x2="456" y2="174"/></g>
+        <g class="tr-axis-label"><text x="8" y="32">20</text><text x="8" y="69">15</text><text x="8" y="105">10</text><text x="13" y="141">5</text><text x="13" y="178">0</text></g>
+        <polygon [attr.points]="areaPoints" fill="url(#tr-area)"/><polyline [attr.points]="linePoints" fill="none" stroke="#ed6116" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle *ngFor="let count of timeline; index as i" [attr.cx]="30+i*71" [attr.cy]="174-count/20*145" r="0" fill="#f66d13" class="tr-hide-point"/>
+        <g class="tr-axis-label"><text *ngFor="let day of days; index as i" [attr.x]="30+i*71" y="201" text-anchor="middle">{{day}}</text></g>
+      </svg><p class="tr-footnote">Serie simulada · se actualiza al aplicar filtros</p></article>
+      <article class="tr-card tr-severity"><h2><span>◧</span> Anomalías por severidad <small>DEMO</small></h2><div class="tr-severity-body"><div class="tr-donut" [style.background]="donut"><div><strong>{{total}}</strong><span>Total</span></div></div><div class="tr-legend"><div *ngFor="let s of breakdown"><i [style.background]="s.color"></i><span>{{s.label}}: <b>{{s.count}}</b> ({{percentage(s.count)}} %)</span></div></div></div></article>
+      <article class="tr-card tr-summary"><h2><span>▤</span> Resumen por distrito <small>DEMO</small></h2><div class="tr-table-wrap"><table><thead><tr><th>Distrito</th><th>Anomalías</th><th>% del total</th><th>Nivel de actividad</th><th>Tendencia</th></tr></thead><tbody><tr *ngFor="let row of districtRows;trackBy:trackDistrict"><td>📍 {{row.district}}</td><td>{{row.count}}</td><td>{{districtPercent(row.count)}} %</td><td><span class="tr-risk" [class.high]="row.level==='Alto'" [class.medium]="row.level==='Medio'">{{row.level}}</span></td><td [class.tr-positive]="row.change>0" [class.tr-negative]="row.change<0">{{trend(row.change)}}</td></tr><tr *ngIf="!districtRows.length"><td colspan="5" class="tr-empty">Sin resultados para estos filtros</td></tr></tbody></table></div></article>
+      <article class="tr-card tr-compare"><h2><span>▱</span> Comparación de detecciones <small>DEMO</small></h2><div class="tr-bars"><div><span>MODIS (NASA)</span><i><b [style.width.%]="total ? 49 : 0"></b></i><strong>{{total ? (total*0.63 | number:'1.0-0') : 0}}</strong></div><div><span>VIIRS (NASA)</span><i class="light"><b [style.width.%]="total ? 53 : 0"></b></i><strong>{{total ? (total*0.68 | number:'1.0-0') : 0}}</strong></div><div><span>Armonizada</span><i class="dark"><b [style.width.%]="total ? 100 : 0"></b></i><strong>{{total}}</strong></div></div><p class="tr-info">ⓘ La armonización integra y depura detecciones MODIS y VIIRS, reduciendo duplicados. <b>Cifras ilustrativas.</b></p></article>
+    </div>
+    <aside class="tr-side">
+      <article class="tr-card tr-export"><h2><span>▤</span> Generar reporte</h2><p>Configura los parámetros y exporta tu reporte en el formato que necesites.</p><label class="tr-export-label">Tipo de reporte<select [(ngModel)]="reportType" aria-label="Tipo de reporte"><option *ngFor="let type of reportTypes" [value]="type">{{type}}</option></select></label><div class="tr-export-label">Formato de exportación</div><div class="tr-formats" role="group" aria-label="Formato de exportación"><button type="button" *ngFor="let option of ['PDF','CSV','Excel']" [class.active]="format===option" [attr.aria-pressed]="format===option" (click)="format=$any(option)">{{option}}</button></div><button type="button" class="tr-generate tr-primary" (click)="generate()">↧ &nbsp; Generar y descargar</button><small class="tr-disclaimer">Los archivos incluyen únicamente datos DEMO, no alertas oficiales.</small></article>
+      <article class="tr-card tr-recent"><h2><span>◷</span> Reportes recientes</h2><div *ngIf="!recent.length" class="tr-empty-recent">Todavía no generaste reportes en esta sesión.</div><button type="button" *ngFor="let report of recent" class="tr-file" (click)="downloadPrevious(report)"><span class="tr-file-icon">{{report.format==='PDF'?'PDF':report.format==='CSV'?'CSV':'XLS'}}</span><span class="tr-file-meta"><b>{{report.title}}</b><small>{{report.date}}</small></span><span class="tr-download">↓</span></button></article>
+    </aside>
   </div>
 </section>
