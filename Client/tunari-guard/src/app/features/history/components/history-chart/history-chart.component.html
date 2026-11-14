@@ -1,1 +1,47 @@
-<p>history-chart works!</p>
+
+<section class="tg-history-chart">
+
+  <header class="tg-history-chart__header">
+    <div>
+      <h2>Evolución histórica</h2>
+
+      <p>
+        Comportamiento anual de la actividad registrada
+        según la fuente seleccionada.
+      </p>
+    </div>
+
+    <span class="tg-history-chart__badge">
+      2005 – 2026
+    </span>
+  </header>
+
+  @if (hasRecords()) {
+  <div
+    #chartContainer
+    class="tg-history-chart__canvas"
+    role="img"
+    aria-label="Gráfica de evolución histórica de actividad por año"
+  ></div>
+} @else {
+  <div class="tg-history-chart__empty">
+    <span>📈</span>
+
+    <h3>Sin datos para graficar</h3>
+
+    <p>
+      No hay registros históricos disponibles para la fuente seleccionada.
+    </p>
+  </div>
+}
+
+  <footer class="tg-history-chart__footer">
+    <span class="tg-history-chart__dot"></span>
+
+    <span>
+      Los valores representan detecciones o actividad armonizada,
+      según la fuente seleccionada.
+    </span>
+  </footer>
+
+</section>

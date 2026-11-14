@@ -1,1 +1,96 @@
-<p>history-table works!</p>
+<section class="tg-history-table">
+  <header class="tg-history-table__header">
+    <div>
+      <h2>Registros históricos</h2>
+      <p>Detalle mensual de la actividad registrada.</p>
+    </div>
+
+    <div class="tg-history-table__filter">
+      <label for="history-year">Año</label>
+
+      <select
+        id="history-year"
+        [value]="selectedYear()"
+        (change)="selectYear($any($event.target).value)"
+      >
+        <option value="ALL">Todos los años</option>
+
+        @for (year of years; track year) {
+          <option [value]="year">{{ year }}</option>
+        }
+      </select>
+    </div>
+  </header>
+
+  <div class="tg-history-table__wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Año</th>
+          <th>Mes</th>
+          <th>Fuente</th>
+          <th class="text-right">Actividad registrada</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (record of paginatedRecords(); track record.year + '-' + record.month) {
+          <tr>
+            <td class="year-cell">{{ record.year }}</td>
+            <td>{{ getMonthName(record.month) }}</td>
+            <td>
+              <span
+                class="source-badge"
+                [class.source-badge--harmonized]="record.source === 'HARMONIZED'"
+                [class.source-badge--modis]="record.source === 'MODIS'"
+                [class.source-badge--viirs]="record.source === 'VIIRS'"
+              >
+                {{ getSourceLabel(record.source) }}
+              </span>
+            </td>
+            <td class="activity-cell">
+              {{ record.activityCount | number }}
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4" class="empty-state">
+              No existen registros para el año seleccionado.
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <footer class="tg-history-table__footer">
+    <span>
+      Mostrando {{ firstVisibleRecord() }}–{{ lastVisibleRecord() }}
+      de {{ totalRecords() }} registros
+    </span>
+
+    <div class="pagination">
+      <button
+        type="button"
+        (click)="previousPage()"
+        [disabled]="currentPage() === 1"
+        aria-label="Página anterior"
+      >
+        Anterior
+      </button>
+
+      <span>
+        {{ currentPage() }} / {{ totalPages() }}
+      </span>
+
+      <button
+        type="button"
+        (click)="nextPage()"
+        [disabled]="currentPage() === totalPages()"
+        aria-label="Página siguiente"
+      >
+        Siguiente
+      </button>
+    </div>
+  </footer>
+</section>

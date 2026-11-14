@@ -21,13 +21,6 @@
   gap: 20px;
 }
 
-.tg-history__breadcrumb {
-  display: flex;
-  gap: 9px;
-  margin-bottom: 12px;
-  color: #8b9588;
-  font-size: 12px;
-}
 
 .tg-history__header h1 {
   margin: 0;
@@ -228,5 +221,65 @@
 
   .tg-history__header h1 {
     font-size: 22px;
+  }
+}
+.tg-origin-indicator {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 16px;
+  margin-bottom: 22px;
+  border: 1px solid #e9e5d9;
+  border-radius: 12px;
+  background: #f5f4ed;
+
+  &__dot {
+    width: 9px;
+    height: 9px;
+    margin-top: 5px;
+    border-radius: 50%;
+    background: #929486;
+    flex-shrink: 0;
+  }
+
+  strong {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 13px;
+    color: #414638;
+  }
+
+  p {
+    margin: 0;
+    font-size: 12px;
+    color: #777b6c;
+    line-height: 1.5;
+  }
+
+  &--simulated {
+    background: #fff7e9;
+    border-color: #f0dfbd;
+
+    .tg-origin-indicator__dot {
+      background: #d18a45;
+    }
+  }
+
+  &--real {
+    background: #edf4e9;
+    border-color: #d9e7d1;
+
+    .tg-origin-indicator__dot {
+      background: #526b4c;
+    }
+  }
+
+  &--imported {
+    background: #edf1f7;
+    border-color: #dce3ee;
+
+    .tg-origin-indicator__dot {
+      background: #7188a6;
+    }
   }
 }

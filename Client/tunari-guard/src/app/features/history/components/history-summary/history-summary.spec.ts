@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HistorySummary } from './history-summary';
+import { HistorySummaryComponent } from './history-summary.component';
 
 describe('HistorySummary', () => {
-  let component: HistorySummary;
-  let fixture: ComponentFixture<HistorySummary>;
+  let component: HistorySummaryComponent;
+  let fixture: ComponentFixture<HistorySummaryComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HistorySummary],
+      imports: [HistorySummaryComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(HistorySummary);
+    fixture = TestBed.createComponent(HistorySummaryComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

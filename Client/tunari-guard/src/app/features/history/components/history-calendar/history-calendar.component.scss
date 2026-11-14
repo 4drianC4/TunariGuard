@@ -1,0 +1,421 @@
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.tg-calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tg-calendar__grid {
+  display: grid;
+  grid-template-columns: 52px repeat(12, minmax(24px, 1fr));
+  gap: 7px;
+  min-width: 540px;
+}
+
+.tg-calendar__year-label,
+.tg-calendar__month-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #899184;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.tg-calendar__year {
+  display: flex;
+  align-items: center;
+  color: #667365;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.tg-calendar__cell {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 0.85;
+  min-height: 15px;
+  border-radius: 4px;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.tg-calendar__cell:not(.tg-calendar__cell--empty):hover {
+  transform: scale(1.12);
+  outline: 2px solid #526b4c;
+  outline-offset: 1px;
+}
+
+.tg-calendar__cell--level-0 {
+  background: #e8eddf;
+}
+
+.tg-calendar__cell--level-1 {
+  background: #cbd9b9;
+}
+
+.tg-calendar__cell--level-2 {
+  background: #a4bd8c;
+}
+
+.tg-calendar__cell--level-3 {
+  background: #789a68;
+}
+
+.tg-calendar__cell--level-4 {
+  background: #496b45;
+}
+
+.tg-calendar__cell--empty {
+  background: #eeece6;
+  border: 1px dashed #d7d4ca;
+}
+
+.tg-calendar__legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tg-calendar__legend-label,
+.tg-calendar__unavailable {
+  color: #849080;
+  font-size: 11px;
+}
+
+.tg-calendar__legend-items {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tg-calendar__legend-items .tg-calendar__cell {
+  width: 15px;
+  min-height: 15px;
+}
+
+.tg-calendar__summary {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid #ece9e0;
+  color: #849080;
+  font-size: 11px;
+}
+
+
+.tg-calendar__cell {
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.tg-calendar__cell:disabled {
+  cursor: not-allowed;
+}
+
+.tg-calendar__cell--selected {
+  outline: 2px solid #344c39;
+  outline-offset: 2px;
+  transform: scale(1.08);
+}
+
+.tg-calendar__cell--empty:hover {
+  transform: none;
+  outline: none;
+}
+
+.tg-calendar__selection-hint {
+  padding: 16px;
+  border: 1px dashed #deded2;
+  border-radius: 12px;
+  color: #8b9588;
+  background: #faf9f4;
+  font-size: 12px;
+  text-align: center;
+}
+
+
+/* Tarjeta flotante contextual */
+.tg-calendar-popover {
+  position: fixed;
+  z-index: 1100;
+
+  width: 320px;
+  max-width: calc(100vw - 24px);
+
+  padding: 16px;
+
+  border: 1px solid #e5e3d9;
+  border-radius: 14px;
+  background: #fffefa;
+
+  box-shadow:
+    0 8px 30px rgba(40, 59, 48, 0.16),
+    0 2px 6px rgba(40, 59, 48, 0.06);
+
+  animation: tg-popover-appear 0.18s ease-out;
+}
+
+.tg-calendar-popover__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+
+  margin-bottom: 16px;
+}
+
+.tg-calendar-popover__eyebrow {
+  color: #929b8e;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+}
+
+.tg-calendar-popover__header h3 {
+  margin: 5px 0 0;
+  color: #344c39;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.tg-calendar-popover__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+
+  border: none;
+  border-radius: 7px;
+  background: #f0eee7;
+  color: #647260;
+
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.tg-calendar-popover__close:hover {
+  background: #e5e9df;
+  color: #344c39;
+}
+
+/* Ajustes del componente de detalle dentro del popover */
+.tg-calendar-popover app-month-detail {
+  display: block;
+}
+
+.tg-calendar-popover ::ng-deep .tg-month-detail {
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.tg-calendar-popover ::ng-deep .tg-month-detail__header {
+  display: none;
+}
+
+.tg-calendar-popover ::ng-deep .tg-month-detail__content {
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.tg-calendar-popover ::ng-deep .tg-month-detail__description {
+  padding: 12px 0 0;
+  border-left: none;
+  border-top: 1px solid #e6e2d8;
+}
+
+@keyframes tg-popover-appear {
+  from {
+    opacity: 0;
+    transform: translateY(5px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tg-calendar-popover {
+    animation: none;
+  }
+}
+
+
+/* Encabezado */
+.tg-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+
+  margin-bottom: 24px;
+}
+
+.tg-modal__eyebrow {
+  color: #929b8e;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.tg-modal__header h2 {
+  margin: 7px 0 0;
+  color: #344c39;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+/* Botón de cerrar */
+.tg-modal__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  border: none;
+  border-radius: 9px;
+  background: #f0eee7;
+  color: #647260;
+
+  font-size: 24px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.tg-modal__close:hover {
+  background: #e5e9df;
+  color: #344c39;
+}
+
+/* Footer */
+.tg-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid #ece9e0;
+}
+
+.tg-modal__footer span {
+  color: #929b8e;
+  font-size: 11px;
+}
+
+.tg-modal__button {
+  padding: 9px 20px;
+  border: none;
+  border-radius: 9px;
+
+  background: #526b4c;
+  color: white;
+
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.tg-modal__button:hover {
+  background: #405a3b;
+}
+
+.tg-calendar-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  padding: 32px 20px;
+  text-align: center;
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 14px;
+    border-radius: 14px;
+    background: #f1f0e8;
+
+    span {
+      font-size: 22px;
+    }
+  }
+
+  h3 {
+    margin: 0 0 8px;
+    color: #414638;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  p {
+    max-width: 380px;
+    margin: 0;
+    color: #898b7d;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+}
+
+/* Animaciones */
+@keyframes tg-modal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes tg-modal-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .tg-modal {
+    padding: 18px;
+  }
+
+  .tg-modal__overlay {
+    padding: 12px;
+  }
+}
+
+
+@media (max-width: 600px) {
+  .tg-calendar__grid {
+    gap: 5px;
+  }
+
+  .tg-calendar__year {
+    font-size: 10px;
+  }
+}

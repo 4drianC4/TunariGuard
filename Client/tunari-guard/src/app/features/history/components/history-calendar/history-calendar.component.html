@@ -1,0 +1,141 @@
+
+@if (hasRecords() && hasAvailableMonths()) {
+<div class="tg-calendar">
+
+  <!-- Encabezado de meses -->
+  <div class="tg-calendar__grid">
+
+    <div class="tg-calendar__year-label"></div>
+
+    @for (month of months; track month) {
+      <div class="tg-calendar__month-label">
+        {{ month }}
+      </div>
+    }
+
+    <!-- Filas de años -->
+    @for (row of calendar(); track row.year) {
+
+  <div class="tg-calendar__year">
+    {{ row.year }}
+  </div>
+
+  @for (cell of row.cells; track cell.month) {
+    <button
+      type="button"
+      class="tg-calendar__cell"
+      [class.tg-calendar__cell--empty]="cell.level === -1"
+      [class.tg-calendar__cell--level-0]="cell.level === 0"
+      [class.tg-calendar__cell--level-1]="cell.level === 1"
+      [class.tg-calendar__cell--level-2]="cell.level === 2"
+      [class.tg-calendar__cell--level-3]="cell.level === 3"
+      [class.tg-calendar__cell--level-4]="cell.level === 4"
+      [class.tg-calendar__cell--selected]="isSelected(cell)"
+      [disabled]="cell.count === null"
+      [attr.title]="
+        cell.count === null
+          ? getMonthName(cell.month) + ' ' + cell.year + ': Sin datos'
+          : getMonthName(cell.month) + ' ' + cell.year + ': ' + cell.count + ' detecciones'
+      "
+      (click)="selectMonth(cell, $event)"
+    ></button>
+  }
+
+}
+
+  </div>
+
+  <!-- Leyenda -->
+  <div class="tg-calendar__legend">
+
+    <span class="tg-calendar__legend-label">
+      Menor actividad
+    </span>
+
+    <div class="tg-calendar__legend-items">
+      <span class="tg-calendar__cell tg-calendar__cell--level-0"></span>
+      <span class="tg-calendar__cell tg-calendar__cell--level-1"></span>
+      <span class="tg-calendar__cell tg-calendar__cell--level-2"></span>
+      <span class="tg-calendar__cell tg-calendar__cell--level-3"></span>
+      <span class="tg-calendar__cell tg-calendar__cell--level-4"></span>
+      <span class="tg-calendar__cell tg-calendar__cell--empty"></span>
+    </div>
+
+    <span class="tg-calendar__legend-label">
+      Mayor actividad
+    </span>
+
+    <span class="tg-calendar__unavailable">
+      Sin datos
+    </span>
+
+  </div>
+
+  <!-- Resumen de cobertura -->
+  <div class="tg-calendar__summary">
+    <span>
+      {{ availableMonths() }} meses con registros
+    </span>
+
+    <span>
+      {{ unavailableMonths() }} meses sin datos disponibles
+    </span>
+  </div>
+
+</div>
+
+
+<!-- Modal de detalle mensual -->
+
+@if (selectedCell(); as selected) {
+  @if (popoverPosition(); as position) {
+    <div
+      class="tg-calendar-popover"
+      [style.top.px]="position.top"
+      [style.left.px]="position.left"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="tg-calendar-popover__header">
+        <div>
+          <span class="tg-calendar-popover__eyebrow">
+            DETALLE DEL PERIODO
+          </span>
+
+          <h3>
+            {{ getMonthName(selected.month) }} {{ selected.year }}
+          </h3>
+        </div>
+
+        <button
+          type="button"
+          class="tg-calendar-popover__close"
+          aria-label="Cerrar detalle"
+          (click)="closeDetail()"
+        >
+          &times;
+        </button>
+      </div>
+
+      <app-month-detail
+        [year]="selected.year"
+        [month]="selected.month"
+        [count]="selected.count!"
+        [source]="selectedSource()"
+      />
+    </div>
+  }
+}
+} @else {
+  <div class="tg-calendar-empty">
+    <div class="tg-calendar-empty__icon">
+      <span>📅</span>
+    </div>
+
+    <h3>Sin información histórica</h3>
+
+    <p>
+      No existen registros disponibles para la fuente seleccionada
+      en el periodo histórico consultado.
+    </p>
+  </div>
+}

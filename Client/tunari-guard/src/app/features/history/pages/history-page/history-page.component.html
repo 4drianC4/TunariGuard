@@ -4,11 +4,8 @@
   <!-- Encabezado -->
   <header class="tg-history__header">
     <div>
-      <div class="tg-history__breadcrumb">
-        <span>Monitoreo</span>
-        <span>/</span>
-        <span>Historial</span>
-      </div>
+      
+    <div class="tg-breadcrumb">TUNARI GUARD / historial</div>
 
       <h1>Historial de actividad de quema</h1>
 
@@ -23,6 +20,20 @@
       Datos de demostración
     </span>
   </header>
+
+  <div
+  class="tg-origin-indicator"
+  [class.tg-origin-indicator--simulated]="originInfo().type === 'SIMULATED'"
+  [class.tg-origin-indicator--real]="originInfo().type === 'NASA_FIRMS'"
+  [class.tg-origin-indicator--imported]="originInfo().type === 'IMPORTED'"
+>
+  <span class="tg-origin-indicator__dot"></span>
+
+  <div>
+    <strong>{{ originInfo().label }}</strong>
+    <p>{{ originInfo().description }}</p>
+  </div>
+</div>
 
   <!-- Selector de fuente -->
   <section class="tg-history__source-section">
@@ -128,17 +139,9 @@
       </span>
     </div>
 
-    <div class="tg-history__calendar-placeholder">
-      <div class="tg-history__placeholder-icon">▦</div>
-
-      <h3>Calendario histórico</h3>
-
-      <p>
-        En el siguiente paso construiremos la matriz
-        de actividad mensual por año.
-      </p>
-    </div>
-
+    <app-history-calendar />
+    <app-history-chart />
+    <app-history-table />
   </section>
 
   <!-- Información de los datos -->

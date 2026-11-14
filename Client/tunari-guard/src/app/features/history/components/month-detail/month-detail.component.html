@@ -1,0 +1,43 @@
+
+<section class="tg-month-detail">
+
+  <div class="tg-month-detail__header">
+    <div>
+      <span class="tg-month-detail__eyebrow">
+        DETALLE DEL PERIODO
+      </span>
+
+      <h3>{{ monthName }} {{ year() }}</h3>
+    </div>
+
+    <span class="tg-month-detail__source">
+      {{ sourceName }}
+    </span>
+  </div>
+
+  <div class="tg-month-detail__content">
+
+    <div class="tg-month-detail__metric">
+      <span class="tg-month-detail__icon">◉</span>
+
+      <div>
+        <strong>{{ count() }}</strong>
+        <span>Detecciones registradas</span>
+      </div>
+    </div>
+
+    <div class="tg-month-detail__description">
+      <p>
+        Se registraron {{ count() }} detecciones durante
+        {{ monthName }} de {{ year() }}, utilizando la fuente
+        {{ sourceName }}.
+      </p>
+
+      <span>
+        Información de demostración.
+      </span>
+    </div>
+
+  </div>
+
+</section>
