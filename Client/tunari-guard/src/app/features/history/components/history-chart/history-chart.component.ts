@@ -87,18 +87,9 @@ export class HistoryChartComponent implements AfterViewInit, OnDestroy {
       HistorySource,
       { label: string; color: string }
     > = {
-      HARMONIZED: {
-        label: 'Actividad armonizada',
-        color: '#526b4c',
-      },
-      MODIS: {
-        label: 'Actividad MODIS',
-        color: '#d18a45',
-      },
-      VIIRS: {
-        label: 'Actividad VIIRS',
-        color: '#7188a6',
-      },
+      HARMONIZED: { label: 'Índice armonizado', color: '#526b4c' },
+      MODIS: { label: 'Conteo bruto MODIS', color: '#d18a45' },
+      VIIRS: { label: 'Conteo bruto VIIRS', color: '#7188a6' },
     };
 
     const config = sourceConfig[source];
