@@ -56,12 +56,19 @@ export class AlertsService {
   }
 
   async list(q: ListAlertsQuery) {
+    // Áreas que agrupan a otras: el parque incluye sus sectores por municipio y el municipio
+    // de Cochabamba sus 15 distritos.
+    const parque = q.area_id === 'parque-tunari';
+    const municipio = q.area_id === 'municipio-cochabamba';
+    const areaIds = municipio ? Array.from({ length: 15 }, (_, i) => `distrito-${String(i + 1).padStart(2, '0')}`) : undefined;
     const { rows, total, bySeverity, byStatus, areas } = await this.repository.list(
       {
         // Los días se piden en hora de Bolivia (UTC−4): el día D va de D 04:00Z a D+1 04:00Z.
         fromUtc: q.desde ? new Date(`${q.desde}T04:00:00Z`) : undefined,
         toUtc: q.hasta ? new Date(new Date(`${q.hasta}T04:00:00Z`).getTime() + 86_400_000) : undefined,
-        areaId: q.area_id,
+        areaId: parque || municipio ? undefined : q.area_id,
+        areaIds,
+        inPark: parque ? true : q.en_parque,
         severity: q.severidad ? severityFromLabel(q.severidad) : undefined,
         status: q.estado ? statusFromLabel(q.estado) : undefined,
         mode: q.modo === 'replay' ? 'REPLAY' : q.modo === 'live' ? 'LIVE' : undefined,

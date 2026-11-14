@@ -291,7 +291,7 @@ Son reglas operativas para priorizar la revisión, no el modelo estadístico. Es
 
 | Endpoint | Qué hace |
 | --- | --- |
-| `GET /alertas` | Lista paginada, de la más reciente a la más antigua. Filtros: `desde`, `hasta` (días en hora de Bolivia), `area_id`, `severidad` (`Crítica`/`Alta`/`Media`), `estado`, `modo` (`live`/`replay`), `origen`, `page`, `limit`. Incluye `counts` por severidad y estado sobre todo el filtro (para las tarjetas de resumen) y `areas` con alertas (para el selector) |
+| `GET /alertas` | Lista paginada, de la más reciente a la más antigua. Filtros: `desde`, `hasta` (días en hora de Bolivia), `area_id` (`parque-tunari` incluye sus sectores por municipio y `municipio-cochabamba` sus 15 distritos), `en_parque`, `severidad` (`Crítica`/`Alta`/`Media`), `estado`, `modo` (`live`/`replay`), `origen`, `page`, `limit`. Incluye `counts` por severidad y estado sobre todo el filtro (para las tarjetas de resumen) y `areas` con alertas (para el selector) |
 | `GET /alertas/{id}` | Una alerta, por uuid o por código `AL-0001` |
 | `PATCH /alertas/{id}` | Cambia el estado: `{ "status": "Verificada", "note": "…" }`. Estados: `Pendiente`, `En revisión`, `En análisis`, `Verificada`. Se guarda y se avisa a todos con `alert:updated` |
 | `GET /alertas/contexto-mensual` | El **nivel_alerta** del mes en curso por área, traducido a un mensaje (`area_id`, `solo_alertas=true`) |
@@ -303,6 +303,8 @@ Cada alerta tiene la forma que usa la vista: `id` (`AL-3194`), `district` (nombr
 
 Ejemplo de `message`:
 > 2 detecciones de calor VIIRS (Suomi-NPP) en Sector del Tunari en Quillacollo, dentro del Parque Nacional Tunari, el 2026-10-25 a las 13:37 (hora de Bolivia). Confianza alta. Potencia radiativa máxima: 8.7 MW. Requiere verificación: una detección satelital no confirma un incendio.
+
+**En el chat (Tuni):** `POST /tuni/chat` responde con estas mismas alertas a preguntas como "¿hay alertas?", "alertas críticas en el Tunari", "alertas pendientes de Cochabamba" o "últimas alertas del distrito 9". Devuelve el total por severidad, las 5 más recientes y un enlace a `/alertas` con el filtro aplicado. Esas frases no necesitan clave de IA; con `LLM_API_KEY`, Tuni también entiende otras formas de preguntarlo (herramienta `alertas_operativas`). El botón rápido del chat puede enviar `consulta: "alertas_operativas"`.
 
 **Contexto mensual (`nivel_alerta`):** es el nivel que calcula el modelo del equipo de datos para el mes en curso. Va de `normal` y `elevada` a `alta` y `muy_alta`, más `sin_baseline` cuando no hay historia suficiente. El backend solo lo convierte en mensaje, por ejemplo:
 

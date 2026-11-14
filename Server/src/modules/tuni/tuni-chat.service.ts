@@ -42,6 +42,7 @@ export class TuniChatService {
       if (consulta === 'estado_mes') return await this.datos.estadoMes(null);
       if (consulta === 'ultimas_detecciones') return await this.datos.ultimasDetecciones(null, null, null);
       if (consulta === 'comparar_meses') return await this.datos.compararMeses(null, null, null);
+      if (consulta === 'alertas_operativas') return await this.datos.alertasOperativas(null, null, false);
       const coincidencia = await this.consultaDirecta(message);
       if (coincidencia) return coincidencia;
 
@@ -71,6 +72,13 @@ export class TuniChatService {
 
     const detecciones = new RegExp(`^(?:(?:donde (?:se vieron|se detectaron|estan) |muestra(?:me)? )?(?:los |las )?)ultim[oa]s (?:focos(?: de calor)?|detecciones(?: termicas)?)(?: (?:de|en) (?:el )?${zona})?$`).exec(texto);
     if (detecciones) return this.datos.ultimasDetecciones(detecciones[1] ?? null, null, null);
+    const alertas = new RegExp(
+      `^(?:hay alertas|que alertas hay|(?:las )?(?:ultimas )?alertas(?: (activas|pendientes|criticas|recientes))?)(?: (?:en|de|del) (?:el |la )?${zona})?$`,
+    ).exec(texto);
+    if (alertas) {
+      const tipo = alertas[1];
+      return this.datos.alertasOperativas(alertas[2] ?? null, tipo === 'criticas' ? 'Crítica' : null, tipo === 'pendientes');
+    }
     if (/^(comparar ultimo mes completo|compara el ultimo mes completo con el ano anterior)$/.test(texto)) {
       return this.datos.compararMeses(null, null, null);
     }
@@ -137,6 +145,12 @@ export class TuniChatService {
         return parsed.success
           ? this.datos.compararMeses(parsed.data.area, parsed.data.periodo, parsed.data.referencia)
           : orientar('periodo');
+      }
+      case 'alertas_operativas': {
+        const parsed = consultas.alertas_operativas.safeParse(args);
+        return parsed.success
+          ? this.datos.alertasOperativas(parsed.data.area, parsed.data.severidad, parsed.data.solo_pendientes)
+          : orientar('fuera_de_alcance');
       }
       case 'consultar_metodologia': {
         const parsed = consultas.consultar_metodologia.safeParse(args);

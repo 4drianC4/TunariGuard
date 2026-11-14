@@ -12,5 +12,6 @@ import { AlertsService } from './alerts.service.js';
 @Module({
   controllers: [AlertsController],
   providers: [AlertsService, AlertsRepository],
+  exports: [AlertsService],
 })
 export class AlertsModule {}

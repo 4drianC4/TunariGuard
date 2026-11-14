@@ -9,6 +9,10 @@ export interface AlertFilter {
   fromUtc?: Date;
   toUtc?: Date;
   areaId?: string;
+  /** Varias áreas a la vez (p. ej. los 15 distritos del municipio). */
+  areaIds?: string[];
+  /** Solo alertas dentro del Parque Tunari (incluye sus sectores por municipio). */
+  inPark?: boolean;
   severity?: Severity;
   status?: AlertStatusValue;
   mode?: 'LIVE' | 'REPLAY';
@@ -129,7 +133,7 @@ export class AlertsRepository {
       // Áreas con alertas en el periodo (sin filtrar por área), para el selector de la vista.
       this.prisma.alert.groupBy({
         by: ['areaId', 'areaName'],
-        where: whereOf({ ...filter, areaId: undefined }),
+        where: whereOf({ ...filter, areaId: undefined, areaIds: undefined }),
         _count: { _all: true },
         orderBy: { areaName: 'asc' },
       }),
@@ -179,7 +183,8 @@ export class AlertsRepository {
 function whereOf(f: AlertFilter): Prisma.AlertWhereInput {
   return {
     ...(f.fromUtc || f.toUtc ? { detectedAt: { gte: f.fromUtc, lt: f.toUtc } } : {}),
-    areaId: f.areaId,
+    areaId: f.areaId ?? (f.areaIds ? { in: f.areaIds } : undefined),
+    inPark: f.inPark,
     severity: f.severity,
     status: f.status,
     mode: f.mode,

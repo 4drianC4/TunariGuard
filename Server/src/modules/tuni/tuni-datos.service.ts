@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { deteccionesSchema, historialSchema } from '../analisis/analisis.schemas.js';
 import { AnalisisService } from '../analisis/analisis.service.js';
 import { HistorialService } from '../analisis/historial.service.js';
+import { listAlertsSchema } from '../alerts/alerts.schemas.js';
+import { AlertsService } from '../alerts/alerts.service.js';
 import type { FuenteTuni, RespuestaTuni } from './tuni-respuesta.js';
 import type { SateliteTuni } from './tuni.schemas.js';
 
@@ -19,7 +21,7 @@ const isoMonth = /^(20\d\d|2100)-(0[1-9]|1[0-2])$/;
 const alerta = z.object({
   mes: isoDay,
   fecha_corte: isoDay,
-  nivel_alerta: z.enum(['normal', 'elevada', 'alta', 'muy_alta']),
+  nivel_alerta: z.enum(['normal', 'elevada', 'alta', 'muy_alta', 'sin_baseline']),
   satelite_base: z.string(),
   celdas_dia_observadas: z.number(),
   mediana_historica_tramo: z.number().nullable(),
@@ -46,7 +48,59 @@ export class TuniDatosService {
   constructor(
     private readonly analisis: AnalisisService,
     private readonly historial: HistorialService,
+    private readonly alertas: AlertsService,
   ) {}
+
+  /**
+   * Alertas operativas guardadas (tabla alerts): las más recientes y el total por severidad.
+   * «Parque Tunari» incluye sus sectores por municipio; «municipio de Cochabamba», sus 15 distritos.
+   */
+  async alertasOperativas(
+    area: string | null, severidad: 'Crítica' | 'Alta' | 'Media' | null, soloPendientes: boolean,
+  ): Promise<RespuestaTuni> {
+    const filtro: Record<string, string> = {};
+    let nombre = 'todas las áreas vigiladas';
+    if (area !== null) {
+      const seleccion = await this.area(area);
+      if (!seleccion) return areaDesconocida(area);
+      nombre = seleccion.nombre_visible;
+      filtro['area_id'] = seleccion.area_id;
+    }
+    if (severidad) filtro['severidad'] = severidad;
+    if (soloPendientes) filtro['estado'] = 'Pendiente';
+
+    const query = listAlertsSchema.parse({ ...filtro, limit: '5' });
+    const resultado = await this.alertas.list(query);
+    const fuente: FuenteTuni = {
+      label: 'Abrir alertas',
+      route: '/alertas',
+      apiPath: `/alertas?${new URLSearchParams({ ...filtro, limit: '50' })}`,
+      query: filtro,
+    };
+
+    const descripcion = [soloPendientes ? 'pendientes' : '', severidad ? `de severidad ${severidad.toLowerCase()}` : '']
+      .filter(Boolean).join(' ');
+    if (!resultado.total) {
+      return sinDatos(`No hay alertas operativas${descripcion ? ' ' + descripcion : ''} registradas en ${nombre}.`, fuente);
+    }
+
+    const { critical, high, medium } = resultado.counts;
+    const desglose = severidad ? '' : ` (${critical} críticas, ${high} altas y ${medium} medias)`;
+    const [reciente] = resultado.items;
+    const facts = resultado.items.map((a) => ({
+      label: `${a.id} · ${a.severity} · ${a.status}`,
+      value: `${a.district} · ${a.detected} (Bolivia) · ${a.detectionCount} ${a.detectionCount === 1 ? 'detección' : 'detecciones'}` +
+        (a.simulated ? ' · simulada' : ''),
+    }));
+    return {
+      answer:
+        `Hay ${numero.format(resultado.total)} alertas operativas${descripcion ? ' ' + descripcion : ''} en ${nombre}${desglose}. ` +
+        `La más reciente: ${reciente!.message}`,
+      dataSource: 'tunari_guard',
+      facts,
+      source: fuente,
+    };
+  }
 
   async estadoMes(area: string | null): Promise<RespuestaTuni> {
     const seleccion = await this.area(area);
