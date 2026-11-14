@@ -24,9 +24,12 @@ export class ObservationsService {
     return this.repository.insertMany(batchId, origin, observations);
   }
 
-  /** Quita las NRT que el dato estándar del lote deja obsoletas (por plataforma y rango de días). */
-  deleteObsoleteNrt(batchId: string, ranges: NrtRange[]): Promise<number> {
-    return ranges.length ? this.repository.deleteObsoleteNrt(batchId, ranges) : Promise.resolve(0);
+  /**
+   * Quita las NRT que el dato estándar del lote deja obsoletas (misma plataforma, origen, días y
+   * zona). Devuelve los ids borrados para avisar al mapa.
+   */
+  deleteObsoleteNrt(batchId: string, origin: DataOrigin, ranges: NrtRange[]): Promise<string[]> {
+    return ranges.length ? this.repository.deleteObsoleteNrt(batchId, origin, ranges) : Promise.resolve([]);
   }
 
   /** Asigna distritos a todo un lote, una vez insertados todos sus bloques. */

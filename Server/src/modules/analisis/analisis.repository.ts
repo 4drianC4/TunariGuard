@@ -232,6 +232,96 @@ export class AnalisisRepository {
       SELECT to_jsonb(i) AS fila FROM fuego.ingestas i ORDER BY i.fecha_carga DESC LIMIT 1`);
   }
 
+  // ── Historial (vista /historial del frontend) ─────────────────────────────
+
+  /** Nombre y método del índice de las áreas pedidas, sin geometría. */
+  areasResumen(filtro: { ids?: string[]; tipo?: string }): Promise<Fila[]> {
+    return this.filas(Prisma.sql`
+      SELECT jsonb_build_object('area_id', area_id, 'nombre_visible', nombre_visible, 'tipo', tipo,
+                                'metodo_indice', metodo_indice) AS fila
+      FROM fuego.areas
+      WHERE (${filtro.ids ?? null}::text[] IS NULL OR area_id = ANY (${filtro.ids ?? null}::text[]))
+        AND (${filtro.tipo ?? null}::text IS NULL OR tipo = ${filtro.tipo ?? null})
+      ORDER BY area_id`);
+  }
+
+  /**
+   * Conteo mensual BRUTO de un sensor (sin factores ni armonización) para varias áreas.
+   * Incluye todos los satélites del sensor. Un mes sin detecciones vale 0; los meses anteriores
+   * a que el sensor existiera no se devuelven. Llega hasta la última detección cargada.
+   */
+  serieSensorMensual(areaIds: string[], sensor: 'MODIS' | 'VIIRS', desdeAnio?: number, hastaAnio?: number): Promise<Fila[]> {
+    return this.filas(Prisma.sql`
+      WITH lim AS (
+        SELECT GREATEST(
+                 (SELECT date_trunc('month', min(inicio_indice)) FROM fuego.fuentes_satelitales WHERE familia = ${sensor}),
+                 make_date(COALESCE(${desdeAnio ?? null}::int, 1900), 1, 1))::date AS d0,
+               LEAST(
+                 date_trunc('month', GREATEST((SELECT valor::date FROM fuego.parametros WHERE clave = 'cobertura_hasta'),
+                                              (SELECT max(fecha_bo) FROM fuego.detecciones))),
+                 make_date(COALESCE(${hastaAnio ?? null}::int, 2999), 12, 1))::date AS d1
+      ),
+      sel AS (SELECT area_id FROM fuego.areas WHERE area_id = ANY (${areaIds}::text[])),
+      -- Cada área empieza donde empieza su cobertura en el paquete (serie_mensual): antes no hay
+      -- datos cargados y un 0 sería falso.
+      inicio_area AS (
+        SELECT area_id, min(mes) AS m0 FROM fuego.serie_mensual
+        WHERE area_id = ANY (${areaIds}::text[]) GROUP BY area_id
+      ),
+      meses AS (
+        SELECT s.area_id, generate_series(GREATEST(lim.d0, COALESCE(ia.m0, lim.d0)), lim.d1, interval '1 month')::date AS mes
+        FROM sel s CROSS JOIN lim LEFT JOIN inicio_area ia USING (area_id)
+      ),
+      base AS (
+        SELECT s.area_id, date_trunc('month', d.fecha_bo)::date AS mes, d.fuente, d.fecha_bo, d.cell_id, d.origen_dato
+        FROM sel s JOIN fuego.detecciones d ON fuego.pertenece_a_area(d, s.area_id)
+        WHERE d.sensor = ${sensor}
+      ),
+      por_mes AS (
+        SELECT area_id, mes, count(*)::int AS detecciones,
+               count(DISTINCT (fecha_bo, cell_id))::int AS celdas_dia,
+               bool_or(origen_dato = 'NRT') AS provisional
+        FROM base GROUP BY area_id, mes
+      ),
+      por_fuente AS (
+        SELECT area_id, mes, jsonb_object_agg(fuente, n) AS fuentes
+        FROM (SELECT area_id, mes, fuente, count(*)::int AS n FROM base GROUP BY area_id, mes, fuente) x
+        GROUP BY area_id, mes
+      )
+      SELECT jsonb_build_object(
+               'area_id', m.area_id, 'mes', to_char(m.mes, 'YYYY-MM-DD'),
+               'detecciones', COALESCE(p.detecciones, 0), 'celdas_dia', COALESCE(p.celdas_dia, 0),
+               'provisional', COALESCE(p.provisional, false), 'por_fuente', COALESCE(f.fuentes, '{}'::jsonb)) AS fila
+      FROM meses m
+      LEFT JOIN por_mes p ON p.area_id = m.area_id AND p.mes = m.mes
+      LEFT JOIN por_fuente f ON f.area_id = m.area_id AND f.mes = m.mes
+      ORDER BY m.area_id, m.mes`);
+  }
+
+  /**
+   * Índice armonizado mensual de varias áreas, desde fuego.serie_mensual: la tabla precalculada de
+   * la que sale el calendario. La validación del paquete (04) garantiza que coincide con
+   * serie_armonizada_area, pero leerla es instantáneo (la función recalcula geometrías por área).
+   */
+  serieArmonizadaMensual(areaIds: string[], desdeAnio?: number, hastaAnio?: number): Promise<Fila[]> {
+    return this.filas(Prisma.sql`
+      SELECT jsonb_build_object(
+               'area_id', s.area_id, 'mes', to_char(s.mes, 'YYYY-MM-DD'),
+               'indice', round(s.indice_modis_equivalente::numeric, 2),
+               'calidad_indice', s.calidad_indice) AS fila
+      FROM fuego.serie_mensual s
+      WHERE s.area_id = ANY (${areaIds}::text[])
+        AND (${desdeAnio ?? null}::int IS NULL OR s.anio >= ${desdeAnio ?? null}::int)
+        AND (${hastaAnio ?? null}::int IS NULL OR s.anio <= ${hastaAnio ?? null}::int)
+      ORDER BY s.area_id, s.mes`);
+  }
+
+  async factorViirsPorModis(): Promise<number | null> {
+    const rows = await this.query<{ factor: number | null }>(Prisma.sql`
+      SELECT valor::float8 AS factor FROM fuego.parametros WHERE clave = 'factor_viirs_por_modis'`);
+    return rows[0]?.factor ?? null;
+  }
+
   // ── Infraestructura ──────────────────────────────────────────────────────
 
   private async filas(sql: Prisma.Sql): Promise<Fila[]> {

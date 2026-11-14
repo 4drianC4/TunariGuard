@@ -1,4 +1,11 @@
-import { BadRequestException, Injectable, Logger, type OnApplicationBootstrap, ServiceUnavailableException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  Logger,
+  type OnApplicationBootstrap,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { DISTRICTS_UPDATED, type DistrictsUpdatedEvent } from '../../shared/domain-events.js';
 import type { FeatureCollection } from 'geojson';
@@ -34,6 +41,14 @@ export class DistrictsService implements OnApplicationBootstrap {
   async importFromFuego(replace: boolean) {
     if (!(await this.repository.fuegoDisponible())) {
       throw new ServiceUnavailableException('El esquema fuego no está cargado. Ejecuta en Server/: npm run fuego:setup');
+    }
+    // Sin replace, agregar los de fuego dejaría dos juegos de polígonos solapados: no se toca nada.
+    const ajenos = await this.repository.codesOutsideFuego();
+    if (ajenos.length > 0 && !replace) {
+      throw new ConflictException(
+        `Hay ${ajenos.length} distritos con códigos que no vienen de fuego.areas (${ajenos.slice(0, 5).join(', ')}` +
+          `${ajenos.length > 5 ? ', …' : ''}). Para reemplazarlos por los 15 del paquete usa replace=true; no se modificó nada.`,
+      );
     }
     const { imported, removed } = await this.repository.upsertFromFuego(replace);
     return { ...(await this.reassign(imported)), removed };

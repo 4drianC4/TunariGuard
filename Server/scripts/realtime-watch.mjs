@@ -41,12 +41,24 @@ socket.on('hotspots:new', (msg) => {
   console.log(`           ${Object.entries(porDistrito).map(([d, n]) => `${d}: ${n}`).join(' · ')}`);
 });
 
+socket.on('hotspots:removed', (msg) => {
+  const muestra = msg.removedIds.slice(0, 3).join(', ');
+  console.log(
+    `[${hora()}] 🧹 hotspots:removed  ${msg.removedIds.length} focos quitados del mapa · ${msg.reason} · ` +
+      `"${msg.dataset}" (${muestra}${msg.removedIds.length > 3 ? ', …' : ''})`,
+  );
+});
+
 socket.on('sync:status', ({ lastBatch }) => {
   if (!lastBatch) return console.log(`[${hora()}] sync:status  (todavía no hay importaciones)`);
   const masivo = lastBatch.announced === false ? ' · masiva: recargar GET /observations' : '';
+  const nrt =
+    lastBatch.upgradedToStandard || lastBatch.removedObsolete
+      ? ` · NRT: ${lastBatch.upgradedToStandard ?? 0} a estándar, ${lastBatch.removedObsolete ?? 0} borradas`
+      : '';
   console.log(
     `[${hora()}] 📥 sync:status  "${lastBatch.dataset}" · ${lastBatch.inserted} nuevas, ` +
-      `${lastBatch.duplicates} duplicadas, ${lastBatch.rejected} rechazadas${masivo}`,
+      `${lastBatch.duplicates} duplicadas, ${lastBatch.rejected} rechazadas${nrt}${masivo}`,
   );
 });
 

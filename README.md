@@ -158,7 +158,7 @@ El equipo de datos entregó un paquete (`Server/data/fuego/`) con un esquema Pos
 | Evento | Qué hace |
 | --- | --- |
 | `hotspots:new` | Llega cuando se importan focos nuevos. Trae un FeatureCollection listo para el mapa. |
-| `subscribe` | El cliente elige distritos (`{ districts: ['D1'] }`) o recibe todo. |
+| `subscribe` | El cliente elige distritos (`{ districts: ['distrito-01'] }`) o recibe todo. |
 | `sync:status` | Resultado de la última importación; se reenvía a quien se conecta tarde. |
 | `districts:updated` | Cambiaron los límites: el front debe recargar. |
 | `replay:status` | Progreso de la reproducción de demo. |

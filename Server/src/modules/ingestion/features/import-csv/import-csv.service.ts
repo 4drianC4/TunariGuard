@@ -66,9 +66,13 @@ export class ImportCsvService {
         },
       });
 
-      // El dato estándar reemplaza a las NRT provisionales de esos días (por rango, no por huella).
+      // El dato estándar reemplaza a las NRT provisionales de esos días y esa zona, del mismo
+      // origen (por rango, no por huella). Con replaceNrt=false no se borra nada.
       const standardCoverage = coverage.toArray();
-      const nrtRemoved = await this.observations.deleteObsoleteNrt(batch.id, standardCoverage);
+      const removedIds = body.replaceNrt
+        ? await this.observations.deleteObsoleteNrt(batch.id, body.origin, standardCoverage)
+        : [];
+      const nrtRemoved = removedIds.length;
       const duplicates = summary.accepted - inserted - nrtUpgraded;
       const assignment = await this.observations.assignBatchDistricts(batch.id);
       await this.batches.complete(batch.id, {
@@ -97,6 +101,9 @@ export class ImportCsvService {
         rejected: summary.rejected,
         insertedIds: announced ? insertedIds : [],
         announced,
+        upgradedToStandard: nrtUpgraded,
+        removedObsolete: nrtRemoved,
+        removedIds: nrtRemoved <= LIVE_ANNOUNCE_LIMIT ? removedIds : [],
         completedAtUtc: new Date().toISOString(),
       } satisfies BatchCompletedEvent);
 
@@ -113,7 +120,7 @@ export class ImportCsvService {
         errors: summary.errors,
         districtAssignment: assignment,
         announcedLive: announced,
-        nrt: { upgradedToStandard: nrtUpgraded, removedObsolete: nrtRemoved, standardCoverage },
+        nrt: { replaceNrt: body.replaceNrt, upgradedToStandard: nrtUpgraded, removedObsolete: nrtRemoved, standardCoverage },
       };
     } catch (error) {
       // Si falla el registro no queda un lote huérfano con conteos incorrectos.

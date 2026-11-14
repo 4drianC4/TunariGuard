@@ -1,8 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 type TuniEstado = 'bienvenida' | 'saludo' | 'alerta' | 'satelite' | 'ayuda';
 type ChatItem = { role: 'tuni' | 'user'; text: string };
+type TuniConsejo = { titulo: string; texto: string };
 
 @Component({
   selector: 'app-mascot-assistant',
@@ -12,11 +14,80 @@ type ChatItem = { role: 'tuni' | 'user'; text: string };
   styleUrl: './mascot-assistant.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MascotAssistantComponent {
+export class MascotAssistantComponent implements OnInit, OnDestroy {
   readonly abierto = signal(false);
   readonly estado = signal<TuniEstado>('bienvenida');
   readonly movimiento = signal(true);
   readonly inclinacion = signal(0);
+
+  // TUNARIGUARD_TUNI_GUIDE_V1_START: consejos contextuales por ruta.
+  readonly consejoVisible = signal(false);
+  readonly secuenciaConsejo = signal(0);
+  readonly consejoActual = signal<TuniConsejo>({ titulo: 'Consejo de Tuni', texto: 'Explora TunariGuard con ayuda de Tuni.' });
+  private readonly enrutador = inject(Router);
+  private suscripcionRutas?: Subscription;
+  private temporizadorConsejo?: ReturnType<typeof setTimeout>;
+  private readonly duracionConsejoMs = 30_000;
+  private readonly consejos: Record<string, TuniConsejo> = {
+    '/inicio': { titulo: 'Bienvenido a TunariGuard', texto: 'Revisa los indicadores generales y entra al mapa para explorar los focos de calor.' },
+    '/mapa': { titulo: 'Explora el mapa de focos', texto: 'Selecciona un punto y utiliza los filtros para consultar sus características y procedencia.' },
+    '/historial': { titulo: 'Consulta el historial', texto: 'Compara fechas y sensores para analizar cómo cambia la actividad térmica con el tiempo.' },
+    '/armonizacion': { titulo: 'MODIS + VIIRS', texto: 'Conoce cómo se relacionan observaciones de ambos sensores y consulta sus coincidencias.' },
+    '/alertas': { titulo: 'Prioriza las alertas', texto: 'Filtra por severidad y distrito; revisa el estado de seguimiento antes de actuar.' },
+    '/distritos': { titulo: 'Analiza cada distrito', texto: 'Elige un distrito para ver su actividad térmica, evolución y nivel de riesgo DEMO.' },
+    '/reportes': { titulo: 'Genera tu reporte', texto: 'Aplica un rango de fechas y exporta un resumen por distrito, severidad o fuente.' },
+    '/proyecciones': { titulo: 'Configura una proyección', texto: 'Cambia la serie, el modelo y el escenario. Recuerda: los pronósticos mostrados son DEMO.' },
+    '/metodologia': { titulo: 'Conoce el método', texto: 'Revisa las fuentes MODIS y VIIRS, los pasos de armonización y sus limitaciones.' },
+  };
+
+  ngOnInit(): void {
+    this.actualizarConsejoPorRuta(this.enrutador.url);
+    this.suscripcionRutas = this.enrutador.events.subscribe(evento => {
+      if (evento instanceof NavigationEnd) {
+        this.actualizarConsejoPorRuta(evento.urlAfterRedirects);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.suscripcionRutas?.unsubscribe();
+    this.cancelarTemporizadorConsejo();
+  }
+
+  private actualizarConsejoPorRuta(url: string): void {
+    const ruta = (url.split(/[?#]/)[0].replace(/\/+$/, '') || '/inicio').toLowerCase();
+    this.consejoActual.set(this.consejos[ruta] ?? this.consejos['/inicio']);
+    this.cancelarTemporizadorConsejo();
+    // Si la persona esta usando el chat, no interrumpirlo con una burbuja.
+    if (this.abierto()) {
+      this.consejoVisible.set(false);
+      return;
+    }
+    this.secuenciaConsejo.update(numero => numero + 1);
+    this.consejoVisible.set(true);
+    this.temporizadorConsejo = setTimeout(() => {
+      this.consejoVisible.set(false);
+      this.temporizadorConsejo = undefined;
+    }, this.duracionConsejoMs);
+  }
+
+  private cancelarTemporizadorConsejo(): void {
+    if (this.temporizadorConsejo !== undefined) {
+      clearTimeout(this.temporizadorConsejo);
+      this.temporizadorConsejo = undefined;
+    }
+  }
+
+  cerrarConsejo(): void {
+    this.cancelarTemporizadorConsejo();
+    this.consejoVisible.set(false);
+  }
+
+  abrirAyudaDeEstaVista(): void {
+    this.cerrarConsejo();
+    this.elegir('ayuda');
+  }
+  // TUNARIGUARD_TUNI_GUIDE_V1_END
 
   readonly chat = computed<ChatItem[]>(() => {
     switch (this.estado()) {
@@ -62,9 +133,10 @@ export class MascotAssistantComponent {
     }
   });
 
-  alternar(): void { this.abierto.update(valor => !valor); }
+  alternar(): void { const abrir = !this.abierto(); this.abierto.set(abrir); if (abrir) this.cerrarConsejo(); }
   cerrar(): void { this.abierto.set(false); }
   elegir(estado: TuniEstado): void {
+    this.cerrarConsejo();
     this.estado.set(estado);
     this.abierto.set(true);
     this.inclinacion.set(0);

@@ -36,6 +36,11 @@ export class ImportCsvController {
         dataset: { type: 'string', example: 'FIRMS VIIRS_SNPP_NRT' },
         origin: { type: 'string', enum: ['REAL', 'SIMULATED'], default: 'REAL' },
         sensor: { type: 'string', enum: ['MODIS', 'VIIRS'] },
+        replaceNrt: {
+          type: 'boolean',
+          default: true,
+          description: 'false: no borrar NRT por rango (usar con extractos parciales del estándar)',
+        },
       },
     },
   })

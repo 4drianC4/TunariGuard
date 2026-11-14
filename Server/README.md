@@ -62,14 +62,19 @@ Qué hace cada paso:
 5. **`fuego:setup`**: ejecuta los SQL del paquete de datos (`data/fuego/`). Ver [sección 8](#8-datos-del-equipo-esquema-fuego).
 6. **`start:dev`**: arranca el servidor y lo reinicia solo cuando cambias el código. La primera vez copia los 15 distritos del paquete a nuestra tabla de distritos.
 
-Opcional, para tener la historia completa en el mapa en vivo (11.923 detecciones de 2001 a 2026), con el servidor ya corriendo:
+Después, **con el servidor ya corriendo**, en otra terminal carga las detecciones en tu base. Cada uno tiene su propia base en Docker, así que todos deben hacer este paso:
 
 ```bash
-curl -F file=@data/fuego/formato_firms/firms_modis_cochabamba.csv -F dataset="FIRMS MODIS Cochabamba 2001-2026" http://localhost:3000/api/v1/ingestion/csv
-curl -F file=@data/fuego/formato_firms/firms_viirs_cochabamba.csv -F dataset="FIRMS VIIRS Cochabamba 2012-2026" http://localhost:3000/api/v1/ingestion/csv
+npm run datos:cargar   # 11.923 detecciones reales de 2001 a 2026 (MODIS y VIIRS)
+npm run datos:demo     # opcional: 1.109 detecciones SIMULADAS de 2027 para la demo en tiempo real
 ```
 
-También se pueden subir desde Swagger (`POST /ingestion/csv`). Repetir la carga no duplica nada.
+- Los CSV están en el repo: `data/fuego/formato_firms/` (reales) y `data/demo/` (simulados).
+- Repetirlo no duplica nada.
+- Si falta el servidor o no hay distritos, el script lo avisa.
+- Resultado esperado de `datos:cargar`: 11.923 nuevas, 0 rechazadas y 680 en distritos.
+
+Cuando el equipo de datos entregue CSV nuevos, se agregan a esas carpetas con un commit, y cada compañero solo hace `git pull` y vuelve a correr el comando.
 
 ### El día a día
 
@@ -147,7 +152,10 @@ Qué garantiza la importación:
 - **No duplica.** Cada detección tiene una huella (sensor, satélite, instante, coordenadas). Reimportar el mismo archivo da 0 filas nuevas.
 - **No se detiene por filas malas.** Las rechaza indicando la línea y el motivo.
 - **Distingue datos de prueba.** Con `origin=SIMULATED` los focos llegan marcados como simulados y nunca se confunden con reales.
-- **Datos provisionales.** Los datos NRT de FIRMS se publican rápido pero son provisionales. Cuando llega el dato estándar del mismo periodo, las filas NRT se reemplazan (ver `nrt` en la respuesta).
+- **Datos provisionales.** Los datos NRT de FIRMS se publican rápido pero son provisionales. Cuando llega el dato estándar, reemplaza a las NRT (ver `nrt` en la respuesta):
+  - si una NRT tiene la misma huella que una fila estándar del **mismo origen**, se actualiza en su lugar y conserva su id y su lote;
+  - las demás NRT se borran, pero **solo** las del mismo satélite, el mismo origen (`REAL`/`SIMULATED`), los mismos días y dentro del rectángulo que cubre el archivo. Un archivo de Santa Cruz no toca las NRT de Cochabamba, y un archivo simulado no toca datos reales;
+  - el borrado por rango asume que el estándar es un archivo **completo** de esa zona y periodo. Con un extracto parcial, envía `replaceNrt=false`: no se borra nada, aunque las NRT con la misma huella igual pasan a estándar.
 - **Si algo falla a mitad**, se deshace toda la importación.
 
 ### 4.3 Detecciones en vivo (`/observations`)
@@ -177,7 +185,7 @@ Filtros de `GET /observations`:
 | --- | --- |
 | `GET /districts` | Distritos con su cantidad de focos y área en km². Con `format=geojson` incluye los polígonos |
 | `POST /districts/import` | Carga límites propios desde un GeoJSON (por ejemplo, la cartografía oficial cuando la tengamos) |
-| `POST /districts/import-fuego` | Usa los 15 distritos del paquete de datos (`distrito-01` … `distrito-15`). Se hace solo al arrancar si no hay distritos |
+| `POST /districts/import-fuego` | Usa los 15 distritos del paquete de datos (`distrito-01` … `distrito-15`). Se hace solo al arrancar si no hay distritos. Si ya hay distritos con otros códigos responde `409` sin tocar nada; `?replace=true` los reemplaza |
 
 Cada foco se asigna al distrito cuyo polígono lo contiene. El borde cuenta como dentro. Nunca se asigna al distrito "más cercano" por aproximación: si queda fuera es `OUTSIDE`, y si cae en dos distritos es `AMBIGUOUS`. Al cambiar los distritos, se recalculan todas las asignaciones y se avisa por tiempo real.
 
@@ -218,7 +226,53 @@ Implementa el contrato que entregó el equipo de datos ([`data/fuego/docs/openap
 | `GET /casos-documentados` | Siete incendios publicados en prensa, usados para validar |
 | `GET /metadatos` | Parámetros, fecha de cobertura y las **advertencias obligatorias** que deben mostrarse junto a cada cifra |
 
-### 4.7 Errores
+### 4.7 Historial (vista `/historial` del frontend)
+
+Actividad **mensual** con la misma forma que `HistoricalRecord` del front (`year`, `month`, `source`, `activityCount`, `origin`), lista para reemplazar `history.mock.ts`.
+
+| Endpoint | Qué devuelve |
+| --- | --- |
+| `GET /historial` | Los meses de un área (`area_id`, por defecto `parque-tunari`) con un `summary`: total, promedio mensual y mes pico |
+| `GET /historial/distritos` | **Vistazo general:** los 15 distritos a la vez, cada uno con sus `records` y su `summary`, más un `ranking` por actividad total |
+
+Parámetros (los dos endpoints):
+
+| Parámetro | Valores | Qué hace |
+| --- | --- | --- |
+| `fuente` | `HARMONIZED` (por defecto), `MODIS`, `VIIRS` | **HARMONIZED:** el índice armonizado del paquete. **MODIS / VIIRS:** conteo bruto de ese sensor, sin armonizar ni aplicar factores, con todos sus satélites |
+| `medida` | `celdas_dia` (por defecto), `detecciones` | Solo MODIS/VIIRS: qué va en `activityCount`. Las celdas-día no cuentan dos veces un fuego visto por dos satélites |
+| `desde_anio` / `hasta_anio` | `2013`, `2024` | Recorta el periodo |
+
+```bash
+curl "http://localhost:3000/api/v1/historial?area_id=parque-tunari&fuente=VIIRS&desde_anio=2024&hasta_anio=2024"
+```
+```json
+{
+  "area": { "area_id": "parque-tunari", "nombre_visible": "Parque Nacional Tunari", "metodo_indice": "mixto_calibrado" },
+  "source": "VIIRS",
+  "unit": "celdas-día VIIRS",
+  "notice": "Una detección satelital de calor no es un incendio confirmado. Conteo bruto de VIIRS, sin armonizar…",
+  "summary": { "total": 197, "monthsWithData": 12, "monthlyAverage": 16.42, "peak": { "year": 2024, "month": 9, "activityCount": 49 } },
+  "records": [
+    { "year": 2024, "month": 8, "source": "VIIRS", "activityCount": 47, "origin": "NASA_FIRMS",
+      "detections": 107, "cellDays": 47, "bySatellite": { "VIIRS-Suomi-NPP": 59, "VIIRS-NOAA-20": 48 }, "provisional": false }
+  ]
+}
+```
+
+Lo que el front debe tener en cuenta:
+- **`activityCount` puede ser `null`** en `HARMONIZED`: fuera del Parque Tunari no hay índice comparable antes de febrero de 2012. Se pinta en gris, nunca como cero. El `summary` ya ignora esos meses.
+- **MODIS y VIIRS en bruto no se comparan entre sí.** VIIRS (375 m) detecta unas 2,87 veces más que MODIS (1 km). Para compararlos está `HARMONIZED`.
+- **Cobertura:**
+  - Cada área empieza donde empiezan sus datos (el parque, en agosto de 2001).
+  - VIIRS empieza en febrero de 2012.
+  - El armonizado llega hasta la cobertura del análisis (octubre de 2026).
+  - MODIS y VIIRS incluyen además las novedades NRT posteriores, que pueden ser un mes parcial.
+- **`provisional: true`** marca meses con datos NRT que NASA todavía puede corregir.
+- Muestra `notice` y `unit` junto al calendario y al gráfico.
+- Para el total del municipio usa `area_id=municipio-cochabamba`, no la suma de los distritos.
+
+### 4.8 Errores
 
 | Código | Cuándo |
 | --- | --- |
@@ -265,8 +319,9 @@ Sin tiempo real, el frontend tendría que preguntar cada pocos segundos si hay a
 
 | Evento | Cuándo llega | Qué trae |
 | --- | --- | --- |
+| `hotspots:removed` | Cuando el dato estándar borra NRT provisionales, antes del `hotspots:new` del mismo lote | `removedIds`: ids a quitar del mapa. `reason`: `nrt_replaced_by_standard`. Llega a todos los clientes, aunque estén suscritos solo a algunos distritos |
 | `hotspots:new` | Al importarse focos nuevos, y en cada paso de la reproducción | `collection`: FeatureCollection GeoJSON de puntos, listo para agregar al mapa. `mode`: `live` (recién importado) o `replay` (demo). `simulated`: `true` si es demo o datos de prueba, y hay que mostrarlo. `simulatedTimeUtc`: en replay, el momento histórico reproducido. `dataset`, `batchId`, `emittedAtUtc` |
-| `sync:status` | Al terminar cada importación y al conectarse | `lastBatch`: nombre del dataset, filas nuevas, duplicadas y rechazadas, y `announced`. Si `announced` es `false` fue una importación masiva: hay que recargar con `GET /observations` |
+| `sync:status` | Al terminar cada importación y al conectarse | `lastBatch`: nombre del dataset, filas nuevas, duplicadas y rechazadas, `announced`, `upgradedToStandard` y `removedObsolete`. Si `announced` es `false`, o si `upgradedToStandard`/`removedObsolete` son mayores que 0, conviene recargar con `GET /observations` |
 | `replay:status` | En cada paso de la reproducción, al detenerse y al conectarse | `running`, `step`, `totalSteps`, `intervalMs`, `loop`, `observationCount`, `simulatedTimeUtc` |
 | `districts:updated` | Cuando cambian los límites de los distritos | `imported`, `reassigned`. Hay que recargar `GET /districts` y `GET /observations` |
 
@@ -299,6 +354,7 @@ Los tipos exactos de cada evento están en [`src/modules/realtime/realtime.contr
 
 - Un lote grande se divide en varios `hotspots:new` de hasta 500 puntos cada uno.
 - Si una importación trae **más de 5000 focos nuevos**, no se envían por socket: llega solo `sync:status` con `announced: false` y el frontend recarga por REST. Así pasa al cargar históricos completos.
+- Igual con los borrados: `hotspots:removed` lleva hasta 1000 ids por mensaje, y con más de 5000 no se envían ids (queda `removedObsolete` en `sync:status`).
 
 ---
 
@@ -319,7 +375,15 @@ npm run realtime:watch                          # todos los distritos
 npm run realtime:watch -- distrito-09 distrito-13   # solo esos distritos
 ```
 
-**Hazlo reaccionar** desde una tercera terminal o desde Swagger:
+**Hazlo reaccionar** desde una tercera terminal o desde Swagger.
+
+La forma más vistosa para la demo es con los datos simulados de 2027:
+
+```bash
+npm run datos:demo   # importa los simulados e imprime el comando de replay con su batchId
+```
+
+Ese replay (12 al 16 de agosto de 2027) da 33 pasadas con 186 detecciones. Otras opciones:
 
 ```bash
 # A) Reproducción histórica: una pasada cada 2 s
@@ -345,7 +409,7 @@ Lo que verás en el oyente:
            distrito-02: 1 · distrito-09: 1
 ```
 
-La reproducción necesita detecciones guardadas en ese periodo. Si no ves pasadas, importa primero los CSV de `data/fuego/formato_firms/` (ver [Primera vez](#primera-vez)).
+La reproducción necesita detecciones guardadas en ese periodo. Si no ves pasadas, carga primero los datos con `npm run datos:cargar` o `npm run datos:demo`.
 
 ---
 
@@ -388,6 +452,10 @@ socket.on('connect', async () => {
 socket.on('hotspots:new', (msg) => {
   // msg.collection es un FeatureCollection: agrégalo a la capa del mapa.
   // Si msg.simulated es true, muestra la etiqueta "simulado".
+});
+
+socket.on('hotspots:removed', ({ removedIds }) => {
+  // Quita esos ids de la capa del mapa (NRT reemplazadas por el dato estándar).
 });
 
 socket.on('sync:status', ({ lastBatch }) => {
@@ -473,6 +541,8 @@ Si quien sube el archivo está en otra computadora de la red, pon `S3_PUBLIC_END
 | `start:dev` | Servidor con recarga automática (API + tiempo real) |
 | `build` / `start:prod` | Compilar y ejecutar la versión de producción (`dist/`) |
 | `realtime:watch` | Oyente de consola del tiempo real (`-- distrito-09` para filtrar) |
+| `datos:cargar` | Carga en tu base las 11.923 detecciones reales del repo (con el servidor corriendo) |
+| `datos:demo` | Carga las detecciones simuladas de 2027 e imprime el comando de replay |
 | `db:up` / `db:down` | Levantar o detener PostgreSQL y MinIO |
 | `db:doctor` | Diagnosticar problemas de conexión a la base |
 | `prisma:deploy` | Aplicar las migraciones |
@@ -532,7 +602,7 @@ Revisa `.env`, el contenedor y a qué servidor llega la conexión, y dice qué c
 | `realtime:watch` dice "no se pudo conectar" | El servidor no está corriendo, o usa otro puerto | `npm run start:dev`; si usas otro puerto: `API_URL=http://localhost:PUERTO npm run realtime:watch` |
 | El navegador muestra un error de CORS | El frontend corre en una dirección que no está en `CORS_ORIGINS` (ojo: `localhost` y `127.0.0.1` cuentan como distintas) | Agrégala en `.env` y reinicia el backend |
 | Me conecto pero no llega nada | Nadie importó ni inició una reproducción, o estás suscrito a otros distritos | Inicia un replay; revisa la sala que imprime `realtime:watch` |
-| La reproducción no emite pasadas | No hay detecciones guardadas en ese periodo | Importa los CSV de `data/fuego/formato_firms/` o cambia `from`/`to` |
+| La reproducción no emite pasadas | No hay detecciones guardadas en ese periodo | `npm run datos:cargar` o `npm run datos:demo`, o cambia `from`/`to` |
 | Importé un CSV grande y no llegaron puntos | Más de 5000 focos nuevos: por diseño solo llega `sync:status` | El frontend debe recargar `GET /observations` |
 
 ---
@@ -552,8 +622,9 @@ Revisa `.env`, el contenedor y a qué servidor llega la conexión, y dice qué c
 ```text
 Server/
   data/fuego/                 paquete de datos del equipo (SQL, CSV, contrato OpenAPI)
+  data/demo/                  detecciones simuladas de 2027 para la demo
   prisma/                     schema.prisma y migraciones (no borrar)
-  scripts/                    db-doctor, fuego (SQL del paquete), realtime-watch
+  scripts/                    db-doctor, fuego (SQL del paquete), realtime-watch, cargar-datos
   src/
     main.ts                   arranque: prefijo /api/v1, CORS, Swagger, Socket.IO
     infrastructure/           configuración, base de datos, MinIO, adaptador de WebSocket

@@ -31,6 +31,8 @@
     "fuego:alerta-mes": "node scripts/fuego.mjs alerta-mes",
     "fuego:status": "node scripts/fuego.mjs status",
     "realtime:watch": "node scripts/realtime-watch.mjs",
+    "datos:cargar": "node scripts/cargar-datos.mjs historico",
+    "datos:demo": "node scripts/cargar-datos.mjs demo",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",

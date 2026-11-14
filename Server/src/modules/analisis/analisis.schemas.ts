@@ -135,3 +135,37 @@ export const buscarDeteccionesSchema = z
   })
   .refine(rangoValido, errorRango);
 export type BuscarDeteccionesBody = z.infer<typeof buscarDeteccionesSchema>;
+
+const anio = z.coerce.number().int().min(2000).max(2100);
+const historialBase = {
+  fuente: z
+    .enum(['HARMONIZED', 'MODIS', 'VIIRS'])
+    .default('HARMONIZED')
+    .describe('HARMONIZED: índice armonizado · MODIS / VIIRS: conteo bruto de ese sensor, sin armonizar'),
+  medida: z
+    .enum(['celdas_dia', 'detecciones'])
+    .default('celdas_dia')
+    .describe('Solo MODIS/VIIRS: qué va en activityCount. celdas_dia evita contar dos veces un fuego visto por dos satélites'),
+  desde_anio: anio.optional(),
+  hasta_anio: anio.optional(),
+};
+const aniosValidos = (q: { desde_anio?: number; hasta_anio?: number }) =>
+  !q.desde_anio || !q.hasta_anio || q.desde_anio <= q.hasta_anio;
+const errorAnios = { message: 'desde_anio debe ser menor o igual a hasta_anio', path: ['desde_anio'] };
+
+export const historialSchema = z
+  .object({
+    area_id: z
+      .string()
+      .trim()
+      .min(1)
+      .max(100)
+      .default('parque-tunari')
+      .describe('parque-tunari (por defecto), municipio-cochabamba, distrito-01 … distrito-15, mun-…'),
+    ...historialBase,
+  })
+  .refine(aniosValidos, errorAnios);
+export type HistorialQuery = z.infer<typeof historialSchema>;
+
+export const historialDistritosSchema = z.object(historialBase).refine(aniosValidos, errorAnios);
+export type HistorialDistritosQuery = z.infer<typeof historialDistritosSchema>;
