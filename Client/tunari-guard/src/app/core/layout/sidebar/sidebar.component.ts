@@ -47,6 +47,7 @@ export class SidebarComponent {
     { path: '/alertas', icon: 'bell', label: 'Alertas' },
     { path: '/distritos', icon: 'districts', label: 'Distritos' },
     { path: '/reportes', icon: 'reports', label: 'Reportes' },
+    { path: '/proyecciones', icon: 'trend', label: 'Proyecciones' },
     { path: '/metodologia', icon: 'methodology', label: 'Metodología' },
   ] as const;
 }

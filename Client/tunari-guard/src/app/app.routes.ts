@@ -13,6 +13,7 @@ export const routes: Routes = [
       { path: 'alertas', loadComponent: () => import('./features/alerts/pages/alerts-page/alerts-page.component').then(m => m.AlertsPageComponent) },
       { path: 'distritos', loadComponent: () => import('./features/districts/pages/districts-page/districts-page.component').then(m => m.DistrictsPageComponent) },
       { path: 'reportes', loadComponent: () => import('./features/reports/pages/reports-page/reports-page.component').then(m => m.ReportsPageComponent) },
+      { path: 'proyecciones', loadComponent: () => import('./features/projections/pages/projections-page/projections-page.component').then(m => m.ProjectionsPageComponent) },
       { path: 'metodologia', loadComponent: () => import('./features/methodology/pages/methodology-page/methodology-page.component').then(m => m.MethodologyPageComponent) },
     ],
   },

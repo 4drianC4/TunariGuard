@@ -1,0 +1,90 @@
+<section class="tg-forecast-page" aria-label="Proyecciones de anomalías térmicas DEMO">
+
+   <app-page-header
+    section="Proyecciones"
+    title="Proyecciones de anomalías térmicas"
+    description="Análisis y pronóstico ilustrativo para los próximos años, con configuración de serie de tiempo."
+  />
+
+  <div class="tg-forecast-kpis" aria-label="Indicadores de proyección DEMO">
+    <article class="tg-forecast-kpi red"><div class="tg-forecast-kpi-icon">🔥</div><div><strong>{{projectedChange > 0 ? '+' : ''}}{{projectedChange}} %</strong><span>{{projectedChange >= 0 ? 'Aumento' : 'Reducción'}} proyectado</span><small>(2027 – {{2026 + active.horizon}})</small></div></article>
+    <article class="tg-forecast-kpi amber"><div class="tg-forecast-kpi-icon">▣</div><div><strong>{{annualAverage}}</strong><span>Promedio anual proyectado</span><small>Datos sintéticos</small></div></article>
+    <article class="tg-forecast-kpi lime"><div class="tg-forecast-kpi-icon">↗</div><div><strong>{{growthIndex}}</strong><span>Tendencia de crecimiento</span><small>(índice anual acumulado)</small></div></article>
+    <article class="tg-forecast-kpi green"><div class="tg-forecast-kpi-icon">◎</div><div><strong>{{(stat.r2 * 100) | number:'1.0-0'}} %</strong><span>Desempeño ilustrativo</span><small>(R² = {{stat.r2 | number:'1.2-2'}} · DEMO)</small></div></article>
+  </div>
+
+  <form class="tg-forecast-filters" (ngSubmit)="apply()">
+    <label><span>↗ &nbsp; Serie de tiempo</span><select name="serie" [(ngModel)]="draftSeries"><option *ngFor="let option of seriesOptions" [ngValue]="option.value">{{option.label}}</option></select></label>
+    <label><span>▣ &nbsp; Rango histórico</span><select name="historico" [(ngModel)]="draftStart"><option *ngFor="let year of historicalStarts" [ngValue]="year">{{year}} – 2026</option></select></label>
+    <label><span>▣ &nbsp; Horizonte de proyección</span><select name="horizonte" [(ngModel)]="draftHorizon"><option *ngFor="let h of horizons" [ngValue]="h">{{h}} años (2027 – {{2026 + h}})</option></select></label>
+    <label><span>◈ &nbsp; Distrito</span><select name="distrito" [(ngModel)]="draftDistrict"><option *ngFor="let d of districts">{{d}}</option></select></label>
+    <label><span>⚙ &nbsp; Modelo</span><select name="modelo" [(ngModel)]="draftModel"><option *ngFor="let m of models" [ngValue]="m.name">{{m.name}}</option></select></label>
+    <button class="tg-forecast-update" type="submit">▷ &nbsp; Actualizar</button>
+  </form>
+
+  <div class="tg-forecast-main-grid">
+    <article class="tg-forecast-card tg-forecast-chart-card">
+      <div class="tg-forecast-card-title"><h2>↗ &nbsp; Proyección de anomalías térmicas</h2><span>DEMO · {{active.district}}</span></div>
+      <div class="tg-forecast-chart-top"><span class="tg-forecast-hist-strip">Histórico (DEMO)</span><span class="tg-forecast-future-strip">Proyección ({{active.horizon}} años)</span></div>
+      <div class="tg-forecast-svg-wrap">
+        <svg viewBox="0 0 870 290" role="img" [attr.aria-label]="'Gráfico DEMO de '+seriesLabel+' entre '+active.start+' y '+(2026+active.horizon)">
+          <defs><linearGradient id="tgProjectionBand" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f8b763" stop-opacity=".34"/><stop offset="100%" stop-color="#f8b763" stop-opacity=".08"/></linearGradient></defs>
+          <g *ngFor="let grid of [0,1,2,3,4]">
+            <line x1="55" [attr.y1]="45+grid*47.5" x2="820" [attr.y2]="45+grid*47.5" stroke="#e7e7dd" stroke-width="1" />
+            <text x="43" [attr.y]="49+grid*47.5" text-anchor="end" font-size="12" fill="#5b6153">{{(chartCeiling * (4-grid) / 4) | number:'1.0-0'}}</text>
+          </g>
+          <line [attr.x1]="x(2026)" y1="35" [attr.x2]="x(2026)" y2="238" stroke="#a5a99a" stroke-width="1.5" stroke-dasharray="7 5"/>
+          <polygon [attr.points]="bandPoints" fill="url(#tgProjectionBand)" />
+          <polyline [attr.points]="historyPoints" fill="none" stroke="#345b20" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+          <polyline [attr.points]="futurePoints" fill="none" stroke="#ef650e" stroke-width="4" stroke-dasharray="10 7" stroke-linecap="round" stroke-linejoin="round" />
+          <g *ngFor="let point of historic"><circle [attr.cx]="x(point.year)" [attr.cy]="y(point.value)" r="4.6" fill="#365e21" stroke="white" stroke-width="1.5"><title>{{point.year}} · {{point.value}} (DEMO)</title></circle></g>
+          <g *ngFor="let point of forecast"><circle [attr.cx]="x(point.year)" [attr.cy]="y(point.value)" r="4.8" fill="#f26911" stroke="white" stroke-width="1.5"><title>{{point.year}} · {{point.value}} (DEMO)</title></circle></g>
+          <text *ngFor="let year of visibleYearLabels" [attr.x]="x(year)" y="265" text-anchor="middle" font-size="12" font-weight="600" fill="#343b30">{{year}}</text>
+          <text transform="rotate(-90 13 160)" x="13" y="160" text-anchor="middle" font-size="11" fill="#4a5044">{{active.series === 'actividad' ? 'Índice relativo DEMO' : 'N.º de anomalías DEMO'}}</text>
+        </svg>
+      </div>
+      <div class="tg-forecast-legend"><span><i class="history"></i> Observado (DEMO)</span><span><i class="future"></i> Proyección (DEMO)</span><span><i class="band"></i> Banda ilustrativa</span></div>
+    </article>
+    <article class="tg-forecast-card tg-forecast-scenarios">
+      <div class="tg-forecast-card-title"><h2>ⓘ &nbsp; Escenarios de proyección</h2><span>DEMO</span></div>
+      <button *ngFor="let item of scenarios" type="button" class="tg-forecast-scenario" [class.selected]="scenario === item.key" [class.optimistic]="item.key === 'optimista'" [class.critical]="item.key === 'critico'" (click)="setScenario(item.key)" [attr.aria-pressed]="scenario === item.key">
+        <span class="tg-forecast-radio">{{scenario === item.key ? '✓' : ''}}</span><span><strong>{{item.name}}</strong><small>{{item.caption}}</small></span>
+      </button>
+      <p class="tg-forecast-scenario-note">{{scenarioLabel}} activo · proyecciones sintéticas, no predicciones meteorológicas.</p>
+    </article>
+  </div>
+
+  <div class="tg-forecast-bottom-grid">
+    <article class="tg-forecast-card tg-forecast-model-card">
+      <div class="tg-forecast-card-title"><h2>♧ &nbsp; Comparación de modelos</h2><span>Validación DEMO</span></div>
+      <div class="tg-forecast-table-scroll"><table><thead><tr><th>Modelo</th><th>MAE ↓</th><th>RMSE ↓</th><th>MAPE ↓</th><th>R² ↑</th></tr></thead><tbody>
+        <tr *ngFor="let model of models" (click)="setModel(model.name)" [class.active]="active.model===model.name" tabindex="0" (keydown.enter)="setModel(model.name)" (keydown.space)="setModel(model.name);$event.preventDefault()" [attr.aria-selected]="active.model===model.name" [attr.title]="'Seleccionar modelo DEMO '+model.name"><td><span class="tg-forecast-select-mark">{{active.model===model.name ? '✓' : '○'}}</span> {{model.name}}</td><td>{{model.mae}}</td><td>{{model.rmse}}</td><td>{{model.mape}} %</td><td>{{model.r2 | number:'1.2-2'}}</td></tr>
+      </tbody></table></div>
+    </article>
+    <article class="tg-forecast-card tg-forecast-errors-card">
+      <div class="tg-forecast-card-title"><h2>Error de predicción (MAPE por año)</h2><span>DEMO</span></div>
+      <div class="tg-forecast-error-avg">MAPE promedio: {{stat.mape}} %</div>
+      <div class="tg-forecast-bars" role="img" [attr.aria-label]="'Barras de MAPE sintético para '+active.model">
+        <div *ngFor="let item of errorBars" class="tg-forecast-bar-item"><div class="tg-forecast-bar-track"><div [style.height.%]="item.value / 20 * 100" [attr.title]="item.year+': '+item.value+'%'"></div></div><span>{{item.year}}</span></div>
+      </div>
+    </article>
+    <article class="tg-forecast-card tg-forecast-recommend">
+      <div class="tg-forecast-card-title"><h2>🏆 &nbsp; Modelo recomendado</h2></div>
+      <div class="tg-forecast-recommend-body"><strong>Prophet</strong><p>Mejor perfil de métricas de ejemplo (R² = 0.87, MAE = 9.8, MAPE = 11.9 %).</p><small>Comparación DEMO. No se ha entrenado ni validado ningún modelo real.</small></div>
+    </article>
+  </div>
+
+  <div *ngIf="showModelDetails" class="tg-forecast-details" id="forecast-model-details">
+    <strong>Detalle de {{active.model}} · demostración</strong>
+    <p>Se muestran curvas sintéticas con perfiles predefinidos para SARIMA, Prophet y XGBoost. El sistema no ajusta parámetros ni utiliza un modelo entrenado. MAE, RMSE, MAPE, R² y la banda de variación son únicamente ejemplos para validar la interfaz.</p>
+    <p>Antes de utilizar pronósticos operativos se requieren series NASA FIRMS verificadas, calibración MODIS/VIIRS, control de cobertura satelital, particiones temporales, validación fuera de muestra e incertidumbre estadística.</p>
+  </div>
+
+  <div class="tg-forecast-footer">
+    <div class="tg-forecast-disclaimer">ⓘ &nbsp; <strong>Nota:</strong> todos los resultados son DEMO con series sintéticas (2018–2026). Las proyecciones no sustituyen el monitoreo satelital ni predicen incendios confirmados.</div>
+    <button type="button" (click)="toggleModelDetails()" [attr.aria-expanded]="showModelDetails" aria-controls="forecast-model-details">▤ &nbsp; {{showModelDetails ? 'Ocultar detalles' : 'Ver detalles del modelo'}}</button>
+    <button type="button" (click)="exportPdf()">↓ &nbsp; Exportar resultados (PDF)</button>
+    <button type="button" (click)="exportCsv()">▦ &nbsp; Exportar datos (CSV)</button>
+  </div>
+  <p *ngIf="message" class="tg-forecast-live" role="status">{{message}}</p>
+</section>
