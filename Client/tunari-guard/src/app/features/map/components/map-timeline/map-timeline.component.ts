@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { MapPeriod } from '../../../../domain/models/map-period.model';
 
-/** Read-only period summary; the calendar feature owns all period controls. */
+/** Read-only summary of the period applied to the map. */
 @Component({
   selector: 'app-map-timeline',
   standalone: true,
@@ -11,6 +11,5 @@ import { MapPeriod } from '../../../../domain/models/map-period.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MapTimelineComponent {
-  @Input({ required: true }) areaId = '';
   @Input({ required: true }) period: MapPeriod = { from: '', to: '' };
 }

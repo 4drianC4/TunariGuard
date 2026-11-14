@@ -1,17 +1,15 @@
-<section class="min-w-0 space-y-4" aria-labelledby="map-page-title">
- 
-
-   <app-page-header
+<section class="min-w-0 space-y-4" aria-label="Mapa de focos">
+  <app-page-header
     section="observación territorial"
     title="Observación territorial"
     description="Explora detecciones satelitales MODIS y VIIRS en el Parque Nacional Tunari y su entorno."
   />
 
   <app-hotspot-map
+    [areaId]="mapState.areaId()"
+    [period]="mapState.period()"
+    (contextChange)="onContextChange($event)"
     (selectionChange)="onSelectionChange($event)"
     (areaOfInterestChange)="onAreaOfInterestChange($event)" />
 
-  <p class="m-0 rounded-xl border border-[#dfd8cd] bg-[#fffcf8] px-4 py-3 text-xs leading-5 text-[#595a4c]">
-    Una detección satelital es una señal térmica y no confirma un incendio. El período lo proporciona el módulo de calendario; esta página no añade controles temporales propios.
-  </p>
 </section>

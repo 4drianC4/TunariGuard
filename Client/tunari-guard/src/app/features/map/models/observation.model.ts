@@ -29,11 +29,14 @@ export interface Observation {
   track: number | null;
   dayNight: DayNight | null;
   productVersion: string | null;
+  detectionType?: number | null;
+  raw?: Record<string, unknown>;
   source: ObservationSource;
   dataset: string;
   batchId: string;
-  districtAssignment: DistrictAssignment;
+  districtAssignment: DistrictAssignment | null;
   district: ObservationDistrict | null;
+  archive?: { origin: string; persistent: boolean; events: string[] };
 }
 
 export type ObservationFeatureProperties = Omit<Observation, 'position'>;
