@@ -774,3 +774,161 @@ app-sidebar.tg-responsive-v2 button:focus-visible {
 }
 @media (prefers-reduced-motion:reduce) { .method-tabs button { transition:none; } }
 /* TUNARIGUARD_METHODOLOGY_RESPONSIVE_V1_END */
+
+/* TUNARIGUARD_PROJECTIONS_V1_START - estilos exclusivos de /proyecciones */
+.tg-forecast-page{--fp-olive:#273e1b;--fp-orange:#f46c0e;--fp-border:#e8e4da;--fp-cream:#fffdfa;width:100%;max-width:1640px;margin:0 auto;color:#1c271a;font-family:Inter,ui-sans-serif,system-ui,sans-serif;min-width:0}
+.tg-forecast-page *{box-sizing:border-box}
+.tg-forecast-hero{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:114px;margin:0 0 14px;padding:0 6px}
+.tg-forecast-heading{min-width:0;flex:1}
+.tg-forecast-crumb{font-size:12px;color:#d84b15;font-weight:850;letter-spacing:.04em;margin-bottom:11px}
+.tg-forecast-title-row{display:flex;align-items:center;gap:14px}
+.tg-forecast-title-icon{width:66px;height:66px;display:grid;place-items:center;flex:0 0 66px;border-radius:14px;background:linear-gradient(140deg,#4a7a20,#193b17);box-shadow:0 5px 13px #24431324;color:#fff;font-weight:900;font-size:52px;line-height:1}
+.tg-forecast-hero h1{margin:0 0 4px;font-size:clamp(27px,2.55vw,42px);line-height:1.12;font-weight:840;letter-spacing:-.042em;color:#233b1d}
+.tg-forecast-hero p{margin:0;color:#282d28;font-size:14px;line-height:1.45}
+.tg-forecast-tuni{flex:0 0 auto;display:flex;align-items:center;gap:8px;max-width:380px}
+.tg-forecast-tuni img{width:104px;height:104px;object-fit:contain;filter:drop-shadow(0 4px 3px #27231329)}
+.tg-forecast-bubble{position:relative;max-width:250px;min-width:195px;padding:15px 19px;border:1.5px solid #c9c9b9;border-radius:48% 49% 41% 49% / 48% 45% 47% 43%;background:#fff;text-align:center;font-size:13px;font-weight:740;line-height:1.3;color:#202420;box-shadow:0 3px 10px #40331d0c}
+.tg-forecast-bubble:after{content:'';position:absolute;right:-14px;top:46%;border-top:12px solid transparent;border-bottom:12px solid transparent;border-left:18px solid #fff}
+.tg-forecast-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin:0 0 15px}
+.tg-forecast-kpi{display:flex;align-items:center;gap:14px;min-width:0;min-height:103px;padding:14px 15px;border-radius:16px;overflow:hidden}
+.tg-forecast-kpi.red{background:linear-gradient(115deg,#ffeded,#fff5f2)}.tg-forecast-kpi.amber{background:linear-gradient(115deg,#fff1df,#fff6e8)}.tg-forecast-kpi.lime{background:linear-gradient(115deg,#edf6e7,#f8faec)}.tg-forecast-kpi.green{background:linear-gradient(115deg,#eaf2e1,#f3f8ec)}
+.tg-forecast-kpi-icon{flex:0 0 55px;width:55px;height:55px;display:grid;place-items:center;background:#ffffff8f;border-radius:16px;font-size:36px;font-weight:800;color:#f37a10}
+.tg-forecast-kpi.red .tg-forecast-kpi-icon{color:#dd2619;background:#ffe1dd}.tg-forecast-kpi.lime .tg-forecast-kpi-icon{color:#18a34a}.tg-forecast-kpi.green .tg-forecast-kpi-icon{color:#4e9a20}
+.tg-forecast-kpi strong{display:block;font-size:clamp(25px,2.15vw,36px);letter-spacing:-.055em;line-height:1;font-weight:880;color:#141e13;white-space:nowrap}
+.tg-forecast-kpi span{display:block;font-size:13px;font-weight:650;margin-top:6px;line-height:1.14}
+.tg-forecast-kpi small{display:block;font-size:11px;line-height:1.23;margin-top:3px;color:#4c5148}
+.tg-forecast-filters{display:grid;grid-template-columns:minmax(170px,1.72fr) minmax(130px,1.08fr) minmax(156px,1.2fr) minmax(138px,1.08fr) minmax(120px,.77fr) auto;gap:10px;align-items:end;margin:0 0 15px}
+.tg-forecast-filters label{display:flex;flex-direction:column;justify-content:center;gap:7px;min-width:0;min-height:69px;padding:8px 11px 7px 12px;background:#fffdf9;border:1px solid var(--fp-border);border-radius:13px;box-shadow:0 2px 7px #403c2810}
+.tg-forecast-filters label>span{font-size:12px;font-weight:820;color:#1a2118;white-space:nowrap}
+.tg-forecast-filters select{width:100%;min-width:0;height:27px;border:0;background:transparent;font-family:inherit;color:#1a2017;outline-offset:3px;font-size:12px;font-weight:650;cursor:pointer;white-space:nowrap;text-overflow:ellipsis}
+.tg-forecast-page button{font:inherit;cursor:pointer}
+.tg-forecast-page button:focus-visible,.tg-forecast-page select:focus-visible,.tg-forecast-page tr:focus-visible{outline:3px solid #dd811e;outline-offset:2px}
+.tg-forecast-update{min-width:122px;height:50px;margin-bottom:9px;border:1px solid #294415;border-radius:11px;background:linear-gradient(#426c22,#223e18);color:white;font-size:13px;font-weight:800;box-shadow:0 3px 8px #243a1d25}
+.tg-forecast-update:hover,.tg-forecast-footer button:hover{filter:brightness(1.08)}
+.tg-forecast-card{min-width:0;background:linear-gradient(120deg,#fffdfa,#fffefc);border:1px solid #e9e5dd;border-radius:14px;box-shadow:0 4px 15px #37342210;padding:13px 15px}
+.tg-forecast-card-title{display:flex;align-items:center;justify-content:space-between;gap:9px;min-height:27px;margin-bottom:13px}
+.tg-forecast-card-title h2{margin:0;font-size:15px;font-weight:850;letter-spacing:-.025em;line-height:1.2;color:#20241e}
+.tg-forecast-card-title>span{font-size:10px;color:#828878;font-weight:800;white-space:nowrap}
+.tg-forecast-main-grid{display:grid;grid-template-columns:minmax(0,2.25fr) minmax(248px,.96fr);gap:14px;margin-bottom:13px}
+.tg-forecast-chart-card{display:flex;flex-direction:column;min-height:323px}
+.tg-forecast-chart-top{display:grid;grid-template-columns:61% 39%;margin:0 8px 2px 43px;height:30px;border-radius:9px 9px 0 0;overflow:hidden;font-size:12px;font-weight:790;text-align:center;line-height:30px}
+.tg-forecast-hist-strip{background:#ebf3de;color:#304c1e}.tg-forecast-future-strip{background:#fff0dc;color:#d04d16}
+.tg-forecast-svg-wrap{min-width:0;flex:1}
+.tg-forecast-svg-wrap svg{width:100%;height:244px;display:block;overflow:visible}
+.tg-forecast-legend{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:18px;padding:2px 0 0;color:#32362e;font-size:11px;font-weight:680}
+.tg-forecast-legend span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.tg-forecast-legend i{display:inline-block;width:22px;height:3px;background:#3a6326;border-radius:2px}
+.tg-forecast-legend i.future{background:repeating-linear-gradient(90deg,#ef6d0e 0 6px,transparent 6px 9px)}
+.tg-forecast-legend i.band{height:11px;background:#ffdfb8}
+.tg-forecast-scenarios{min-height:323px}
+.tg-forecast-scenario{width:100%;text-align:left;display:flex;align-items:center;gap:13px;min-height:63px;border:1px solid transparent;border-radius:12px;margin:0 0 9px;padding:10px 12px;background:#fffdf9;color:#273022;transition:border .12s,background .12s}
+.tg-forecast-scenario.selected{background:#eef6e5;border-color:#d7e5c2}.tg-forecast-scenario.optimistic.selected{background:#edf6f0}.tg-forecast-scenario.critical.selected{background:#fff0ee}
+.tg-forecast-scenario:hover{border-color:#bbc9a9}
+.tg-forecast-radio{display:grid;place-items:center;flex:0 0 23px;width:23px;height:23px;border:2px solid #c9cfc5;border-radius:50%;background:white;font-weight:850;color:white}
+.tg-forecast-scenario.selected .tg-forecast-radio{background:#497b23;border-color:#497b23}
+.tg-forecast-scenario.selected.critical .tg-forecast-radio{background:#d9552f;border-color:#d9552f}
+.tg-forecast-scenario strong{display:block;font-size:13px;font-weight:860;line-height:1.3}.tg-forecast-scenario small{display:block;font-size:11px;line-height:1.35;margin-top:2px}
+.tg-forecast-scenario-note{margin:9px 4px 0;color:#6a6c5f;font-size:10px;line-height:1.35}
+.tg-forecast-bottom-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1.05fr) minmax(245px,.86fr);gap:13px;margin-bottom:13px}
+.tg-forecast-bottom-grid .tg-forecast-card{min-height:225px}
+.tg-forecast-table-scroll{width:100%;overflow-x:auto}
+.tg-forecast-model-card table{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;font-weight:650;white-space:nowrap;text-align:left}
+.tg-forecast-model-card th{color:#262a23;padding:6px 8px;font-size:11px;font-weight:820}
+.tg-forecast-model-card td{padding:9px 8px;border-bottom:1px solid #f1ece2}
+.tg-forecast-model-card tbody tr{cursor:pointer}.tg-forecast-model-card tbody tr.active{background:#e3f4c8}.tg-forecast-model-card tbody tr:hover{background:#f0f6e6}
+.tg-forecast-model-card tbody tr.active td:first-child{border-radius:10px 0 0 10px}.tg-forecast-model-card tbody tr.active td:last-child{border-radius:0 10px 10px 0}
+.tg-forecast-select-mark{font-size:17px;color:#496b29;margin-right:6px;font-weight:900}
+.tg-forecast-error-avg{display:table;margin:0 0 -4px auto;padding:6px 11px;background:#e3f4c9;color:#243b1e;border-radius:999px;font-size:11px;font-weight:790}
+.tg-forecast-bars{display:flex;gap:10px;align-items:end;justify-content:space-between;height:153px;padding:8px 4px 0 13px;border-bottom:1px solid #d6d6cd}
+.tg-forecast-bar-item{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:100%}
+.tg-forecast-bar-track{width:100%;max-width:46px;height:117px;display:flex;align-items:flex-end;border-bottom:1px solid #aeb8a5}
+.tg-forecast-bar-track>div{width:100%;min-height:3px;border-radius:5px 5px 0 0;background:linear-gradient(0deg,#66932f,#9dbb56);transition:height .2s ease}
+.tg-forecast-bar-item>span{font-size:10px;font-weight:700;white-space:nowrap}
+.tg-forecast-recommend-body{padding:15px 17px;background:linear-gradient(105deg,#fff0df,#fff6e9);border-radius:12px;min-height:150px}
+.tg-forecast-recommend-body strong{display:inline-block;padding:3px 12px;background:#fba84e;border-radius:9px;font-size:14px}
+.tg-forecast-recommend-body p{font-size:13px;line-height:1.46;margin:10px 0;font-weight:570}
+.tg-forecast-recommend-body small{display:block;font-size:11px;color:#7a603c;line-height:1.3}
+.tg-forecast-details{background:#f3f7ec;border:1px solid #dce7d1;border-radius:12px;padding:15px 18px;margin-bottom:12px;font-size:12px;line-height:1.6}
+.tg-forecast-details p{margin:6px 0}
+.tg-forecast-footer{display:grid;grid-template-columns:minmax(0,1.8fr) repeat(3,minmax(0,1fr));gap:12px}
+.tg-forecast-disclaimer{min-width:0;border-radius:13px;padding:13px;background:#fff1de;color:#2f3029;font-size:11px;line-height:1.48}
+.tg-forecast-footer button{min-height:65px;padding:10px 14px;background:#f8f9f3;border:1px solid #e7e9de;border-radius:12px;color:#1f2b18;font-weight:800;font-size:12px;box-shadow:0 2px 8px #4f46300c}
+.tg-forecast-footer button::first-letter{color:#406e24}
+.tg-forecast-live{font-size:11px;color:#476327;font-weight:700;min-height:18px;margin:9px 3px 0}
+@media(max-width:1450px){.tg-forecast-tuni{max-width:285px}.tg-forecast-bubble{min-width:170px;max-width:185px;font-size:11px}.tg-forecast-tuni img{width:82px;height:82px}.tg-forecast-kpi-icon{flex-basis:46px;width:46px;height:46px}.tg-forecast-kpi{gap:10px;padding:12px}.tg-forecast-filters{grid-template-columns:repeat(3,minmax(0,1fr))}.tg-forecast-update{height:50px;margin:0;align-self:center}.tg-forecast-bottom-grid{grid-template-columns:1.2fr 1fr}.tg-forecast-recommend{grid-column:span 2}.tg-forecast-recommend-body{min-height:0}}
+@media(max-width:1100px){.tg-forecast-tuni{display:none}.tg-forecast-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.tg-forecast-main-grid{grid-template-columns:minmax(0,1fr)}.tg-forecast-scenarios{min-height:0}.tg-forecast-scenario{display:inline-flex;vertical-align:top;width:calc(33.333% - 9px);min-height:82px;margin-right:9px}.tg-forecast-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.tg-forecast-footer{grid-template-columns:1fr 1fr}.tg-forecast-disclaimer{grid-column:1/-1}}
+@media(max-width:800px){.tg-forecast-hero{min-height:0;margin:0 0 16px;padding:0}.tg-forecast-title-row{align-items:flex-start;gap:10px}.tg-forecast-title-icon{width:48px;height:48px;flex-basis:48px;font-size:35px}.tg-forecast-hero h1{font-size:clamp(23px,5vw,33px)}.tg-forecast-hero p{font-size:12px}.tg-forecast-crumb{font-size:10px;margin-bottom:9px}.tg-forecast-bottom-grid{grid-template-columns:1fr}.tg-forecast-recommend{grid-column:auto}.tg-forecast-main-grid{gap:11px}}
+@media(max-width:580px){.tg-forecast-kpis{gap:9px}.tg-forecast-kpi{min-height:92px;padding:9px;gap:7px;border-radius:12px}.tg-forecast-kpi-icon{width:32px;height:36px;flex-basis:32px;font-size:24px;border-radius:10px}.tg-forecast-kpi strong{font-size:25px}.tg-forecast-kpi span{font-size:11px}.tg-forecast-kpi small{font-size:9px}.tg-forecast-filters{grid-template-columns:1fr 1fr;gap:8px}.tg-forecast-filters label{min-height:62px;padding:7px}.tg-forecast-filters label>span{font-size:10px}.tg-forecast-filters select{font-size:11px}.tg-forecast-filters label:first-child{grid-column:1/-1}.tg-forecast-update{grid-column:1/-1;width:100%;margin:0;height:43px}.tg-forecast-card{padding:11px 9px}.tg-forecast-card-title h2{font-size:13px}.tg-forecast-chart-card{min-height:285px}.tg-forecast-svg-wrap svg{height:204px}.tg-forecast-chart-top{font-size:10px;margin-left:32px;height:27px;line-height:27px}.tg-forecast-legend{gap:9px;font-size:9px}.tg-forecast-scenario{width:100%;display:flex;min-height:60px;margin:0 0 7px;padding:8px}.tg-forecast-footer{grid-template-columns:1fr}.tg-forecast-disclaimer{grid-column:auto}.tg-forecast-footer button{min-height:48px}.tg-forecast-bottom-grid .tg-forecast-card{min-height:0}.tg-forecast-recommend-body{min-height:0}}
+@media(max-width:360px){.tg-forecast-kpi-icon{display:none}.tg-forecast-hero h1{font-size:22px}.tg-forecast-filters{grid-template-columns:1fr}.tg-forecast-filters label:first-child{grid-column:auto}}
+@media(prefers-reduced-motion:reduce){.tg-forecast-page *{transition:none!important}}
+/* TUNARIGUARD_PROJECTIONS_V1_END */
+
+/* TUNARIGUARD_TUNI_GUIDE_V1_START: burbuja de ayuda de Tuni por ruta (30 s). */
+.tuni-chat-v14 { position:relative; display:flex; justify-content:flex-end; align-items:flex-end; pointer-events:none; }
+.tuni-chat-v14 .tuni-guide-v1 {
+  position:absolute; right:0; bottom:calc(100% + 15px); z-index:25;
+  width:310px; max-width:calc(100vw - 24px);
+  max-height:calc(100dvh - 118px); overflow:visible;
+  padding:16px 18px 14px; border-radius:20px;
+  background:linear-gradient(160deg,#fffdf7 0%,#fbf4e7 100%);
+  border:1px solid #d6cbb2; box-shadow:0 12px 36px rgba(29,40,16,.23),0 2px 6px rgba(29,40,16,.08);
+  color:#25341b; font:inherit; text-align:left; pointer-events:auto;
+  animation:tuniGuideV1Enter .25s ease-out both;
+}
+.tuni-chat-v14 .tuni-guide-v1::after {
+  content:''; position:absolute; right:25px; bottom:-9px; width:17px; height:17px;
+  transform:rotate(45deg); background:#fbf4e7; border-right:1px solid #d6cbb2; border-bottom:1px solid #d6cbb2;
+}
+.tuni-chat-v14 .tuni-guide-v1__top { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px; }
+.tuni-chat-v14 .tuni-guide-v1__eyebrow { font-size:10px; letter-spacing:.095em; font-weight:850; color:#567427; }
+.tuni-chat-v14 .tuni-guide-v1__eyebrow span { color:#e98417; font-size:15px; }
+.tuni-chat-v14 .tuni-guide-v1__title { display:block; margin:4px 20px 6px 0; font-size:16px; font-weight:850; line-height:1.22; color:#283d1d; letter-spacing:-.025em; }
+.tuni-chat-v14 .tuni-guide-v1__text { margin:0 0 12px; font-size:12.5px; line-height:1.5; color:#4a4c3d; overflow-wrap:anywhere; }
+.tuni-chat-v14 .tuni-guide-v1__close {
+  display:grid; place-items:center; flex:0 0 29px; width:29px; height:29px;
+  border:1px solid #e4d9c4; border-radius:9px; background:#fffefa; color:#566047;
+  cursor:pointer; font-size:21px; line-height:1; padding:0;
+}
+.tuni-chat-v14 .tuni-guide-v1__close:hover { background:#fff0de; border-color:#e3a878; color:#ad451d; }
+.tuni-chat-v14 .tuni-guide-v1__action {
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  min-height:36px; padding:8px 13px; border:0; border-radius:11px;
+  background:linear-gradient(120deg,#2a3c1b,#486a24); color:#fffdf6;
+  font-size:11.5px; font-weight:800; cursor:pointer;
+}
+.tuni-chat-v14 .tuni-guide-v1__action:hover { background:#52742b; }
+.tuni-chat-v14 .tuni-guide-v1__action span { font-size:15px; }
+.tuni-chat-v14 .tuni-guide-v1__close:focus-visible,
+.tuni-chat-v14 .tuni-guide-v1__action:focus-visible { outline:3px solid #e97934; outline-offset:3px; }
+.tuni-chat-v14 .tuni-guide-v1__timer {
+  position:absolute; bottom:0; left:20px; right:20px; height:3px; border-radius:3px;
+  background:linear-gradient(90deg,#819d43,#d3ac56);
+  transform-origin:left; animation:tuniGuideV1Timer 30s linear forwards; opacity:.75;
+}
+.tuni-chat-v14 .tuni-guide-v1__timer--alterno { animation-name:tuniGuideV1TimerAlterno; }
+.tuni-chat-v14 .tuni-guide-v1__chat-context {
+  border:1px solid #d5e2c5; border-radius:14px; padding:11px 12px;
+  background:linear-gradient(120deg,#f2f8e6,#fbf7ed); color:#294321;
+  margin-top:12px; font-size:12px; line-height:1.5;
+}
+.tuni-chat-v14 .tuni-guide-v1__chat-context strong { display:block; margin-bottom:5px; font-size:12px; }
+.tuni-chat-v14 .tuni-guide-v1__chat-context p { margin:0; }
+@keyframes tuniGuideV1Enter { from { opacity:0; transform:translateY(8px) scale(.98) } to { opacity:1; transform:none } }
+@keyframes tuniGuideV1Timer { from { transform:scaleX(1) } to { transform:scaleX(0) } }
+@keyframes tuniGuideV1TimerAlterno { from { transform:scaleX(1) } to { transform:scaleX(0) } }
+@media (max-width:600px) {
+  .tuni-chat-v14 .tuni-guide-v1 { right:0; bottom:calc(100% + 12px); width:min(302px,calc(100vw - 24px)); padding:14px 15px 13px; border-radius:17px; }
+  .tuni-chat-v14 .tuni-guide-v1__title { font-size:15px; }
+  .tuni-chat-v14 .tuni-guide-v1__text { font-size:12px; }
+  .tuni-chat-v14 .tuni-guide-v1__timer { left:16px; right:16px; }
+}
+@media (max-height:420px) {
+  .tuni-chat-v14 .tuni-guide-v1 { padding:9px 12px; max-height:calc(100dvh - 92px); overflow-y:auto; }
+  .tuni-chat-v14 .tuni-guide-v1__title { font-size:13px; }
+  .tuni-chat-v14 .tuni-guide-v1__text { font-size:11px; margin-bottom:6px; }
+  .tuni-chat-v14 .tuni-guide-v1__action { min-height:31px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .tuni-chat-v14 .tuni-guide-v1,.tuni-chat-v14 .tuni-guide-v1__timer { animation:none!important; }
+}
+/* TUNARIGUARD_TUNI_GUIDE_V1_END */

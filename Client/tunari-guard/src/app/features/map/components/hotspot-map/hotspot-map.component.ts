@@ -2,6 +2,7 @@ import { AfterViewInit, Component, DestroyRef, ElementRef, EventEmitter, Input, 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LiveUpdatesService } from '../../../../application/services/live-updates.service';
 import { CommonModule, registerLocaleData } from '@angular/common';
+import type { Geometry } from 'geojson';
 import localeEsBo from '@angular/common/locales/es-BO';
 import * as L from 'leaflet';
 import 'leaflet-draw';
@@ -20,22 +21,48 @@ import { filterObservations } from '../../utils/map-observation-filter';
 import { MapFiltersComponent } from '../map-filters/map-filters.component';
 import { MapLayerSwitcherComponent } from '../map-layer-switcher/map-layer-switcher.component';
 import { MapTimelineComponent } from '../map-timeline/map-timeline.component';
+import { MapQueryControlsComponent } from '../map-query-controls/map-query-controls.component';
 import { HotspotPopupComponent } from '../hotspot-popup/hotspot-popup.component';
+import { MapAnalysisService, type AnalysisArea, type MapOverlay } from '../../data-access/map-analysis.service';
 
 registerLocaleData(localeEsBo);
 
 @Component({
   selector: 'app-hotspot-map',
   standalone: true,
-  imports: [CommonModule, MunicipalLayerControlComponent, MapFiltersComponent, MapLayerSwitcherComponent, MapTimelineComponent, HotspotPopupComponent],
+  imports: [CommonModule, MunicipalLayerControlComponent, MapFiltersComponent, MapLayerSwitcherComponent, MapTimelineComponent, HotspotPopupComponent, MapQueryControlsComponent],
   templateUrl: './hotspot-map.component.html',
+  styleUrl: './hotspot-map.component.scss',
   host: { class: 'block min-w-0 text-[#30351f]' }
 })
 export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy {
   private readonly mapData = inject(MapDataService);
+  private readonly analysis = inject(MapAnalysisService);
   private readonly destroyRef = inject(DestroyRef);
   readonly liveUpdates = inject(LiveUpdatesService);
   readonly replayTime = signal<string | null>(null);
+  readonly archive = signal(false);
+  readonly backendEnabled = this.mapData.origin === 'BACKEND';
+  readonly areas = signal<Omit<AnalysisArea, 'geometria'>[]>([]);
+  readonly areaError = signal('');
+  readonly boundaryError = signal('');
+  readonly layerError = signal('');
+  readonly polygon = signal<Geometry | undefined>(undefined);
+  readonly detailError = signal('');
+  private detailRequest?: AbortController;
+  readonly layerLabels: Record<MapOverlay, string> = {
+    districts: 'Distritos operativos', recurrencia: 'Recurrencia histórica', 'puntos-calientes': 'Puntos calientes Gi*',
+  };
+  readonly overlays: MapOverlay[] = ['districts', 'recurrencia', 'puntos-calientes'];
+  readonly activeOverlays = signal<MapOverlay[]>([]);
+  readonly excludePersistent = signal(false);
+  readonly includeAllTypes = signal(false);
+  private readonly lifetime = new AbortController();
+  private areaRequest?: AbortController;
+  private layerRequest?: AbortController;
+  private readonly areaLayer = L.geoJSON(undefined, { style: { color: '#526b24', weight: 2, fill: false, interactive: false } });
+  private readonly spatialLayers = L.layerGroup();
+  private selectedAreaBoundary?: L.LatLngBounds;
   private readonly replayObservations = new Map<string, Observation>();
 
   constructor(
@@ -48,6 +75,7 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   /** Calendar contract: inclusive local-date range; this module has no period controls of its own. */
   @Input() areaId = 'parque-tunari';
   @Input() period: MapPeriod = { ...DEMO_MAP_PERIOD };
+  @Output() readonly contextChange = new EventEmitter<{ areaId: string; period: MapPeriod }>();
 
   /** Emits the selected map entity and drawn AOI for companion modules. */
   @Output() readonly selectionChange = new EventEmitter<MapEntitySelection | null>();
@@ -83,6 +111,11 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   private liveRefreshPending = false;
   private areaRefreshFrame = 0;
 
+  get areaLabel(): string {
+    if (!this.areaId) return 'Todas las áreas';
+    return this.areas().find((area) => area.area_id === this.areaId)?.nombre_visible ?? this.areaId;
+  }
+
   get filteredObservations(): Observation[] {
     return this.applyFilters(this.dataSet().observations);
   }
@@ -96,7 +129,13 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       showViirs: this.visibleSensors.includes(SensorType.VIIRS),
       showModis: this.visibleSensors.includes(SensorType.MODIS),
       ...this.observationFilters,
-      includesArea: (observation) => !polygon || this.containsPoint(polygon, observation.position.lat, observation.position.lng),
+      includesArea: (observation) => {
+        const { lat, lng } = observation.position;
+        return polygon ? this.containsPoint(polygon, lat, lng)
+          : this.archive() || !this.areaLayer.getLayers().length || this.areaLayer.getLayers().some(
+            (layer) => layer instanceof L.Polygon && this.containsPoint(layer, lat, lng),
+          );
+      },
     });
   }
 
@@ -124,6 +163,11 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['areaId'] && this.map && this.backendEnabled) {
+      if (!this.areaId) this.activeOverlays.update((layers) => layers.filter((layer) => layer === 'districts'));
+      void this.loadArea();
+      void this.loadOverlays();
+    }
     if (changes['period'] || changes['areaId']) void this.loadDetections();
     else this.renderDetections();
   }
@@ -143,6 +187,8 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       tolerance: 8
     });
     this.detectionLayer.addTo(this.map);
+    this.areaLayer.addTo(this.map);
+    this.spatialLayers.addTo(this.map);
     this.replayLayer.addTo(this.map);
     this.drawnItems.addTo(this.map);
     this.initializeDrawing();
@@ -151,8 +197,14 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       if (!this.selectedArea()) this.scheduleDetectionReload();
     });
     this.renderDetections();
+    if (this.backendEnabled) {
+      void this.loadAreaCatalog();
+      void this.loadArea();
+    }
     if (this.liveUpdates.enabled) {
       this.liveUpdates.observationsChanged$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+        if (this.activeOverlays().includes('districts')) void this.loadOverlays();
+        if (this.archive()) return;
         if (this.loadDebounceTimer) return;
         if (this.loadAbortController) this.liveRefreshPending = true;
         else void this.loadDetections(true);
@@ -173,12 +225,109 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   ngOnDestroy(): void {
+    this.lifetime.abort();
+    this.areaRequest?.abort();
+    this.layerRequest?.abort();
+    this.detailRequest?.abort();
     this.loadSequence++;
     if (this.loadDebounceTimer) clearTimeout(this.loadDebounceTimer);
     this.loadAbortController?.abort();
     if (this.areaRefreshFrame) cancelAnimationFrame(this.areaRefreshFrame);
     this.map?.off();
     this.map?.remove();
+  }
+
+  async loadAreaCatalog(): Promise<void> {
+    this.areaError.set('');
+    try {
+      this.areas.set(await this.analysis.areas(this.lifetime.signal));
+    } catch (error) {
+      if (!this.lifetime.signal.aborted) this.areaError.set(this.errorMessage(error));
+    }
+  }
+
+  changeSource(archive: boolean): void {
+    this.archive.set(archive);
+    this.selectObservation(null);
+    this.dataSet.set({ origin: archive ? 'ARCHIVE' : 'BACKEND', observations: [] });
+    this.renderDetections();
+    void this.loadDetections();
+  }
+
+  toggleOverlay(layer: MapOverlay, visible: boolean): void {
+    this.activeOverlays.update((layers) => visible ? [...layers, layer] : layers.filter((item) => item !== layer));
+    void this.loadOverlays();
+  }
+
+  togglePersistent(exclude: boolean): void {
+    this.excludePersistent.set(exclude);
+    if (this.archive()) this.scheduleDetectionReload();
+    if (this.activeOverlays().includes('recurrencia')) void this.loadOverlays();
+  }
+
+  toggleDetectionTypes(includeAll: boolean): void {
+    this.includeAllTypes.set(includeAll);
+    this.scheduleDetectionReload();
+  }
+
+  async loadArea(): Promise<void> {
+    this.areaRequest?.abort();
+    const request = new AbortController();
+    this.areaRequest = request;
+    this.areaLayer.clearLayers();
+    this.selectedAreaBoundary = undefined;
+    this.boundaryError.set('');
+    this.renderDetections();
+    if (!this.areaId) return;
+    try {
+      const area = await this.analysis.area(this.areaId, request.signal);
+      if (request.signal.aborted || !area.geometria) return;
+      this.areaLayer.addData(area.geometria);
+      const bounds = this.areaLayer.getBounds();
+      if (bounds.isValid()) this.selectedAreaBoundary = bounds;
+      this.renderDetections();
+    } catch (error) {
+      if (!request.signal.aborted) this.boundaryError.set(this.errorMessage(error));
+    }
+  }
+
+  zoomToArea(): void {
+    if (this.selectedAreaBoundary) this.map?.fitBounds(this.selectedAreaBoundary);
+  }
+
+  async loadOverlays(): Promise<void> {
+    this.layerRequest?.abort();
+    const request = new AbortController();
+    this.layerRequest = request;
+    this.spatialLayers.clearLayers();
+    this.layerError.set('');
+    const colors = { districts: '#2563eb', recurrencia: '#a16207', 'puntos-calientes': '#be123c' };
+    const layers = this.activeOverlays().filter((layer) => layer === 'districts' || this.areaId);
+    const results = await Promise.allSettled(layers.map(async (layer) => {
+      const data = await this.analysis.overlay(this.areaId, layer, this.excludePersistent(), request.signal);
+      if (request.signal.aborted) return;
+      const vector = L.geoJSON(data, {
+        style: { color: colors[layer], weight: 2, fillOpacity: layer === 'districts' ? 0.04 : 0.24 },
+        onEachFeature: (feature, item) => {
+          const content = document.createElement('div');
+          for (const [key, value] of Object.entries(feature.properties ?? {})) {
+            if (value == null || typeof value === 'object') continue;
+            const field = document.createElement('div');
+            field.textContent = key.replaceAll('_', ' ') + ': ' + String(value);
+            content.append(field);
+          }
+          item.bindPopup(content, { maxHeight: 230 });
+        },
+      });
+      vector.addTo(this.spatialLayers);
+    }));
+    if (request.signal.aborted) return;
+    this.layerError.set(results.flatMap((result, index) => result.status === 'rejected'
+      ? [this.layerLabels[layers[index]] + ': ' + this.errorMessage(result.reason)] : []).join(' · '));
+  }
+
+  private errorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : 'No se pudo completar la consulta.';
   }
 
   toggleFilters(): void {
@@ -208,6 +357,7 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   clearSelection(): void {
     this.drawnItems.clearLayers();
     this.selectedArea.set(null);
+    this.polygon.set(undefined);
     this.selectedObservation.set(null);
     this.selectionChange.emit(null);
     this.areaOfInterestChange.emit(null);
@@ -231,6 +381,8 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   selectObservation(observation: Observation | null): void {
+    this.detailRequest?.abort();
+    this.detailError.set('');
     this.selectedObservation.set(observation);
 
     this.selectionChange.emit(
@@ -240,6 +392,18 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     requestAnimationFrame(() => {
       this.map?.invalidateSize({ pan: false });
     });
+    if (observation && this.dataSet().origin === 'BACKEND') void this.loadDetail(observation.id);
+  }
+
+  private async loadDetail(id: string): Promise<void> {
+    const request = new AbortController();
+    this.detailRequest = request;
+    try {
+      const observation = await this.mapData.observation(id, request.signal);
+      if (!request.signal.aborted) this.selectedObservation.set(observation);
+    } catch (error) {
+      if (!request.signal.aborted) this.detailError.set(this.errorMessage(error));
+    }
   }
 
   setMunicipalLayer(id: string, visible: boolean): void {
@@ -309,17 +473,27 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       const bbox = west <= east
         ? `${west},${south},${east},${north}`
         : `-180,${south},180,${north}`;
-      const data = await this.mapData.loadObservations(this.period, {
+      const data: MapDataSet = this.archive() ? {
+        origin: 'ARCHIVE',
+        observations: await this.analysis.detections(
+          this.areaId, this.period, bbox, this.polygon(), this.observationFilters.platforms,
+          this.observationFilters.minConfidence, this.excludePersistent(), abortController.signal,
+        ),
+      } : await this.mapData.loadObservations(this.period, {
         bbox,
         minConfidence: this.observationFilters.minConfidence,
         platforms: this.observationFilters.platforms,
+        includeAllTypes: this.includeAllTypes(),
       }, abortController.signal);
       if (sequence !== this.loadSequence) return;
       this.dataSet.set(data);
       const selected = this.selectedObservation();
       if (selected) {
+        this.detailRequest?.abort();
+        this.detailError.set('');
         const updated = this.filteredObservations.find(({ id }) => id === selected.id);
-        if (updated) this.selectedObservation.set(updated);
+        if (updated && data.origin === 'BACKEND') this.selectObservation(updated);
+        else if (updated) this.selectedObservation.set(updated);
         else this.selectObservation(null);
       }
       this.dataStatus.set('ready');
@@ -327,7 +501,7 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     } catch (error) {
       if (sequence !== this.loadSequence) return;
       if (error instanceof DOMException && error.name === 'AbortError') return;
-      if (!liveRefresh) this.dataSet.set({ origin: this.mapData.origin, observations: [] });
+      if (!liveRefresh) this.dataSet.set({ origin: this.archive() ? 'ARCHIVE' : this.mapData.origin, observations: [] });
       this.dataStatus.set('error');
       this.dataError.set(error instanceof Error ? error.message : 'No se pudieron cargar las detecciones.');
       this.renderDetections();
@@ -440,9 +614,13 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.map.on('draw:editvertex draw:editmove draw:editresize draw:edited', () => {
       this.refreshAreaAfterEdit();
     });
-    this.map.on('draw:edited', () => this.scheduleDetectionReload());
+    this.map.on('draw:edited', () => {
+      this.emitAreaOfInterest();
+      this.scheduleDetectionReload();
+    });
     this.map.on(L.Draw.Event.DELETED, () => {
       this.selectedArea.set(null);
+      this.polygon.set(undefined);
       this.areaRevision.update((revision) => revision + 1);
       this.areaOfInterestChange.emit(null);
       this.scheduleDetectionReload();
@@ -454,13 +632,13 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.areaRefreshFrame = requestAnimationFrame(() => {
       this.areaRefreshFrame = 0;
       this.areaRevision.update((revision) => revision + 1);
-      this.emitAreaOfInterest();
       this.renderDetections();
     });
   }
 
   private emitAreaOfInterest(): void {
     const polygon = this.selectedArea();
+    this.polygon.set(polygon?.toGeoJSON().geometry);
     this.areaOfInterestChange.emit(polygon?.toGeoJSON() ?? null);
   }
 
@@ -564,6 +742,9 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
         minConfidence: this.observationFilters.minConfidence || null,
       },
       clientFilters: {
+        areaId: this.areaId || null,
+        excludePersistent: this.archive() && this.excludePersistent(),
+        includeAllDetectionTypes: !this.archive() && this.includeAllTypes(),
         visibleSensors: this.visibleSensors,
         minFrpMw: this.observationFilters.minFrpMw,
         dayNight: this.observationFilters.dayNight || null,

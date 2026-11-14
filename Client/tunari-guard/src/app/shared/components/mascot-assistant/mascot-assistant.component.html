@@ -39,6 +39,14 @@
             </div>
           }
         </div>
+        <!-- TUNARIGUARD_TUNI_GUIDE_CONTEXT_V1_START -->
+        @if (estado() === 'ayuda') {
+          <div class="tuni-guide-v1__chat-context">
+            <strong>Ayuda de esta sección: {{ consejoActual().titulo }}</strong>
+            <p>{{ consejoActual().texto }}</p>
+          </div>
+        }
+        <!-- TUNARIGUARD_TUNI_GUIDE_CONTEXT_V1_END -->
       </div>
 
       <div class="chat-actions" aria-label="Opciones de ayuda de Tuni">
@@ -82,6 +90,21 @@
       </div>
     </div>
   }
+
+  <!-- TUNARIGUARD_TUNI_GUIDE_V1_START -->
+  @if (consejoVisible() && !abierto()) {
+    <aside class="tuni-guide-v1" role="status" aria-label="Consejo contextual de Tuni">
+      <div class="tuni-guide-v1__top">
+        <span class="tuni-guide-v1__eyebrow"><span aria-hidden="true">✦</span> TUNI TE AYUDA</span>
+        <button type="button" class="tuni-guide-v1__close" (click)="cerrarConsejo()" aria-label="Cerrar consejo de Tuni" title="Cerrar consejo">×</button>
+      </div>
+      <strong class="tuni-guide-v1__title">{{ consejoActual().titulo }}</strong>
+      <p class="tuni-guide-v1__text">{{ consejoActual().texto }}</p>
+      <button type="button" class="tuni-guide-v1__action" (click)="abrirAyudaDeEstaVista()">Ver ayuda en el chat <span aria-hidden="true">→</span></button>
+      <div class="tuni-guide-v1__timer" [class.tuni-guide-v1__timer--alterno]="secuenciaConsejo() % 2 === 1" aria-hidden="true"></div>
+    </aside>
+  }
+  <!-- TUNARIGUARD_TUNI_GUIDE_V1_END -->
 
   <button type="button" class="chat-bubble"
           (click)="alternar()"

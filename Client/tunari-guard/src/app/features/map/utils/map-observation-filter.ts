@@ -3,6 +3,8 @@ import { Observation } from '../models/observation.model';
 import { MapPeriod } from '../models/map-period.model';
 import { MapObservationFilters } from '../models/map-observation-filters.model';
 
+const boliviaDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/La_Paz' });
+
 export interface MapLayerVisibility {
   period: MapPeriod;
   showViirs: boolean;
@@ -17,7 +19,7 @@ export function filterObservations(
 
   const confidenceRank = { LOW: 1, NOMINAL: 2, HIGH: 3 } as const;
   return observations.filter((observation) => {
-    const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/La_Paz' }).format(new Date(observation.acquiredAtUtc));
+    const date = boliviaDate.format(new Date(observation.acquiredAtUtc));
     if (date < filters.period.from || date > filters.period.to) return false;
     if (observation.sensor === SensorType.VIIRS && !filters.showViirs) return false;
     if (observation.sensor === SensorType.MODIS && !filters.showModis) return false;

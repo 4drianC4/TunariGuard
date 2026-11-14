@@ -1,0 +1,24 @@
+<div class="query-controls" role="group" aria-label="Fuente, área y período">
+  <label>Fuente de detecciones
+    <select #source [value]="archive() ? 'archive' : 'live'" (change)="sourceChange.emit(source.value === 'archive')">
+      <option value="live">Observaciones operativas</option>
+      <option value="archive">Archivo analítico</option>
+    </select>
+  </label>
+  <label>Área de referencia
+    <select #area [value]="areaId()" (change)="contextChange.emit({ areaId: area.value, period: period() })">
+      <option value="">Todas las áreas</option>
+      @if (areaId() && !areas().length) { <option [value]="areaId()">{{ areaId() }}</option> }
+      @for (item of areas(); track item.area_id) {
+        <option [value]="item.area_id">{{ item.nombre_visible }}</option>
+      }
+    </select>
+  </label>
+  <label>Desde <input #from type="date" [value]="period().from" /></label>
+  <label>Hasta <input #to type="date" [value]="period().to" /></label>
+  <button type="button" (click)="applyPeriod(from.value, to.value)">Aplicar fechas</button>
+  @if (areaId()) {
+    <button type="button" (click)="centerArea.emit()">Centrar en el área</button>
+  }
+</div>
+@if (periodError()) { <p class="period-error" role="alert">{{ periodError() }}</p> }

@@ -24,10 +24,22 @@
       }
       @if (selected.brightnessKelvin != null) { <div><dt class="text-[10px] font-medium text-[#526b24]">Temperatura de brillo</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.brightnessKelvin }} K</dd></div> }
       @if (selected.dayNight) { <div><dt class="text-[10px] font-medium text-[#526b24]">Día / noche</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.dayNight }}</dd></div> }
-      <div><dt class="text-[10px] font-medium text-[#526b24]">Asignación territorial</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.districtAssignment }}</dd></div>
+      @if (selected.districtAssignment) { <div><dt class="text-[10px] font-medium text-[#526b24]">Asignación territorial</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.districtAssignment }}</dd></div> }
+      @if (selected.archive; as archive) {
+        <div><dt class="text-[10px] font-medium text-[#526b24]">Origen en el archivo</dt><dd class="m-0 text-xs">{{ archive.origin }}</dd></div>
+        @if (archive.persistent) { <div class="text-xs">Posible fuente fija de calor</div> }
+        @if (archive.events.length) { <div><dt class="text-[10px] font-medium text-[#526b24]">Eventos candidatos</dt><dd class="m-0 text-xs">{{ archive.events.join(', ') }}</dd></div> }
+      }
       @if (selected.district) { <div><dt class="text-[10px] font-medium text-[#526b24]">Distrito</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.district.name }} ({{ selected.district.code }})</dd></div> }
       @if (selected.batchId) { <div><dt class="text-[10px] font-medium text-[#526b24]">Lote de ingesta</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.batchId }}</dd></div> }
+      @if (selected.detectionType != null) { <div><dt class="text-[10px] font-medium text-[#526b24]">Tipo FIRMS</dt><dd class="m-0 text-xs">{{ selected.detectionType }}</dd></div> }
     </dl>
+    @if (selected.raw) {
+      <details class="text-xs">
+        <summary class="cursor-pointer font-medium">Fila original</summary>
+        <pre class="mt-2 overflow-auto whitespace-pre-wrap break-all">{{ selected.raw | json }}</pre>
+      </details>
+    }
 
     @if (origin === 'DEMO') {
       <p class="rounded-md bg-[#526b24]/15 p-3 text-xs leading-5 text-[#424037]">Registro ficticio para probar la interfaz; no es una medición FIRMS.</p>
