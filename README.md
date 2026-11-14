@@ -1,6 +1,6 @@
 # Tunari Guard
 
-Plataforma web para el desafío de NASA Space Apps **"Harmonization of MODIS and VIIRS Hot Spots"**, con enfoque local en los **16 distritos de Cochabamba** (Bolivia). Recibe focos de calor detectados por los sensores MODIS y VIIRS, los ubica en cada distrito y los muestra en tiempo real. Más adelante sumará un asistente con IA que explica los datos y avisa de alertas.
+Plataforma web para el desafío de NASA Space Apps **"Harmonization of MODIS and VIIRS Hot Spots"**, con enfoque local en el **Parque Nacional Tunari** y los **15 distritos de Cochabamba** (Bolivia). Recibe focos de calor detectados por los sensores MODIS y VIIRS, los ubica en cada distrito y los muestra en tiempo real. Expone también el análisis armonizado del equipo de datos: calendario térmico, series, alertas y recurrencia. Más adelante sumará un asistente con IA que explica los datos y avisa de alertas.
 
 > Una detección térmica **no confirma** un incendio. Todo el sistema conserva la fuente original de cada dato y marca como simulados los datos de demostración.
 
@@ -16,6 +16,7 @@ Este documento es el informe de estado al **13 de noviembre de 2026**.
 | Backend: base técnica (Fase 0) | ✅ Lista y verificada |
 | Backend: ingesta y distritos (Fase 1) | ✅ Lista y verificada |
 | Backend: tiempo real y demo (Fase 2) | ✅ Lista y verificada |
+| Backend: análisis del equipo de datos (esquema `fuego`) | ✅ Listo y verificado |
 | Backend: alertas + n8n (Fase 3) | ⏳ Pendiente |
 | Backend: asistente con IA (Fase 4) | ⏳ Pendiente |
 | Backend: sincronización automática con NASA FIRMS (Fase 5) | ⏳ Pendiente |
@@ -141,6 +142,15 @@ Nunca se asigna un foco al "distrito más cercano" por aproximación. Al cargar 
 
 **Procedencia** (`GET /api/v1/ingestion/batches`): qué archivo se importó, cuándo y cuántas filas resultaron nuevas, duplicadas o rechazadas.
 
+### Análisis del equipo de datos ✅
+
+El equipo de datos entregó un paquete (`Server/data/fuego/`) con un esquema PostgreSQL aparte, `fuego`, y el análisis ya calculado.
+- **Los SQL corren tal cual** en nuestra base (PostgreSQL 17 + PostGIS 3.5) con `npm run fuego:setup`, usando el `psql` del contenedor; en Windows no hace falta instalar nada. La validación del paquete (`04`) pasa completa.
+- **API de lectura según su contrato** (`openapi.yaml`): áreas, calendario mes × año, series armonizadas, alertas, alerta del mes en curso, recurrencia, puntos calientes, tendencias y detecciones (JSON, CSV o GeoJSON). Incluye búsqueda por polígono dibujado y metadatos con las advertencias obligatorias.
+- **Distritos:** los 15 del paquete pasan automáticamente a nuestra tabla `districts`, con los mismos códigos (`distrito-01` …).
+- **Detecciones crudas:** las 11.923 filas en formato FIRMS del paquete se importan con 0 rechazos. Su asignación por distrito coincide con el análisis: 680 focos en el municipio.
+- **Importador:** guarda el tipo de detección FIRMS. Cuando llega el dato estándar, reemplaza las NRT provisionales de ese rango de fechas.
+
 ### Fase 2: tiempo real ✅
 
 **Canal Socket.IO** en `http://localhost:3000/realtime`:
@@ -185,6 +195,7 @@ cp .env.example .env    # Windows (cmd): copy .env.example .env
 npm install
 npm run db:up          # PostGIS y MinIO en Docker
 npm run prisma:deploy  # crea las tablas
+npm run fuego:setup    # carga el análisis del equipo de datos (~1 min)
 npm run start:dev      # http://localhost:3000/api/docs
 ```
 
@@ -216,7 +227,7 @@ Los detalles, los scripts y los ejemplos con `curl` están en [`Server/README.md
 
 ### Insumos que necesita el equipo
 
-- [ ] **Cartografía oficial de los 16 distritos** (GeoJSON o shapefile), con fuente y versión.
+- [ ] **Cartografía oficial de los 15 distritos** (hoy se usan los de referencia abierta del paquete `fuego`, marcados como provisionales).
 - [ ] **Datos reales de MODIS y VIIRS** y el periodo de análisis.
 - [ ] **Proveedor de IA y clave** para el asistente.
 - [ ] **¿Alertas fuera de la app?** Si se quieren por Telegram o WhatsApp, entra n8n.

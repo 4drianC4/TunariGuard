@@ -117,6 +117,9 @@ model Observation {
   track              Float?
   dayNight           DayNight?                         @map("day_night")
   productVersion     String?                           @map("product_version")
+  /// Tipo FIRMS: 0 incendio de vegetación probable, 1 volcán, 2 otra fuente estática en tierra,
+  /// 3 costa afuera. Nulo si el archivo no lo trae (p. ej. NRT).
+  detectionType      Int?                              @map("detection_type") @db.SmallInt
   origin             DataOrigin
   /// Fila original del archivo, para trazabilidad.
   raw                Json
@@ -129,6 +132,7 @@ model Observation {
 
   @@index([acquiredAt])
   @@index([sensor, acquiredAt])
+  @@index([platform, acquiredAt])
   @@index([districtId, acquiredAt])
   @@index([batchId])
   @@index([geom], type: Gist)

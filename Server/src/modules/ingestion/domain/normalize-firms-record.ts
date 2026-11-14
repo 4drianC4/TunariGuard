@@ -52,8 +52,18 @@ export function normalizeFirmsRecord(
     track: optionalNumber(row, 'track'),
     dayNight: parseDayNight(row['daynight']),
     productVersion: row['version']?.trim() || null,
+    detectionType: parseDetectionType(row['type']),
     raw: { ...record },
   };
+}
+
+/** `type` de FIRMS: entero 0–3; vacío o ausente → null (los NRT no lo traen). */
+function parseDetectionType(value: string | undefined): number | null {
+  const text = value?.trim();
+  if (!text) return null;
+  const type = Number(text);
+  if (!Number.isInteger(type) || type < 0 || type > 3) throw new Error(`type inválido: ${text} (se espera 0, 1, 2 o 3)`);
+  return type;
 }
 
 /** Huella estable: mismo sensor, plataforma, instante y coordenadas (5 decimales ≈ 1 m). */

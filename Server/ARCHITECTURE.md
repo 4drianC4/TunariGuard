@@ -42,7 +42,8 @@ Al inicializar NestJS se agregarán `src/main.ts`, `src/app.module.ts` y la conf
 | --- | --- |
 | `ingestion` | Coordinar importaciones CSV y sincronizaciones FIRMS; interpretar formatos, validar entradas y registrar el resultado de cada lote. |
 | `observations` | Registrar y consultar observaciones normalizadas, preservar procedencia y evitar duplicados de importación. |
-| `districts` | Administrar los límites de los 16 distritos y resolver la asignación territorial mediante PostGIS. |
+| `districts` | Administrar los límites de los 15 distritos (por defecto, los de `fuego.areas`) y resolver la asignación territorial mediante PostGIS. |
+| `analisis` | Exponer en lectura el análisis del equipo de datos (esquema `fuego`): áreas, calendario, series armonizadas, alertas, recurrencia, puntos calientes y detecciones analizadas. No recalcula nada. |
 | `harmonization` | Ejecutar métodos versionados de asociación y agregación conservando las observaciones originales. |
 | `analytics` | Entregar indicadores, calendario histórico y anomalías con referencia histórica y metadatos del método. |
 
@@ -78,7 +79,7 @@ La composición se realizará en los módulos NestJS. Un módulo sencillo podrá
 
 ## Criterios geográficos y científicos
 
-- El alcance municipal incluye los 16 distritos. Tunari es una posible capa adicional y no sustituye esa división territorial.
+- El alcance comprende el Parque Nacional Tunari y los 15 distritos del municipio de Cochabamba (paquete `fuego`). Los límites son de referencia abierta, no oficiales (`provisional`).
 - Se requiere cartografía oficial con su procedencia y versión. Mientras no exista, los polígonos se importan con `provisional = true` y la API lo informa.
 - Política de límites (implementada): se usa `ST_Covers`, de modo que un punto sobre el borde pertenece al polígono. Si lo cubre un solo distrito queda `ASSIGNED`; si lo cubren varios (borde compartido o polígonos superpuestos), `AMBIGUOUS` y sin distrito; si no lo cubre ninguno, `OUTSIDE`. Sin distritos cargados, las observaciones quedan `PENDING`. Importar distritos recalcula todas las asignaciones.
 - Los puntos externos o sin asignación se identifican explícitamente; no se atribuyen al distrito más cercano automáticamente.
@@ -136,16 +137,38 @@ cliente ──POST /ingestion/uploads/import { objectKey }─▶ backend ──s
 
 Validación: esquemas Zod con `StandardSchemaValidationPipe`, que `@nestjs/swagger` 12 documenta automáticamente. En formularios multipart se valida con `SchemaPipe` para que Swagger conserve el campo del archivo.
 
+### Análisis del equipo de datos (esquema `fuego`)
+
+El calendario, las métricas y las anomalías que antes figuraban como previstos llegan **ya calculados** en el paquete `data/fuego/`. Es un esquema PostgreSQL aparte (19 tablas, vistas y funciones) que se instala ejecutando sus SQL tal cual (`npm run fuego:setup`). Prisma no lo modela ni lo migra: solo gestiona `public`, y `prisma migrate` no detecta deriva por su culpa.
+
+El módulo `analisis` implementa el contrato `data/fuego/docs/openapi.yaml` con SQL parametrizado. Reutiliza las vistas y funciones del paquete (`pertenece_a_area`, `alertas_area`, `serie_armonizada_area`, `serie_armonizada_poligono`, `buscar_detecciones`, `conteo_mensual_en_poligono`) para no reinterpretar su lógica. Las filas salen con `to_jsonb`, en `snake_case`, como en el contrato.
+
+| Endpoint | Fuente |
+| --- | --- |
+| `GET /areas`, `GET /areas/{id}` | `fuego.areas` + `v_detecciones_por_area` |
+| `GET /areas/{id}/calendario` | `v_calendario_mes_anio` |
+| `GET /areas/{id}/serie` | `serie_mensual` / `serie_agregada` |
+| `GET /areas/{id}/serie-armonizada` | `serie_armonizada_area()` |
+| `GET /areas/{id}/alertas` | `alertas_area()` |
+| `GET /areas/{id}/alerta-mes-en-curso` (+ alias deprecado `estado-actual`) | `v_alerta_mes_en_curso` / `alerta_mes_en_curso` |
+| `GET /areas/{id}/recurrencia`, `puntos-calientes`, `tendencias` | `recurrencia_celda`, `puntos_calientes_gi`, `conglomerados_gi`, `tendencias` |
+| `GET /detecciones` (json/csv/geojson, `X-Total-Count`, `X-Next-Offset`) | `detecciones` + `pertenece_a_area()` |
+| `POST /detecciones/buscar`, `/conteos/mensual`, `/poligono/serie-armonizada` | funciones por polígono |
+| `GET /eventos`, `/fuentes`, `/casos-documentados`, `/metadatos` | tablas de catálogo + `docs/advertencias.json` |
+
+**Errores:**
+- Un área inexistente da 404.
+- Un polígono inválido da 400.
+- Si el esquema `fuego` no está instalado, la respuesta es 503 e indica `npm run fuego:setup`.
+
+**Cruce con nuestras tablas:**
+- Los distritos se copian de `fuego.areas`, con los mismos códigos `distrito-NN`.
+- `observations` se puede llenar con `formato_firms/` (camino A). La asignación con PostGIS da los mismos 680 focos en el municipio que el parámetro `detecciones_municipio_cochabamba` del paquete.
+- Las cifras de `observations` y `fuego.detecciones` no se suman.
+
 ### Prevista
 
-| Endpoint | Propósito |
-| --- | --- |
-| `GET /api/v1/hotspots` | Agrupaciones candidatas y trazabilidad. |
-| `GET /api/v1/calendar` | Actividad agregada por periodo y distrito. |
-| `GET /api/v1/metrics` | Indicadores del dashboard. |
-| `GET /api/v1/anomalies` | Resultados con referencia histórica y limitaciones. |
-
-Al desarrollarlos se acordarán con Angular los DTOs, errores y límites de consulta.
+Las métricas del dashboard en tiempo real (`metrics:updated`) y las alertas operativas (fase 3) pueden apoyarse en `fuego.alertas_mensuales` y `alerta_mes_en_curso` en lugar de reglas propias.
 
 ## Tiempo real, alertas y asistente
 
@@ -218,6 +241,7 @@ Comportamiento implementado:
 0. **Base** (lista): NestJS, configuración validada con Zod, Prisma + PostGIS en Docker Compose, Swagger y `/api/v1/health`.
 1. **Datos** (lista): importar CSV, persistir observaciones, asignar distritos y exponer `GET /observations`.
 2. **Tiempo real** (lista): gateway con `hotspots:new` y modo de reproducción histórica.
+2b. **Análisis del equipo** (lista): esquema `fuego` instalado con sus SQL, módulo `analisis`, distritos desde `fuego.areas`, `detection_type` y reemplazo de NRT por rango de fechas.
 3. **Alertas:** reglas, `alert:new` y webhook a n8n.
 4. **Asistente:** IA con funciones, respuestas en fragmentos y límites.
 5. **FIRMS en vivo:** sincronización programada con `FIRMS_MAP_KEY`.

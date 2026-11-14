@@ -49,6 +49,47 @@ export class DistrictsRepository {
     return districts.length;
   }
 
+  /** ¿Está instalado el esquema fuego del paquete de datos? */
+  async fuegoDisponible(): Promise<boolean> {
+    const [row] = await this.prisma.$queryRaw<{ ok: boolean }[]>`
+      SELECT to_regclass('fuego.areas') IS NOT NULL AS ok`;
+    return row?.ok ?? false;
+  }
+
+  count(): Promise<number> {
+    return this.prisma.district.count();
+  }
+
+  /**
+   * Copia los 15 distritos de fuego.areas (código distrito-01 … distrito-15, el mismo que usa el
+   * análisis). Con `replace`, borra los distritos que no vengan de ahí para que no se solapen.
+   */
+  async upsertFromFuego(replace: boolean): Promise<{ imported: number; removed: number }> {
+    return this.prisma.$transaction(async (tx) => {
+      const imported = await tx.$executeRaw`
+        INSERT INTO districts (code, name, source, version, provisional, geom)
+        SELECT a.area_id, a.nombre_visible, a.fuente_limite,
+               COALESCE((SELECT valor FROM fuego.parametros WHERE clave = 'esquema_version'), 'fuego'),
+               NOT a.es_oficial,
+               ST_Multi(ST_CollectionExtract(ST_MakeValid(a.geom), 3))
+        FROM fuego.areas a
+        WHERE a.tipo = 'distrito'
+        ON CONFLICT (code) DO UPDATE SET
+          name = EXCLUDED.name,
+          source = EXCLUDED.source,
+          version = EXCLUDED.version,
+          provisional = EXCLUDED.provisional,
+          geom = EXCLUDED.geom,
+          imported_at = now()`;
+      const removed = replace
+        ? await tx.$executeRaw`
+            DELETE FROM districts
+            WHERE code NOT IN (SELECT area_id FROM fuego.areas WHERE tipo = 'distrito')`
+        : 0;
+      return { imported, removed };
+    });
+  }
+
   async list(): Promise<DistrictRow[]> {
     return this.prisma.$queryRaw<DistrictRow[]>`
       SELECT d.id, d.code, d.name, d.source, d.version, d.provisional,

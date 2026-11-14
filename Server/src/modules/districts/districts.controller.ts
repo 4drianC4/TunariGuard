@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   MaxFileSizeValidator,
   ParseFilePipe,
   Post,
@@ -11,7 +12,9 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { z } from 'zod';
 import { SchemaPipe } from '../../infrastructure/http/schema.pipe.js';
+import { queryBoolean } from '../../shared/query-schemas.js';
 import { DistrictsService } from './districts.service.js';
 import {
   importDistrictsBodySchema,
@@ -19,6 +22,10 @@ import {
   type ImportDistrictsBody,
   type ListDistrictsQuery,
 } from './districts.schemas.js';
+
+const importFuegoQuerySchema = z.object({
+  replace: queryBoolean.default(true).describe('Borra los distritos que no vienen de fuego.areas (evita solapes)'),
+});
 
 @ApiTags('districts')
 @Controller('districts')
@@ -61,5 +68,17 @@ export class DistrictsController {
     @Body(new SchemaPipe(importDistrictsBodySchema)) body: ImportDistrictsBody,
   ) {
     return this.districts.import(file.buffer, body);
+  }
+
+  @Post('import-fuego')
+  @HttpCode(200)
+  @ApiOperation({
+    summary: 'Usa los 15 distritos del paquete de datos (fuego.areas) como límites',
+    description:
+      'Códigos distrito-01 … distrito-15, los mismos del análisis, así ambos mundos se cruzan por distrito. ' +
+      'Reasigna todas las observaciones. Se hace solo al arrancar si no hay distritos.',
+  })
+  importFuego(@Query({ schema: importFuegoQuerySchema }) query: z.infer<typeof importFuegoQuerySchema>) {
+    return this.districts.importFromFuego(query.replace);
   }
 }

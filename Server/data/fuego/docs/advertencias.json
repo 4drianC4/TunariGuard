@@ -1,0 +1,77 @@
+[
+  {
+    "codigo": "deteccion_no_es_incendio",
+    "donde": "Cualquier mapa o tabla de detecciones",
+    "texto": "Cada punto es una detección satelital de calor, no un incendio confirmado. Puede corresponder a una quema, un incendio, calor industrial u otra fuente."
+  },
+  {
+    "codigo": "indice_relativo",
+    "donde": "Calendario, series e índices",
+    "texto": "El índice se expresa en celdas-día MODIS-equivalentes. Es una medida relativa de actividad térmica: no son hectáreas quemadas ni el número oficial de incendios."
+  },
+  {
+    "codigo": "escala_mensual_indicativa",
+    "donde": "Series mensuales",
+    "texto": "La escala mensual es solo indicativa (error aproximado del 40 %). Para comparar, use la escala trimestral o anual."
+  },
+  {
+    "codigo": "alerta_candidata",
+    "donde": "Cualquier alerta",
+    "texto": "Una alerta es una señal estadística relativa al historial del mismo mes. Requiere verificación y no confirma un incendio."
+  },
+  {
+    "codigo": "probabilidad_aproximada",
+    "donde": "Alertas (probabilidad y equivalente en años)",
+    "texto": "La probabilidad es aproximada y sale de un modelo ajustado con unos 13 años de datos. El equivalente en años es solo indicativo; no presentarlo como 'una vez cada N años'."
+  },
+  {
+    "codigo": "limites_no_oficiales",
+    "donde": "Mapas con límites del parque, municipios o distritos",
+    "texto": "Los límites del parque, municipios y distritos son de referencia abierta (OpenStreetMap, ciudatoslab) y no son cartografía oficial (las áreas derivadas del GAMC tienen su propia advertencia). Deben validarse con el GAMC y el SERNAP antes de usos institucionales."
+  },
+  {
+    "codigo": "geometria_oficial_derivada",
+    "donde": "Áreas zona-cota-2750 y periurbanos-gamc",
+    "texto": "La fuente es un servicio oficial del GAMC, pero la geometría fue derivada de una imagen (Cota 2750, muestreo de unos 11 m, exactitud posicional no evaluada) o de una consulta GetFeatureInfo (Periurbanos). No es el vector original ni un límite legal, y los términos de redistribución no están confirmados."
+  },
+  {
+    "codigo": "dos_satelites_mismo_fuego",
+    "donde": "Conteos de detecciones",
+    "texto": "Suomi-NPP y NOAA-20 pasan por el mismo lugar con menos de una hora de diferencia: un mismo fuego puede aparecer como dos detecciones de satélites distintos. El conteo de filas de la tabla detecciones puede por eso contar dos veces un fuego; la unidad comparable es la celda-día."
+  },
+  {
+    "codigo": "satelite_decide_alertas",
+    "donde": "Alertas y series",
+    "texto": "Las alertas entregadas se calculan solo con VIIRS Suomi-NPP, que dejó de entregar observaciones nuevas a inicios de noviembre de 2026 (FIRMS indica cobertura hasta el 2-nov-2026). NOAA-20 es comparable en totales mensuales, no detección por detección; para continuar se propone un enlace que debe verificarse con datos de 2026."
+  },
+  {
+    "codigo": "serie_poligono_dibujado",
+    "donde": "Índice armonizado de un polígono dibujado o de un área nueva",
+    "texto": "El índice usa los factores del catálogo de satélites, calibrados en el Tunari; en otros territorios son una aproximación (MODIS→VIIRS da 2,87 en el Tunari y 2,09 en toda Bolivia). En polígonos pequeños MODIS casi no detecta y el índice es muy ruidoso. Solo hay datos cargados en el parque y el municipio: si pct_area_con_datos es 0 (sin_cobertura = true) NO hay datos y NO significa cero incendios; si es menor que 100 el índice solo refleja la parte cubierta. Mostrar siempre el campo aviso. Un polígono dibujado siempre devuelve metodo_indice = viirs_reescalado (VIIRS / factor, sin valor antes de febrero de 2012), incluso si coincide con el Tunari: el método mixto calibrado solo se aplica al área registrada parque-tunari."
+  },
+  {
+    "codigo": "calidad_indice",
+    "donde": "Calendario, series e índice de cualquier área",
+    "texto": "Cada mes del índice trae calidad_indice: calibrado_localmente_en_tunari (solo el Parque Tunari; aun así el error mensual es ~40 %), aproximado_factor_transferido (VIIRS reescalado con el factor del Tunari, sin validación local: es VIIRS en unidades equivalentes de MODIS, no una armonización de dos sensores) o no_comparable (antes de febrero de 2012 en las áreas distintas del Tunari: no hay valor). Muestre aproximado_factor_transferido atenuado, con una nota, y no_comparable en gris y sin valor; nunca como cero. El rango limite_inferior/superior_estructural de esas áreas es un rango de sensibilidad al factor, no un intervalo de confianza."
+  },
+  {
+    "codigo": "fuente_persistente",
+    "donde": "Detecciones y celdas marcadas",
+    "texto": "Esta celda tiene detecciones en la mayoría de los años, de noche y con baja potencia: podría ser una fuente fija de calor y no un incendio de vegetación. Debe verificarse."
+  },
+  {
+    "codigo": "cobertura_datos",
+    "donde": "Cualquier pantalla con fechas",
+    "texto": "La serie mensual, el índice y las alertas llegan hasta el 31 de octubre de 2026. Las detecciones NRT (origen_dato = NRT) son provisionales y NASA las reprocesa; no traen el tipo de detección. Suomi-NPP dejó de entregar observaciones nuevas a inicios de noviembre de 2026 (FIRMS indica cobertura hasta el 2-nov-2026)."
+  },
+  {
+    "codigo": "solo_areas_cargadas",
+    "donde": "Búsquedas por polígono dibujado",
+    "texto": "La búsqueda solo cubre el Parque Nacional Tunari y el municipio de Cochabamba. Fuera de esas áreas no hay datos cargados."
+  },
+  {
+    "codigo": "sin_validacion_campo",
+    "donde": "Páginas de validación o métricas",
+    "texto": "La validación usa siete incendios publicados en prensa sin coordenadas; no hay validación espacial ni de campo."
+  }
+]

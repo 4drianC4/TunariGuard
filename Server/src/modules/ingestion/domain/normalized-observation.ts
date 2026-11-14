@@ -25,6 +25,8 @@ export interface NormalizedObservation {
   track: number | null;
   dayNight: DayNight | null;
   productVersion: string | null;
+  /** Columna `type` de FIRMS (0 vegetación, 1 volcán, 2 fuente estática, 3 costa afuera). */
+  detectionType: number | null;
   raw: Record<string, string>;
 }
 

@@ -1,27 +1,11 @@
 import { z } from 'zod';
+import { bbox } from '../../shared/query-schemas.js';
 
 /** Fecha ISO 8601 (YYYY-MM-DD o fecha-hora con zona). Sin zona explícita se interpreta en UTC. */
 const isoDate = z
   .union([z.iso.datetime({ offset: true }), z.iso.date()])
   .transform((value) => new Date(value));
 
-const bbox = z
-  .string()
-  .transform((value, ctx) => {
-    const parts = value.split(',').map(Number);
-    const [minLon, minLat, maxLon, maxLat] = parts;
-    const valid =
-      parts.length === 4 &&
-      parts.every(Number.isFinite) &&
-      minLon! >= -180 && maxLon! <= 180 && minLat! >= -90 && maxLat! <= 90 &&
-      minLon! <= maxLon! && minLat! <= maxLat!;
-    if (!valid) {
-      ctx.addIssue({ code: 'custom', message: 'bbox debe ser minLon,minLat,maxLon,maxLat en WGS84' });
-      return z.NEVER;
-    }
-    return parts as [number, number, number, number];
-  })
-  .describe('Área visible del mapa: minLon,minLat,maxLon,maxLat');
 
 export const listObservationsQuerySchema = z
   .object({
@@ -35,6 +19,10 @@ export const listObservationsQuerySchema = z
     origin: z.enum(['REAL', 'SIMULATED']).optional(),
     batchId: z.uuid().optional(),
     bbox: bbox.optional(),
+    detectionType: z
+      .enum(['vegetation', 'all'])
+      .default('vegetation')
+      .describe('vegetation: tipo FIRMS 0 o desconocido (por defecto); all: incluye volcanes y fuentes estáticas'),
     format: z.enum(['json', 'geojson']).default('json'),
     limit: z.coerce.number().int().min(1).max(1000).default(200),
     cursor: z.uuid().optional().describe('nextCursor de la página anterior'),

@@ -5,6 +5,8 @@ import {
   ObservationsRepository,
   type AssignmentSummary,
   type ChronologicalFilter,
+  type InsertResult,
+  type NrtRange,
   type ObservationRecord,
 } from './observations.repository.js';
 import type { ListObservationsQuery } from './observations.schemas.js';
@@ -17,9 +19,14 @@ export type ObservationFeature = Feature<Point, Omit<ObservationDto, 'position'>
 export class ObservationsService {
   constructor(private readonly repository: ObservationsRepository) {}
 
-  /** Inserta un bloque de un lote; devuelve solo los ids nuevos (las duplicadas se omiten). */
-  insertChunk(batchId: string, origin: DataOrigin, observations: NormalizedObservation[]): Promise<string[]> {
+  /** Inserta un bloque de un lote: ids nuevos y cuántas NRT pasaron a estándar. */
+  insertChunk(batchId: string, origin: DataOrigin, observations: NormalizedObservation[]): Promise<InsertResult> {
     return this.repository.insertMany(batchId, origin, observations);
+  }
+
+  /** Quita las NRT que el dato estándar del lote deja obsoletas (por plataforma y rango de días). */
+  deleteObsoleteNrt(batchId: string, ranges: NrtRange[]): Promise<number> {
+    return ranges.length ? this.repository.deleteObsoleteNrt(batchId, ranges) : Promise.resolve(0);
   }
 
   /** Asigna distritos a todo un lote, una vez insertados todos sus bloques. */
@@ -78,6 +85,7 @@ function toDto(o: ObservationRecord) {
     track: o.track,
     dayNight: o.dayNight,
     productVersion: o.productVersion,
+    detectionType: o.detectionType,
     source: sourceOf(o),
     dataset: o.batch.dataset,
     batchId: o.batchId,

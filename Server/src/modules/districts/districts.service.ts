@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, type OnApplicationBootstrap, ServiceUnavailableException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { DISTRICTS_UPDATED, type DistrictsUpdatedEvent } from '../../shared/domain-events.js';
 import type { FeatureCollection } from 'geojson';
@@ -8,7 +8,9 @@ import { DistrictsRepository, type DistrictRow } from './districts.repository.js
 import type { ImportDistrictsBody } from './districts.schemas.js';
 
 @Injectable()
-export class DistrictsService {
+export class DistrictsService implements OnApplicationBootstrap {
+  private readonly logger = new Logger(DistrictsService.name);
+
   constructor(
     private readonly repository: DistrictsRepository,
     private readonly observations: ObservationsService,
@@ -25,6 +27,34 @@ export class DistrictsService {
     }
 
     const imported = await this.repository.upsertMany(districts, body);
+    return this.reassign(imported);
+  }
+
+  /** Usa los 15 distritos del paquete de datos (fuego.areas) como límites de la app. */
+  async importFromFuego(replace: boolean) {
+    if (!(await this.repository.fuegoDisponible())) {
+      throw new ServiceUnavailableException('El esquema fuego no está cargado. Ejecuta en Server/: npm run fuego:setup');
+    }
+    const { imported, removed } = await this.repository.upsertFromFuego(replace);
+    return { ...(await this.reassign(imported)), removed };
+  }
+
+  /**
+   * Al arrancar, si todavía no hay distritos y el paquete fuego está cargado, los toma de ahí.
+   * Así el mapa tiene distritos sin pasos manuales. Nunca reemplaza distritos ya cargados.
+   */
+  async onApplicationBootstrap(): Promise<void> {
+    try {
+      if ((await this.repository.count()) > 0 || !(await this.repository.fuegoDisponible())) return;
+      const { imported } = await this.importFromFuego(false);
+      this.logger.log(`Sin distritos cargados: se importaron ${imported} desde fuego.areas`);
+    } catch (error) {
+      // Sin base de datos al arrancar: PrismaService ya avisa con un mensaje claro.
+      this.logger.debug(`No se importaron distritos al arrancar: ${String(error)}`);
+    }
+  }
+
+  private async reassign(imported: number) {
     const assignment = await this.observations.assignDistricts();
     this.events.emit(DISTRICTS_UPDATED, {
       imported,

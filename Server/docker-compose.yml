@@ -13,6 +13,9 @@ services:
       - '${DB_PORT:-5433}:5432'
     volumes:
       - tunari-guard-pgdata:/var/lib/postgresql/data
+      # Paquete de datos del equipo (esquema fuego): los SQL usan rutas relativas y se ejecutan
+      # con psql dentro del contenedor (npm run fuego:setup), así no hace falta psql en Windows.
+      - ./data/fuego:/fuego:ro
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
       interval: 5s

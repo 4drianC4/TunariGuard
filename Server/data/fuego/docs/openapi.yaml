@@ -1,0 +1,399 @@
+openapi: 3.0.3
+info:
+  title: API de calendario armonizado de actividad de incendios (Parque Nacional Tunari y municipio de Cochabamba)
+  version: 0.1.0
+  description: |
+    **CONTRATO PROPUESTO: no hay una API implementada.** Los endpoints marcados `listo` solo indican que se pueden resolver con las vistas y funciones SQL del paquete; el backend debe construir la lógica HTTP, la autenticación y la paginación.
+
+    Contrato propuesto para el backend. Los datos viven en PostgreSQL + PostGIS (esquema `fuego`, ver `docs/diccionario_datos.md`).
+
+    **Reglas de presentación (obligatorias en el frontend):** ver `docs/advertencias.json`. En especial:
+    una detección NO es un incendio confirmado; el índice es relativo (no son hectáreas); una alerta es una señal estadística
+    que requiere verificación; los límites no son oficiales; la serie mensual y las alertas llegan hasta el 31-oct-2026 (las novedades posteriores son NRT, provisionales).
+
+    **Estado de implementación:** cada endpoint indica en `x-estado` si ya se puede resolver con una consulta SQL sobre los datos
+    cargados (`listo`) o si necesita trabajo nuevo (`fase-2`).
+servers:
+  - url: /api/v1
+tags:
+  - name: areas
+  - name: detecciones
+  - name: series
+  - name: alertas
+  - name: espacial
+  - name: metadatos
+paths:
+  /areas:
+    get:
+      tags: [areas]
+      summary: Lista de áreas analizables
+      x-estado: listo
+      x-sql: "SELECT area_id, tipo, nombre, nombre_visible, alcance_estadistico, padre_area_id, area_km2, es_oficial FROM fuego.areas"
+      parameters:
+        - {name: tipo, in: query, schema: {type: string, enum: [parque, municipio, distrito, municipio_parque, personalizada]}}
+      responses:
+        "200": {description: Lista de áreas, content: {application/json: {schema: {type: array, items: {$ref: "#/components/schemas/Area"}}}}}
+  /areas/{area_id}:
+    get:
+      tags: [areas]
+      summary: Detalle de un área, con su geometría
+      x-estado: listo
+      x-sql: "SELECT *, ST_AsGeoJSON(geom) FROM fuego.areas WHERE area_id = $1"
+      parameters:
+        - {$ref: "#/components/parameters/AreaId"}
+      responses:
+        "200": {description: Área con geometría GeoJSON}
+        "404": {description: No existe}
+  /areas/{area_id}/calendario:
+    get:
+      tags: [series]
+      summary: Calendario térmico mes x año (heatmap)
+      description: Matriz de años por 12 meses con el índice armonizado. Pintar con una rampa secuencial accesible.
+      x-estado: listo
+      x-sql: "SELECT anio, mes_num, indice FROM fuego.v_calendario_mes_anio WHERE area_id = $1 ORDER BY anio, mes_num"
+      parameters:
+        - {$ref: "#/components/parameters/AreaId"}
+        - {name: desde_anio, in: query, schema: {type: integer}}
+        - {name: hasta_anio, in: query, schema: {type: integer}}
+      responses:
+        "200": {description: Celdas del calendario, content: {application/json: {schema: {type: array, items: {$ref: "#/components/schemas/CeldaCalendario"}}}}}
+  /areas/{area_id}/serie:
+    get:
+      tags: [series]
+      summary: Serie armonizada con bandas de incertidumbre
+      description: |
+        `mensual` viene de `serie_mensual` (solo indicativa: error ~40 %). `trimestral` y `anual` vienen de `serie_agregada`
+        (solo existen para parque-tunari) e incluyen las bandas de muestreo y la banda combinada con la incertidumbre estructural del factor.
+      x-estado: listo
+      parameters:
+        - {$ref: "#/components/parameters/AreaId"}
+        - {name: escala, in: query, schema: {type: string, enum: [mensual, trimestral, anual], default: anual}}
+        - {name: desde, in: query, schema: {type: string, format: date}}
+        - {name: hasta, in: query, schema: {type: string, format: date}}
+      responses:
+        "200": {description: Serie, content: {application/json: {schema: {type: array, items: {$ref: "#/components/schemas/PuntoSerie"}}}}}
+  /areas/{area_id}/alertas:
+    get:
+      tags: [alertas]
+      summary: Alertas estadísticas mensuales
+      description: |
+        Probabilidad de que el mes sea tan alto o más (modelo de conteos). Incluye el Z-score clásico (informativo), cuántas veces la mediana
+        histórica, la lectura en palabras y el nivel. NO presentar `equivalente_anios_indicativo` como "una vez cada N años".
+      x-estado: listo
+      x-sql: "SELECT * FROM fuego.alertas_area($1 /*area_id*/, $2 /*desde*/, $3 /*hasta*/, $4 /*nivel*/, $5 /*variante*/, $6 /*solo_destacadas*/, $7 /*limite*/, $8 /*offset*/)  -- todos los filtros aceptan NULL"
+      parameters:
+        - {$ref: "#/components/parameters/AreaId"}
+        - {name: desde, in: query, schema: {type: string, format: date}}
+        - {name: hasta, in: query, schema: {type: string, format: date}}
+        - {name: nivel, in: query, schema: {type: string, enum: [normal, elevada, alta, muy_alta]}}
+        - {name: variante, in: query, schema: {type: string, enum: [base, sin_fuentes_persistentes], default: base}}
+        - {name: solo_destacadas, in: query, schema: {type: boolean, default: false}}
+        - {name: limite, in: query, schema: {type: integer, default: 1000, maximum: 10000}}
+        - {name: offset, in: query, schema: {type: integer, default: 0}}
+      responses:
+        "200": {description: Alertas, content: {application/json: {schema: {type: array, items: {$ref: "#/components/schemas/Alerta"}}}}}
+  /areas/{area_id}/estado-actual:
+    get:
+      tags: [alertas]
+      deprecated: true
+      summary: (Deprecado) Alias de /areas/{area_id}/alerta-mes-en-curso
+      description: |
+        **Deprecado:** devuelve lo mismo que `/areas/{area_id}/alerta-mes-en-curso` (mes en curso frente al mismo tramo de años anteriores).
+        Se conserva solo para no romper implementaciones que ya partieron de la versión anterior del contrato; use la ruta nueva.
+      x-estado: listo
+      parameters:
+        - {$ref: "#/components/parameters/AreaId"}
+      responses:
+        "200":
+          description: Igual que /alerta-mes-en-curso
+          content:
+            application/json: {schema: {type: array, items: {$ref: "#/components/schemas/AlertaMesEnCurso"}}}
+  /areas/{area_id}/recurrencia:
+    get:
+      tags: [espacial]
+      summary: Recurrencia por celda de 1 km (en cuántos años hubo fuego)
+      x-estado: listo
+      x-sql: "SELECT r.*, c.geom FROM fuego.recurrencia_celda r JOIN fuego.celdas_1km c USING (cell_id) WHERE r.area_id = $1"
+      parameters:
+        - {$ref: "#/components/parameters/AreaId"}
+        - {name: formato, in: query, schema: {type: string, enum: [json, geojson], default: geojson}}
+        - {name: excluir_fuentes_persistentes, in: query, schema: {type: boolean, default: false}}
+      responses:
+        "200": {description: Celdas con su recurrencia}
+  /areas/{area_id}/puntos-calientes:
+    get:
+      tags: [espacial]
+      summary: Conglomerados significativos (Getis-Ord Gi*)
+      x-estado: listo
+      parameters:
+        - {$ref: "#/components/parameters/AreaId"}
+        - {name: solo_calientes, in: query, schema: {type: boolean, default: true}}
+        - {name: formato, in: query, schema: {type: string, enum: [json, geojson], default: geojson}}
+      responses:
+        "200": {description: Celdas calientes y resumen de conglomerados}
+  /areas/{area_id}/tendencias:
+    get:
+      tags: [series]
+      summary: Pruebas de tendencia (Mann-Kendall y Sen)
+      x-estado: listo
+      parameters:
+        - {$ref: "#/components/parameters/AreaId"}
+      responses:
+        "200": {description: Resultados. Hoy no hay tendencia significativa.}
+  /detecciones:
+    get:
+      tags: [detecciones]
+      summary: Detecciones filtradas, con descarga CSV o GeoJSON
+      description: |
+        Es la "búsqueda con descarga" que pide el reto. Una fila es una detección, no un incendio. Por defecto trae solo las del área indicada.
+      x-estado: listo
+      x-sql: "SELECT * FROM fuego.detecciones_por_area($1 /*area_id*/, $2 /*desde*/, $3 /*hasta*/, $4 /*fuentes text[]*/, $5 /*excluir_persistentes*/, $6 /*limite*/, $7 /*offset*/, $8 /*desc*/); total: SELECT fuego.contar_detecciones_por_area($1,$2,$3,$4,$5)"
+      parameters:
+        - {name: area_id, in: query, schema: {type: string}, description: "parque-tunari, municipio-cochabamba, distrito-NN o mun-<nombre>"}
+        - {name: desde, in: query, schema: {type: string, format: date}}
+        - {name: hasta, in: query, schema: {type: string, format: date}}
+        - {name: fuente, in: query, schema: {type: array, items: {type: string}}, style: form, explode: true}
+        - {name: confianza_minima, in: query, schema: {type: string, enum: [nominal, alta]}}
+        - {name: excluir_fuentes_persistentes, in: query, schema: {type: boolean, default: false}}
+        - {name: bbox, in: query, schema: {type: string}, description: "minLon,minLat,maxLon,maxLat"}
+        - {name: formato, in: query, schema: {type: string, enum: [json, csv, geojson], default: json}}
+        - {name: limite, in: query, schema: {type: integer, default: 10000, minimum: 1, maximum: 100000}}
+        - {name: offset, in: query, schema: {type: integer, default: 0, minimum: 0}, description: "Paginación por desplazamiento. Orden estable: fecha UTC y id_deteccion"}
+        - {name: orden, in: query, schema: {type: string, enum: [fecha_asc, fecha_desc], default: fecha_asc}}
+      responses:
+        "200":
+          description: Detecciones en el formato pedido. Devolver el total en la cabecera X-Total-Count (fuego.contar_detecciones_por_area) y, si hay más filas, el siguiente offset.
+          content:
+            application/json: {schema: {type: array, items: {$ref: "#/components/schemas/Deteccion"}}}
+            text/csv: {schema: {type: string}}
+            application/geo+json: {schema: {type: object}}
+  /detecciones/buscar:
+    post:
+      tags: [detecciones]
+      summary: Detecciones dentro de un polígono dibujado por el usuario
+      description: |
+        Usa la función SQL `fuego.buscar_detecciones(geom, desde, hasta, fuentes)`. Solo hay datos cargados para el Parque Tunari y el municipio de
+        Cochabamba: fuera de esas áreas el resultado es vacío (mostrar la advertencia `solo_areas_cargadas`).
+      x-estado: listo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [poligono]
+              properties:
+                poligono: {type: object, description: "Geometría GeoJSON (Polygon) en EPSG:4326"}
+                desde: {type: string, format: date}
+                hasta: {type: string, format: date}
+                fuentes: {type: array, items: {type: string}}
+                formato: {type: string, enum: [json, csv, geojson], default: json}
+      responses:
+        "200": {description: Detecciones dentro del polígono}
+  /conteos/mensual:
+    post:
+      tags: [series]
+      summary: Conteo mensual BRUTO dentro de un polígono dibujado
+      description: |
+        Usa `fuego.conteo_mensual_en_poligono`. Es un conteo por fuente (detecciones y celdas-día), NO está armonizado ni calibrado. Para el índice
+        armonizado de un polígono use `/poligono/serie-armonizada`. Las alertas de un polígono arbitrario (modelo estadístico en Python) son trabajo de fase 2.
+      x-estado: listo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [poligono]
+              properties:
+                poligono: {type: object}
+                desde: {type: string, format: date}
+                hasta: {type: string, format: date}
+      responses:
+        "200": {description: Conteos por mes y fuente}
+  /areas/{area_id}/serie-armonizada:
+    get:
+      tags: [series]
+      summary: Serie mensual armonizada de un área según el catálogo de satélites
+      description: |
+        Usa `fuego.serie_armonizada_area(area_id, desde, hasta)`. Calcula el índice con los satélites que el catálogo `fuentes_satelitales`
+        marca como activos en el índice cada mes (cambiar el catálogo cambia el resultado, no el código). Para las áreas registradas es igual a
+        `serie_mensual`; sirve además para recalcular tras activar otro satélite. Mostrar siempre el campo `aviso` y `fuentes_usadas`.
+      x-estado: listo
+      parameters:
+        - {name: area_id, in: path, required: true, schema: {type: string}}
+        - {name: desde, in: query, schema: {type: string, format: date}}
+        - {name: hasta, in: query, schema: {type: string, format: date}}
+      responses:
+        "200":
+          description: Un registro por mes
+          content:
+            application/json: {schema: {type: array, items: {$ref: "#/components/schemas/SerieArmonizada"}}}
+  /poligono/serie-armonizada:
+    post:
+      tags: [series]
+      summary: Serie mensual ARMONIZADA de un polígono dibujado por el usuario
+      description: |
+        Usa `fuego.serie_armonizada_poligono(geom, desde, hasta)`. Cuenta celdas-día por satélite dentro del polígono, las lleva a la escala MODIS con
+        el factor del catálogo y combina (MODIS + VIIRS)/2. Cuidados (advertencia `serie_poligono_dibujado`): los factores se calibraron en el Tunari,
+        en polígonos pequeños el resultado es muy ruidoso y solo hay datos en el parque y el municipio. No calcula alertas (requieren el modelo de Python).
+      x-estado: listo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [poligono]
+              properties:
+                poligono: {type: object, description: "Geometría GeoJSON (Polygon) en EPSG:4326"}
+                desde: {type: string, format: date}
+                hasta: {type: string, format: date}
+      responses:
+        "200":
+          description: Un registro por mes
+          content:
+            application/json: {schema: {type: array, items: {$ref: "#/components/schemas/SerieArmonizada"}}}
+  /areas/{area_id}/alerta-mes-en-curso:
+    get:
+      tags: [alertas]
+      summary: Alerta del mes en curso de un área
+      description: |
+        Lee `fuego.v_alerta_mes_en_curso` (la corrida más reciente, factor de enlace 1,0) o `fuego.alerta_mes_en_curso` para el historial de cortes y la
+        sensibilidad (0,94 y 1,10). Compara lo acumulado en los primeros `dias_transcurridos` días del mes con el mismo tramo de años anteriores; **no pronostica**
+        el resto del mes. Es una señal estadística que requiere verificación y no confirma un incendio. Mostrar `lectura`, `dias_transcurridos`, `satelite_base`
+        y `anios_de_historial`.
+      x-estado: listo
+      parameters:
+        - {name: area_id, in: path, required: true, schema: {type: string}}
+        - {name: historial, in: query, schema: {type: boolean, default: false}, description: "true = todos los cortes y los tres factores de enlace"}
+      responses:
+        "200":
+          description: Alerta del mes en curso
+          content:
+            application/json: {schema: {type: array, items: {$ref: "#/components/schemas/AlertaMesEnCurso"}}}
+  /eventos:
+    get:
+      tags: [detecciones]
+      summary: Eventos candidatos (agrupaciones de detecciones)
+      x-estado: listo
+      parameters:
+        - {name: area_id, in: query, schema: {type: string}}
+        - {name: desde, in: query, schema: {type: string, format: date}}
+        - {name: hasta, in: query, schema: {type: string, format: date}}
+      responses:
+        "200": {description: Eventos}
+  /fuentes:
+    get:
+      tags: [metadatos]
+      summary: Satélites y sensores de origen
+      x-estado: listo
+      responses:
+        "200": {description: Fuentes}
+  /casos-documentados:
+    get:
+      tags: [metadatos]
+      summary: Incendios publicados usados para validar (sin coordenadas)
+      x-estado: listo
+      responses:
+        "200": {description: Siete casos}
+  /metadatos:
+    get:
+      tags: [metadatos]
+      summary: Parámetros del análisis, cobertura de datos y advertencias obligatorias
+      x-estado: listo
+      description: Devuelve la tabla `parametros` y el contenido de `docs/advertencias.json`.
+      responses:
+        "200": {description: Metadatos}
+components:
+  parameters:
+    AreaId:
+      name: area_id
+      in: path
+      required: true
+      schema: {type: string}
+      description: "Por ejemplo parque-tunari, municipio-cochabamba, distrito-09, mun-sacaba"
+  schemas:
+    AlertaMesEnCurso:
+      type: object
+      properties:
+        area_id: {type: string}
+        fecha_corte: {type: string, format: date}
+        mes: {type: string, format: date}
+        dias_transcurridos: {type: integer}
+        dias_del_mes: {type: integer}
+        satelite_base: {type: string, description: "NOAA-20 (enlazado a la referencia histórica Suomi-NPP)"}
+        factor_de_enlace: {type: number}
+        celdas_dia_observadas: {type: integer}
+        esperado_modelo: {type: number, nullable: true}
+        mediana_historica_tramo: {type: number, nullable: true}
+        percentil_historico: {type: number, nullable: true}
+        anios_de_historial: {type: integer}
+        probabilidad_exceso: {type: number, nullable: true}
+        nivel_alerta: {type: string, enum: [normal, elevada, alta, muy_alta, sin_baseline]}
+        lectura: {type: string}
+    SerieArmonizada:
+      type: object
+      properties:
+        mes: {type: string, format: date}
+        era: {type: string, description: "MODIS_solo | MODIS+VIIRS"}
+        indice_modis_equivalente: {type: number, nullable: true}
+        modis_celdas_dia: {type: number, nullable: true}
+        viirs_equivalente: {type: number, nullable: true}
+        fuentes_usadas: {type: string, description: "Grupos de satélites que entraron ese mes, por ejemplo MODIS + VIIRS-SNPP"}
+        aviso: {type: string, description: "Mostrar siempre. Avisa de cobertura parcial o nula y de la aproximación de los factores"}
+        pct_area_con_datos: {type: number, description: "Porcentaje del polígono con datos cargados (parque + municipio de Cochabamba)"}
+        sin_cobertura: {type: boolean, description: "true = el polígono está fuera de lo cargado: indice_modis_equivalente es null y NO significa cero incendios"}
+        calidad_indice: {type: string, enum: [calibrado_localmente_en_tunari, aproximado_factor_transferido, no_comparable], nullable: true, description: "calibrado_localmente_en_tunari = solo el Parque Tunari (error mensual ~40 %); aproximado_factor_transferido = VIIRS reescalado con el factor del Tunari, sin validación local; no_comparable = antes de feb-2012 en áreas distintas del Tunari (indice es null; mostrar en gris, nunca como cero)"}
+        metodo_indice: {type: string, enum: [mixto_calibrado, viirs_reescalado], description: "mixto_calibrado = promedio de MODIS y VIIRS convertido (solo el Parque Tunari); viirs_reescalado = VIIRS convertido con el factor del Tunari (todas las demás áreas y todo polígono dibujado); no es una armonización de dos sensores"}
+    Area:
+      type: object
+      properties:
+        area_id: {type: string}
+        tipo: {type: string}
+        nombre: {type: string, description: "Nombre de la entidad; en municipio_parque se usa para asignar detecciones: no lo use para mostrar"}
+        nombre_visible: {type: string, description: "Nombre para mostrar; en municipio_parque dice Sector del Tunari en X"}
+        alcance_estadistico: {type: string, enum: [area_completa, solo_sector_del_parque], description: "solo_sector_del_parque = las cifras cuentan solo las detecciones del Parque Tunari asignadas a ese municipio, aunque la geometria sea el municipio completo"}
+        padre_area_id: {type: string, nullable: true}
+        area_km2: {type: number}
+        es_oficial: {type: boolean}
+    CeldaCalendario:
+      type: object
+      properties:
+        anio: {type: integer}
+        mes_num: {type: integer}
+        indice: {type: number, description: "Celdas-día MODIS-equivalentes (relativo)"}
+    PuntoSerie:
+      type: object
+      properties:
+        periodo: {type: string}
+        indice: {type: number}
+        inferior: {type: number, nullable: true}
+        superior: {type: number, nullable: true}
+        inferior_estructural: {type: number, nullable: true}
+        superior_estructural: {type: number, nullable: true}
+    Alerta:
+      type: object
+      properties:
+        area_id: {type: string}
+        mes: {type: string, format: date}
+        nivel_alerta: {type: string}
+        categoria_alerta: {type: string}
+        probabilidad_exceso: {type: number}
+        lectura_modelo: {type: string}
+        z_score: {type: number}
+        veces_mediana_historica: {type: number, nullable: true}
+        celdas_dia_base: {type: integer}
+        equivalente_anios_indicativo: {type: number, description: "SOLO INDICATIVO; no presentar como una vez cada N años"}
+    Deteccion:
+      type: object
+      properties:
+        id_deteccion: {type: string}
+        fecha_hora_bo: {type: string, format: date-time}
+        fuente: {type: string}
+        lat: {type: number}
+        lon: {type: number}
+        confianza_clase: {type: string}
+        frp_mw: {type: number}
+        distrito: {type: string, nullable: true}
+        fuente_persistente_probable: {type: boolean}

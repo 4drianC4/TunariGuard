@@ -1,10 +1,10 @@
 # Tunari Guard — Backend
 
-Backend para la hackatón. El alcance territorial comprende los **16 distritos de Cochabamba**; Tunari podrá incorporarse como una capa geográfica adicional.
+Backend para la hackatón. El alcance territorial comprende el **Parque Nacional Tunari** y los **15 distritos del municipio de Cochabamba**, según el paquete de datos del equipo (`data/fuego/`).
 
 ## Estado actual
 
-Fases 0 a 2 listas: importación idempotente de CSV FIRMS (MODIS y VIIRS), también de archivos pesados subidos a MinIO, carga de distritos en GeoJSON, asignación territorial con PostGIS, consulta de observaciones con filtros, paginación y GeoJSON, y tiempo real con Socket.IO más un modo de reproducción histórica para la demo. Faltan alertas, asistente y sincronización FIRMS; consulta las fases y los endpoints en [ARCHITECTURE.md](./ARCHITECTURE.md#api).
+Fases 0 a 2 listas, más el **análisis del equipo de datos** (esquema `fuego`: calendario, series armonizadas, alertas, recurrencia y detecciones; ver abajo). Importación idempotente de CSV FIRMS (MODIS y VIIRS), también de archivos pesados subidos a MinIO, carga de distritos en GeoJSON, asignación territorial con PostGIS, consulta de observaciones con filtros, paginación y GeoJSON, y tiempo real con Socket.IO más un modo de reproducción histórica para la demo. Faltan alertas, asistente y sincronización FIRMS; consulta las fases y los endpoints en [ARCHITECTURE.md](./ARCHITECTURE.md#api).
 
 ## Probar el recorrido
 
@@ -20,6 +20,59 @@ curl -F file=@fire_nrt_J1V-C2.csv -F dataset="FIRMS VIIRS NOAA-20 NRT" \
 # 3. Consultar para el mapa
 curl "http://localhost:3000/api/v1/observations?format=geojson&minConfidence=NOMINAL&limit=500"
 ```
+
+## Datos del equipo (esquema `fuego`)
+
+El equipo de datos entregó un paquete en [`data/fuego/`](data/fuego/LEEME.md): un esquema PostgreSQL aparte, `fuego`, con el análisis ya calculado (17 CSV + SQL). Incluye:
+- 6157 detecciones analizadas;
+- 31 áreas: el parque, el municipio, 15 distritos, 12 sectores del Tunari y 2 zonas del GAMC;
+- el índice armonizado MODIS/VIIRS por mes;
+- alertas estadísticas, recurrencia por celda de 1 km y puntos calientes.
+
+**No pisa nuestras tablas** (`observations`, `districts`, `import_batches`) y **no se recalcula nada aquí**: el backend solo lo lee.
+
+```bash
+npm run fuego:setup             # 01 esquema + 02 funciones + 03 carga (con 04 validación), en una transacción
+npm run fuego:setup -- --reset  # borra el esquema fuego y lo vuelve a crear
+npm run fuego:novedades         # 05: detecciones nuevas; reemplaza las NRT del mismo rango de fechas
+npm run fuego:alerta-mes        # 06: alerta del mes en curso
+```
+
+Los SQL se ejecutan **tal cual vienen**, con el `psql` del contenedor (`data/fuego` está montado en `/fuego`), así que en Windows no hace falta instalar `psql`. Si el contenedor se creó antes de este cambio: `docker compose up -d --force-recreate db`.
+
+**API** (contrato en [`data/fuego/docs/openapi.yaml`](data/fuego/docs/openapi.yaml), todo bajo `/api/v1`):
+
+| Endpoint | Qué devuelve |
+| --- | --- |
+| `GET /areas` (`tipo`, `formato=geojson`) | Áreas con su conteo de detecciones; con geometría para el mapa |
+| `GET /areas/{id}` | Detalle con geometría |
+| `GET /areas/{id}/calendario` | Calendario mes × año (heatmap) |
+| `GET /areas/{id}/serie` (`escala`) | Serie mensual, trimestral o anual con bandas |
+| `GET /areas/{id}/serie-armonizada` | Serie según el catálogo de satélites (`aviso`, `fuentes_usadas`) |
+| `GET /areas/{id}/alertas` | Alertas mensuales (nivel, probabilidad, lectura) |
+| `GET /areas/{id}/alerta-mes-en-curso` (`historial`) | Alerta del mes en curso |
+| `GET /areas/{id}/recurrencia` / `puntos-calientes` / `tendencias` | Análisis espacial y de tendencia |
+| `GET /detecciones` | Detecciones con filtros; `formato=csv` o `geojson`; total en `X-Total-Count` |
+| `POST /detecciones/buscar`, `POST /conteos/mensual`, `POST /poligono/serie-armonizada` | Lo mismo dentro de un polígono dibujado (GeoJSON) |
+| `GET /eventos`, `GET /fuentes`, `GET /casos-documentados` | Eventos candidatos y catálogos |
+| `GET /metadatos` | Parámetros, cobertura y **advertencias obligatorias** |
+
+Reglas para el frontend, según el paquete:
+- Muestra junto a cada cifra las advertencias de `GET /metadatos`. Cuando muestres el índice, incluye también `calidad_indice`.
+- Un índice nulo se pinta en gris, nunca como cero.
+- Para nombrar un área usa `nombre_visible`.
+- Una detección no es un incendio confirmado.
+- No sumes cifras de `observations` con cifras de `fuego.detecciones`: son vistas solapadas de las mismas fuentes.
+
+**Conexión con nuestras tablas:**
+- **Distritos:** al arrancar, si no hay distritos, el backend copia los 15 de `fuego.areas` con códigos `distrito-01` … `distrito-15`. Son los mismos códigos del análisis, así que las salas de Socket.IO y los filtros coinciden. Para forzarlo: `POST /api/v1/districts/import-fuego`.
+- **Detecciones crudas (camino A):** `data/fuego/formato_firms/` trae 11.923 filas en formato FIRMS para llenar `observations` con la historia:
+  ```bash
+  curl -F file=@data/fuego/formato_firms/firms_modis_cochabamba.csv -F dataset="FIRMS MODIS Cochabamba 2001-2026" http://localhost:3000/api/v1/ingestion/csv
+  curl -F file=@data/fuego/formato_firms/firms_viirs_cochabamba.csv -F dataset="FIRMS VIIRS Cochabamba 2012-2026" http://localhost:3000/api/v1/ingestion/csv
+  ```
+- **Tipo de detección:** el importador guarda la columna `type` de FIRMS en `detection_type`. Por defecto, `GET /observations` muestra solo vegetación (tipo 0) o tipo desconocido; con `detectionType=all` se ven todos.
+- **NRT → estándar:** al importar dato estándar, las NRT con la misma huella se actualizan a estándar. Las demás NRT de esa plataforma en el mismo rango de días se eliminan. La respuesta lo detalla en `nrt`.
 
 ## CSV pesados (MinIO)
 
@@ -117,7 +170,8 @@ cp .env.example .env     # Windows (cmd): copy .env.example .env
 npm install              # también genera el cliente Prisma
 npm run db:up            # levanta PostGIS y MinIO y espera a que estén sanos
 npm run prisma:deploy    # aplica las migraciones (habilita PostGIS)
-npm run start:dev
+npm run fuego:setup      # instala y carga el paquete de datos del equipo (~1 min)
+npm run start:dev        # al arrancar toma los 15 distritos de fuego.areas si no hay distritos
 ```
 
 | URL | Contenido |
@@ -137,6 +191,9 @@ npm run start:dev
 | `lint` | oxlint con reglas que usan los tipos |
 | `db:up` / `db:down` | Levantar o detener PostGIS y MinIO |
 | `db:doctor` | Diagnosticar la conexión a la base (puerto, contraseña, contenedor) |
+| `fuego:setup` | Instalar y cargar el esquema `fuego` (`-- --reset` lo recrea desde cero) |
+| `fuego:novedades` / `fuego:alerta-mes` | Cargas incrementales del paquete (SQL 05 y 06) |
+| `fuego:status` | Conteos y cobertura del esquema `fuego` |
 | `prisma:migrate` | Crear una migración nueva en desarrollo |
 | `prisma:deploy` | Aplicar las migraciones existentes |
 | `prisma:studio` | Explorar la base de datos |
@@ -183,7 +240,7 @@ Las credenciales viven solo en `.env`, que está fuera de Git.
 
 ## Insumos pendientes
 
-- Cartografía oficial de los 16 distritos, con fuente y versión.
+- Cartografía oficial de los 15 distritos (hoy se usan los de referencia abierta del paquete, marcados `provisional`).
 - Datasets de MODIS y VIIRS y periodo de análisis (el equipo de datos los sube a MinIO).
 - Proveedor de IA y su clave.
 - Si habrá alertas fuera de la app (Telegram/WhatsApp vía n8n).

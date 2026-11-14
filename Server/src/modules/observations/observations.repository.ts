@@ -6,6 +6,19 @@ import type { ListObservationsQuery } from './observations.schemas.js';
 
 const INSERT_CHUNK = 1000;
 
+export interface InsertResult {
+  insertedIds: string[];
+  /** Filas NRT existentes que pasaron a dato estándar (misma huella). */
+  upgraded: number;
+}
+
+/** Días UTC (YYYY-MM-DD, inclusive) cubiertos por dato estándar de una plataforma. */
+export interface NrtRange {
+  platform: string;
+  from: string;
+  to: string;
+}
+
 export interface AssignmentSummary {
   evaluated: number;
   assigned: number;
@@ -28,13 +41,17 @@ export class ObservationsRepository {
    * Inserta ignorando huellas ya existentes y devuelve los ids de las filas nuevas.
    * Una sola sentencia por bloque (jsonb_to_recordset) que además calcula `geom`: Prisma no
    * escribe columnas geometry y createMany era ~25 veces más lento con CSV grandes.
+   *
+   * Si la huella ya existe como NRT (provisional) y la fila nueva es dato estándar, la fila
+   * se actualiza en su lugar (`upgraded`): el estándar reemplaza al provisional sin duplicar.
    */
   async insertMany(
     batchId: string,
     origin: DataOrigin,
     observations: NormalizedObservation[],
-  ): Promise<string[]> {
+  ): Promise<InsertResult> {
     const inserted: string[] = [];
+    let upgraded = 0;
     for (let i = 0; i < observations.length; i += INSERT_CHUNK) {
       const rows = JSON.stringify(
         observations.slice(i, i + INSERT_CHUNK).map((o) => ({
@@ -54,32 +71,69 @@ export class ObservationsRepository {
           track: o.track,
           day_night: o.dayNight,
           product_version: o.productVersion,
+          detection_type: o.detectionType,
           raw: o.raw,
         })),
       );
-      const ids = await this.prisma.$queryRaw<{ id: string }[]>`
+      const ids = await this.prisma.$queryRaw<{ id: string; inserted: boolean }[]>`
         INSERT INTO observations (
           id, dedupe_key, sensor, platform, latitude, longitude, geom, acquired_at,
           confidence_raw, confidence_level, brightness_k, brightness_aux_k, frp_mw, scan, track,
-          day_night, product_version, origin, raw, batch_id
+          day_night, product_version, detection_type, origin, raw, batch_id
         )
         SELECT
           gen_random_uuid(), r.dedupe_key, r.sensor::"Sensor", r.platform::"Platform",
           r.latitude, r.longitude, ST_SetSRID(ST_MakePoint(r.longitude, r.latitude), 4326),
           r.acquired_at, r.confidence_raw, r.confidence_level::"ConfidenceLevel", r.brightness_k,
           r.brightness_aux_k, r.frp_mw, r.scan, r.track, r.day_night::"DayNight",
-          r.product_version, ${origin}::"DataOrigin", r.raw, ${batchId}::uuid
+          r.product_version, r.detection_type, ${origin}::"DataOrigin", r.raw, ${batchId}::uuid
         FROM jsonb_to_recordset(${rows}::jsonb) AS r(
           dedupe_key text, sensor text, platform text, latitude float8, longitude float8,
           acquired_at timestamp(3), confidence_raw text, confidence_level text,
           brightness_k float8, brightness_aux_k float8, frp_mw float8, scan float8, track float8,
-          day_night text, product_version text, raw jsonb
+          day_night text, product_version text, detection_type smallint, raw jsonb
         )
-        ON CONFLICT (dedupe_key) DO NOTHING
-        RETURNING id`;
-      inserted.push(...ids.map((row) => row.id));
+        ON CONFLICT (dedupe_key) DO UPDATE SET
+          confidence_raw = EXCLUDED.confidence_raw,
+          confidence_level = EXCLUDED.confidence_level,
+          brightness_k = EXCLUDED.brightness_k,
+          brightness_aux_k = EXCLUDED.brightness_aux_k,
+          frp_mw = EXCLUDED.frp_mw,
+          scan = EXCLUDED.scan,
+          track = EXCLUDED.track,
+          day_night = EXCLUDED.day_night,
+          product_version = EXCLUDED.product_version,
+          detection_type = EXCLUDED.detection_type,
+          raw = EXCLUDED.raw,
+          batch_id = EXCLUDED.batch_id
+        WHERE observations.product_version ILIKE '%NRT%'
+          AND COALESCE(EXCLUDED.product_version, '') NOT ILIKE '%NRT%'
+        RETURNING id, (xmax = 0) AS inserted`;
+      for (const row of ids) {
+        if (row.inserted) inserted.push(row.id);
+        else upgraded++;
+      }
     }
-    return inserted;
+    return { insertedIds: inserted, upgraded };
+  }
+
+  /**
+   * Borra las observaciones NRT (provisionales) que el dato estándar deja obsoletas: mismas
+   * plataformas y mismo rango de días UTC, de otros lotes. Se hace por rango y no por huella
+   * porque parte de las NRT no coincide con su versión estándar (recomendación del paquete fuego).
+   */
+  async deleteObsoleteNrt(batchId: string, ranges: NrtRange[]): Promise<number> {
+    let deleted = 0;
+    for (const { platform, from, to } of ranges) {
+      deleted += await this.prisma.$executeRaw`
+        DELETE FROM observations
+        WHERE platform = ${platform}::"Platform"
+          AND product_version ILIKE '%NRT%'
+          AND acquired_at >= ${from}::date
+          AND acquired_at < (${to}::date + 1)
+          AND batch_id <> ${batchId}::uuid`;
+    }
+    return deleted;
   }
 
   /**
@@ -189,6 +243,8 @@ function buildWhere(q: ListObservationsQuery): Prisma.ObservationWhereInput {
   if (q.from || q.to) where.acquiredAt = { gte: q.from, lte: q.to };
   if (q.district) where.district = { code: q.district };
   if (q.minConfidence) where.confidenceLevel = { in: [...CONFIDENCE_AT_LEAST[q.minConfidence]] };
+  // Por defecto solo incendios de vegetación probables (tipo 0) o sin tipo conocido (NRT).
+  if (q.detectionType === 'vegetation') where.OR = [{ detectionType: 0 }, { detectionType: null }];
   if (q.bbox) {
     const [minLon, minLat, maxLon, maxLat] = q.bbox;
     where.longitude = { gte: minLon, lte: maxLon };

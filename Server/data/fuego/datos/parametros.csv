@@ -1,0 +1,31 @@
+clave,valor,descripcion
+factor_viirs_por_modis,2.8715,"Factor de armonización (media geométrica, RMA) ajustado con 2013-2025: VIIRS = factor x MODIS."
+factor_estructural_minimo,2.7134,Extremo inferior plausible del factor (ajuste de menor error de predicción).
+factor_estructural_maximo,3.3727,Extremo superior plausible del factor (razón de sumas).
+metodo_factor,media_geometrica,Estimador del factor operativo.
+periodo_ajuste_factor,2013-2025,Años usados para ajustar el factor.
+cobertura_hasta,2026-10-31,"Última fecha cubierta por la serie mensual, el índice y las alertas mensuales. Las detecciones posteriores (NRT, provisionales) se cargan aparte con sql/05_cargar_novedades.sql."
+crs_grilla,EPSG:32720,Sistema de coordenadas de la grilla de 1 km.
+origen_grilla_x_m,102000.0,Origen X de la grilla (UTM 20S).
+origen_grilla_y_m,8055000.0,Origen Y de la grilla (UTM 20S).
+tamano_celda_m,1000.0,Tamaño de celda.
+filtro_principal,tipo = 0 y confianza distinta de baja,Filtro de las detecciones cargadas.
+alerta_vigilancia_p_max,0.10,"Nivel elevada (vigilancia): probabilidad de exceso <= 0,10."
+alerta_candidata_p_max,0.05,"Nivel alta (candidata a verificación): probabilidad de exceso <= 0,05."
+alerta_muy_alta_p_max,0.01,"Nivel muy_alta (candidata a verificación): probabilidad de exceso <= 0,01."
+alerta_actividad_minima_viirs,6,"Celdas-día de VIIRS Suomi-NPP mínimas en el mes (desde febrero de 2012) para emitir una alerta. Equivale a VIIRS / 2,87 >= 2 con el factor vigente; se fija en conteos para que un reajuste futuro del factor no cambie retroactivamente los niveles. Con factor 2,09 serían 5 y con 3,37 serían 7."
+alerta_actividad_minima_modis,2,"Celdas-día de MODIS mínimas en el mes (antes de febrero de 2012, base MODIS) para emitir una alerta."
+alerta_anios_minimos_historial,5,Años previos mínimos del mismo mes y era.
+modelo_alertas,"binomial negativa estacional, ajustada solo con años anteriores",Modelo de las alertas.
+detecciones_parque,5646,Detecciones en el parque.
+detecciones_municipio_cochabamba,680,Detecciones en el municipio de Cochabamba.
+wape_mensual_prueba,40.5,"Error (WAPE %) mensual al reconstruir MODIS desde VIIRS, prueba 2022-2025."
+wape_trimestral_prueba,27.0,Error trimestral.
+wape_anual_prueba,16.3,Error anual.
+factor_enlace_noaa20_por_suomi,1.0000,"Enlace propuesto para continuar la serie VIIRS: celdas-día de Suomi-NPP = NOAA-20 / factor. Tunari 0,99 (IC 0,94-1,10); Bolivia 1,04 (IC 1,01-1,05). Reajustar con datos de 2026."
+satelite_que_decide_alertas,VIIRS Suomi-NPP,Las alertas mensuales entregadas (2012 hasta la cobertura) se calculan solo con Suomi-NPP. NOAA-20 y NOAA-21 están en detecciones pero no deciden alertas mensuales. La alerta del mes en curso (tabla alerta_mes_en_curso) usa NOAA-20 enlazado a Suomi-NPP.
+suomi_npp_activo,false,"Suomi-NPP dejó de entregar observaciones nuevas a inicios de noviembre de 2026 (FIRMS indica cobertura hasta el 2-nov-2026). Para datos nuevos se usa NOAA-20 (reemplazo comprobado de Suomi-NPP); NOAA-21 ya está en detecciones pero solo como detección (desactivado en el índice, ver fuentes_satelitales)."
+regla_indice_area_calibrada,parque-tunari,"Única área donde el índice promedia MODIS y VIIRS convertido (método mixto_calibrado): allí se calibró y se validó el factor. En todas las demás (metodo_indice = viirs_reescalado) el índice es VIIRS / factor, con el factor transferido desde el Tunari y sin validación local; antes de febrero de 2012 no hay valor comparable. Se descartó un umbral de celdas-día de MODIS por arbitrario (pruebas en el proyecto)."
+factor_referencia_bolivia,2.09,Factor MODIS->VIIRS en toda Bolivia (2013-2025); extremo bajo del rango de sensibilidad al factor de las áreas con metodo_indice = viirs_reescalado.
+fecha_generacion_paquete,2026-11-13,Fecha en que se generó este paquete. NO es la cobertura de los datos (ver cobertura_hasta).
+esquema_version,2026.11.13-6,Versión del esquema SQL del paquete.

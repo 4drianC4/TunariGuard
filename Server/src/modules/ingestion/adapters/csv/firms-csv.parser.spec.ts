@@ -86,6 +86,18 @@ describe('readFirmsCsv', () => {
     expect(errors[3]?.message).toMatch(/repetida/);
   });
 
+  it('lee el tipo de detección FIRMS (type) y rechaza valores inválidos', async () => {
+    const csv =
+      'latitude,longitude,bright_ti4,scan,track,acq_date,acq_time,satellite,instrument,confidence,version,bright_ti5,frp,daynight,type\n' +
+      '-17.5,-66.2,335,0.39,0.36,2012-04-02,1756,N,VIIRS,n,2,302,3.7,D,0\n' +
+      '-17.6,-66.2,335,0.39,0.36,2012-04-02,1756,N,VIIRS,n,2,302,3.7,D,2\n' +
+      '-17.7,-66.2,335,0.39,0.36,2012-04-02,1756,N,VIIRS,n,2.0NRT,302,3.7,D,\n' +
+      '-17.8,-66.2,335,0.39,0.36,2012-04-02,1756,N,VIIRS,n,2,302,3.7,D,7\n';
+    const { observations, errors } = await parseFirmsCsv(csv);
+    expect(observations.map((o) => o.detectionType)).toEqual([0, 2, null]);
+    expect(errors).toEqual([{ line: 5, message: 'type inválido: 7 (se espera 0, 1, 2 o 3)' }]);
+  });
+
   it('rechaza archivos que no son FIRMS o no son CSV', async () => {
     await expect(parseFirmsCsv('nombre,valor\na,1\n')).rejects.toThrow(/faltan columnas/);
     await expect(parseFirmsCsv(MODIS_CSV + '"sin cerrar,1\n')).rejects.toBeInstanceOf(CsvFormatError);

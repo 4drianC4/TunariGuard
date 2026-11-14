@@ -1,0 +1,2015 @@
+area_id,cell_id,ranking,detecciones_total,dias_con_deteccion,primer_anio,ultimo_anio,anios_con_fuego_2001_2025,anios_con_fuego_viirs_2013_2025,anios_temporada_viirs_2013_2025,pct_anios_2001_2025,pct_anios_viirs_2013_2025,clase_recurrencia_viirs,mes_pico,unidad_principal,fuente_persistente_probable
+parque-tunari,32720_45_52,1,11,6,2014,2025,6,6,3,24.0,46.2,alta,8,Quillacollo,False
+parque-tunari,32720_75_37,2,9,5,2013,2024,5,5,5,20.0,38.5,alta,8,Sacaba,False
+parque-tunari,32720_51_28,3,24,7,2003,2022,5,4,1,20.0,30.8,alta,6,Quillacollo,False
+parque-tunari,32720_66_54,4,20,6,2015,2026,4,4,4,16.0,30.8,alta,7,Villa Tunari,False
+parque-tunari,32720_62_27,5,19,6,2015,2025,4,4,4,16.0,30.8,alta,10,Cochabamba,False
+parque-tunari,32720_70_51,6,12,6,2015,2026,5,4,3,20.0,30.8,alta,6,Villa Tunari,False
+parque-tunari,32720_76_46,7,12,6,2016,2026,4,4,3,16.0,30.8,alta,8,Colomi,False
+parque-tunari,32720_67_31,8,11,7,2003,2026,5,4,2,20.0,30.8,alta,8,Sacaba,False
+parque-tunari,32720_84_30,9,9,4,2016,2022,4,4,3,16.0,30.8,alta,8,Colomi,False
+parque-tunari,32720_20_31,10,6,4,2019,2025,4,4,4,16.0,30.8,alta,7,Morochata,False
+parque-tunari,32720_51_29,11,18,8,2008,2022,5,3,1,20.0,23.1,media,7,Quillacollo,False
+parque-tunari,32720_59_63,12,18,6,2013,2025,4,3,1,16.0,23.1,media,6,Villa Tunari,False
+parque-tunari,32720_17_47,13,17,10,2013,2022,3,3,0,12.0,23.1,media,11,Morochata,False
+parque-tunari,32720_73_33,14,16,5,2013,2023,5,3,3,20.0,23.1,media,8,Sacaba,False
+parque-tunari,32720_75_46,15,16,5,2014,2026,3,3,3,12.0,23.1,media,8,Sacaba,False
+parque-tunari,32720_58_62,16,15,9,2003,2023,5,3,2,20.0,23.1,media,6,Villa Tunari,False
+parque-tunari,32720_40_24,17,14,3,2019,2023,3,3,3,12.0,23.1,media,8,Vinto,False
+parque-tunari,32720_65_56,18,13,6,2016,2023,4,3,2,16.0,23.1,media,6,Villa Tunari,False
+parque-tunari,32720_74_37,19,13,6,2007,2026,5,3,3,20.0,23.1,media,9,Sacaba,False
+parque-tunari,32720_87_29,20,13,8,2007,2023,5,3,3,20.0,23.1,media,8,Colomi,False
+parque-tunari,32720_42_66,21,12,4,2016,2025,4,3,3,16.0,23.1,media,8,Cocapata,False
+parque-tunari,32720_59_62,22,12,7,2005,2025,5,3,2,20.0,23.1,media,6,Villa Tunari,False
+parque-tunari,32720_71_50,23,12,9,2016,2026,4,3,3,16.0,23.1,media,7,Villa Tunari,False
+parque-tunari,32720_72_49,24,12,4,2016,2026,3,3,3,12.0,23.1,media,7,Villa Tunari,False
+parque-tunari,32720_81_33,25,12,5,2006,2022,5,3,2,20.0,23.1,media,10,Colomi,False
+parque-tunari,32720_81_35,26,12,6,2016,2026,3,3,3,12.0,23.1,media,8,Colomi,False
+parque-tunari,32720_86_30,27,12,9,2014,2023,4,3,3,16.0,23.1,media,8,Colomi,False
+parque-tunari,32720_86_31,28,12,5,2016,2024,4,3,2,16.0,23.1,media,7,Colomi,False
+parque-tunari,32720_15_31,29,11,5,2008,2024,4,3,3,16.0,23.1,media,8,Morochata,False
+parque-tunari,32720_29_34,30,11,4,2013,2024,3,3,3,12.0,23.1,media,10,Morochata,False
+parque-tunari,32720_46_69,31,11,3,2016,2023,3,3,2,12.0,23.1,media,8,Cocapata,False
+parque-tunari,32720_72_48,32,11,8,2014,2026,5,3,2,20.0,23.1,media,8,Villa Tunari,False
+parque-tunari,32720_10_31,33,10,4,2009,2022,4,3,3,16.0,23.1,media,9,Morochata,False
+parque-tunari,32720_24_27,34,10,5,2016,2024,3,3,3,12.0,23.1,media,8,Morochata,False
+parque-tunari,32720_29_31,35,10,5,2019,2025,3,3,3,12.0,23.1,media,8,Morochata,False
+parque-tunari,32720_71_28,36,10,5,2005,2020,4,3,2,16.0,23.1,media,8,Sacaba,False
+parque-tunari,32720_81_34,37,10,7,2006,2023,6,3,3,24.0,23.1,media,8,Colomi,False
+parque-tunari,32720_27_28,38,9,3,2018,2024,3,3,3,12.0,23.1,media,8,Sipe Sipe,False
+parque-tunari,32720_28_28,39,9,4,2019,2025,4,3,3,16.0,23.1,media,8,Sipe Sipe,False
+parque-tunari,32720_42_45,40,9,3,2019,2025,3,3,3,12.0,23.1,media,8,Quillacollo,False
+parque-tunari,32720_63_58,41,9,5,2005,2023,5,3,3,20.0,23.1,media,8,Villa Tunari,False
+parque-tunari,32720_69_30,42,9,7,2005,2026,6,3,2,24.0,23.1,media,7,Sacaba,False
+parque-tunari,32720_56_65,43,8,5,2003,2026,4,3,3,16.0,23.1,media,8,Villa Tunari,False
+parque-tunari,32720_72_33,44,8,4,2015,2023,3,3,3,12.0,23.1,media,8,Sacaba,False
+parque-tunari,32720_73_44,45,8,6,2012,2026,4,3,2,16.0,23.1,media,6,Sacaba,False
+parque-tunari,32720_76_47,46,8,5,2016,2026,4,3,1,16.0,23.1,media,5,Colomi,False
+parque-tunari,32720_80_39,47,8,5,2015,2026,4,3,3,16.0,23.1,media,6,Colomi,False
+parque-tunari,32720_33_55,48,7,3,2018,2025,3,3,2,12.0,23.1,media,7,Cocapata,False
+parque-tunari,32720_40_60,49,7,4,2016,2026,3,3,2,12.0,23.1,media,8,Cocapata,False
+parque-tunari,32720_41_51,50,7,5,2016,2026,3,3,2,12.0,23.1,media,6,Quillacollo,False
+parque-tunari,32720_42_23,51,7,4,2003,2023,4,3,2,16.0,23.1,media,8,Vinto,False
+parque-tunari,32720_47_69,52,7,3,2016,2022,3,3,1,12.0,23.1,media,6,Cocapata,False
+parque-tunari,32720_48_70,53,7,6,2003,2022,4,3,1,16.0,23.1,media,7,Cocapata,False
+parque-tunari,32720_57_61,54,7,4,2003,2023,4,3,2,16.0,23.1,media,8,Villa Tunari,False
+parque-tunari,32720_61_41,55,7,5,2016,2026,4,3,2,16.0,23.1,media,7,Sacaba,False
+parque-tunari,32720_63_23,56,7,5,2012,2020,4,3,2,16.0,23.1,media,8,Cochabamba,False
+parque-tunari,32720_66_36,57,7,7,2007,2025,5,3,3,20.0,23.1,media,7,Sacaba,False
+parque-tunari,32720_68_23,58,7,5,2009,2026,4,3,3,16.0,23.1,media,8,Sacaba,False
+parque-tunari,32720_68_53,59,7,6,2015,2023,4,3,2,16.0,23.1,media,8,Villa Tunari,False
+parque-tunari,32720_80_30,60,7,4,2014,2022,3,3,2,12.0,23.1,media,6,Sacaba,False
+parque-tunari,32720_47_51,61,6,4,2012,2022,4,3,3,16.0,23.1,media,9,Quillacollo,False
+parque-tunari,32720_57_64,62,6,5,2013,2026,3,3,2,12.0,23.1,media,8,Villa Tunari,False
+parque-tunari,32720_60_54,63,6,3,2014,2020,3,3,3,12.0,23.1,media,10,Villa Tunari,False
+parque-tunari,32720_68_31,64,6,5,2014,2026,3,3,3,12.0,23.1,media,8,Sacaba,False
+parque-tunari,32720_77_44,65,6,4,2016,2024,4,3,1,16.0,23.1,media,6,Colomi,False
+parque-tunari,32720_80_29,66,6,3,2014,2022,3,3,1,12.0,23.1,media,6,Sacaba,False
+parque-tunari,32720_12_39,67,5,5,2014,2023,4,3,0,16.0,23.1,media,8,Morochata,False
+parque-tunari,32720_30_23,68,5,4,2020,2023,4,3,3,16.0,23.1,media,9,Sipe Sipe,False
+parque-tunari,32720_50_66,69,5,3,2015,2024,3,3,2,12.0,23.1,media,9,Cocapata,False
+parque-tunari,32720_60_28,70,5,3,2016,2020,3,3,2,12.0,23.1,media,9,Cochabamba,False
+parque-tunari,32720_61_48,71,5,3,2016,2025,3,3,3,12.0,23.1,media,9,Tiquipaya,False
+parque-tunari,32720_64_53,72,5,3,2013,2017,3,3,3,12.0,23.1,media,10,Villa Tunari,False
+parque-tunari,32720_73_26,73,5,4,2012,2023,4,3,0,16.0,23.1,media,6,Sacaba,False
+parque-tunari,32720_26_28,74,4,3,2020,2023,3,3,2,12.0,23.1,media,8,Morochata,False
+parque-tunari,32720_50_28,75,4,4,2014,2020,3,3,2,12.0,23.1,media,6,Quillacollo,False
+parque-tunari,32720_65_50,76,4,4,2013,2025,4,3,2,16.0,23.1,media,6,Villa Tunari,False
+parque-tunari,32720_9_40,77,4,4,2014,2023,4,3,2,16.0,23.1,media,6,Morochata,False
+parque-tunari,32720_61_60,78,3,3,2018,2025,3,3,3,12.0,23.1,media,8,Villa Tunari,False
+parque-tunari,32720_62_30,79,3,3,2013,2018,3,3,3,12.0,23.1,media,9,Cochabamba,False
+parque-tunari,32720_78_40,80,3,3,2016,2021,3,3,3,12.0,23.1,media,9,Colomi,False
+parque-tunari,32720_70_52,81,18,7,2005,2026,4,2,2,16.0,15.4,media,8,Villa Tunari,False
+parque-tunari,32720_86_29,82,18,7,2003,2026,5,2,2,20.0,15.4,media,7,Colomi,False
+parque-tunari,32720_62_28,83,17,3,2019,2025,2,2,2,8.0,15.4,media,8,Cochabamba,False
+parque-tunari,32720_15_32,84,16,5,2003,2024,3,2,2,12.0,15.4,media,8,Morochata,False
+parque-tunari,32720_51_30,85,16,4,2016,2022,2,2,1,8.0,15.4,media,11,Quillacollo,False
+parque-tunari,32720_24_26,86,14,5,2016,2024,3,2,2,12.0,15.4,media,8,Morochata,False
+parque-tunari,32720_29_32,87,14,4,2020,2023,3,2,1,12.0,15.4,media,8,Morochata,False
+parque-tunari,32720_31_36,88,14,4,2010,2026,3,2,2,12.0,15.4,media,7,Morochata,False
+parque-tunari,32720_16_37,89,13,4,2010,2022,3,2,2,12.0,15.4,media,10,Morochata,False
+parque-tunari,32720_35_18,90,13,5,2015,2021,2,2,2,8.0,15.4,media,7,Vinto,False
+parque-tunari,32720_36_18,91,13,4,2004,2021,3,2,1,12.0,15.4,media,11,Vinto,False
+parque-tunari,32720_16_31,92,12,5,2005,2024,3,2,2,12.0,15.4,media,10,Morochata,False
+parque-tunari,32720_26_33,93,12,7,2006,2023,4,2,2,16.0,15.4,media,8,Morochata,False
+parque-tunari,32720_58_63,94,12,4,2013,2023,3,2,1,12.0,15.4,media,6,Villa Tunari,False
+parque-tunari,32720_67_30,95,12,3,2016,2026,2,2,2,8.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_24_36,96,11,3,2016,2025,3,2,1,12.0,15.4,media,5,Morochata,False
+parque-tunari,32720_35_19,97,11,5,2008,2021,3,2,2,12.0,15.4,media,7,Vinto,False
+parque-tunari,32720_52_28,98,11,5,2007,2021,4,2,1,16.0,15.4,media,6,Quillacollo,False
+parque-tunari,32720_85_30,99,11,10,2010,2026,7,2,2,28.0,15.4,media,6,Colomi,False
+parque-tunari,32720_39_60,100,10,3,2019,2024,3,2,0,12.0,15.4,media,6,Cocapata,False
+parque-tunari,32720_41_45,101,10,4,2008,2026,3,2,2,12.0,15.4,media,8,Quillacollo,False
+parque-tunari,32720_58_29,102,10,2,2015,2023,2,2,1,8.0,15.4,media,9,Tiquipaya,False
+parque-tunari,32720_59_61,103,10,4,2005,2025,4,2,1,16.0,15.4,media,6,Villa Tunari,False
+parque-tunari,32720_60_62,104,10,3,2023,2025,2,2,1,8.0,15.4,media,8,Villa Tunari,False
+parque-tunari,32720_62_29,105,10,4,2013,2026,3,2,2,12.0,15.4,media,6,Cochabamba,False
+parque-tunari,32720_65_36,106,10,5,2015,2020,4,2,2,16.0,15.4,media,7,Sacaba,False
+parque-tunari,32720_69_52,107,10,7,2005,2026,4,2,2,16.0,15.4,media,7,Villa Tunari,False
+parque-tunari,32720_71_33,108,10,5,2015,2026,2,2,2,8.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_20_32,109,9,4,2020,2025,2,2,2,8.0,15.4,media,7,Morochata,False
+parque-tunari,32720_27_33,110,9,5,2003,2023,3,2,2,12.0,15.4,media,8,Morochata,False
+parque-tunari,32720_39_59,111,9,5,2019,2024,4,2,0,16.0,15.4,media,8,Cocapata,False
+parque-tunari,32720_41_54,112,9,5,2012,2023,4,2,2,16.0,15.4,media,8,Quillacollo,False
+parque-tunari,32720_47_28,113,9,3,2016,2022,2,2,0,8.0,15.4,media,11,Quillacollo,False
+parque-tunari,32720_61_27,114,9,5,2001,2025,5,2,2,20.0,15.4,media,8,Cochabamba,False
+parque-tunari,32720_66_30,115,9,3,2015,2026,2,2,2,8.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_69_23,116,9,7,2004,2026,5,2,2,20.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_69_35,117,9,6,2007,2022,5,2,2,20.0,15.4,media,7,Sacaba,False
+parque-tunari,32720_74_22,118,9,6,2014,2026,4,2,1,16.0,15.4,media,9,Sacaba,False
+parque-tunari,32720_76_28,119,9,3,2018,2024,3,2,2,12.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_80_41,120,9,5,2012,2023,4,2,2,16.0,15.4,media,7,Colomi,False
+parque-tunari,32720_82_33,121,9,6,2005,2026,4,2,1,16.0,15.4,media,6,Colomi,False
+parque-tunari,32720_83_29,122,9,5,2012,2024,4,2,2,16.0,15.4,media,8,Colomi,False
+parque-tunari,32720_21_36,123,8,3,2019,2026,2,2,1,8.0,15.4,media,7,Morochata,False
+parque-tunari,32720_26_24,124,8,3,2016,2021,3,2,2,12.0,15.4,media,8,Morochata,False
+parque-tunari,32720_29_30,125,8,4,2019,2022,2,2,1,8.0,15.4,media,6,Morochata,False
+parque-tunari,32720_34_5,126,8,5,2018,2025,4,2,0,16.0,15.4,media,11,Tapacarí,False
+parque-tunari,32720_35_25,127,8,4,2024,2026,2,2,0,8.0,15.4,media,9,Vinto,False
+parque-tunari,32720_37_23,128,8,4,2022,2024,2,2,1,8.0,15.4,media,5,Vinto,False
+parque-tunari,32720_41_25,129,8,3,2015,2020,2,2,2,8.0,15.4,media,10,Vinto,False
+parque-tunari,32720_42_48,130,8,2,2016,2020,2,2,1,8.0,15.4,media,7,Quillacollo,False
+parque-tunari,32720_42_67,131,8,5,2003,2023,4,2,2,16.0,15.4,media,8,Cocapata,False
+parque-tunari,32720_43_66,132,8,3,2003,2022,3,2,2,12.0,15.4,media,8,Cocapata,False
+parque-tunari,32720_51_45,133,8,2,2022,2025,2,2,1,8.0,15.4,media,8,Tiquipaya,False
+parque-tunari,32720_59_60,134,8,6,2013,2022,4,2,2,16.0,15.4,media,7,Villa Tunari,False
+parque-tunari,32720_63_28,135,8,4,2019,2025,3,2,2,12.0,15.4,media,8,Cochabamba,False
+parque-tunari,32720_63_29,136,8,4,2013,2025,2,2,2,8.0,15.4,media,9,Cochabamba,False
+parque-tunari,32720_65_27,137,8,3,2019,2024,3,2,2,12.0,15.4,media,7,Cochabamba,False
+parque-tunari,32720_65_29,138,8,4,2015,2024,3,2,1,12.0,15.4,media,1,Cochabamba,False
+parque-tunari,32720_67_55,139,8,4,2006,2023,4,2,1,16.0,15.4,media,7,Villa Tunari,False
+parque-tunari,32720_73_38,140,8,5,2006,2026,3,2,1,12.0,15.4,media,7,Sacaba,False
+parque-tunari,32720_74_35,141,8,3,2019,2022,3,2,2,12.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_75_22,142,8,3,2016,2026,2,2,1,8.0,15.4,media,9,Sacaba,False
+parque-tunari,32720_77_33,143,8,4,2015,2022,4,2,2,16.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_79_22,144,8,3,2013,2024,3,2,1,12.0,15.4,media,6,Sacaba,False
+parque-tunari,32720_79_30,145,8,6,2012,2026,4,2,1,16.0,15.4,media,9,Sacaba,False
+parque-tunari,32720_85_29,146,8,8,2003,2023,5,2,2,20.0,15.4,media,8,Colomi,False
+parque-tunari,32720_85_31,147,8,6,2014,2024,5,2,2,20.0,15.4,media,8,Colomi,False
+parque-tunari,32720_21_32,148,7,2,2020,2022,2,2,2,8.0,15.4,media,7,Morochata,False
+parque-tunari,32720_23_28,149,7,5,2014,2024,4,2,2,16.0,15.4,media,8,Morochata,False
+parque-tunari,32720_24_29,150,7,5,2010,2024,5,2,2,20.0,15.4,media,8,Morochata,False
+parque-tunari,32720_25_34,151,7,3,2018,2020,3,2,2,12.0,15.4,media,7,Morochata,False
+parque-tunari,32720_30_31,152,7,4,2019,2022,2,2,2,8.0,15.4,media,7,Morochata,False
+parque-tunari,32720_31_13,153,7,3,2016,2024,2,2,2,8.0,15.4,media,8,Sipe Sipe,False
+parque-tunari,32720_31_49,154,7,3,2022,2025,2,2,1,8.0,15.4,media,8,Morochata,False
+parque-tunari,32720_31_57,155,7,2,2018,2022,2,2,2,8.0,15.4,media,10,Cocapata,False
+parque-tunari,32720_35_55,156,7,4,2016,2026,2,2,2,8.0,15.4,media,7,Cocapata,False
+parque-tunari,32720_38_11,157,7,4,2010,2025,3,2,0,12.0,15.4,media,11,Sipe Sipe,False
+parque-tunari,32720_38_22,158,7,4,2015,2022,2,2,1,8.0,15.4,media,8,Vinto,False
+parque-tunari,32720_40_59,159,7,3,2019,2024,2,2,1,8.0,15.4,media,8,Cocapata,False
+parque-tunari,32720_45_27,160,7,3,2014,2017,3,2,2,12.0,15.4,media,10,Vinto,False
+parque-tunari,32720_52_29,161,7,4,2014,2022,4,2,1,16.0,15.4,media,8,Quillacollo,False
+parque-tunari,32720_59_59,162,7,3,2016,2026,2,2,2,8.0,15.4,media,7,Villa Tunari,False
+parque-tunari,32720_65_28,163,7,3,2023,2024,2,2,1,8.0,15.4,media,7,Cochabamba,False
+parque-tunari,32720_67_29,164,7,4,2016,2026,2,2,1,8.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_72_32,165,7,5,2009,2023,4,2,2,16.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_76_22,166,7,3,2020,2026,2,2,2,8.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_80_34,167,7,3,2016,2026,2,2,2,8.0,15.4,media,8,Colomi,False
+parque-tunari,32720_80_38,168,7,4,2012,2022,3,2,2,12.0,15.4,media,7,Colomi,False
+parque-tunari,32720_10_39,169,6,3,2013,2022,2,2,1,8.0,15.4,media,10,Morochata,False
+parque-tunari,32720_24_37,170,6,3,2016,2022,3,2,1,12.0,15.4,media,8,Morochata,False
+parque-tunari,32720_25_26,171,6,4,2022,2025,3,2,2,12.0,15.4,media,7,Morochata,False
+parque-tunari,32720_28_30,172,6,2,2019,2022,2,2,0,8.0,15.4,media,6,Morochata,False
+parque-tunari,32720_29_22,173,6,2,2020,2023,2,2,2,8.0,15.4,media,9,Sipe Sipe,False
+parque-tunari,32720_33_22,174,6,3,2020,2024,2,2,2,8.0,15.4,media,7,Vinto,False
+parque-tunari,32720_35_24,175,6,3,2014,2026,2,2,2,8.0,15.4,media,9,Vinto,False
+parque-tunari,32720_35_28,176,6,3,2019,2024,3,2,2,12.0,15.4,media,7,Vinto,False
+parque-tunari,32720_37_3,177,6,4,2020,2026,2,2,2,8.0,15.4,media,8,Sipe Sipe,False
+parque-tunari,32720_46_24,178,6,5,2014,2026,4,2,2,16.0,15.4,media,6,Vinto,False
+parque-tunari,32720_49_70,179,6,4,2003,2019,3,2,1,12.0,15.4,media,6,Cocapata,False
+parque-tunari,32720_50_29,180,6,4,2014,2026,2,2,1,8.0,15.4,media,8,Quillacollo,False
+parque-tunari,32720_50_45,181,6,2,2022,2025,2,2,1,8.0,15.4,media,8,Tiquipaya,False
+parque-tunari,32720_51_67,182,6,2,2015,2023,2,2,1,8.0,15.4,media,6,Cocapata,False
+parque-tunari,32720_54_66,183,6,4,2016,2026,2,2,2,8.0,15.4,media,8,Villa Tunari,False
+parque-tunari,32720_57_65,184,6,3,2019,2023,3,2,2,12.0,15.4,media,8,Villa Tunari,False
+parque-tunari,32720_61_25,185,6,3,2012,2024,3,2,2,12.0,15.4,media,8,Cochabamba,False
+parque-tunari,32720_62_59,186,6,4,2006,2023,4,2,2,16.0,15.4,media,7,Villa Tunari,False
+parque-tunari,32720_63_26,187,6,2,2019,2021,2,2,2,8.0,15.4,media,10,Cochabamba,False
+parque-tunari,32720_64_57,188,6,4,2014,2023,3,2,2,12.0,15.4,media,8,Villa Tunari,False
+parque-tunari,32720_66_29,189,6,4,2015,2026,3,2,1,12.0,15.4,media,9,Sacaba,False
+parque-tunari,32720_66_35,190,6,4,2015,2025,4,2,2,16.0,15.4,media,9,Sacaba,False
+parque-tunari,32720_72_28,191,6,3,2005,2023,3,2,2,12.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_73_34,192,6,3,2019,2023,3,2,2,12.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_74_31,193,6,5,2007,2022,5,2,2,20.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_75_26,194,6,3,2016,2022,3,2,1,12.0,15.4,media,10,Sacaba,False
+parque-tunari,32720_76_21,195,6,3,2014,2026,2,2,1,8.0,15.4,media,7,Sacaba,False
+parque-tunari,32720_77_46,196,6,5,2013,2022,3,2,0,12.0,15.4,media,6,Colomi,False
+parque-tunari,32720_79_38,197,6,4,2008,2025,4,2,2,16.0,15.4,media,7,Colomi,False
+parque-tunari,32720_10_38,198,5,4,2014,2021,2,2,0,8.0,15.4,media,10,Morochata,False
+parque-tunari,32720_16_49,199,5,3,2017,2026,2,2,1,8.0,15.4,media,10,Morochata,False
+parque-tunari,32720_22_11,200,5,3,2016,2023,2,2,0,8.0,15.4,media,11,Tapacarí,False
+parque-tunari,32720_23_30,201,5,4,2016,2024,3,2,2,12.0,15.4,media,8,Morochata,False
+parque-tunari,32720_24_35,202,5,5,2016,2020,3,2,2,12.0,15.4,media,5,Morochata,False
+parque-tunari,32720_30_37,203,5,2,2014,2025,2,2,1,8.0,15.4,media,6,Morochata,False
+parque-tunari,32720_30_38,204,5,2,2014,2025,2,2,1,8.0,15.4,media,8,Morochata,False
+parque-tunari,32720_34_28,205,5,2,2022,2023,2,2,2,8.0,15.4,media,9,Vinto,False
+parque-tunari,32720_35_27,206,5,2,2019,2024,2,2,2,8.0,15.4,media,7,Vinto,False
+parque-tunari,32720_39_19,207,5,2,2020,2024,2,2,2,8.0,15.4,media,10,Vinto,False
+parque-tunari,32720_41_23,208,5,2,2013,2023,2,2,2,8.0,15.4,media,8,Vinto,False
+parque-tunari,32720_42_4,209,5,2,2013,2024,2,2,0,8.0,15.4,media,11,Sipe Sipe,False
+parque-tunari,32720_48_71,210,5,3,2016,2019,2,2,1,8.0,15.4,media,6,Cocapata,False
+parque-tunari,32720_49_69,211,5,2,2016,2019,2,2,1,8.0,15.4,media,6,Cocapata,False
+parque-tunari,32720_52_66,212,5,3,2018,2023,3,2,1,12.0,15.4,media,7,Villa Tunari,False
+parque-tunari,32720_53_67,213,5,2,2014,2023,2,2,2,8.0,15.4,media,7,Villa Tunari,False
+parque-tunari,32720_54_28,214,5,2,2016,2022,2,2,1,8.0,15.4,media,8,Tiquipaya,False
+parque-tunari,32720_57_62,215,5,4,2005,2023,3,2,1,12.0,15.4,media,6,Villa Tunari,False
+parque-tunari,32720_58_30,216,5,3,2012,2024,3,2,2,12.0,15.4,media,9,Tiquipaya,False
+parque-tunari,32720_58_61,217,5,3,2005,2016,3,2,2,12.0,15.4,media,8,Villa Tunari,False
+parque-tunari,32720_59_53,218,5,2,2016,2021,2,2,2,8.0,15.4,media,8,Tiquipaya,False
+parque-tunari,32720_60_26,219,5,5,2010,2023,5,2,2,20.0,15.4,media,8,Cochabamba,False
+parque-tunari,32720_60_49,220,5,3,2020,2026,2,2,2,8.0,15.4,media,8,Tiquipaya,False
+parque-tunari,32720_64_58,221,5,4,2019,2026,2,2,1,8.0,15.4,media,7,Villa Tunari,False
+parque-tunari,32720_66_56,222,5,4,2017,2023,3,2,1,12.0,15.4,media,6,Villa Tunari,False
+parque-tunari,32720_67_45,223,5,4,2019,2024,4,2,1,16.0,15.4,media,6,Sacaba,False
+parque-tunari,32720_69_31,224,5,4,2014,2026,3,2,2,12.0,15.4,media,7,Sacaba,False
+parque-tunari,32720_69_33,225,5,4,2005,2020,4,2,2,16.0,15.4,media,7,Sacaba,False
+parque-tunari,32720_69_37,226,5,2,2019,2025,2,2,2,8.0,15.4,media,9,Sacaba,False
+parque-tunari,32720_74_38,227,5,3,2013,2026,2,2,2,8.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_74_45,228,5,3,2017,2026,2,2,2,8.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_81_37,229,5,5,2020,2026,2,2,2,8.0,15.4,media,7,Colomi,False
+parque-tunari,32720_82_35,230,5,3,2014,2016,2,2,2,8.0,15.4,media,8,Colomi,False
+parque-tunari,32720_85_32,231,5,4,2008,2023,4,2,1,16.0,15.4,media,6,Colomi,False
+parque-tunari,32720_8_34,232,5,4,2005,2022,3,2,1,12.0,15.4,media,8,Morochata,False
+parque-tunari,32720_9_35,233,5,2,2016,2024,2,2,2,8.0,15.4,media,8,Morochata,False
+parque-tunari,32720_10_41,234,4,3,2021,2022,2,2,1,8.0,15.4,media,8,Morochata,False
+parque-tunari,32720_11_44,235,4,2,2022,2023,2,2,2,8.0,15.4,media,10,Morochata,False
+parque-tunari,32720_13_34,236,4,2,2022,2023,2,2,1,8.0,15.4,media,8,Morochata,False
+parque-tunari,32720_17_43,237,4,3,2002,2022,3,2,2,12.0,15.4,media,7,Morochata,False
+parque-tunari,32720_19_34,238,4,2,2019,2022,2,2,0,8.0,15.4,media,5,Morochata,False
+parque-tunari,32720_21_27,239,4,2,2019,2022,2,2,2,8.0,15.4,media,8,Morochata,False
+parque-tunari,32720_27_29,240,4,4,2007,2021,3,2,1,12.0,15.4,media,6,Morochata,False
+parque-tunari,32720_28_24,241,4,2,2016,2025,2,2,2,8.0,15.4,media,7,Sipe Sipe,False
+parque-tunari,32720_29_24,242,4,4,2020,2026,2,2,2,8.0,15.4,media,7,Sipe Sipe,False
+parque-tunari,32720_30_30,243,4,3,2021,2025,3,2,1,12.0,15.4,media,6,Morochata,False
+parque-tunari,32720_34_15,244,4,3,2012,2024,3,2,2,12.0,15.4,media,9,Sipe Sipe,False
+parque-tunari,32720_34_4,245,4,3,2013,2020,3,2,2,12.0,15.4,media,10,Tapacarí,False
+parque-tunari,32720_35_4,246,4,4,2011,2023,4,2,1,16.0,15.4,media,10,Tapacarí,False
+parque-tunari,32720_38_10,247,4,2,2015,2020,2,2,1,8.0,15.4,media,5,Sipe Sipe,False
+parque-tunari,32720_38_2,248,4,4,2022,2025,3,2,2,12.0,15.4,media,9,Sipe Sipe,False
+parque-tunari,32720_41_66,249,4,2,2016,2024,2,2,2,8.0,15.4,media,8,Cocapata,False
+parque-tunari,32720_42_46,250,4,3,2019,2023,3,2,1,12.0,15.4,media,8,Quillacollo,False
+parque-tunari,32720_47_68,251,4,2,2016,2019,2,2,1,8.0,15.4,media,6,Cocapata,False
+parque-tunari,32720_60_52,252,4,3,2016,2020,3,2,2,12.0,15.4,media,8,Tiquipaya,False
+parque-tunari,32720_61_26,253,4,3,2015,2026,2,2,2,8.0,15.4,media,8,Cochabamba,False
+parque-tunari,32720_61_30,254,4,3,2019,2024,3,2,1,12.0,15.4,media,8,Cochabamba,False
+parque-tunari,32720_61_51,255,4,3,2016,2020,2,2,2,8.0,15.4,media,9,Tiquipaya,False
+parque-tunari,32720_61_61,256,4,3,2022,2025,2,2,2,8.0,15.4,media,8,Villa Tunari,False
+parque-tunari,32720_63_39,257,4,2,2020,2022,2,2,1,8.0,15.4,media,6,Sacaba,False
+parque-tunari,32720_65_24,258,4,2,2015,2017,2,2,2,8.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_65_53,259,4,2,2013,2021,2,2,2,8.0,15.4,media,8,Villa Tunari,False
+parque-tunari,32720_66_28,260,4,3,2016,2025,3,2,2,12.0,15.4,media,9,Sacaba,False
+parque-tunari,32720_66_34,261,4,3,2014,2019,3,2,2,12.0,15.4,media,7,Sacaba,False
+parque-tunari,32720_66_37,262,4,2,2015,2020,2,2,2,8.0,15.4,media,7,Sacaba,False
+parque-tunari,32720_68_34,263,4,4,2015,2026,3,2,0,12.0,15.4,media,6,Sacaba,False
+parque-tunari,32720_69_36,264,4,3,2005,2020,3,2,2,12.0,15.4,media,7,Sacaba,False
+parque-tunari,32720_69_53,265,4,4,2016,2026,3,2,1,12.0,15.4,media,7,Villa Tunari,False
+parque-tunari,32720_71_49,266,4,3,2006,2023,3,2,2,12.0,15.4,media,7,Villa Tunari,False
+parque-tunari,32720_72_27,267,4,3,2014,2023,3,2,1,12.0,15.4,media,6,Sacaba,False
+parque-tunari,32720_74_32,268,4,3,2012,2023,3,2,2,12.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_79_37,269,4,3,2003,2023,3,2,2,12.0,15.4,media,10,Colomi,False
+parque-tunari,32720_81_39,270,4,2,2020,2022,2,2,2,8.0,15.4,media,8,Colomi,False
+parque-tunari,32720_82_34,271,4,4,2016,2023,3,2,2,12.0,15.4,media,7,Colomi,False
+parque-tunari,32720_82_37,272,4,2,2016,2023,2,2,2,8.0,15.4,media,7,Colomi,False
+parque-tunari,32720_83_34,273,4,2,2016,2023,2,2,2,8.0,15.4,media,7,Colomi,False
+parque-tunari,32720_9_31,274,4,3,2020,2024,3,2,2,12.0,15.4,media,10,Morochata,False
+parque-tunari,32720_16_47,275,3,3,2020,2022,2,2,1,8.0,15.4,media,4,Morochata,False
+parque-tunari,32720_23_12,276,3,2,2019,2022,2,2,1,8.0,15.4,media,12,Tapacarí,False
+parque-tunari,32720_24_28,277,3,2,2016,2024,2,2,2,8.0,15.4,media,7,Morochata,False
+parque-tunari,32720_25_28,278,3,3,2016,2024,3,2,2,12.0,15.4,media,8,Morochata,False
+parque-tunari,32720_26_31,279,3,2,2014,2018,2,2,2,8.0,15.4,media,9,Morochata,False
+parque-tunari,32720_28_25,280,3,2,2019,2020,2,2,2,8.0,15.4,media,10,Sipe Sipe,False
+parque-tunari,32720_33_54,281,3,3,2020,2025,3,2,2,12.0,15.4,media,7,Cocapata,False
+parque-tunari,32720_34_55,282,3,2,2019,2025,2,2,2,8.0,15.4,media,7,Cocapata,False
+parque-tunari,32720_35_10,283,3,2,2013,2016,2,2,2,8.0,15.4,media,9,Sipe Sipe,False
+parque-tunari,32720_38_23,284,3,3,2014,2022,2,2,1,8.0,15.4,media,6,Vinto,False
+parque-tunari,32720_38_3,285,3,2,2023,2025,2,2,1,8.0,15.4,media,11,Sipe Sipe,False
+parque-tunari,32720_40_27,286,3,2,2015,2020,2,2,2,8.0,15.4,media,10,Vinto,False
+parque-tunari,32720_41_52,287,3,2,2016,2022,2,2,1,8.0,15.4,media,7,Quillacollo,False
+parque-tunari,32720_42_61,288,3,2,2020,2023,2,2,2,8.0,15.4,media,9,Cocapata,False
+parque-tunari,32720_46_51,289,3,3,2016,2026,2,2,0,8.0,15.4,media,1,Quillacollo,False
+parque-tunari,32720_51_27,290,3,2,2016,2021,2,2,1,8.0,15.4,media,10,Quillacollo,False
+parque-tunari,32720_51_32,291,3,2,2016,2022,2,2,1,8.0,15.4,media,8,Quillacollo,False
+parque-tunari,32720_52_27,292,3,2,2014,2021,2,2,1,8.0,15.4,media,10,Quillacollo,False
+parque-tunari,32720_52_45,293,3,3,2020,2025,3,2,1,12.0,15.4,media,8,Tiquipaya,False
+parque-tunari,32720_55_56,294,3,2,2016,2024,2,2,2,8.0,15.4,media,10,Villa Tunari,False
+parque-tunari,32720_55_63,295,3,3,2020,2025,3,2,1,12.0,15.4,media,7,Villa Tunari,False
+parque-tunari,32720_57_37,296,3,2,2020,2021,2,2,2,8.0,15.4,media,7,Tiquipaya,False
+parque-tunari,32720_59_45,297,3,3,2016,2026,2,2,1,8.0,15.4,media,6,Tiquipaya,False
+parque-tunari,32720_59_52,298,3,2,2016,2022,2,2,1,8.0,15.4,media,7,Tiquipaya,False
+parque-tunari,32720_60_27,299,3,3,2001,2020,3,2,2,12.0,15.4,media,8,Cochabamba,False
+parque-tunari,32720_62_57,300,3,2,2015,2025,2,2,2,8.0,15.4,media,8,Villa Tunari,False
+parque-tunari,32720_63_24,301,3,3,2013,2019,3,2,0,12.0,15.4,media,5,Cochabamba,False
+parque-tunari,32720_63_55,302,3,3,2003,2019,3,2,2,12.0,15.4,media,8,Villa Tunari,False
+parque-tunari,32720_64_37,303,3,2,2015,2020,2,2,2,8.0,15.4,media,7,Sacaba,False
+parque-tunari,32720_65_35,304,3,2,2014,2024,2,2,2,8.0,15.4,media,9,Sacaba,False
+parque-tunari,32720_65_40,305,3,2,2022,2025,2,2,0,8.0,15.4,media,11,Sacaba,False
+parque-tunari,32720_66_24,306,3,3,2003,2015,3,2,2,12.0,15.4,media,10,Sacaba,False
+parque-tunari,32720_68_55,307,3,3,2016,2025,3,2,1,12.0,15.4,media,6,Villa Tunari,False
+parque-tunari,32720_69_24,308,3,3,2015,2023,3,2,1,12.0,15.4,media,7,Sacaba,False
+parque-tunari,32720_70_37,309,3,3,2005,2021,3,2,2,12.0,15.4,media,7,Sacaba,False
+parque-tunari,32720_71_27,310,3,2,2017,2022,2,2,1,8.0,15.4,media,9,Sacaba,False
+parque-tunari,32720_71_48,311,3,2,2020,2024,2,2,2,8.0,15.4,media,8,Villa Tunari,False
+parque-tunari,32720_72_22,312,3,2,2013,2024,2,2,0,8.0,15.4,media,6,Sacaba,False
+parque-tunari,32720_72_26,313,3,3,2019,2026,2,2,1,8.0,15.4,media,6,Sacaba,False
+parque-tunari,32720_73_25,314,3,2,2023,2025,2,2,1,8.0,15.4,media,10,Sacaba,False
+parque-tunari,32720_73_45,315,3,3,2015,2024,3,2,1,12.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_74_25,316,3,2,2016,2021,2,2,1,8.0,15.4,media,6,Sacaba,False
+parque-tunari,32720_75_34,317,3,2,2020,2022,2,2,2,8.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_77_21,318,3,3,2015,2025,3,2,1,12.0,15.4,media,5,Sacaba,False
+parque-tunari,32720_78_25,319,3,2,2017,2019,2,2,1,8.0,15.4,media,11,Sacaba,False
+parque-tunari,32720_79_32,320,3,2,2017,2022,2,2,2,8.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_79_35,321,3,2,2017,2020,2,2,2,8.0,15.4,media,7,Sacaba,False
+parque-tunari,32720_81_38,322,3,3,2020,2023,2,2,2,8.0,15.4,media,8,Colomi,False
+parque-tunari,32720_9_38,323,3,3,2003,2023,3,2,1,12.0,15.4,media,5,Morochata,False
+parque-tunari,32720_9_45,324,3,3,2020,2022,3,2,0,12.0,15.4,media,6,Morochata,False
+parque-tunari,32720_12_41,325,2,2,2017,2020,2,2,1,8.0,15.4,media,7,Morochata,False
+parque-tunari,32720_17_29,326,2,2,2020,2024,2,2,1,8.0,15.4,media,5,Morochata,False
+parque-tunari,32720_20_40,327,2,2,2017,2022,2,2,2,8.0,15.4,media,10,Morochata,False
+parque-tunari,32720_23_10,328,2,2,2021,2022,2,2,1,8.0,15.4,media,8,Tapacarí,False
+parque-tunari,32720_25_10,329,2,2,2015,2019,2,2,2,8.0,15.4,media,9,Tapacarí,False
+parque-tunari,32720_30_28,330,2,2,2020,2025,2,2,1,8.0,15.4,media,4,Sipe Sipe,False
+parque-tunari,32720_30_57,331,2,2,2018,2020,2,2,2,8.0,15.4,media,9,Cocapata,False
+parque-tunari,32720_35_11,332,2,2,2020,2022,2,2,1,8.0,15.4,media,10,Sipe Sipe,False
+parque-tunari,32720_35_9,333,2,2,2020,2023,2,2,1,8.0,15.4,media,7,Sipe Sipe,False
+parque-tunari,32720_36_21,334,2,2,2021,2022,2,2,1,8.0,15.4,media,5,Vinto,False
+parque-tunari,32720_36_4,335,2,2,2014,2022,2,2,1,8.0,15.4,media,10,Tapacarí,False
+parque-tunari,32720_36_5,336,2,2,2022,2025,2,2,2,8.0,15.4,media,10,Tapacarí,False
+parque-tunari,32720_37_16,337,2,2,2019,2021,2,2,2,8.0,15.4,media,8,Sipe Sipe,False
+parque-tunari,32720_38_57,338,2,2,2020,2022,2,2,2,8.0,15.4,media,8,Cocapata,False
+parque-tunari,32720_39_20,339,2,2,2013,2014,2,2,1,8.0,15.4,media,5,Vinto,False
+parque-tunari,32720_39_24,340,2,2,2014,2016,2,2,2,8.0,15.4,media,8,Vinto,False
+parque-tunari,32720_42_51,341,2,2,2018,2021,2,2,1,8.0,15.4,media,5,Quillacollo,False
+parque-tunari,32720_46_45,342,2,2,2019,2022,2,2,1,8.0,15.4,media,5,Quillacollo,False
+parque-tunari,32720_46_52,343,2,2,2019,2022,2,2,2,8.0,15.4,media,8,Quillacollo,False
+parque-tunari,32720_49_48,344,2,2,2017,2020,2,2,2,8.0,15.4,media,7,Tiquipaya,False
+parque-tunari,32720_51_57,345,2,2,2016,2017,2,2,2,8.0,15.4,media,7,Villa Tunari,False
+parque-tunari,32720_60_40,346,2,2,2015,2019,2,2,2,8.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_60_55,347,2,2,2016,2020,2,2,2,8.0,15.4,media,7,Villa Tunari,False
+parque-tunari,32720_64_39,348,2,2,2017,2020,2,2,1,8.0,15.4,media,6,Sacaba,False
+parque-tunari,32720_64_45,349,2,2,2016,2020,2,2,2,8.0,15.4,media,8,Tiquipaya,False
+parque-tunari,32720_70_28,350,2,2,2020,2022,2,2,1,8.0,15.4,media,9,Sacaba,False
+parque-tunari,32720_74_46,351,2,2,2016,2019,2,2,1,8.0,15.4,media,5,Sacaba,False
+parque-tunari,32720_78_29,352,2,2,2015,2020,2,2,2,8.0,15.4,media,8,Sacaba,False
+parque-tunari,32720_79_23,353,2,2,2020,2024,2,2,1,8.0,15.4,media,6,Sacaba,False
+parque-tunari,32720_9_48,354,2,2,2020,2022,2,2,1,8.0,15.4,media,8,Morochata,False
+parque-tunari,32720_70_33,355,19,7,2020,2026,3,1,1,12.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_28_32,356,16,1,2023,2023,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_40_22,357,14,3,2023,2023,1,1,1,4.0,7.7,baja,8,Vinto,False
+parque-tunari,32720_57_63,358,13,4,2005,2026,3,1,0,12.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_13_35,359,12,1,2023,2023,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_19_25,360,12,3,2020,2020,1,1,1,4.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_20_36,361,11,3,2019,2026,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_52_67,362,11,2,2015,2023,2,1,1,8.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_66_53,363,11,5,2003,2026,4,1,1,16.0,7.7,baja,7,Tiquipaya,False
+parque-tunari,32720_71_31,364,11,5,2012,2026,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_23_37,365,10,4,2020,2023,3,1,1,12.0,7.7,baja,4,Morochata,False
+parque-tunari,32720_27_34,366,10,4,2008,2023,3,1,1,12.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_55_65,367,10,3,2003,2026,2,1,1,8.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_56_64,368,10,5,2013,2026,3,1,1,12.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_74_34,369,10,3,2020,2026,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_83_30,370,10,4,2005,2021,4,1,1,16.0,7.7,baja,8,Colomi,False
+parque-tunari,32720_10_24,371,9,2,2022,2022,1,1,0,4.0,7.7,baja,11,Ayopaya,False
+parque-tunari,32720_13_36,372,9,3,2023,2023,1,1,1,4.0,7.7,baja,1,Morochata,False
+parque-tunari,32720_36_19,373,9,2,2008,2020,2,1,0,8.0,7.7,baja,11,Vinto,False
+parque-tunari,32720_39_27,374,9,2,2020,2021,2,1,1,8.0,7.7,baja,10,Vinto,False
+parque-tunari,32720_41_46,375,9,2,2019,2026,1,1,1,4.0,7.7,baja,10,Quillacollo,False
+parque-tunari,32720_60_42,376,9,4,2009,2026,2,1,1,8.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_60_61,377,9,4,2023,2025,2,1,1,8.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_14_53,378,8,4,2009,2024,3,1,1,12.0,7.7,baja,7,Cocapata,False
+parque-tunari,32720_20_37,379,8,5,2019,2026,3,1,1,12.0,7.7,baja,6,Morochata,False
+parque-tunari,32720_25_24,380,8,3,2020,2021,2,1,1,8.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_34_22,381,8,2,2020,2024,2,1,1,8.0,7.7,baja,7,Vinto,False
+parque-tunari,32720_45_58,382,8,2,2020,2024,2,1,1,8.0,7.7,baja,8,Cocapata,False
+parque-tunari,32720_47_31,383,8,3,2011,2026,2,1,1,8.0,7.7,baja,7,Quillacollo,False
+parque-tunari,32720_52_30,384,8,3,2016,2021,2,1,1,8.0,7.7,baja,8,Quillacollo,False
+parque-tunari,32720_60_51,385,8,3,2016,2025,3,1,1,12.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_63_59,386,8,5,2012,2026,4,1,1,16.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_67_33,387,8,4,2014,2026,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_74_24,388,8,3,2016,2026,2,1,0,8.0,7.7,baja,9,Sacaba,False
+parque-tunari,32720_75_27,389,8,1,2020,2020,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_75_28,390,8,2,2020,2020,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_77_47,391,8,4,2016,2026,2,1,1,8.0,7.7,baja,7,Colomi,False
+parque-tunari,32720_78_31,392,8,3,2020,2024,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_80_36,393,8,4,2020,2026,2,1,1,8.0,7.7,baja,6,Colomi,False
+parque-tunari,32720_80_37,394,8,5,2012,2023,4,1,1,16.0,7.7,baja,8,Colomi,False
+parque-tunari,32720_9_34,395,8,4,2005,2016,2,1,1,8.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_16_32,396,7,4,2008,2024,3,1,1,12.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_23_29,397,7,2,2019,2024,2,1,1,8.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_45_68,398,7,2,2016,2016,1,1,1,4.0,7.7,baja,8,Cocapata,False
+parque-tunari,32720_70_32,399,7,4,2020,2024,3,1,1,12.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_71_32,400,7,4,2020,2026,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_76_23,401,7,3,2020,2023,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_78_26,402,7,5,2007,2026,4,1,0,16.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_79_41,403,7,2,2023,2023,1,1,1,4.0,7.7,baja,8,Colomi,False
+parque-tunari,32720_11_24,404,6,3,2022,2026,1,1,0,4.0,7.7,baja,11,Ayopaya,False
+parque-tunari,32720_12_36,405,6,3,2016,2023,3,1,1,12.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_12_42,406,6,5,2017,2022,3,1,0,12.0,7.7,baja,12,Morochata,False
+parque-tunari,32720_17_31,407,6,3,2006,2020,2,1,1,8.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_17_36,408,6,3,2010,2022,2,1,1,8.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_19_24,409,6,4,2020,2020,1,1,1,4.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_19_32,410,6,2,2020,2025,2,1,1,8.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_28_31,411,6,4,2019,2023,3,1,0,12.0,7.7,baja,6,Morochata,False
+parque-tunari,32720_28_34,412,6,5,2003,2024,5,1,0,20.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_29_33,413,6,4,2021,2024,4,1,0,16.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_31_14,414,6,2,2016,2016,1,1,1,4.0,7.7,baja,8,Sipe Sipe,False
+parque-tunari,32720_33_15,415,6,3,2012,2024,3,1,1,12.0,7.7,baja,9,Sipe Sipe,False
+parque-tunari,32720_34_14,416,6,2,2012,2024,2,1,1,8.0,7.7,baja,9,Sipe Sipe,False
+parque-tunari,32720_36_17,417,6,2,2021,2021,1,1,1,4.0,7.7,baja,7,Vinto,False
+parque-tunari,32720_36_35,418,6,5,2025,2025,1,1,1,4.0,7.7,baja,9,Quillacollo,False
+parque-tunari,32720_40_23,419,6,4,2015,2023,3,1,1,12.0,7.7,baja,8,Vinto,False
+parque-tunari,32720_40_55,420,6,3,2012,2023,3,1,1,12.0,7.7,baja,9,Quillacollo,False
+parque-tunari,32720_44_58,421,6,4,2010,2026,2,1,1,8.0,7.7,baja,8,Cocapata,False
+parque-tunari,32720_46_28,422,6,5,2007,2022,3,1,0,12.0,7.7,baja,11,Vinto,False
+parque-tunari,32720_51_44,423,6,1,2025,2025,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_52_38,424,6,1,2025,2025,1,1,1,4.0,7.7,baja,9,Quillacollo,False
+parque-tunari,32720_55_48,425,6,4,2019,2025,3,1,1,12.0,7.7,baja,7,Tiquipaya,False
+parque-tunari,32720_59_37,426,6,3,2020,2026,2,1,1,8.0,7.7,baja,9,Sacaba,False
+parque-tunari,32720_59_55,427,6,3,2016,2022,2,1,1,8.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_62_26,428,6,2,2019,2019,1,1,1,4.0,7.7,baja,9,Cochabamba,False
+parque-tunari,32720_67_32,429,6,3,2016,2026,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_67_34,430,6,3,2015,2026,2,1,0,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_70_34,431,6,4,2019,2025,3,1,1,12.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_72_50,432,6,3,2016,2026,2,1,1,8.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_73_48,433,6,4,2006,2026,2,1,0,8.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_75_23,434,6,2,2020,2026,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_76_29,435,6,2,2018,2020,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_78_28,436,6,4,2020,2024,2,1,1,8.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_79_25,437,6,3,2005,2017,2,1,0,8.0,7.7,baja,11,Sacaba,False
+parque-tunari,32720_79_27,438,6,3,2016,2026,2,1,1,8.0,7.7,baja,10,Sacaba,False
+parque-tunari,32720_79_29,439,6,4,2011,2022,3,1,0,12.0,7.7,baja,6,Sacaba,False
+parque-tunari,32720_79_31,440,6,2,2012,2020,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_80_27,441,6,1,2022,2022,1,1,1,4.0,7.7,baja,10,Sacaba,False
+parque-tunari,32720_80_33,442,6,3,2016,2023,3,1,1,12.0,7.7,baja,7,Colomi,False
+parque-tunari,32720_80_35,443,6,5,2003,2026,3,1,1,12.0,7.7,baja,7,Colomi,False
+parque-tunari,32720_81_36,444,6,5,2005,2026,4,1,1,16.0,7.7,baja,6,Colomi,False
+parque-tunari,32720_11_43,445,5,2,2022,2022,1,1,1,4.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_12_44,446,5,4,2016,2023,4,1,0,16.0,7.7,baja,11,Morochata,False
+parque-tunari,32720_17_54,447,5,1,2019,2019,1,1,1,4.0,7.7,baja,8,Cocapata,False
+parque-tunari,32720_19_31,448,5,4,2020,2025,3,1,0,12.0,7.7,baja,11,Morochata,False
+parque-tunari,32720_1_33,449,5,3,2017,2022,3,1,1,12.0,7.7,baja,8,Ayopaya,False
+parque-tunari,32720_20_12,450,5,4,2020,2026,3,1,1,12.0,7.7,baja,8,Tapacarí,False
+parque-tunari,32720_23_27,451,5,2,2024,2024,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_27_26,452,5,3,2012,2020,2,1,0,8.0,7.7,baja,6,Sipe Sipe,False
+parque-tunari,32720_27_31,453,5,3,2019,2023,2,1,0,8.0,7.7,baja,6,Morochata,False
+parque-tunari,32720_27_36,454,5,1,2022,2022,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_33_4,455,5,3,2020,2025,3,1,0,12.0,7.7,baja,4,Tapacarí,False
+parque-tunari,32720_35_5,456,5,5,2023,2026,2,1,1,8.0,7.7,baja,9,Tapacarí,False
+parque-tunari,32720_35_8,457,5,2,2009,2019,2,1,1,8.0,7.7,baja,10,Tapacarí,False
+parque-tunari,32720_36_16,458,5,1,2021,2021,1,1,1,4.0,7.7,baja,7,Vinto,False
+parque-tunari,32720_3_35,459,5,1,2016,2016,1,1,1,4.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_40_54,460,5,2,2023,2026,1,1,1,4.0,7.7,baja,8,Quillacollo,False
+parque-tunari,32720_41_22,461,5,2,2017,2023,2,1,1,8.0,7.7,baja,8,Vinto,False
+parque-tunari,32720_41_48,462,5,2,2020,2020,1,1,1,4.0,7.7,baja,7,Quillacollo,False
+parque-tunari,32720_43_62,463,5,2,2021,2023,2,1,1,8.0,7.7,baja,8,Cocapata,False
+parque-tunari,32720_44_59,464,5,3,2019,2023,3,1,0,12.0,7.7,baja,10,Cocapata,False
+parque-tunari,32720_48_69,465,5,2,2016,2016,1,1,0,4.0,7.7,baja,6,Cocapata,False
+parque-tunari,32720_49_71,466,5,4,2003,2019,3,1,0,12.0,7.7,baja,7,Cocapata,False
+parque-tunari,32720_4_29,467,5,2,2019,2026,1,1,1,4.0,7.7,baja,6,Ayopaya,False
+parque-tunari,32720_50_69,468,5,2,2016,2026,1,1,0,4.0,7.7,baja,10,Cocapata,False
+parque-tunari,32720_54_47,469,5,2,2020,2025,2,1,1,8.0,7.7,baja,7,Tiquipaya,False
+parque-tunari,32720_57_29,470,5,4,2001,2024,3,1,1,12.0,7.7,baja,9,Tiquipaya,False
+parque-tunari,32720_59_50,471,5,3,2020,2025,3,1,1,12.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_60_41,472,5,3,2019,2026,1,1,1,4.0,7.7,baja,10,Tiquipaya,False
+parque-tunari,32720_63_38,473,5,3,2019,2022,3,1,0,12.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_65_26,474,5,3,2017,2024,3,1,0,12.0,7.7,baja,10,Cochabamba,False
+parque-tunari,32720_65_54,475,5,3,2003,2026,2,1,1,8.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_66_25,476,5,2,2017,2024,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_66_45,477,5,2,2019,2019,1,1,0,4.0,7.7,baja,6,Sacaba,False
+parque-tunari,32720_68_30,478,5,2,2016,2026,1,1,1,4.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_68_33,479,5,3,2016,2022,3,1,0,12.0,7.7,baja,6,Sacaba,False
+parque-tunari,32720_68_54,480,5,5,2007,2023,5,1,0,20.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_70_23,481,5,4,2017,2023,4,1,0,16.0,7.7,baja,11,Sacaba,False
+parque-tunari,32720_71_51,482,5,3,2016,2022,3,1,0,12.0,7.7,baja,6,Villa Tunari,False
+parque-tunari,32720_72_45,483,5,2,2012,2023,2,1,0,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_73_29,484,5,2,2020,2020,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_73_32,485,5,2,2012,2023,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_73_36,486,5,3,2014,2024,3,1,1,12.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_74_27,487,5,1,2020,2020,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_75_31,488,5,2,2020,2022,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_76_27,489,5,4,2012,2024,4,1,0,16.0,7.7,baja,6,Sacaba,False
+parque-tunari,32720_76_45,490,5,4,2019,2023,3,1,1,12.0,7.7,baja,7,Colomi,False
+parque-tunari,32720_78_44,491,5,2,2016,2020,2,1,1,8.0,7.7,baja,7,Colomi,False
+parque-tunari,32720_84_32,492,5,4,2003,2026,3,1,0,12.0,7.7,baja,6,Colomi,False
+parque-tunari,32720_9_30,493,5,2,2020,2022,2,1,1,8.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_10_25,494,4,2,2022,2022,1,1,0,4.0,7.7,baja,11,Ayopaya,False
+parque-tunari,32720_11_25,495,4,1,2022,2022,1,1,0,4.0,7.7,baja,11,Ayopaya,False
+parque-tunari,32720_11_32,496,4,3,2009,2024,3,1,1,12.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_13_31,497,4,3,2008,2020,3,1,1,12.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_14_35,498,4,2,2023,2023,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_15_34,499,4,1,2022,2022,1,1,1,4.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_15_37,500,4,2,2019,2022,2,1,1,8.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_16_36,501,4,2,2022,2022,1,1,1,4.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_16_43,502,4,2,2002,2020,2,1,1,8.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_18_33,503,4,1,2016,2016,1,1,1,4.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_21_35,504,4,1,2022,2022,1,1,1,4.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_22_31,505,4,1,2022,2022,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_22_37,506,4,4,2016,2023,3,1,1,12.0,7.7,baja,1,Morochata,False
+parque-tunari,32720_23_36,507,4,2,2016,2016,1,1,0,4.0,7.7,baja,11,Morochata,False
+parque-tunari,32720_23_59,508,4,2,2020,2023,2,1,0,8.0,7.7,baja,9,Cocapata,False
+parque-tunari,32720_24_10,509,4,2,2021,2026,1,1,1,4.0,7.7,baja,10,Tapacarí,False
+parque-tunari,32720_25_25,510,4,1,2023,2023,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_26_25,511,4,3,2022,2024,3,1,1,12.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_26_34,512,4,4,2003,2023,4,1,1,16.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_27_25,513,4,2,2018,2020,2,1,0,8.0,7.7,baja,4,Sipe Sipe,False
+parque-tunari,32720_27_30,514,4,3,2019,2019,1,1,0,4.0,7.7,baja,6,Morochata,False
+parque-tunari,32720_28_10,515,4,1,2020,2020,1,1,1,4.0,7.7,baja,9,Tapacarí,False
+parque-tunari,32720_28_35,516,4,1,2024,2024,1,1,1,4.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_28_6,517,4,1,2022,2022,1,1,1,4.0,7.7,baja,8,Tapacarí,False
+parque-tunari,32720_29_28,518,4,1,2020,2020,1,1,1,4.0,7.7,baja,10,Sipe Sipe,False
+parque-tunari,32720_30_16,519,4,1,2024,2024,1,1,1,4.0,7.7,baja,9,Sipe Sipe,False
+parque-tunari,32720_30_4,520,4,3,2021,2024,2,1,1,8.0,7.7,baja,7,Tapacarí,False
+parque-tunari,32720_31_8,521,4,1,2025,2025,1,1,1,4.0,7.7,baja,7,Tapacarí,False
+parque-tunari,32720_34_18,522,4,3,2015,2021,2,1,1,8.0,7.7,baja,8,Vinto,False
+parque-tunari,32720_34_54,523,4,3,2019,2025,3,1,0,12.0,7.7,baja,10,Cocapata,False
+parque-tunari,32720_34_56,524,4,2,2016,2026,1,1,1,4.0,7.7,baja,7,Cocapata,False
+parque-tunari,32720_35_17,525,4,3,2021,2021,1,1,1,4.0,7.7,baja,7,Vinto,False
+parque-tunari,32720_36_14,526,4,1,2015,2015,1,1,0,4.0,7.7,baja,11,Sipe Sipe,False
+parque-tunari,32720_36_9,527,4,3,2007,2023,3,1,0,12.0,7.7,baja,5,Sipe Sipe,False
+parque-tunari,32720_37_4,528,4,1,2017,2017,1,1,1,4.0,7.7,baja,10,Sipe Sipe,False
+parque-tunari,32720_38_18,529,4,3,2016,2026,2,1,0,8.0,7.7,baja,10,Vinto,False
+parque-tunari,32720_38_21,530,4,2,2015,2015,1,1,1,4.0,7.7,baja,8,Vinto,False
+parque-tunari,32720_38_59,531,4,3,2009,2025,3,1,1,12.0,7.7,baja,7,Cocapata,False
+parque-tunari,32720_38_60,532,4,2,2024,2024,1,1,0,4.0,7.7,baja,6,Cocapata,False
+parque-tunari,32720_38_63,533,4,1,2016,2016,1,1,1,4.0,7.7,baja,8,Cocapata,False
+parque-tunari,32720_40_45,534,4,2,2008,2023,2,1,1,8.0,7.7,baja,8,Quillacollo,False
+parque-tunari,32720_41_24,535,4,4,2003,2020,3,1,0,12.0,7.7,baja,6,Vinto,False
+parque-tunari,32720_41_50,536,4,2,2024,2026,1,1,1,4.0,7.7,baja,9,Quillacollo,False
+parque-tunari,32720_42_24,537,4,3,2003,2026,2,1,1,8.0,7.7,baja,10,Vinto,False
+parque-tunari,32720_42_53,538,4,2,2014,2023,2,1,1,8.0,7.7,baja,8,Quillacollo,False
+parque-tunari,32720_43_64,539,4,4,2019,2024,3,1,0,12.0,7.7,baja,7,Cocapata,False
+parque-tunari,32720_44_27,540,4,4,2015,2026,2,1,1,8.0,7.7,baja,10,Vinto,False
+parque-tunari,32720_45_45,541,4,2,2010,2022,2,1,1,8.0,7.7,baja,7,Quillacollo,False
+parque-tunari,32720_45_69,542,4,2,2016,2023,2,1,1,8.0,7.7,baja,8,Cocapata,False
+parque-tunari,32720_46_68,543,4,3,2003,2019,3,1,1,12.0,7.7,baja,8,Cocapata,False
+parque-tunari,32720_47_47,544,4,3,2022,2026,1,1,1,4.0,7.7,baja,9,Quillacollo,False
+parque-tunari,32720_47_52,545,4,3,2022,2026,2,1,1,8.0,7.7,baja,10,Quillacollo,False
+parque-tunari,32720_47_53,546,4,3,2019,2022,3,1,1,12.0,7.7,baja,9,Quillacollo,False
+parque-tunari,32720_48_43,547,4,1,2022,2022,1,1,0,4.0,7.7,baja,11,Tiquipaya,False
+parque-tunari,32720_48_48,548,4,1,2020,2020,1,1,1,4.0,7.7,baja,7,Tiquipaya,False
+parque-tunari,32720_50_49,549,4,3,2017,2026,2,1,1,8.0,7.7,baja,9,Quillacollo,False
+parque-tunari,32720_52_44,550,4,2,2022,2025,2,1,1,8.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_55_64,551,4,3,2016,2026,2,1,0,8.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_56_36,552,4,1,2020,2020,1,1,1,4.0,7.7,baja,10,Tiquipaya,False
+parque-tunari,32720_58_54,553,4,2,2016,2020,2,1,1,8.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_60_60,554,4,3,2018,2022,2,1,1,8.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_61_24,555,4,4,2021,2026,3,1,0,12.0,7.7,baja,8,Cochabamba,False
+parque-tunari,32720_61_46,556,4,2,2020,2026,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_61_53,557,4,2,2016,2020,2,1,1,8.0,7.7,baja,7,Tiquipaya,False
+parque-tunari,32720_62_25,558,4,4,2021,2024,2,1,1,8.0,7.7,baja,6,Cochabamba,False
+parque-tunari,32720_63_57,559,4,2,2023,2023,1,1,1,4.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_64_36,560,4,3,2018,2020,2,1,1,8.0,7.7,baja,9,Sacaba,False
+parque-tunari,32720_65_33,561,4,2,2015,2020,2,1,0,8.0,7.7,baja,6,Sacaba,False
+parque-tunari,32720_70_24,562,4,2,2020,2023,2,1,1,8.0,7.7,baja,11,Sacaba,False
+parque-tunari,32720_70_30,563,4,3,2020,2026,2,1,1,8.0,7.7,baja,9,Sacaba,False
+parque-tunari,32720_72_23,564,4,3,2013,2019,3,1,1,12.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_72_29,565,4,2,2005,2020,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_74_30,566,4,2,2020,2022,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_74_36,567,4,4,2019,2024,4,1,1,16.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_75_38,568,4,4,2014,2022,4,1,1,16.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_75_47,569,4,2,2019,2026,1,1,1,4.0,7.7,baja,8,Colomi,False
+parque-tunari,32720_76_26,570,4,3,2012,2019,3,1,0,12.0,7.7,baja,6,Sacaba,False
+parque-tunari,32720_79_28,571,4,2,2011,2020,2,1,0,8.0,7.7,baja,6,Sacaba,False
+parque-tunari,32720_79_42,572,4,2,2023,2023,1,1,1,4.0,7.7,baja,8,Colomi,False
+parque-tunari,32720_7_34,573,4,2,2005,2022,2,1,0,8.0,7.7,baja,11,Ayopaya,False
+parque-tunari,32720_80_26,574,4,2,2009,2025,2,1,1,8.0,7.7,baja,10,Sacaba,False
+parque-tunari,32720_80_40,575,4,4,2016,2024,4,1,1,16.0,7.7,baja,7,Colomi,False
+parque-tunari,32720_81_29,576,4,2,2020,2022,2,1,1,8.0,7.7,baja,10,Colomi,False
+parque-tunari,32720_83_31,577,4,3,2020,2020,1,1,1,4.0,7.7,baja,7,Colomi,False
+parque-tunari,32720_84_28,578,4,2,2016,2016,1,1,1,4.0,7.7,baja,8,Colomi,False
+parque-tunari,32720_85_33,579,4,3,2008,2020,3,1,0,12.0,7.7,baja,6,Colomi,False
+parque-tunari,32720_9_24,580,4,2,2022,2022,1,1,0,4.0,7.7,baja,11,Ayopaya,False
+parque-tunari,32720_9_32,581,4,4,2007,2024,3,1,0,12.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_10_32,582,3,1,2018,2018,1,1,1,4.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_10_35,583,3,1,2024,2024,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_10_42,584,3,2,2022,2022,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_10_43,585,3,3,2022,2023,2,1,1,8.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_10_46,586,3,2,2014,2022,2,1,1,8.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_11_31,587,3,2,2009,2015,2,1,1,8.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_12_50,588,3,2,2020,2022,2,1,1,8.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_14_36,589,3,1,2023,2023,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_16_45,590,3,1,2025,2025,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_17_33,591,3,1,2016,2016,1,1,1,4.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_18_30,592,3,2,2018,2018,1,1,1,4.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_19_35,593,3,2,2019,2026,1,1,0,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_20_39,594,3,1,2022,2022,1,1,1,4.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_20_50,595,3,1,2022,2022,1,1,1,4.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_22_26,596,3,3,2016,2026,2,1,1,8.0,7.7,baja,6,Morochata,False
+parque-tunari,32720_22_30,597,3,2,2022,2024,2,1,1,8.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_24_13,598,3,2,2014,2023,2,1,1,8.0,7.7,baja,10,Tapacarí,False
+parque-tunari,32720_24_21,599,3,2,2022,2024,2,1,1,8.0,7.7,baja,10,Sipe Sipe,False
+parque-tunari,32720_25_14,600,3,3,2020,2023,3,1,1,12.0,7.7,baja,6,Tapacarí,False
+parque-tunari,32720_25_27,601,3,1,2024,2024,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_26_26,602,3,3,2020,2025,3,1,1,12.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_27_35,603,3,2,2014,2022,2,1,1,8.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_28_18,604,3,1,2025,2025,1,1,1,4.0,7.7,baja,10,Sipe Sipe,False
+parque-tunari,32720_29_37,605,3,2,2014,2022,2,1,0,8.0,7.7,baja,6,Morochata,False
+parque-tunari,32720_30_17,606,3,2,2021,2022,2,1,1,8.0,7.7,baja,9,Sipe Sipe,False
+parque-tunari,32720_30_29,607,3,3,2012,2021,3,1,1,12.0,7.7,baja,8,Sipe Sipe,False
+parque-tunari,32720_31_28,608,3,3,2019,2026,2,1,1,8.0,7.7,baja,8,Sipe Sipe,False
+parque-tunari,32720_32_13,609,3,2,2012,2024,2,1,1,8.0,7.7,baja,9,Sipe Sipe,False
+parque-tunari,32720_32_25,610,3,1,2024,2024,1,1,1,4.0,7.7,baja,9,Vinto,False
+parque-tunari,32720_32_30,611,3,1,2022,2022,1,1,0,4.0,7.7,baja,11,Vinto,False
+parque-tunari,32720_34_11,612,3,1,2020,2020,1,1,0,4.0,7.7,baja,11,Sipe Sipe,False
+parque-tunari,32720_34_16,613,3,1,2022,2022,1,1,0,4.0,7.7,baja,6,Sipe Sipe,False
+parque-tunari,32720_34_24,614,3,1,2024,2024,1,1,1,4.0,7.7,baja,9,Vinto,False
+parque-tunari,32720_36_15,615,3,2,2015,2019,2,1,0,8.0,7.7,baja,11,Sipe Sipe,False
+parque-tunari,32720_37_10,616,3,3,2001,2020,3,1,1,12.0,7.7,baja,5,Sipe Sipe,False
+parque-tunari,32720_37_18,617,3,2,2013,2026,1,1,1,4.0,7.7,baja,6,Vinto,False
+parque-tunari,32720_37_59,618,3,1,2025,2025,1,1,1,4.0,7.7,baja,8,Cocapata,False
+parque-tunari,32720_38_27,619,3,1,2021,2021,1,1,1,4.0,7.7,baja,10,Vinto,False
+parque-tunari,32720_38_58,620,3,2,2019,2022,2,1,1,8.0,7.7,baja,7,Cocapata,False
+parque-tunari,32720_39_28,621,3,2,2020,2021,2,1,1,8.0,7.7,baja,10,Vinto,False
+parque-tunari,32720_3_38,622,3,1,2019,2019,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_40_52,623,3,2,2016,2026,1,1,1,4.0,7.7,baja,6,Quillacollo,False
+parque-tunari,32720_40_53,624,3,2,2023,2026,1,1,1,4.0,7.7,baja,6,Quillacollo,False
+parque-tunari,32720_41_53,625,3,2,2023,2023,1,1,1,4.0,7.7,baja,8,Quillacollo,False
+parque-tunari,32720_42_25,626,3,3,2007,2015,2,1,1,8.0,7.7,baja,10,Vinto,False
+parque-tunari,32720_43_45,627,3,1,2020,2020,1,1,1,4.0,7.7,baja,7,Quillacollo,False
+parque-tunari,32720_45_28,628,3,3,2015,2026,1,1,1,4.0,7.7,baja,8,Vinto,False
+parque-tunari,32720_45_62,629,3,1,2016,2016,1,1,1,4.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_46_27,630,3,3,2019,2022,2,1,1,8.0,7.7,baja,8,Vinto,False
+parque-tunari,32720_46_30,631,3,1,2025,2025,1,1,1,4.0,7.7,baja,7,Quillacollo,False
+parque-tunari,32720_47_44,632,3,2,2022,2025,2,1,0,8.0,7.7,baja,11,Tiquipaya,False
+parque-tunari,32720_47_70,633,3,1,2022,2022,1,1,0,4.0,7.7,baja,6,Cocapata,False
+parque-tunari,32720_48_50,634,3,2,2017,2025,2,1,0,8.0,7.7,baja,11,Quillacollo,False
+parque-tunari,32720_49_45,635,3,1,2022,2022,1,1,1,4.0,7.7,baja,9,Tiquipaya,False
+parque-tunari,32720_49_49,636,3,2,2017,2020,2,1,1,8.0,7.7,baja,7,Tiquipaya,False
+parque-tunari,32720_4_38,637,3,2,2019,2021,2,1,1,8.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_50_70,638,3,1,2016,2016,1,1,0,4.0,7.7,baja,6,Cocapata,False
+parque-tunari,32720_51_31,639,3,2,2016,2022,2,1,0,8.0,7.7,baja,11,Quillacollo,False
+parque-tunari,32720_51_36,640,3,1,2020,2020,1,1,1,4.0,7.7,baja,8,Quillacollo,False
+parque-tunari,32720_51_37,641,3,1,2020,2020,1,1,1,4.0,7.7,baja,8,Quillacollo,False
+parque-tunari,32720_51_48,642,3,2,2019,2024,2,1,1,8.0,7.7,baja,9,Tiquipaya,False
+parque-tunari,32720_51_56,643,3,2,2016,2026,1,1,1,4.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_52_56,644,3,1,2021,2021,1,1,1,4.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_53_28,645,3,1,2016,2016,1,1,1,4.0,7.7,baja,8,Quillacollo,False
+parque-tunari,32720_53_38,646,3,1,2025,2025,1,1,1,4.0,7.7,baja,9,Quillacollo,False
+parque-tunari,32720_53_42,647,3,1,2018,2018,1,1,1,4.0,7.7,baja,9,Tiquipaya,False
+parque-tunari,32720_53_58,648,3,1,2016,2016,1,1,1,4.0,7.7,baja,9,Villa Tunari,False
+parque-tunari,32720_53_65,649,3,2,2023,2023,1,1,1,4.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_54_45,650,3,1,2016,2016,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_54_65,651,3,3,2016,2026,2,1,1,8.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_57_27,652,3,3,2012,2024,3,1,0,12.0,7.7,baja,9,Tiquipaya,False
+parque-tunari,32720_58_56,653,3,1,2019,2019,1,1,1,4.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_59_30,654,3,2,2019,2023,2,1,1,8.0,7.7,baja,9,Tiquipaya,False
+parque-tunari,32720_59_46,655,3,3,2020,2026,2,1,0,8.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_60_46,656,3,1,2020,2020,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_60_50,657,3,3,2020,2025,2,1,1,8.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_61_32,658,3,1,2025,2025,1,1,1,4.0,7.7,baja,9,Tiquipaya,False
+parque-tunari,32720_61_45,659,3,2,2020,2022,2,1,1,8.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_63_27,660,3,2,2019,2019,1,1,1,4.0,7.7,baja,9,Cochabamba,False
+parque-tunari,32720_64_35,661,3,2,2014,2022,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_64_49,662,3,3,2012,2020,3,1,1,12.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_65_31,663,3,1,2021,2021,1,1,1,4.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_65_37,664,3,2,2015,2026,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_66_55,665,3,1,2020,2020,1,1,1,4.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_67_24,666,3,3,2003,2013,2,1,1,8.0,7.7,baja,10,Sacaba,False
+parque-tunari,32720_67_46,667,3,3,2019,2024,2,1,1,8.0,7.7,baja,6,Villa Tunari,False
+parque-tunari,32720_67_53,668,3,3,2020,2022,2,1,1,8.0,7.7,baja,7,Tiquipaya,False
+parque-tunari,32720_68_36,669,3,2,2009,2020,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_70_21,670,3,2,2018,2025,2,1,0,8.0,7.7,baja,5,Sacaba,False
+parque-tunari,32720_70_25,671,3,1,2023,2023,1,1,1,4.0,7.7,baja,9,Sacaba,False
+parque-tunari,32720_70_29,672,3,2,2025,2026,1,1,1,4.0,7.7,baja,6,Sacaba,False
+parque-tunari,32720_70_36,673,3,3,2005,2019,3,1,1,12.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_70_39,674,3,2,2022,2024,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_71_30,675,3,2,2017,2020,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_72_38,676,3,2,2016,2026,1,1,1,4.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_73_28,677,3,1,2020,2020,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_73_35,678,3,2,2015,2020,2,1,1,8.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_73_47,679,3,2,2013,2026,1,1,1,4.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_74_21,680,3,2,2021,2026,1,1,1,4.0,7.7,baja,9,Sacaba,False
+parque-tunari,32720_76_30,681,3,1,2020,2020,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_76_37,682,3,2,2021,2024,2,1,1,8.0,7.7,baja,9,Sacaba,False
+parque-tunari,32720_77_29,683,3,2,2015,2020,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_78_21,684,3,2,2016,2020,2,1,0,8.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_78_34,685,3,2,2017,2018,2,1,1,8.0,7.7,baja,9,Sacaba,False
+parque-tunari,32720_78_35,686,3,2,2012,2016,2,1,1,8.0,7.7,baja,10,Sacaba,False
+parque-tunari,32720_81_30,687,3,2,2020,2022,2,1,1,8.0,7.7,baja,10,Colomi,False
+parque-tunari,32720_81_32,688,3,2,2019,2022,2,1,0,8.0,7.7,baja,6,Colomi,False
+parque-tunari,32720_82_26,689,3,1,2023,2023,1,1,1,4.0,7.7,baja,7,Colomi,False
+parque-tunari,32720_83_32,690,3,2,2020,2020,1,1,0,4.0,7.7,baja,7,Colomi,False
+parque-tunari,32720_83_33,691,3,2,2006,2016,2,1,1,8.0,7.7,baja,8,Colomi,False
+parque-tunari,32720_84_29,692,3,3,2003,2016,3,1,1,12.0,7.7,baja,8,Colomi,False
+parque-tunari,32720_84_31,693,3,3,2010,2022,3,1,1,12.0,7.7,baja,6,Colomi,False
+parque-tunari,32720_87_30,694,3,3,2014,2023,2,1,1,8.0,7.7,baja,8,Colomi,False
+parque-tunari,32720_9_25,695,3,1,2022,2022,1,1,0,4.0,7.7,baja,11,Ayopaya,False
+parque-tunari,32720_9_33,696,3,2,2005,2016,2,1,1,8.0,7.7,baja,6,Morochata,False
+parque-tunari,32720_10_26,697,2,2,2022,2022,1,1,0,4.0,7.7,baja,11,Ayopaya,False
+parque-tunari,32720_10_33,698,2,2,2015,2018,2,1,1,8.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_10_36,699,2,1,2016,2016,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_10_37,700,2,1,2022,2022,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_10_44,701,2,1,2023,2023,1,1,1,4.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_11_42,702,2,2,2018,2022,2,1,1,8.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_11_45,703,2,1,2023,2023,1,1,0,4.0,7.7,baja,6,Morochata,False
+parque-tunari,32720_12_25,704,2,2,2022,2024,2,1,1,8.0,7.7,baja,8,Ayopaya,False
+parque-tunari,32720_12_35,705,2,2,2020,2023,2,1,0,8.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_12_43,706,2,2,2020,2022,2,1,1,8.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_12_45,707,2,2,2023,2023,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_13_43,708,2,2,2020,2023,2,1,1,8.0,7.7,baja,2,Morochata,False
+parque-tunari,32720_14_37,709,2,1,2016,2016,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_15_36,710,2,1,2022,2022,1,1,1,4.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_15_38,711,2,2,2023,2026,1,1,0,4.0,7.7,baja,5,Morochata,False
+parque-tunari,32720_16_33,712,2,1,2020,2020,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_16_48,713,2,1,2020,2020,1,1,0,4.0,7.7,baja,11,Morochata,False
+parque-tunari,32720_16_54,714,2,1,2019,2019,1,1,1,4.0,7.7,baja,8,Cocapata,False
+parque-tunari,32720_17_44,715,2,2,2020,2025,2,1,1,8.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_18_28,716,2,2,2020,2020,1,1,1,4.0,7.7,baja,5,Morochata,False
+parque-tunari,32720_18_32,717,2,2,2016,2025,2,1,1,8.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_19_28,718,2,1,2020,2020,1,1,0,4.0,7.7,baja,5,Morochata,False
+parque-tunari,32720_19_30,719,2,1,2018,2018,1,1,1,4.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_19_47,720,2,2,2016,2022,2,1,1,8.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_20_23,721,2,1,2024,2024,1,1,1,4.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_20_27,722,2,1,2019,2019,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_21_22,723,2,2,2022,2026,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_21_23,724,2,2,2019,2022,2,1,1,8.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_21_26,725,2,1,2022,2022,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_21_28,726,2,1,2021,2021,1,1,1,4.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_21_29,727,2,1,2021,2021,1,1,1,4.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_21_31,728,2,2,2022,2026,1,1,1,4.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_22_34,729,2,1,2024,2024,1,1,1,4.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_22_38,730,2,1,2016,2016,1,1,1,4.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_22_9,731,2,2,2012,2021,2,1,1,8.0,7.7,baja,6,Tapacarí,False
+parque-tunari,32720_23_11,732,2,2,2013,2023,2,1,0,8.0,7.7,baja,11,Tapacarí,False
+parque-tunari,32720_23_31,733,2,2,2016,2020,2,1,1,8.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_24_14,734,2,1,2020,2020,1,1,1,4.0,7.7,baja,9,Tapacarí,False
+parque-tunari,32720_24_34,735,2,2,2019,2020,2,1,1,8.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_24_59,736,2,1,2023,2023,1,1,1,4.0,7.7,baja,9,Cocapata,False
+parque-tunari,32720_25_15,737,2,1,2024,2024,1,1,0,4.0,7.7,baja,6,Tapacarí,False
+parque-tunari,32720_25_30,738,2,1,2016,2016,1,1,1,4.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_25_33,739,2,2,2016,2026,1,1,0,4.0,7.7,baja,5,Morochata,False
+parque-tunari,32720_25_35,740,2,1,2016,2016,1,1,0,4.0,7.7,baja,5,Morochata,False
+parque-tunari,32720_25_42,741,2,1,2020,2020,1,1,0,4.0,7.7,baja,5,Morochata,False
+parque-tunari,32720_25_58,742,2,2,2016,2023,2,1,0,8.0,7.7,baja,6,Cocapata,False
+parque-tunari,32720_26_29,743,2,1,2016,2016,1,1,1,4.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_26_35,744,2,2,2015,2022,2,1,1,8.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_26_37,745,2,2,2016,2018,2,1,0,8.0,7.7,baja,5,Morochata,False
+parque-tunari,32720_27_21,746,2,1,2024,2024,1,1,1,4.0,7.7,baja,10,Sipe Sipe,False
+parque-tunari,32720_27_27,747,2,1,2024,2024,1,1,1,4.0,7.7,baja,8,Sipe Sipe,False
+parque-tunari,32720_27_37,748,2,1,2020,2020,1,1,0,4.0,7.7,baja,11,Morochata,False
+parque-tunari,32720_27_38,749,2,2,2019,2020,2,1,1,8.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_29_5,750,2,2,2014,2020,2,1,1,8.0,7.7,baja,9,Tapacarí,False
+parque-tunari,32720_2_35,751,2,1,2016,2016,1,1,1,4.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_30_14,752,2,2,2016,2024,2,1,1,8.0,7.7,baja,8,Sipe Sipe,False
+parque-tunari,32720_31_16,753,2,2,2019,2024,2,1,1,8.0,7.7,baja,8,Sipe Sipe,False
+parque-tunari,32720_31_19,754,2,1,2020,2020,1,1,1,4.0,7.7,baja,8,Sipe Sipe,False
+parque-tunari,32720_31_3,755,2,2,2013,2021,2,1,0,8.0,7.7,baja,5,Tapacarí,False
+parque-tunari,32720_31_37,756,2,2,2006,2017,2,1,0,8.0,7.7,baja,1,Morochata,False
+parque-tunari,32720_32_36,757,2,2,2019,2022,2,1,1,8.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_32_50,758,2,1,2014,2014,1,1,1,4.0,7.7,baja,9,Quillacollo,False
+parque-tunari,32720_33_28,759,2,1,2022,2022,1,1,1,4.0,7.7,baja,9,Vinto,False
+parque-tunari,32720_34_7,760,2,1,2013,2013,1,1,0,4.0,7.7,baja,12,Tapacarí,False
+parque-tunari,32720_35_56,761,2,2,2016,2022,2,1,1,8.0,7.7,baja,7,Cocapata,False
+parque-tunari,32720_36_10,762,2,1,2022,2022,1,1,0,4.0,7.7,baja,6,Sipe Sipe,False
+parque-tunari,32720_36_55,763,2,1,2022,2022,1,1,1,4.0,7.7,baja,8,Cocapata,False
+parque-tunari,32720_36_57,764,2,1,2020,2020,1,1,1,4.0,7.7,baja,7,Cocapata,False
+parque-tunari,32720_37_15,765,2,2,2015,2019,2,1,0,8.0,7.7,baja,8,Sipe Sipe,False
+parque-tunari,32720_37_20,766,2,1,2016,2016,1,1,1,4.0,7.7,baja,10,Vinto,False
+parque-tunari,32720_38_19,767,2,1,2022,2022,1,1,0,4.0,7.7,baja,11,Vinto,False
+parque-tunari,32720_39_64,768,2,1,2016,2016,1,1,0,4.0,7.7,baja,6,Cocapata,False
+parque-tunari,32720_40_56,769,2,1,2022,2022,1,1,1,4.0,7.7,baja,9,Cocapata,False
+parque-tunari,32720_40_7,770,2,1,2013,2013,1,1,1,4.0,7.7,baja,9,Sipe Sipe,False
+parque-tunari,32720_41_47,771,2,1,2020,2020,1,1,1,4.0,7.7,baja,7,Quillacollo,False
+parque-tunari,32720_41_55,772,2,2,2020,2022,2,1,1,8.0,7.7,baja,9,Quillacollo,False
+parque-tunari,32720_41_67,773,2,1,2016,2016,1,1,1,4.0,7.7,baja,8,Cocapata,False
+parque-tunari,32720_42_3,774,2,1,2024,2024,1,1,0,4.0,7.7,baja,11,Sipe Sipe,False
+parque-tunari,32720_42_44,775,2,1,2025,2025,1,1,1,4.0,7.7,baja,10,Quillacollo,False
+parque-tunari,32720_42_49,776,2,1,2020,2020,1,1,1,4.0,7.7,baja,7,Quillacollo,False
+parque-tunari,32720_42_64,777,2,2,2020,2020,1,1,1,4.0,7.7,baja,5,Cocapata,False
+parque-tunari,32720_43_53,778,2,2,2014,2021,2,1,0,8.0,7.7,baja,5,Quillacollo,False
+parque-tunari,32720_43_55,779,2,1,2015,2015,1,1,1,4.0,7.7,baja,9,Cocapata,False
+parque-tunari,32720_44_65,780,2,1,2016,2016,1,1,1,4.0,7.7,baja,8,Cocapata,False
+parque-tunari,32720_44_68,781,2,1,2016,2016,1,1,1,4.0,7.7,baja,8,Cocapata,False
+parque-tunari,32720_45_24,782,2,1,2017,2017,1,1,1,4.0,7.7,baja,8,Vinto,False
+parque-tunari,32720_45_26,783,2,2,2014,2026,1,1,1,4.0,7.7,baja,9,Vinto,False
+parque-tunari,32720_45_29,784,2,2,2010,2015,2,1,0,8.0,7.7,baja,8,Vinto,False
+parque-tunari,32720_45_70,785,2,1,2016,2016,1,1,0,4.0,7.7,baja,6,Cocapata,False
+parque-tunari,32720_46_43,786,2,1,2013,2013,1,1,0,4.0,7.7,baja,11,Quillacollo,False
+parque-tunari,32720_46_46,787,2,1,2020,2020,1,1,1,4.0,7.7,baja,10,Quillacollo,False
+parque-tunari,32720_47_27,788,2,1,2022,2022,1,1,0,4.0,7.7,baja,11,Vinto,False
+parque-tunari,32720_47_29,789,2,2,2010,2016,2,1,0,8.0,7.7,baja,6,Quillacollo,False
+parque-tunari,32720_47_43,790,2,1,2022,2022,1,1,0,4.0,7.7,baja,11,Tiquipaya,False
+parque-tunari,32720_47_54,791,2,2,2020,2021,2,1,0,8.0,7.7,baja,10,Quillacollo,False
+parque-tunari,32720_48_39,792,2,1,2020,2020,1,1,1,4.0,7.7,baja,10,Quillacollo,False
+parque-tunari,32720_48_47,793,2,1,2019,2019,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_49_46,794,2,2,2019,2026,1,1,1,4.0,7.7,baja,7,Tiquipaya,False
+parque-tunari,32720_49_66,795,2,2,2016,2019,2,1,1,8.0,7.7,baja,9,Cocapata,False
+parque-tunari,32720_4_35,796,2,1,2016,2016,1,1,1,4.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_50_30,797,2,2,2016,2022,2,1,1,8.0,7.7,baja,8,Quillacollo,False
+parque-tunari,32720_50_31,798,2,1,2016,2016,1,1,1,4.0,7.7,baja,8,Quillacollo,False
+parque-tunari,32720_50_60,799,2,1,2024,2024,1,1,0,4.0,7.7,baja,6,Villa Tunari,False
+parque-tunari,32720_50_64,800,2,1,2018,2018,1,1,1,4.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_51_33,801,2,1,2016,2016,1,1,1,4.0,7.7,baja,8,Quillacollo,False
+parque-tunari,32720_51_49,802,2,2,2016,2020,2,1,1,8.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_51_54,803,2,1,2016,2016,1,1,1,4.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_51_65,804,2,2,2015,2018,2,1,1,8.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_51_66,805,2,2,2015,2018,2,1,0,8.0,7.7,baja,6,Cocapata,False
+parque-tunari,32720_52_31,806,2,1,2016,2016,1,1,1,4.0,7.7,baja,8,Quillacollo,False
+parque-tunari,32720_52_42,807,2,1,2018,2018,1,1,1,4.0,7.7,baja,9,Tiquipaya,False
+parque-tunari,32720_52_46,808,2,1,2020,2020,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_52_57,809,2,1,2016,2016,1,1,0,4.0,7.7,baja,11,Villa Tunari,False
+parque-tunari,32720_52_65,810,2,2,2015,2023,2,1,1,8.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_53_29,811,2,1,2016,2016,1,1,1,4.0,7.7,baja,8,Quillacollo,False
+parque-tunari,32720_53_41,812,2,1,2018,2018,1,1,1,4.0,7.7,baja,9,Tiquipaya,False
+parque-tunari,32720_53_45,813,2,1,2016,2016,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_53_57,814,2,2,2016,2019,2,1,1,8.0,7.7,baja,9,Villa Tunari,False
+parque-tunari,32720_53_61,815,2,2,2014,2016,2,1,1,8.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_54_44,816,2,2,2008,2020,2,1,1,8.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_54_53,817,2,2,2015,2026,1,1,1,4.0,7.7,baja,7,Tiquipaya,False
+parque-tunari,32720_54_61,818,2,2,2020,2021,2,1,1,8.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_54_62,819,2,1,2020,2020,1,1,1,4.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_55_31,820,2,2,2014,2025,2,1,0,8.0,7.7,baja,7,Quillacollo,False
+parque-tunari,32720_55_47,821,2,2,2020,2025,2,1,1,8.0,7.7,baja,7,Tiquipaya,False
+parque-tunari,32720_55_51,822,2,2,2019,2021,2,1,1,8.0,7.7,baja,6,Tiquipaya,False
+parque-tunari,32720_55_57,823,2,1,2024,2024,1,1,1,4.0,7.7,baja,10,Villa Tunari,False
+parque-tunari,32720_56_32,824,2,2,2019,2025,2,1,1,8.0,7.7,baja,7,Tiquipaya,False
+parque-tunari,32720_56_56,825,2,1,2024,2024,1,1,1,4.0,7.7,baja,10,Villa Tunari,False
+parque-tunari,32720_56_61,826,2,1,2023,2023,1,1,0,4.0,7.7,baja,6,Villa Tunari,False
+parque-tunari,32720_56_62,827,2,2,2016,2024,2,1,1,8.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_57_56,828,2,2,2019,2019,1,1,1,4.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_58_33,829,2,1,2024,2024,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_58_39,830,2,1,2016,2016,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_58_55,831,2,1,2016,2016,1,1,1,4.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_58_59,832,2,1,2015,2015,1,1,1,4.0,7.7,baja,9,Villa Tunari,False
+parque-tunari,32720_59_41,833,2,2,2019,2024,2,1,1,8.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_59_49,834,2,2,2020,2026,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_60_35,835,2,1,2020,2020,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_60_36,836,2,1,2016,2016,1,1,1,4.0,7.7,baja,9,Sacaba,False
+parque-tunari,32720_60_59,837,2,2,2018,2026,1,1,1,4.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_61_29,838,2,1,2019,2019,1,1,1,4.0,7.7,baja,9,Cochabamba,False
+parque-tunari,32720_61_44,839,2,2,2020,2022,2,1,1,8.0,7.7,baja,7,Tiquipaya,False
+parque-tunari,32720_61_49,840,2,1,2020,2020,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_61_52,841,2,1,2020,2020,1,1,1,4.0,7.7,baja,9,Tiquipaya,False
+parque-tunari,32720_61_57,842,2,1,2019,2019,1,1,1,4.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_62_43,843,2,2,2020,2026,1,1,0,4.0,7.7,baja,5,Tiquipaya,False
+parque-tunari,32720_62_44,844,2,2,2016,2025,2,1,1,8.0,7.7,baja,7,Tiquipaya,False
+parque-tunari,32720_62_47,845,2,2,2019,2026,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_62_48,846,2,2,2019,2025,2,1,1,8.0,7.7,baja,9,Tiquipaya,False
+parque-tunari,32720_62_58,847,2,2,2022,2025,2,1,1,8.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_63_30,848,2,2,2013,2019,2,1,1,8.0,7.7,baja,9,Cochabamba,False
+parque-tunari,32720_63_53,849,2,2,2015,2020,2,1,1,8.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_65_48,850,2,2,2023,2024,2,1,1,8.0,7.7,baja,9,Tiquipaya,False
+parque-tunari,32720_65_51,851,2,2,2024,2025,2,1,1,8.0,7.7,baja,7,Tiquipaya,False
+parque-tunari,32720_66_23,852,2,1,2015,2015,1,1,1,4.0,7.7,baja,9,Sacaba,False
+parque-tunari,32720_67_38,853,2,2,2020,2024,2,1,1,8.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_68_35,854,2,2,2005,2020,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_68_40,855,2,1,2017,2017,1,1,1,4.0,7.7,baja,9,Sacaba,False
+parque-tunari,32720_68_42,856,2,2,2023,2024,2,1,0,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_68_52,857,2,2,2015,2026,1,1,1,4.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_70_27,858,2,1,2020,2020,1,1,1,4.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_70_35,859,2,2,2019,2022,2,1,1,8.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_70_50,860,2,2,2016,2019,2,1,0,8.0,7.7,baja,6,Villa Tunari,False
+parque-tunari,32720_71_21,861,2,2,2010,2013,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_71_22,862,2,1,2014,2014,1,1,1,4.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_71_23,863,2,1,2023,2023,1,1,1,4.0,7.7,baja,10,Sacaba,False
+parque-tunari,32720_71_26,864,2,2,2019,2022,2,1,0,8.0,7.7,baja,6,Sacaba,False
+parque-tunari,32720_72_31,865,2,1,2023,2023,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_73_22,866,2,2,2019,2023,2,1,1,8.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_73_27,867,2,2,2018,2019,2,1,0,8.0,7.7,baja,6,Sacaba,False
+parque-tunari,32720_73_37,868,2,2,2016,2019,2,1,0,8.0,7.7,baja,6,Sacaba,False
+parque-tunari,32720_74_39,869,2,2,2019,2026,1,1,1,4.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_75_42,870,2,2,2020,2022,2,1,1,8.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_77_27,871,2,2,2016,2020,2,1,0,8.0,7.7,baja,6,Sacaba,False
+parque-tunari,32720_77_28,872,2,2,2020,2023,2,1,0,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_77_42,873,2,2,2019,2019,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_78_30,874,2,2,2012,2020,2,1,1,8.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_79_26,875,2,2,2012,2017,2,1,0,8.0,7.7,baja,10,Sacaba,False
+parque-tunari,32720_7_26,876,2,2,2017,2019,2,1,0,8.0,7.7,baja,6,Ayopaya,False
+parque-tunari,32720_80_28,877,2,2,2014,2022,2,1,0,8.0,7.7,baja,6,Sacaba,False
+parque-tunari,32720_82_30,878,2,2,2016,2020,2,1,1,8.0,7.7,baja,6,Colomi,False
+parque-tunari,32720_84_34,879,2,1,2023,2023,1,1,1,4.0,7.7,baja,9,Colomi,False
+parque-tunari,32720_85_28,880,2,1,2015,2015,1,1,1,4.0,7.7,baja,8,Colomi,False
+parque-tunari,32720_8_46,881,2,2,2012,2022,2,1,1,8.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_8_48,882,2,2,2018,2020,2,1,0,8.0,7.7,baja,4,Morochata,False
+parque-tunari,32720_10_34,883,1,1,2016,2016,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_11_40,884,1,1,2022,2022,1,1,1,4.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_11_48,885,1,1,2021,2021,1,1,0,4.0,7.7,baja,12,Morochata,False
+parque-tunari,32720_12_19,886,1,1,2023,2023,1,1,1,4.0,7.7,baja,7,Ayopaya,False
+parque-tunari,32720_13_32,887,1,1,2016,2016,1,1,1,4.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_13_37,888,1,1,2022,2022,1,1,1,4.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_13_41,889,1,1,2018,2018,1,1,0,4.0,7.7,baja,4,Morochata,False
+parque-tunari,32720_13_48,890,1,1,2020,2020,1,1,0,4.0,7.7,baja,6,Morochata,False
+parque-tunari,32720_14_42,891,1,1,2018,2018,1,1,0,4.0,7.7,baja,4,Morochata,False
+parque-tunari,32720_15_39,892,1,1,2023,2023,1,1,0,4.0,7.7,baja,6,Morochata,False
+parque-tunari,32720_16_29,893,1,1,2023,2023,1,1,1,4.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_16_39,894,1,1,2022,2022,1,1,1,4.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_17_27,895,1,1,2020,2020,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_17_34,896,1,1,2016,2016,1,1,1,4.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_17_37,897,1,1,2022,2022,1,1,1,4.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_17_39,898,1,1,2024,2024,1,1,0,4.0,7.7,baja,11,Morochata,False
+parque-tunari,32720_17_40,899,1,1,2023,2023,1,1,0,4.0,7.7,baja,1,Morochata,False
+parque-tunari,32720_17_48,900,1,1,2020,2020,1,1,0,4.0,7.7,baja,11,Morochata,False
+parque-tunari,32720_18_23,901,1,1,2020,2020,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_18_25,902,1,1,2020,2020,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_18_29,903,1,1,2018,2018,1,1,1,4.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_18_34,904,1,1,2016,2016,1,1,1,4.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_18_39,905,1,1,2024,2024,1,1,0,4.0,7.7,baja,11,Morochata,False
+parque-tunari,32720_18_41,906,1,1,2023,2023,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_18_48,907,1,1,2022,2022,1,1,0,4.0,7.7,baja,11,Morochata,False
+parque-tunari,32720_19_46,908,1,1,2015,2015,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_20_24,909,1,1,2024,2024,1,1,1,4.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_20_28,910,1,1,2020,2020,1,1,0,4.0,7.7,baja,5,Morochata,False
+parque-tunari,32720_21_10,911,1,1,2015,2015,1,1,0,4.0,7.7,baja,6,Tapacarí,False
+parque-tunari,32720_21_20,912,1,1,2022,2022,1,1,0,4.0,7.7,baja,11,Morochata,False
+parque-tunari,32720_21_21,913,1,1,2022,2022,1,1,0,4.0,7.7,baja,11,Morochata,False
+parque-tunari,32720_21_37,914,1,1,2024,2024,1,1,0,4.0,7.7,baja,6,Morochata,False
+parque-tunari,32720_21_50,915,1,1,2013,2013,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_22_27,916,1,1,2022,2022,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_22_32,917,1,1,2022,2022,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_22_45,918,1,1,2016,2016,1,1,0,4.0,7.7,baja,1,Morochata,False
+parque-tunari,32720_23_35,919,1,1,2017,2017,1,1,1,4.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_23_42,920,1,1,2014,2014,1,1,1,4.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_24_25,921,1,1,2023,2023,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_24_45,922,1,1,2025,2025,1,1,0,4.0,7.7,baja,1,Morochata,False
+parque-tunari,32720_24_46,923,1,1,2015,2015,1,1,1,4.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_24_8,924,1,1,2024,2024,1,1,1,4.0,7.7,baja,9,Tapacarí,False
+parque-tunari,32720_24_9,925,1,1,2025,2025,1,1,0,4.0,7.7,baja,5,Tapacarí,False
+parque-tunari,32720_25_12,926,1,1,2025,2025,1,1,1,4.0,7.7,baja,8,Tapacarí,False
+parque-tunari,32720_25_19,927,1,1,2025,2025,1,1,1,4.0,7.7,baja,7,Sipe Sipe,False
+parque-tunari,32720_25_8,928,1,1,2025,2025,1,1,1,4.0,7.7,baja,9,Tapacarí,False
+parque-tunari,32720_26_12,929,1,1,2025,2025,1,1,1,4.0,7.7,baja,8,Tapacarí,False
+parque-tunari,32720_26_38,930,1,1,2020,2020,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_27_22,931,1,1,2024,2024,1,1,1,4.0,7.7,baja,10,Sipe Sipe,False
+parque-tunari,32720_27_4,932,1,1,2014,2014,1,1,0,4.0,7.7,baja,6,Tapacarí,False
+parque-tunari,32720_27_9,933,1,1,2021,2021,1,1,1,4.0,7.7,baja,8,Tapacarí,False
+parque-tunari,32720_28_11,934,1,1,2015,2015,1,1,1,4.0,7.7,baja,8,Sipe Sipe,False
+parque-tunari,32720_28_14,935,1,1,2014,2014,1,1,0,4.0,7.7,baja,6,Sipe Sipe,False
+parque-tunari,32720_28_33,936,1,1,2023,2023,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_28_36,937,1,1,2016,2016,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_28_40,938,1,1,2021,2021,1,1,1,4.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_28_7,939,1,1,2022,2022,1,1,1,4.0,7.7,baja,8,Tapacarí,False
+parque-tunari,32720_29_14,940,1,1,2014,2014,1,1,0,4.0,7.7,baja,6,Sipe Sipe,False
+parque-tunari,32720_29_29,941,1,1,2019,2019,1,1,1,4.0,7.7,baja,8,Sipe Sipe,False
+parque-tunari,32720_29_39,942,1,1,2024,2024,1,1,0,4.0,7.7,baja,11,Morochata,False
+parque-tunari,32720_2_28,943,1,1,2024,2024,1,1,0,4.0,7.7,baja,2,Ayopaya,False
+parque-tunari,32720_30_21,944,1,1,2023,2023,1,1,1,4.0,7.7,baja,10,Sipe Sipe,False
+parque-tunari,32720_30_59,945,1,1,2016,2016,1,1,1,4.0,7.7,baja,8,Cocapata,False
+parque-tunari,32720_31_15,946,1,1,2024,2024,1,1,1,4.0,7.7,baja,9,Sipe Sipe,False
+parque-tunari,32720_31_40,947,1,1,2013,2013,1,1,1,4.0,7.7,baja,9,Morochata,False
+parque-tunari,32720_31_48,948,1,1,2025,2025,1,1,1,4.0,7.7,baja,8,Morochata,False
+parque-tunari,32720_31_53,949,1,1,2016,2016,1,1,0,4.0,7.7,baja,1,Cocapata,False
+parque-tunari,32720_31_58,950,1,1,2018,2018,1,1,1,4.0,7.7,baja,9,Cocapata,False
+parque-tunari,32720_32_10,951,1,1,2016,2016,1,1,1,4.0,7.7,baja,7,Sipe Sipe,False
+parque-tunari,32720_32_20,952,1,1,2025,2025,1,1,0,4.0,7.7,baja,11,Sipe Sipe,False
+parque-tunari,32720_32_27,953,1,1,2024,2024,1,1,1,4.0,7.7,baja,10,Sipe Sipe,False
+parque-tunari,32720_32_59,954,1,1,2015,2015,1,1,0,4.0,7.7,baja,11,Cocapata,False
+parque-tunari,32720_33_10,955,1,1,2024,2024,1,1,1,4.0,7.7,baja,8,Sipe Sipe,False
+parque-tunari,32720_33_5,956,1,1,2021,2021,1,1,0,4.0,7.7,baja,11,Tapacarí,False
+parque-tunari,32720_33_60,957,1,1,2025,2025,1,1,0,4.0,7.7,baja,5,Cocapata,False
+parque-tunari,32720_34_10,958,1,1,2016,2016,1,1,1,4.0,7.7,baja,9,Sipe Sipe,False
+parque-tunari,32720_34_37,959,1,1,2014,2014,1,1,1,4.0,7.7,baja,7,Morochata,False
+parque-tunari,32720_35_22,960,1,1,2016,2016,1,1,0,4.0,7.7,baja,6,Vinto,False
+parque-tunari,32720_35_26,961,1,1,2021,2021,1,1,1,4.0,7.7,baja,9,Vinto,False
+parque-tunari,32720_36_24,962,1,1,2024,2024,1,1,1,4.0,7.7,baja,7,Vinto,False
+parque-tunari,32720_37_12,963,1,1,2022,2022,1,1,1,4.0,7.7,baja,8,Sipe Sipe,False
+parque-tunari,32720_37_13,964,1,1,2022,2022,1,1,1,4.0,7.7,baja,8,Sipe Sipe,False
+parque-tunari,32720_37_21,965,1,1,2015,2015,1,1,1,4.0,7.7,baja,8,Vinto,False
+parque-tunari,32720_37_24,966,1,1,2024,2024,1,1,0,4.0,7.7,baja,5,Vinto,False
+parque-tunari,32720_37_57,967,1,1,2020,2020,1,1,1,4.0,7.7,baja,10,Cocapata,False
+parque-tunari,32720_37_7,968,1,1,2013,2013,1,1,1,4.0,7.7,baja,8,Tapacarí,False
+parque-tunari,32720_38_1,969,1,1,2021,2021,1,1,0,4.0,7.7,baja,11,Sipe Sipe,False
+parque-tunari,32720_38_25,970,1,1,2023,2023,1,1,1,4.0,7.7,baja,7,Vinto,False
+parque-tunari,32720_38_4,971,1,1,2025,2025,1,1,0,4.0,7.7,baja,11,Sipe Sipe,False
+parque-tunari,32720_38_62,972,1,1,2019,2019,1,1,0,4.0,7.7,baja,5,Cocapata,False
+parque-tunari,32720_38_8,973,1,1,2024,2024,1,1,1,4.0,7.7,baja,7,Sipe Sipe,False
+parque-tunari,32720_39_18,974,1,1,2020,2020,1,1,1,4.0,7.7,baja,9,Vinto,False
+parque-tunari,32720_39_26,975,1,1,2020,2020,1,1,1,4.0,7.7,baja,10,Vinto,False
+parque-tunari,32720_40_26,976,1,1,2020,2020,1,1,1,4.0,7.7,baja,10,Vinto,False
+parque-tunari,32720_40_47,977,1,1,2025,2025,1,1,1,4.0,7.7,baja,7,Quillacollo,False
+parque-tunari,32720_40_48,978,1,1,2020,2020,1,1,1,4.0,7.7,baja,7,Quillacollo,False
+parque-tunari,32720_40_51,979,1,1,2016,2016,1,1,1,4.0,7.7,baja,7,Quillacollo,False
+parque-tunari,32720_40_57,980,1,1,2023,2023,1,1,1,4.0,7.7,baja,10,Cocapata,False
+parque-tunari,32720_40_6,981,1,1,2013,2013,1,1,1,4.0,7.7,baja,9,Sipe Sipe,False
+parque-tunari,32720_40_63,982,1,1,2016,2016,1,1,1,4.0,7.7,baja,8,Cocapata,False
+parque-tunari,32720_41_60,983,1,1,2019,2019,1,1,0,4.0,7.7,baja,3,Cocapata,False
+parque-tunari,32720_42_52,984,1,1,2014,2014,1,1,1,4.0,7.7,baja,10,Quillacollo,False
+parque-tunari,32720_42_62,985,1,1,2015,2015,1,1,1,4.0,7.7,baja,9,Cocapata,False
+parque-tunari,32720_43_48,986,1,1,2020,2020,1,1,1,4.0,7.7,baja,7,Quillacollo,False
+parque-tunari,32720_43_52,987,1,1,2022,2022,1,1,0,4.0,7.7,baja,11,Quillacollo,False
+parque-tunari,32720_44_52,988,1,1,2016,2016,1,1,1,4.0,7.7,baja,7,Quillacollo,False
+parque-tunari,32720_44_54,989,1,1,2020,2020,1,1,1,4.0,7.7,baja,10,Quillacollo,False
+parque-tunari,32720_44_61,990,1,1,2020,2020,1,1,1,4.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_44_69,991,1,1,2016,2016,1,1,1,4.0,7.7,baja,8,Cocapata,False
+parque-tunari,32720_45_51,992,1,1,2014,2014,1,1,1,4.0,7.7,baja,7,Quillacollo,False
+parque-tunari,32720_46_44,993,1,1,2016,2016,1,1,1,4.0,7.7,baja,8,Quillacollo,False
+parque-tunari,32720_46_55,994,1,1,2025,2025,1,1,0,4.0,7.7,baja,11,Quillacollo,False
+parque-tunari,32720_46_59,995,1,1,2024,2024,1,1,1,4.0,7.7,baja,8,Cocapata,False
+parque-tunari,32720_46_64,996,1,1,2021,2021,1,1,1,4.0,7.7,baja,10,Cocapata,False
+parque-tunari,32720_46_66,997,1,1,2020,2020,1,1,1,4.0,7.7,baja,7,Cocapata,False
+parque-tunari,32720_47_46,998,1,1,2022,2022,1,1,1,4.0,7.7,baja,8,Quillacollo,False
+parque-tunari,32720_48_51,999,1,1,2022,2022,1,1,0,4.0,7.7,baja,11,Quillacollo,False
+parque-tunari,32720_49_41,1000,1,1,2024,2024,1,1,0,4.0,7.7,baja,6,Quillacollo,False
+parque-tunari,32720_49_51,1001,1,1,2017,2017,1,1,1,4.0,7.7,baja,7,Quillacollo,False
+parque-tunari,32720_49_52,1002,1,1,2017,2017,1,1,0,4.0,7.7,baja,12,Quillacollo,False
+parque-tunari,32720_49_54,1003,1,1,2016,2016,1,1,1,4.0,7.7,baja,8,Quillacollo,False
+parque-tunari,32720_49_57,1004,1,1,2023,2023,1,1,1,4.0,7.7,baja,10,Villa Tunari,False
+parque-tunari,32720_50_33,1005,1,1,2024,2024,1,1,1,4.0,7.7,baja,7,Quillacollo,False
+parque-tunari,32720_50_47,1006,1,1,2019,2019,1,1,1,4.0,7.7,baja,10,Tiquipaya,False
+parque-tunari,32720_50_57,1007,1,1,2017,2017,1,1,1,4.0,7.7,baja,9,Villa Tunari,False
+parque-tunari,32720_50_62,1008,1,1,2025,2025,1,1,1,4.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_50_63,1009,1,1,2022,2022,1,1,0,4.0,7.7,baja,11,Villa Tunari,False
+parque-tunari,32720_51_50,1010,1,1,2016,2016,1,1,1,4.0,7.7,baja,9,Quillacollo,False
+parque-tunari,32720_51_52,1011,1,1,2022,2022,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_51_55,1012,1,1,2016,2016,1,1,1,4.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_51_68,1013,1,1,2023,2023,1,1,1,4.0,7.7,baja,7,Cocapata,False
+parque-tunari,32720_51_70,1014,1,1,2016,2016,1,1,0,4.0,7.7,baja,6,Cocapata,False
+parque-tunari,32720_52_64,1015,1,1,2015,2015,1,1,1,4.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_52_69,1016,1,1,2016,2016,1,1,1,4.0,7.7,baja,7,Cocapata,False
+parque-tunari,32720_53_31,1017,1,1,2016,2016,1,1,1,4.0,7.7,baja,8,Quillacollo,False
+parque-tunari,32720_53_47,1018,1,1,2021,2021,1,1,1,4.0,7.7,baja,9,Tiquipaya,False
+parque-tunari,32720_53_48,1019,1,1,2017,2017,1,1,1,4.0,7.7,baja,9,Tiquipaya,False
+parque-tunari,32720_53_53,1020,1,1,2015,2015,1,1,1,4.0,7.7,baja,9,Tiquipaya,False
+parque-tunari,32720_54_27,1021,1,1,2016,2016,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_55_27,1022,1,1,2016,2016,1,1,0,4.0,7.7,baja,6,Tiquipaya,False
+parque-tunari,32720_55_30,1023,1,1,2024,2024,1,1,0,4.0,7.7,baja,11,Tiquipaya,False
+parque-tunari,32720_55_39,1024,1,1,2015,2015,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_55_40,1025,1,1,2016,2016,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_55_44,1026,1,1,2021,2021,1,1,1,4.0,7.7,baja,10,Tiquipaya,False
+parque-tunari,32720_55_55,1027,1,1,2024,2024,1,1,1,4.0,7.7,baja,10,Villa Tunari,False
+parque-tunari,32720_55_59,1028,1,1,2024,2024,1,1,1,4.0,7.7,baja,9,Villa Tunari,False
+parque-tunari,32720_55_66,1029,1,1,2020,2020,1,1,1,4.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_55_67,1030,1,1,2019,2019,1,1,1,4.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_56_30,1031,1,1,2024,2024,1,1,0,4.0,7.7,baja,11,Tiquipaya,False
+parque-tunari,32720_56_40,1032,1,1,2016,2016,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_56_51,1033,1,1,2021,2021,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_57_28,1034,1,1,2016,2016,1,1,0,4.0,7.7,baja,1,Tiquipaya,False
+parque-tunari,32720_57_39,1035,1,1,2016,2016,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_57_42,1036,1,1,2024,2024,1,1,0,4.0,7.7,baja,6,Tiquipaya,False
+parque-tunari,32720_57_55,1037,1,1,2019,2019,1,1,1,4.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_57_57,1038,1,1,2023,2023,1,1,1,4.0,7.7,baja,7,Villa Tunari,False
+parque-tunari,32720_59_31,1039,1,1,2013,2013,1,1,0,4.0,7.7,baja,11,Tiquipaya,False
+parque-tunari,32720_59_38,1040,1,1,2020,2020,1,1,1,4.0,7.7,baja,9,Sacaba,False
+parque-tunari,32720_5_34,1041,1,1,2016,2016,1,1,1,4.0,7.7,baja,7,Ayopaya,False
+parque-tunari,32720_60_38,1042,1,1,2020,2020,1,1,1,4.0,7.7,baja,9,Sacaba,False
+parque-tunari,32720_60_45,1043,1,1,2016,2016,1,1,1,4.0,7.7,baja,7,Tiquipaya,False
+parque-tunari,32720_60_53,1044,1,1,2016,2016,1,1,1,4.0,7.7,baja,7,Tiquipaya,False
+parque-tunari,32720_61_37,1045,1,1,2016,2016,1,1,1,4.0,7.7,baja,9,Sacaba,False
+parque-tunari,32720_61_50,1046,1,1,2020,2020,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_62_24,1047,1,1,2016,2016,1,1,0,4.0,7.7,baja,5,Cochabamba,False
+parque-tunari,32720_62_37,1048,1,1,2015,2015,1,1,1,4.0,7.7,baja,9,Sacaba,False
+parque-tunari,32720_62_40,1049,1,1,2020,2020,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_62_45,1050,1,1,2023,2023,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_62_53,1051,1,1,2020,2020,1,1,1,4.0,7.7,baja,9,Tiquipaya,False
+parque-tunari,32720_62_56,1052,1,1,2019,2019,1,1,1,4.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_63_25,1053,1,1,2021,2021,1,1,1,4.0,7.7,baja,10,Cochabamba,False
+parque-tunari,32720_63_44,1054,1,1,2016,2016,1,1,1,4.0,7.7,baja,7,Tiquipaya,False
+parque-tunari,32720_63_46,1055,1,1,2020,2020,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_63_50,1056,1,1,2019,2019,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_63_51,1057,1,1,2020,2020,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_63_54,1058,1,1,2016,2016,1,1,1,4.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_64_23,1059,1,1,2013,2013,1,1,1,4.0,7.7,baja,8,Cochabamba,False
+parque-tunari,32720_64_24,1060,1,1,2021,2021,1,1,1,4.0,7.7,baja,8,Cochabamba,False
+parque-tunari,32720_64_25,1061,1,1,2017,2017,1,1,0,4.0,7.7,baja,11,Cochabamba,False
+parque-tunari,32720_64_43,1062,1,1,2022,2022,1,1,0,4.0,7.7,baja,11,Sacaba,False
+parque-tunari,32720_64_46,1063,1,1,2020,2020,1,1,1,4.0,7.7,baja,8,Tiquipaya,False
+parque-tunari,32720_65_49,1064,1,1,2024,2024,1,1,1,4.0,7.7,baja,10,Villa Tunari,False
+parque-tunari,32720_66_41,1065,1,1,2023,2023,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_67_23,1066,1,1,2023,2023,1,1,1,4.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_67_28,1067,1,1,2024,2024,1,1,0,4.0,7.7,baja,11,Sacaba,False
+parque-tunari,32720_67_35,1068,1,1,2014,2014,1,1,1,4.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_67_37,1069,1,1,2015,2015,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_67_42,1070,1,1,2021,2021,1,1,0,4.0,7.7,baja,4,Sacaba,False
+parque-tunari,32720_68_24,1071,1,1,2015,2015,1,1,0,4.0,7.7,baja,11,Sacaba,False
+parque-tunari,32720_69_28,1072,1,1,2016,2016,1,1,0,4.0,7.7,baja,6,Sacaba,False
+parque-tunari,32720_69_38,1073,1,1,2017,2017,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_69_39,1074,1,1,2019,2019,1,1,1,4.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_69_50,1075,1,1,2018,2018,1,1,1,4.0,7.7,baja,8,Villa Tunari,False
+parque-tunari,32720_71_36,1076,1,1,2020,2020,1,1,1,4.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_72_34,1077,1,1,2015,2015,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_72_35,1078,1,1,2016,2016,1,1,1,4.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_72_37,1079,1,1,2019,2019,1,1,1,4.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_72_42,1080,1,1,2020,2020,1,1,0,4.0,7.7,baja,5,Sacaba,False
+parque-tunari,32720_72_44,1081,1,1,2016,2016,1,1,1,4.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_73_31,1082,1,1,2015,2015,1,1,1,4.0,7.7,baja,10,Sacaba,False
+parque-tunari,32720_73_46,1083,1,1,2020,2020,1,1,1,4.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_74_28,1084,1,1,2020,2020,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_75_41,1085,1,1,2016,2016,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_75_45,1086,1,1,2019,2019,1,1,1,4.0,7.7,baja,9,Sacaba,False
+parque-tunari,32720_76_31,1087,1,1,2014,2014,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_76_32,1088,1,1,2021,2021,1,1,1,4.0,7.7,baja,10,Sacaba,False
+parque-tunari,32720_76_33,1089,1,1,2021,2021,1,1,1,4.0,7.7,baja,10,Sacaba,False
+parque-tunari,32720_76_39,1090,1,1,2020,2020,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_76_40,1091,1,1,2019,2019,1,1,0,4.0,7.7,baja,6,Sacaba,False
+parque-tunari,32720_77_25,1092,1,1,2020,2020,1,1,1,4.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_77_32,1093,1,1,2021,2021,1,1,1,4.0,7.7,baja,10,Sacaba,False
+parque-tunari,32720_77_39,1094,1,1,2020,2020,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_77_40,1095,1,1,2020,2020,1,1,1,4.0,7.7,baja,9,Sacaba,False
+parque-tunari,32720_78_19,1096,1,1,2013,2013,1,1,1,4.0,7.7,baja,8,Sacaba,False
+parque-tunari,32720_78_22,1097,1,1,2020,2020,1,1,1,4.0,7.7,baja,10,Sacaba,False
+parque-tunari,32720_78_23,1098,1,1,2017,2017,1,1,1,4.0,7.7,baja,10,Sacaba,False
+parque-tunari,32720_78_36,1099,1,1,2016,2016,1,1,1,4.0,7.7,baja,10,Sacaba,False
+parque-tunari,32720_78_41,1100,1,1,2023,2023,1,1,1,4.0,7.7,baja,8,Colomi,False
+parque-tunari,32720_80_21,1101,1,1,2014,2014,1,1,0,4.0,7.7,baja,12,Sacaba,False
+parque-tunari,32720_80_32,1102,1,1,2016,2016,1,1,1,4.0,7.7,baja,7,Sacaba,False
+parque-tunari,32720_80_43,1103,1,1,2013,2013,1,1,0,4.0,7.7,baja,5,Colomi,False
+parque-tunari,32720_81_41,1104,1,1,2023,2023,1,1,1,4.0,7.7,baja,8,Colomi,False
+parque-tunari,32720_82_39,1105,1,1,2016,2016,1,1,0,4.0,7.7,baja,6,Colomi,False
+parque-tunari,32720_84_33,1106,1,1,2023,2023,1,1,1,4.0,7.7,baja,9,Colomi,False
+parque-tunari,32720_86_27,1107,1,1,2023,2023,1,1,1,4.0,7.7,baja,8,Colomi,False
+parque-tunari,32720_8_47,1108,1,1,2022,2022,1,1,1,4.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_9_37,1109,1,1,2021,2021,1,1,0,4.0,7.7,baja,5,Morochata,False
+parque-tunari,32720_9_41,1110,1,1,2015,2015,1,1,1,4.0,7.7,baja,10,Morochata,False
+parque-tunari,32720_44_29,1111,14,1,2026,2026,0,0,0,0.0,0.0,baja,10,Vinto,False
+parque-tunari,32720_32_52,1112,11,2,2024,2026,1,0,0,4.0,0.0,baja,6,Cocapata,False
+parque-tunari,32720_44_28,1113,11,3,2026,2026,0,0,0,0.0,0.0,baja,10,Vinto,False
+parque-tunari,32720_19_36,1114,9,2,2026,2026,0,0,0,0.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_29_2,1115,9,3,2010,2026,2,0,0,8.0,0.0,baja,9,Tapacarí,False
+parque-tunari,32720_46_33,1116,9,2,2020,2026,1,0,0,4.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_30_2,1117,8,2,2026,2026,0,0,0,0.0,0.0,baja,9,Tapacarí,False
+parque-tunari,32720_46_32,1118,8,1,2026,2026,0,0,0,0.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_47_32,1119,8,2,2026,2026,0,0,0,0.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_59_36,1120,8,2,2016,2026,1,0,0,4.0,0.0,baja,9,Sacaba,False
+parque-tunari,32720_61_47,1121,8,1,2026,2026,0,0,0,0.0,0.0,baja,8,Tiquipaya,False
+parque-tunari,32720_18_47,1122,7,2,2022,2022,1,0,0,4.0,0.0,baja,11,Morochata,False
+parque-tunari,32720_22_16,1123,7,2,2026,2026,0,0,0,0.0,0.0,baja,10,Tapacarí,False
+parque-tunari,32720_27_32,1124,7,2,2023,2023,1,0,0,4.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_43_46,1125,6,2,2020,2025,2,0,0,8.0,0.0,baja,11,Quillacollo,False
+parque-tunari,32720_61_28,1126,6,3,2019,2026,2,0,0,8.0,0.0,baja,6,Cochabamba,False
+parque-tunari,32720_61_43,1127,6,3,2022,2026,1,0,0,4.0,0.0,baja,7,Tiquipaya,False
+parque-tunari,32720_65_39,1128,6,1,2022,2022,1,0,0,4.0,0.0,baja,10,Sacaba,False
+parque-tunari,32720_68_32,1129,6,1,2026,2026,0,0,0,0.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_74_23,1130,6,2,2026,2026,0,0,0,0.0,0.0,baja,9,Sacaba,False
+parque-tunari,32720_13_51,1131,5,1,2020,2020,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_21_16,1132,5,2,2026,2026,0,0,0,0.0,0.0,baja,10,Tapacarí,False
+parque-tunari,32720_23_16,1133,5,2,2022,2026,1,0,0,4.0,0.0,baja,10,Tapacarí,False
+parque-tunari,32720_30_1,1134,5,1,2026,2026,0,0,0,0.0,0.0,baja,9,Tapacarí,False
+parque-tunari,32720_46_34,1135,5,2,2026,2026,0,0,0,0.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_47_33,1136,5,1,2026,2026,0,0,0,0.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_48_52,1137,5,3,2019,2026,1,0,0,4.0,0.0,baja,10,Quillacollo,False
+parque-tunari,32720_62_60,1138,5,3,2006,2019,3,0,0,12.0,0.0,baja,9,Villa Tunari,False
+parque-tunari,32720_63_60,1139,5,4,2003,2026,3,0,0,12.0,0.0,baja,6,Villa Tunari,False
+parque-tunari,32720_64_26,1140,5,1,2021,2021,1,0,0,4.0,0.0,baja,10,Cochabamba,False
+parque-tunari,32720_13_52,1141,4,3,2009,2022,3,0,0,12.0,0.0,baja,7,Cocapata,False
+parque-tunari,32720_25_29,1142,4,4,2005,2022,4,0,0,16.0,0.0,baja,7,Morochata,False
+parque-tunari,32720_30_35,1143,4,3,2010,2026,2,0,0,8.0,0.0,baja,4,Morochata,False
+parque-tunari,32720_32_14,1144,4,3,2008,2016,3,0,0,12.0,0.0,baja,8,Sipe Sipe,False
+parque-tunari,32720_32_51,1145,4,1,2026,2026,0,0,0,0.0,0.0,baja,6,Cocapata,False
+parque-tunari,32720_36_58,1146,4,1,2026,2026,0,0,0,0.0,0.0,baja,8,Cocapata,False
+parque-tunari,32720_37_6,1147,4,2,2021,2023,2,0,0,8.0,0.0,baja,10,Tapacarí,False
+parque-tunari,32720_39_3,1148,4,2,2023,2025,2,0,0,8.0,0.0,baja,11,Sipe Sipe,False
+parque-tunari,32720_40_46,1149,4,2,2026,2026,0,0,0,0.0,0.0,baja,10,Quillacollo,False
+parque-tunari,32720_43_65,1150,4,3,2016,2022,3,0,0,12.0,0.0,baja,8,Cocapata,False
+parque-tunari,32720_45_46,1151,4,3,2010,2022,3,0,0,12.0,0.0,baja,10,Quillacollo,False
+parque-tunari,32720_48_31,1152,4,2,2008,2026,1,0,0,4.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_50_68,1153,4,1,2026,2026,0,0,0,0.0,0.0,baja,10,Cocapata,False
+parque-tunari,32720_52_51,1154,4,2,2022,2026,1,0,0,4.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_54_43,1155,4,2,2026,2026,0,0,0,0.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_64_27,1156,4,2,2019,2024,2,0,0,8.0,0.0,baja,9,Cochabamba,False
+parque-tunari,32720_64_34,1157,4,2,2003,2022,2,0,0,8.0,0.0,baja,7,Sacaba,False
+parque-tunari,32720_65_32,1158,4,3,2014,2021,3,0,0,12.0,0.0,baja,6,Sacaba,False
+parque-tunari,32720_70_31,1159,4,1,2026,2026,0,0,0,0.0,0.0,baja,9,Sacaba,False
+parque-tunari,32720_74_26,1160,4,2,2020,2023,2,0,0,8.0,0.0,baja,6,Sacaba,False
+parque-tunari,32720_75_30,1161,4,3,2020,2022,2,0,0,8.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_78_27,1162,4,3,2012,2020,2,0,0,8.0,0.0,baja,10,Sacaba,False
+parque-tunari,32720_12_23,1163,3,2,2026,2026,0,0,0,0.0,0.0,baja,10,Ayopaya,False
+parque-tunari,32720_12_47,1164,3,1,2026,2026,0,0,0,0.0,0.0,baja,6,Morochata,False
+parque-tunari,32720_15_55,1165,3,1,2022,2022,1,0,0,4.0,0.0,baja,11,Cocapata,False
+parque-tunari,32720_16_44,1166,3,2,2022,2025,2,0,0,8.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_21_15,1167,3,1,2026,2026,0,0,0,0.0,0.0,baja,10,Tapacarí,False
+parque-tunari,32720_21_25,1168,3,2,2019,2023,2,0,0,8.0,0.0,baja,11,Morochata,False
+parque-tunari,32720_21_30,1169,3,2,2025,2026,1,0,0,4.0,0.0,baja,7,Morochata,False
+parque-tunari,32720_22_17,1170,3,2,2026,2026,0,0,0,0.0,0.0,baja,10,Tapacarí,False
+parque-tunari,32720_23_26,1171,3,2,2021,2023,2,0,0,8.0,0.0,baja,9,Morochata,False
+parque-tunari,32720_23_8,1172,3,3,2022,2026,1,0,0,4.0,0.0,baja,6,Tapacarí,False
+parque-tunari,32720_24_33,1173,3,3,2018,2020,3,0,0,12.0,0.0,baja,7,Morochata,False
+parque-tunari,32720_25_21,1174,3,1,2025,2025,1,0,0,4.0,0.0,baja,11,Sipe Sipe,False
+parque-tunari,32720_26_32,1175,3,2,2006,2023,2,0,0,8.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_29_1,1176,3,2,2026,2026,0,0,0,0.0,0.0,baja,9,Tapacarí,False
+parque-tunari,32720_29_38,1177,3,2,2019,2024,2,0,0,8.0,0.0,baja,7,Morochata,False
+parque-tunari,32720_29_4,1178,3,3,2019,2022,3,0,0,12.0,0.0,baja,7,Tapacarí,False
+parque-tunari,32720_30_22,1179,3,2,2019,2026,1,0,0,4.0,0.0,baja,6,Sipe Sipe,False
+parque-tunari,32720_31_35,1180,3,2,2019,2020,2,0,0,8.0,0.0,baja,7,Morochata,False
+parque-tunari,32720_34_27,1181,3,2,2022,2022,1,0,0,4.0,0.0,baja,8,Vinto,False
+parque-tunari,32720_34_57,1182,3,2,2020,2022,2,0,0,8.0,0.0,baja,8,Cocapata,False
+parque-tunari,32720_35_14,1183,3,1,2024,2024,1,0,0,4.0,0.0,baja,9,Sipe Sipe,False
+parque-tunari,32720_36_6,1184,3,1,2023,2023,1,0,0,4.0,0.0,baja,1,Tapacarí,False
+parque-tunari,32720_37_55,1185,3,2,2022,2023,2,0,0,8.0,0.0,baja,8,Quillacollo,False
+parque-tunari,32720_37_60,1186,3,1,2025,2025,1,0,0,4.0,0.0,baja,8,Cocapata,False
+parque-tunari,32720_38_56,1187,3,2,2021,2023,2,0,0,8.0,0.0,baja,2,Quillacollo,False
+parque-tunari,32720_39_7,1188,3,1,2026,2026,0,0,0,0.0,0.0,baja,9,Sipe Sipe,False
+parque-tunari,32720_41_63,1189,3,2,2007,2021,2,0,0,8.0,0.0,baja,8,Cocapata,False
+parque-tunari,32720_43_29,1190,3,1,2026,2026,0,0,0,0.0,0.0,baja,10,Vinto,False
+parque-tunari,32720_45_47,1191,3,1,2022,2022,1,0,0,4.0,0.0,baja,9,Quillacollo,False
+parque-tunari,32720_45_53,1192,3,3,2020,2025,2,0,0,8.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_48_66,1193,3,3,2019,2021,2,0,0,8.0,0.0,baja,7,Cocapata,False
+parque-tunari,32720_55_42,1194,3,2,2020,2026,1,0,0,4.0,0.0,baja,8,Tiquipaya,False
+parque-tunari,32720_56_63,1195,3,2,2005,2026,1,0,0,4.0,0.0,baja,7,Villa Tunari,False
+parque-tunari,32720_57_30,1196,3,2,2024,2024,1,0,0,4.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_58_32,1197,3,2,2011,2024,2,0,0,8.0,0.0,baja,8,Tiquipaya,False
+parque-tunari,32720_59_33,1198,3,3,2024,2025,2,0,0,8.0,0.0,baja,8,Tiquipaya,False
+parque-tunari,32720_59_51,1199,3,2,2020,2025,2,0,0,8.0,0.0,baja,8,Tiquipaya,False
+parque-tunari,32720_60_43,1200,3,2,2021,2026,1,0,0,4.0,0.0,baja,7,Tiquipaya,False
+parque-tunari,32720_61_39,1201,3,2,2026,2026,0,0,0,0.0,0.0,baja,6,Sacaba,False
+parque-tunari,32720_64_50,1202,3,2,2012,2024,2,0,0,8.0,0.0,baja,8,Tiquipaya,False
+parque-tunari,32720_64_51,1203,3,2,2024,2024,1,0,0,4.0,0.0,baja,10,Tiquipaya,False
+parque-tunari,32720_64_56,1204,3,3,2016,2023,3,0,0,12.0,0.0,baja,6,Villa Tunari,False
+parque-tunari,32720_65_25,1205,3,3,2017,2024,3,0,0,12.0,0.0,baja,7,Cochabamba,False
+parque-tunari,32720_69_34,1206,3,3,2020,2020,1,0,0,4.0,0.0,baja,6,Sacaba,False
+parque-tunari,32720_71_37,1207,3,2,2017,2024,2,0,0,8.0,0.0,baja,9,Sacaba,False
+parque-tunari,32720_72_36,1208,3,1,2019,2019,1,0,0,4.0,0.0,baja,7,Sacaba,False
+parque-tunari,32720_75_33,1209,3,2,2020,2023,2,0,0,8.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_77_38,1210,3,2,2020,2020,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_77_45,1211,3,3,2019,2025,3,0,0,12.0,0.0,baja,7,Colomi,False
+parque-tunari,32720_78_43,1212,3,2,2012,2019,2,0,0,8.0,0.0,baja,8,Colomi,False
+parque-tunari,32720_82_31,1213,3,3,2010,2021,3,0,0,12.0,0.0,baja,8,Colomi,False
+parque-tunari,32720_0_34,1214,2,2,2020,2022,2,0,0,8.0,0.0,baja,3,Ayopaya,False
+parque-tunari,32720_10_40,1215,2,1,2026,2026,0,0,0,0.0,0.0,baja,6,Morochata,False
+parque-tunari,32720_12_24,1216,2,2,2025,2026,1,0,0,4.0,0.0,baja,8,Ayopaya,False
+parque-tunari,32720_12_30,1217,2,2,2008,2016,2,0,0,8.0,0.0,baja,7,Morochata,False
+parque-tunari,32720_12_31,1218,2,2,2009,2016,2,0,0,8.0,0.0,baja,7,Morochata,False
+parque-tunari,32720_12_37,1219,2,2,2012,2022,2,0,0,8.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_12_38,1220,2,2,2020,2020,1,0,0,4.0,0.0,baja,11,Morochata,False
+parque-tunari,32720_12_52,1221,2,1,2009,2009,1,0,0,4.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_13_38,1222,2,1,2020,2020,1,0,0,4.0,0.0,baja,11,Morochata,False
+parque-tunari,32720_13_47,1223,2,1,2026,2026,0,0,0,0.0,0.0,baja,6,Morochata,False
+parque-tunari,32720_14_30,1224,2,2,2016,2020,2,0,0,8.0,0.0,baja,7,Morochata,False
+parque-tunari,32720_15_30,1225,2,2,2008,2020,2,0,0,8.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_16_35,1226,2,1,2022,2022,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_17_46,1227,2,2,2020,2024,2,0,0,8.0,0.0,baja,6,Morochata,False
+parque-tunari,32720_17_49,1228,2,1,2026,2026,0,0,0,0.0,0.0,baja,9,Morochata,False
+parque-tunari,32720_18_21,1229,2,2,2024,2025,2,0,0,8.0,0.0,baja,7,Ayopaya,False
+parque-tunari,32720_18_43,1230,2,1,2006,2006,1,0,0,4.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_19_23,1231,2,1,2020,2020,1,0,0,4.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_19_37,1232,2,1,2026,2026,0,0,0,0.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_20_25,1233,2,2,2020,2020,1,0,0,4.0,0.0,baja,7,Morochata,False
+parque-tunari,32720_20_49,1234,2,1,2022,2022,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_21_39,1235,2,1,2022,2022,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_22_12,1236,2,1,2023,2023,1,0,0,4.0,0.0,baja,7,Tapacarí,False
+parque-tunari,32720_22_8,1237,2,2,2022,2023,2,0,0,8.0,0.0,baja,7,Tapacarí,False
+parque-tunari,32720_23_15,1238,2,1,2022,2022,1,0,0,4.0,0.0,baja,10,Tapacarí,False
+parque-tunari,32720_23_9,1239,2,2,2012,2022,2,0,0,8.0,0.0,baja,6,Tapacarí,False
+parque-tunari,32720_24_24,1240,2,2,2017,2023,2,0,0,8.0,0.0,baja,7,Morochata,False
+parque-tunari,32720_25_59,1241,2,2,2019,2026,1,0,0,4.0,0.0,baja,7,Cocapata,False
+parque-tunari,32720_25_6,1242,2,1,2023,2023,1,0,0,4.0,0.0,baja,10,Tapacarí,False
+parque-tunari,32720_26_13,1243,2,1,2025,2025,1,0,0,4.0,0.0,baja,10,Sipe Sipe,False
+parque-tunari,32720_26_14,1244,2,2,2023,2025,2,0,0,8.0,0.0,baja,6,Tapacarí,False
+parque-tunari,32720_26_27,1245,2,1,2020,2020,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_27_45,1246,2,1,2026,2026,0,0,0,0.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_29_18,1247,2,1,2026,2026,0,0,0,0.0,0.0,baja,9,Sipe Sipe,False
+parque-tunari,32720_29_23,1248,2,2,2023,2023,1,0,0,4.0,0.0,baja,9,Sipe Sipe,False
+parque-tunari,32720_29_25,1249,2,1,2026,2026,0,0,0,0.0,0.0,baja,10,Sipe Sipe,False
+parque-tunari,32720_29_26,1250,2,2,2022,2026,1,0,0,4.0,0.0,baja,8,Sipe Sipe,False
+parque-tunari,32720_2_34,1251,2,2,2016,2016,1,0,0,4.0,0.0,baja,7,Ayopaya,False
+parque-tunari,32720_30_34,1252,2,1,2024,2024,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_30_36,1253,2,2,2019,2026,1,0,0,4.0,0.0,baja,4,Morochata,False
+parque-tunari,32720_31_1,1254,2,1,2026,2026,0,0,0,0.0,0.0,baja,9,Tapacarí,False
+parque-tunari,32720_31_12,1255,2,2,2018,2023,2,0,0,8.0,0.0,baja,7,Sipe Sipe,False
+parque-tunari,32720_31_17,1256,2,2,2023,2024,2,0,0,8.0,0.0,baja,9,Sipe Sipe,False
+parque-tunari,32720_31_46,1257,2,1,2003,2003,1,0,0,4.0,0.0,baja,8,Quillacollo,False
+parque-tunari,32720_31_59,1258,2,2,2019,2026,1,0,0,4.0,0.0,baja,7,Cocapata,False
+parque-tunari,32720_32_12,1259,2,1,2023,2023,1,0,0,4.0,0.0,baja,10,Sipe Sipe,False
+parque-tunari,32720_32_34,1260,2,2,2020,2021,2,0,0,8.0,0.0,baja,7,Morochata,False
+parque-tunari,32720_33_50,1261,2,2,2020,2021,2,0,0,8.0,0.0,baja,11,Quillacollo,False
+parque-tunari,32720_33_53,1262,2,2,2022,2026,1,0,0,4.0,0.0,baja,8,Quillacollo,False
+parque-tunari,32720_34_13,1263,2,1,2026,2026,0,0,0,0.0,0.0,baja,7,Sipe Sipe,False
+parque-tunari,32720_34_19,1264,2,2,2021,2021,1,0,0,4.0,0.0,baja,7,Vinto,False
+parque-tunari,32720_34_25,1265,2,1,2023,2023,1,0,0,4.0,0.0,baja,8,Vinto,False
+parque-tunari,32720_34_26,1266,2,2,2021,2026,1,0,0,4.0,0.0,baja,7,Vinto,False
+parque-tunari,32720_34_52,1267,2,2,2007,2020,2,0,0,8.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_35_12,1268,2,1,2012,2012,1,0,0,4.0,0.0,baja,8,Sipe Sipe,False
+parque-tunari,32720_35_13,1269,2,2,2012,2012,1,0,0,4.0,0.0,baja,8,Sipe Sipe,False
+parque-tunari,32720_35_3,1270,2,1,2021,2021,1,0,0,4.0,0.0,baja,9,Tapacarí,False
+parque-tunari,32720_36_20,1271,2,2,2020,2026,1,0,0,4.0,0.0,baja,2,Vinto,False
+parque-tunari,32720_36_56,1272,2,1,2022,2022,1,0,0,4.0,0.0,baja,8,Cocapata,False
+parque-tunari,32720_37_58,1273,2,1,2026,2026,0,0,0,0.0,0.0,baja,8,Cocapata,False
+parque-tunari,32720_38_28,1274,2,1,2021,2021,1,0,0,4.0,0.0,baja,10,Vinto,False
+parque-tunari,32720_39_4,1275,2,1,2025,2025,1,0,0,4.0,0.0,baja,11,Sipe Sipe,False
+parque-tunari,32720_3_34,1276,2,2,2016,2016,1,0,0,4.0,0.0,baja,7,Morochata,False
+parque-tunari,32720_40_66,1277,2,2,2003,2025,2,0,0,8.0,0.0,baja,7,Cocapata,False
+parque-tunari,32720_41_43,1278,2,1,2019,2019,1,0,0,4.0,0.0,baja,9,Quillacollo,False
+parque-tunari,32720_42_47,1279,2,1,2020,2020,1,0,0,4.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_42_57,1280,2,2,2021,2024,2,0,0,8.0,0.0,baja,6,Cocapata,False
+parque-tunari,32720_42_65,1281,2,2,2003,2020,2,0,0,8.0,0.0,baja,7,Cocapata,False
+parque-tunari,32720_43_59,1282,2,1,2023,2023,1,0,0,4.0,0.0,baja,10,Cocapata,False
+parque-tunari,32720_43_60,1283,2,1,2023,2023,1,0,0,4.0,0.0,baja,10,Cocapata,False
+parque-tunari,32720_43_61,1284,2,2,2021,2023,2,0,0,8.0,0.0,baja,8,Cocapata,False
+parque-tunari,32720_44_26,1285,2,1,2022,2022,1,0,0,4.0,0.0,baja,12,Vinto,False
+parque-tunari,32720_44_30,1286,2,2,2003,2026,1,0,0,4.0,0.0,baja,10,Quillacollo,False
+parque-tunari,32720_44_31,1287,2,2,2007,2024,2,0,0,8.0,0.0,baja,8,Quillacollo,False
+parque-tunari,32720_44_53,1288,2,1,2022,2022,1,0,0,4.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_44_60,1289,2,1,2023,2023,1,0,0,4.0,0.0,baja,10,Cocapata,False
+parque-tunari,32720_46_53,1290,2,1,2022,2022,1,0,0,4.0,0.0,baja,9,Quillacollo,False
+parque-tunari,32720_46_58,1291,2,2,2020,2024,2,0,0,8.0,0.0,baja,8,Cocapata,False
+parque-tunari,32720_47_25,1292,2,2,2020,2025,2,0,0,8.0,0.0,baja,6,Vinto,False
+parque-tunari,32720_47_34,1293,2,2,2026,2026,0,0,0,0.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_47_35,1294,2,1,2026,2026,0,0,0,0.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_49_65,1295,2,2,2020,2021,2,0,0,8.0,0.0,baja,8,Cocapata,False
+parque-tunari,32720_4_39,1296,2,2,2019,2026,1,0,0,4.0,0.0,baja,7,Morochata,False
+parque-tunari,32720_4_40,1297,2,2,2020,2023,2,0,0,8.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_51_46,1298,2,1,2025,2025,1,0,0,4.0,0.0,baja,8,Tiquipaya,False
+parque-tunari,32720_53_37,1299,2,2,2024,2026,1,0,0,4.0,0.0,baja,3,Quillacollo,False
+parque-tunari,32720_53_56,1300,2,1,2026,2026,0,0,0,0.0,0.0,baja,6,Villa Tunari,False
+parque-tunari,32720_54_42,1301,2,1,2020,2020,1,0,0,4.0,0.0,baja,8,Tiquipaya,False
+parque-tunari,32720_54_48,1302,2,1,2019,2019,1,0,0,4.0,0.0,baja,7,Tiquipaya,False
+parque-tunari,32720_55_32,1303,2,1,2020,2020,1,0,0,4.0,0.0,baja,8,Tiquipaya,False
+parque-tunari,32720_55_43,1304,2,1,2020,2020,1,0,0,4.0,0.0,baja,8,Tiquipaya,False
+parque-tunari,32720_55_50,1305,2,1,2003,2003,1,0,0,4.0,0.0,baja,8,Tiquipaya,False
+parque-tunari,32720_55_53,1306,2,1,2026,2026,0,0,0,0.0,0.0,baja,7,Villa Tunari,False
+parque-tunari,32720_55_62,1307,2,2,2021,2021,1,0,0,4.0,0.0,baja,7,Villa Tunari,False
+parque-tunari,32720_56_54,1308,2,1,2026,2026,0,0,0,0.0,0.0,baja,6,Villa Tunari,False
+parque-tunari,32720_56_55,1309,2,1,2026,2026,0,0,0,0.0,0.0,baja,8,Villa Tunari,False
+parque-tunari,32720_56_66,1310,2,2,2011,2019,2,0,0,8.0,0.0,baja,6,Villa Tunari,False
+parque-tunari,32720_57_26,1311,2,2,2012,2023,2,0,0,8.0,0.0,baja,8,Tiquipaya,False
+parque-tunari,32720_57_41,1312,2,2,2020,2026,1,0,0,4.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_58_31,1313,2,1,2024,2024,1,0,0,4.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_58_42,1314,2,1,2021,2021,1,0,0,4.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_58_57,1315,2,1,2019,2019,1,0,0,4.0,0.0,baja,7,Villa Tunari,False
+parque-tunari,32720_59_42,1316,2,1,2026,2026,0,0,0,0.0,0.0,baja,7,Tiquipaya,False
+parque-tunari,32720_60_48,1317,2,2,2020,2026,1,0,0,4.0,0.0,baja,8,Tiquipaya,False
+parque-tunari,32720_60_58,1318,2,1,2026,2026,0,0,0,0.0,0.0,baja,9,Villa Tunari,False
+parque-tunari,32720_62_38,1319,2,2,2019,2020,2,0,0,8.0,0.0,baja,6,Sacaba,False
+parque-tunari,32720_63_31,1320,2,1,2012,2012,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_63_36,1321,2,1,2022,2022,1,0,0,4.0,0.0,baja,9,Sacaba,False
+parque-tunari,32720_64_59,1322,2,1,2026,2026,0,0,0,0.0,0.0,baja,7,Villa Tunari,False
+parque-tunari,32720_65_46,1323,2,2,2020,2024,2,0,0,8.0,0.0,baja,6,Villa Tunari,False
+parque-tunari,32720_65_55,1324,2,2,2019,2023,2,0,0,8.0,0.0,baja,6,Villa Tunari,False
+parque-tunari,32720_65_58,1325,2,2,2003,2006,2,0,0,8.0,0.0,baja,6,Villa Tunari,False
+parque-tunari,32720_66_39,1326,2,2,2010,2022,2,0,0,8.0,0.0,baja,9,Sacaba,False
+parque-tunari,32720_67_40,1327,2,1,2026,2026,0,0,0,0.0,0.0,baja,6,Sacaba,False
+parque-tunari,32720_67_54,1328,2,2,2015,2020,2,0,0,8.0,0.0,baja,7,Villa Tunari,False
+parque-tunari,32720_68_28,1329,2,2,2023,2026,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_69_21,1330,2,2,2019,2025,2,0,0,8.0,0.0,baja,7,Sacaba,False
+parque-tunari,32720_69_29,1331,2,2,2020,2022,2,0,0,8.0,0.0,baja,7,Sacaba,False
+parque-tunari,32720_69_32,1332,2,2,2020,2022,2,0,0,8.0,0.0,baja,7,Sacaba,False
+parque-tunari,32720_72_30,1333,2,2,2012,2023,2,0,0,8.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_73_21,1334,2,1,2018,2018,1,0,0,4.0,0.0,baja,9,Sacaba,False
+parque-tunari,32720_73_23,1335,2,2,2019,2023,2,0,0,8.0,0.0,baja,1,Sacaba,False
+parque-tunari,32720_74_33,1336,2,1,2023,2023,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_74_44,1337,2,1,2019,2019,1,0,0,4.0,0.0,baja,6,Sacaba,False
+parque-tunari,32720_75_21,1338,2,2,2015,2021,2,0,0,8.0,0.0,baja,9,Sacaba,False
+parque-tunari,32720_75_24,1339,2,1,2026,2026,0,0,0,0.0,0.0,baja,9,Sacaba,False
+parque-tunari,32720_75_36,1340,2,2,2003,2024,2,0,0,8.0,0.0,baja,7,Sacaba,False
+parque-tunari,32720_77_23,1341,2,2,2023,2026,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_7_33,1342,2,2,2005,2009,2,0,0,8.0,0.0,baja,8,Ayopaya,False
+parque-tunari,32720_7_35,1343,2,2,2005,2022,2,0,0,8.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_80_20,1344,2,2,2026,2026,0,0,0,0.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_80_31,1345,2,2,2022,2022,1,0,0,4.0,0.0,baja,10,Sacaba,False
+parque-tunari,32720_80_42,1346,2,2,2013,2023,2,0,0,8.0,0.0,baja,5,Colomi,False
+parque-tunari,32720_82_32,1347,2,1,2019,2019,1,0,0,4.0,0.0,baja,6,Colomi,False
+parque-tunari,32720_82_36,1348,2,2,2023,2023,1,0,0,4.0,0.0,baja,7,Colomi,False
+parque-tunari,32720_83_35,1349,2,2,2023,2023,1,0,0,4.0,0.0,baja,7,Colomi,False
+parque-tunari,32720_83_37,1350,2,2,2019,2026,1,0,0,4.0,0.0,baja,8,Colomi,False
+parque-tunari,32720_86_28,1351,2,2,2023,2026,1,0,0,4.0,0.0,baja,7,Colomi,False
+parque-tunari,32720_87_31,1352,2,2,2019,2023,2,0,0,8.0,0.0,baja,7,Colomi,False
+parque-tunari,32720_8_33,1353,2,2,2009,2016,2,0,0,8.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_9_23,1354,2,2,2022,2023,2,0,0,8.0,0.0,baja,7,Ayopaya,False
+parque-tunari,32720_9_46,1355,2,1,2022,2022,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_0_33,1356,1,1,2018,2018,1,0,0,4.0,0.0,baja,4,Ayopaya,False
+parque-tunari,32720_10_30,1357,1,1,2009,2009,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_10_45,1358,1,1,2022,2022,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_11_23,1359,1,1,2026,2026,0,0,0,0.0,0.0,baja,8,Ayopaya,False
+parque-tunari,32720_11_41,1360,1,1,2022,2022,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_11_47,1361,1,1,2021,2021,1,0,0,4.0,0.0,baja,11,Morochata,False
+parque-tunari,32720_12_32,1362,1,1,2009,2009,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_12_33,1363,1,1,2019,2019,1,0,0,4.0,0.0,baja,9,Morochata,False
+parque-tunari,32720_12_34,1364,1,1,2023,2023,1,0,0,4.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_12_40,1365,1,1,2020,2020,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_12_51,1366,1,1,2020,2020,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_13_23,1367,1,1,2026,2026,0,0,0,0.0,0.0,baja,10,Ayopaya,False
+parque-tunari,32720_13_24,1368,1,1,2026,2026,0,0,0,0.0,0.0,baja,10,Ayopaya,False
+parque-tunari,32720_13_30,1369,1,1,2008,2008,1,0,0,4.0,0.0,baja,9,Morochata,False
+parque-tunari,32720_13_46,1370,1,1,2023,2023,1,0,0,4.0,0.0,baja,9,Morochata,False
+parque-tunari,32720_13_49,1371,1,1,2022,2022,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_13_50,1372,1,1,2020,2020,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_13_53,1373,1,1,2022,2022,1,0,0,4.0,0.0,baja,7,Cocapata,False
+parque-tunari,32720_14_17,1374,1,1,2024,2024,1,0,0,4.0,0.0,baja,4,Ayopaya,False
+parque-tunari,32720_14_32,1375,1,1,2020,2020,1,0,0,4.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_14_41,1376,1,1,2022,2022,1,0,0,4.0,0.0,baja,5,Morochata,False
+parque-tunari,32720_14_43,1377,1,1,2026,2026,0,0,0,0.0,0.0,baja,6,Morochata,False
+parque-tunari,32720_14_46,1378,1,1,2007,2007,1,0,0,4.0,0.0,baja,11,Morochata,False
+parque-tunari,32720_14_51,1379,1,1,2020,2020,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_14_52,1380,1,1,2022,2022,1,0,0,4.0,0.0,baja,7,Cocapata,False
+parque-tunari,32720_15_35,1381,1,1,2022,2022,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_15_40,1382,1,1,2020,2020,1,0,0,4.0,0.0,baja,11,Morochata,False
+parque-tunari,32720_15_41,1383,1,1,2021,2021,1,0,0,4.0,0.0,baja,1,Morochata,False
+parque-tunari,32720_15_45,1384,1,1,2023,2023,1,0,0,4.0,0.0,baja,6,Morochata,False
+parque-tunari,32720_15_47,1385,1,1,2022,2022,1,0,0,4.0,0.0,baja,9,Morochata,False
+parque-tunari,32720_15_50,1386,1,1,2010,2010,1,0,0,4.0,0.0,baja,11,Morochata,False
+parque-tunari,32720_15_52,1387,1,1,2010,2010,1,0,0,4.0,0.0,baja,11,Morochata,False
+parque-tunari,32720_15_54,1388,1,1,2022,2022,1,0,0,4.0,0.0,baja,11,Cocapata,False
+parque-tunari,32720_16_30,1389,1,1,2008,2008,1,0,0,4.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_16_41,1390,1,1,2026,2026,0,0,0,0.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_16_46,1391,1,1,2020,2020,1,0,0,4.0,0.0,baja,6,Morochata,False
+parque-tunari,32720_16_50,1392,1,1,2010,2010,1,0,0,4.0,0.0,baja,11,Morochata,False
+parque-tunari,32720_16_53,1393,1,1,2019,2019,1,0,0,4.0,0.0,baja,8,Cocapata,False
+parque-tunari,32720_17_25,1394,1,1,2020,2020,1,0,0,4.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_17_50,1395,1,1,2026,2026,0,0,0,0.0,0.0,baja,9,Morochata,False
+parque-tunari,32720_17_53,1396,1,1,2019,2019,1,0,0,4.0,0.0,baja,8,Cocapata,False
+parque-tunari,32720_18_12,1397,1,1,2022,2022,1,0,0,4.0,0.0,baja,8,Tapacarí,False
+parque-tunari,32720_18_15,1398,1,1,2026,2026,0,0,0,0.0,0.0,baja,6,Tapacarí,False
+parque-tunari,32720_18_22,1399,1,1,2025,2025,1,0,0,4.0,0.0,baja,7,Morochata,False
+parque-tunari,32720_18_31,1400,1,1,2025,2025,1,0,0,4.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_18_37,1401,1,1,2022,2022,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_18_46,1402,1,1,2022,2022,1,0,0,4.0,0.0,baja,11,Morochata,False
+parque-tunari,32720_19_26,1403,1,1,2024,2024,1,0,0,4.0,0.0,baja,12,Morochata,False
+parque-tunari,32720_19_29,1404,1,1,2022,2022,1,0,0,4.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_19_39,1405,1,1,2026,2026,0,0,0,0.0,0.0,baja,3,Morochata,False
+parque-tunari,32720_19_48,1406,1,1,2022,2022,1,0,0,4.0,0.0,baja,11,Morochata,False
+parque-tunari,32720_1_34,1407,1,1,2022,2022,1,0,0,4.0,0.0,baja,8,Ayopaya,False
+parque-tunari,32720_20_15,1408,1,1,2026,2026,0,0,0,0.0,0.0,baja,8,Tapacarí,False
+parque-tunari,32720_20_26,1409,1,1,2022,2022,1,0,0,4.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_20_30,1410,1,1,2022,2022,1,0,0,4.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_20_35,1411,1,1,2026,2026,0,0,0,0.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_21_38,1412,1,1,2026,2026,0,0,0,0.0,0.0,baja,6,Morochata,False
+parque-tunari,32720_22_10,1413,1,1,2023,2023,1,0,0,4.0,0.0,baja,11,Tapacarí,False
+parque-tunari,32720_22_13,1414,1,1,2023,2023,1,0,0,4.0,0.0,baja,8,Tapacarí,False
+parque-tunari,32720_22_21,1415,1,1,2022,2022,1,0,0,4.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_22_28,1416,1,1,2021,2021,1,0,0,4.0,0.0,baja,6,Morochata,False
+parque-tunari,32720_22_29,1417,1,1,2024,2024,1,0,0,4.0,0.0,baja,6,Morochata,False
+parque-tunari,32720_22_59,1418,1,1,2022,2022,1,0,0,4.0,0.0,baja,8,Cocapata,False
+parque-tunari,32720_23_17,1419,1,1,2020,2020,1,0,0,4.0,0.0,baja,10,Tapacarí,False
+parque-tunari,32720_23_23,1420,1,1,2022,2022,1,0,0,4.0,0.0,baja,11,Morochata,False
+parque-tunari,32720_23_24,1421,1,1,2022,2022,1,0,0,4.0,0.0,baja,11,Morochata,False
+parque-tunari,32720_23_25,1422,1,1,2023,2023,1,0,0,4.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_23_38,1423,1,1,2026,2026,0,0,0,0.0,0.0,baja,2,Morochata,False
+parque-tunari,32720_23_39,1424,1,1,2019,2019,1,0,0,4.0,0.0,baja,6,Morochata,False
+parque-tunari,32720_23_60,1425,1,1,2018,2018,1,0,0,4.0,0.0,baja,6,Cocapata,False
+parque-tunari,32720_24_12,1426,1,1,2022,2022,1,0,0,4.0,0.0,baja,9,Tapacarí,False
+parque-tunari,32720_24_30,1427,1,1,2005,2005,1,0,0,4.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_24_41,1428,1,1,2021,2021,1,0,0,4.0,0.0,baja,7,Morochata,False
+parque-tunari,32720_25_13,1429,1,1,2025,2025,1,0,0,4.0,0.0,baja,10,Tapacarí,False
+parque-tunari,32720_25_31,1430,1,1,2020,2020,1,0,0,4.0,0.0,baja,7,Morochata,False
+parque-tunari,32720_25_32,1431,1,1,2015,2015,1,0,0,4.0,0.0,baja,7,Morochata,False
+parque-tunari,32720_25_41,1432,1,1,2021,2021,1,0,0,4.0,0.0,baja,7,Morochata,False
+parque-tunari,32720_25_43,1433,1,1,2026,2026,0,0,0,0.0,0.0,baja,6,Morochata,False
+parque-tunari,32720_25_9,1434,1,1,2025,2025,1,0,0,4.0,0.0,baja,10,Tapacarí,False
+parque-tunari,32720_26_39,1435,1,1,2020,2020,1,0,0,4.0,0.0,baja,1,Morochata,False
+parque-tunari,32720_26_42,1436,1,1,2018,2018,1,0,0,4.0,0.0,baja,5,Morochata,False
+parque-tunari,32720_26_44,1437,1,1,2022,2022,1,0,0,4.0,0.0,baja,5,Morochata,False
+parque-tunari,32720_26_47,1438,1,1,2026,2026,0,0,0,0.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_26_6,1439,1,1,2026,2026,0,0,0,0.0,0.0,baja,8,Tapacarí,False
+parque-tunari,32720_27_10,1440,1,1,2020,2020,1,0,0,4.0,0.0,baja,9,Tapacarí,False
+parque-tunari,32720_27_24,1441,1,1,2019,2019,1,0,0,4.0,0.0,baja,10,Sipe Sipe,False
+parque-tunari,32720_27_3,1442,1,1,2023,2023,1,0,0,4.0,0.0,baja,7,Tapacarí,False
+parque-tunari,32720_27_41,1443,1,1,2018,2018,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_27_6,1444,1,1,2022,2022,1,0,0,4.0,0.0,baja,12,Tapacarí,False
+parque-tunari,32720_27_7,1445,1,1,2022,2022,1,0,0,4.0,0.0,baja,8,Tapacarí,False
+parque-tunari,32720_28_15,1446,1,1,2024,2024,1,0,0,4.0,0.0,baja,9,Sipe Sipe,False
+parque-tunari,32720_28_16,1447,1,1,2024,2024,1,0,0,4.0,0.0,baja,9,Sipe Sipe,False
+parque-tunari,32720_28_20,1448,1,1,2019,2019,1,0,0,4.0,0.0,baja,6,Sipe Sipe,False
+parque-tunari,32720_28_3,1449,1,1,2019,2019,1,0,0,4.0,0.0,baja,9,Tapacarí,False
+parque-tunari,32720_28_4,1450,1,1,2022,2022,1,0,0,4.0,0.0,baja,11,Tapacarí,False
+parque-tunari,32720_28_5,1451,1,1,2020,2020,1,0,0,4.0,0.0,baja,11,Tapacarí,False
+parque-tunari,32720_29_10,1452,1,1,2025,2025,1,0,0,4.0,0.0,baja,11,Sipe Sipe,False
+parque-tunari,32720_29_27,1453,1,1,2021,2021,1,0,0,4.0,0.0,baja,10,Sipe Sipe,False
+parque-tunari,32720_29_49,1454,1,1,2016,2016,1,0,0,4.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_29_57,1455,1,1,2026,2026,0,0,0,0.0,0.0,baja,10,Cocapata,False
+parque-tunari,32720_29_8,1456,1,1,2014,2014,1,0,0,4.0,0.0,baja,9,Tapacarí,False
+parque-tunari,32720_2_32,1457,1,1,2025,2025,1,0,0,4.0,0.0,baja,12,Ayopaya,False
+parque-tunari,32720_2_37,1458,1,1,2020,2020,1,0,0,4.0,0.0,baja,11,Morochata,False
+parque-tunari,32720_2_38,1459,1,1,2020,2020,1,0,0,4.0,0.0,baja,11,Morochata,False
+parque-tunari,32720_30_13,1460,1,1,2018,2018,1,0,0,4.0,0.0,baja,7,Sipe Sipe,False
+parque-tunari,32720_30_24,1461,1,1,2026,2026,0,0,0,0.0,0.0,baja,10,Sipe Sipe,False
+parque-tunari,32720_30_3,1462,1,1,2021,2021,1,0,0,4.0,0.0,baja,7,Tapacarí,False
+parque-tunari,32720_30_32,1463,1,1,2019,2019,1,0,0,4.0,0.0,baja,7,Morochata,False
+parque-tunari,32720_30_33,1464,1,1,2024,2024,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_30_39,1465,1,1,2015,2015,1,0,0,4.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_30_46,1466,1,1,2003,2003,1,0,0,4.0,0.0,baja,8,Quillacollo,False
+parque-tunari,32720_30_48,1467,1,1,2026,2026,0,0,0,0.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_31_11,1468,1,1,2019,2019,1,0,0,4.0,0.0,baja,10,Sipe Sipe,False
+parque-tunari,32720_31_22,1469,1,1,2021,2021,1,0,0,4.0,0.0,baja,9,Sipe Sipe,False
+parque-tunari,32720_31_24,1470,1,1,2026,2026,0,0,0,0.0,0.0,baja,6,Vinto,False
+parque-tunari,32720_31_29,1471,1,1,2024,2024,1,0,0,4.0,0.0,baja,8,Vinto,False
+parque-tunari,32720_31_31,1472,1,1,2022,2022,1,0,0,4.0,0.0,baja,7,Vinto,False
+parque-tunari,32720_31_4,1473,1,1,2021,2021,1,0,0,4.0,0.0,baja,7,Tapacarí,False
+parque-tunari,32720_31_45,1474,1,1,2022,2022,1,0,0,4.0,0.0,baja,9,Quillacollo,False
+parque-tunari,32720_31_52,1475,1,1,2026,2026,0,0,0,0.0,0.0,baja,6,Cocapata,False
+parque-tunari,32720_32_35,1476,1,1,2020,2020,1,0,0,4.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_32_46,1477,1,1,2022,2022,1,0,0,4.0,0.0,baja,9,Quillacollo,False
+parque-tunari,32720_32_49,1478,1,1,2012,2012,1,0,0,4.0,0.0,baja,8,Quillacollo,False
+parque-tunari,32720_32_56,1479,1,1,2019,2019,1,0,0,4.0,0.0,baja,10,Cocapata,False
+parque-tunari,32720_33_14,1480,1,1,2012,2012,1,0,0,4.0,0.0,baja,8,Sipe Sipe,False
+parque-tunari,32720_33_27,1481,1,1,2024,2024,1,0,0,4.0,0.0,baja,5,Vinto,False
+parque-tunari,32720_33_49,1482,1,1,2021,2021,1,0,0,4.0,0.0,baja,11,Quillacollo,False
+parque-tunari,32720_33_52,1483,1,1,2020,2020,1,0,0,4.0,0.0,baja,9,Quillacollo,False
+parque-tunari,32720_33_7,1484,1,1,2013,2013,1,0,0,4.0,0.0,baja,12,Tapacarí,False
+parque-tunari,32720_34_23,1485,1,1,2020,2020,1,0,0,4.0,0.0,baja,7,Vinto,False
+parque-tunari,32720_35_16,1486,1,1,2022,2022,1,0,0,4.0,0.0,baja,6,Sipe Sipe,False
+parque-tunari,32720_35_23,1487,1,1,2024,2024,1,0,0,4.0,0.0,baja,9,Vinto,False
+parque-tunari,32720_35_53,1488,1,1,2022,2022,1,0,0,4.0,0.0,baja,11,Quillacollo,False
+parque-tunari,32720_35_6,1489,1,1,2020,2020,1,0,0,4.0,0.0,baja,11,Tapacarí,False
+parque-tunari,32720_36_12,1490,1,1,2013,2013,1,0,0,4.0,0.0,baja,8,Sipe Sipe,False
+parque-tunari,32720_36_13,1491,1,1,2012,2012,1,0,0,4.0,0.0,baja,8,Sipe Sipe,False
+parque-tunari,32720_36_54,1492,1,1,2022,2022,1,0,0,4.0,0.0,baja,10,Quillacollo,False
+parque-tunari,32720_36_59,1493,1,1,2026,2026,0,0,0,0.0,0.0,baja,8,Cocapata,False
+parque-tunari,32720_36_8,1494,1,1,2019,2019,1,0,0,4.0,0.0,baja,10,Sipe Sipe,False
+parque-tunari,32720_37_17,1495,1,1,2021,2021,1,0,0,4.0,0.0,baja,7,Vinto,False
+parque-tunari,32720_37_19,1496,1,1,2022,2022,1,0,0,4.0,0.0,baja,11,Vinto,False
+parque-tunari,32720_37_2,1497,1,1,2026,2026,0,0,0,0.0,0.0,baja,9,Sipe Sipe,False
+parque-tunari,32720_37_22,1498,1,1,2025,2025,1,0,0,4.0,0.0,baja,3,Vinto,False
+parque-tunari,32720_37_25,1499,1,1,2020,2020,1,0,0,4.0,0.0,baja,5,Vinto,False
+parque-tunari,32720_37_54,1500,1,1,2022,2022,1,0,0,4.0,0.0,baja,10,Quillacollo,False
+parque-tunari,32720_37_56,1501,1,1,2023,2023,1,0,0,4.0,0.0,baja,8,Quillacollo,False
+parque-tunari,32720_37_9,1502,1,1,2020,2020,1,0,0,4.0,0.0,baja,7,Sipe Sipe,False
+parque-tunari,32720_38_24,1503,1,1,2022,2022,1,0,0,4.0,0.0,baja,10,Vinto,False
+parque-tunari,32720_38_26,1504,1,1,2021,2021,1,0,0,4.0,0.0,baja,10,Vinto,False
+parque-tunari,32720_38_29,1505,1,1,2021,2021,1,0,0,4.0,0.0,baja,10,Vinto,False
+parque-tunari,32720_38_34,1506,1,1,2024,2024,1,0,0,4.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_38_46,1507,1,1,2026,2026,0,0,0,0.0,0.0,baja,10,Quillacollo,False
+parque-tunari,32720_38_54,1508,1,1,2022,2022,1,0,0,4.0,0.0,baja,6,Quillacollo,False
+parque-tunari,32720_38_9,1509,1,1,2026,2026,0,0,0,0.0,0.0,baja,7,Sipe Sipe,False
+parque-tunari,32720_39_2,1510,1,1,2026,2026,0,0,0,0.0,0.0,baja,10,Sipe Sipe,False
+parque-tunari,32720_39_25,1511,1,1,2020,2020,1,0,0,4.0,0.0,baja,4,Vinto,False
+parque-tunari,32720_39_42,1512,1,1,2021,2021,1,0,0,4.0,0.0,baja,10,Quillacollo,False
+parque-tunari,32720_39_49,1513,1,1,2026,2026,0,0,0,0.0,0.0,baja,9,Quillacollo,False
+parque-tunari,32720_39_56,1514,1,1,2022,2022,1,0,0,4.0,0.0,baja,9,Quillacollo,False
+parque-tunari,32720_39_57,1515,1,1,2025,2025,1,0,0,4.0,0.0,baja,11,Cocapata,False
+parque-tunari,32720_39_62,1516,1,1,2021,2021,1,0,0,4.0,0.0,baja,9,Cocapata,False
+parque-tunari,32720_39_63,1517,1,1,2011,2011,1,0,0,4.0,0.0,baja,7,Cocapata,False
+parque-tunari,32720_39_9,1518,1,1,2020,2020,1,0,0,4.0,0.0,baja,7,Sipe Sipe,False
+parque-tunari,32720_3_33,1519,1,1,2022,2022,1,0,0,4.0,0.0,baja,10,Ayopaya,False
+parque-tunari,32720_3_36,1520,1,1,2003,2003,1,0,0,4.0,0.0,baja,11,Morochata,False
+parque-tunari,32720_40_42,1521,1,1,2019,2019,1,0,0,4.0,0.0,baja,9,Quillacollo,False
+parque-tunari,32720_40_43,1522,1,1,2019,2019,1,0,0,4.0,0.0,baja,9,Quillacollo,False
+parque-tunari,32720_40_5,1523,1,1,2026,2026,0,0,0,0.0,0.0,baja,9,Sipe Sipe,False
+parque-tunari,32720_40_62,1524,1,1,2021,2021,1,0,0,4.0,0.0,baja,8,Cocapata,False
+parque-tunari,32720_41_44,1525,1,1,2024,2024,1,0,0,4.0,0.0,baja,8,Quillacollo,False
+parque-tunari,32720_41_65,1526,1,1,2012,2012,1,0,0,4.0,0.0,baja,5,Cocapata,False
+parque-tunari,32720_43_3,1527,1,1,2024,2024,1,0,0,4.0,0.0,baja,11,Sipe Sipe,False
+parque-tunari,32720_43_30,1528,1,1,2026,2026,0,0,0,0.0,0.0,baja,10,Vinto,False
+parque-tunari,32720_43_31,1529,1,1,2007,2007,1,0,0,4.0,0.0,baja,8,Quillacollo,False
+parque-tunari,32720_43_50,1530,1,1,2012,2012,1,0,0,4.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_43_51,1531,1,1,2026,2026,0,0,0,0.0,0.0,baja,3,Quillacollo,False
+parque-tunari,32720_43_57,1532,1,1,2026,2026,0,0,0,0.0,0.0,baja,8,Cocapata,False
+parque-tunari,32720_44_42,1533,1,1,2026,2026,0,0,0,0.0,0.0,baja,10,Quillacollo,False
+parque-tunari,32720_44_51,1534,1,1,2018,2018,1,0,0,4.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_44_57,1535,1,1,2024,2024,1,0,0,4.0,0.0,baja,9,Cocapata,False
+parque-tunari,32720_44_64,1536,1,1,2019,2019,1,0,0,4.0,0.0,baja,6,Cocapata,False
+parque-tunari,32720_45_25,1537,1,1,2021,2021,1,0,0,4.0,0.0,baja,9,Vinto,False
+parque-tunari,32720_45_30,1538,1,1,2003,2003,1,0,0,4.0,0.0,baja,10,Quillacollo,False
+parque-tunari,32720_45_31,1539,1,1,2011,2011,1,0,0,4.0,0.0,baja,11,Quillacollo,False
+parque-tunari,32720_45_32,1540,1,1,2026,2026,0,0,0,0.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_45_41,1541,1,1,2026,2026,0,0,0,0.0,0.0,baja,10,Quillacollo,False
+parque-tunari,32720_45_56,1542,1,1,2020,2020,1,0,0,4.0,0.0,baja,11,Quillacollo,False
+parque-tunari,32720_45_57,1543,1,1,2020,2020,1,0,0,4.0,0.0,baja,8,Cocapata,False
+parque-tunari,32720_46_25,1544,1,1,2022,2022,1,0,0,4.0,0.0,baja,9,Vinto,False
+parque-tunari,32720_46_29,1545,1,1,2010,2010,1,0,0,4.0,0.0,baja,8,Quillacollo,False
+parque-tunari,32720_46_70,1546,1,1,2022,2022,1,0,0,4.0,0.0,baja,6,Cocapata,False
+parque-tunari,32720_47_30,1547,1,1,2016,2016,1,0,0,4.0,0.0,baja,6,Quillacollo,False
+parque-tunari,32720_47_42,1548,1,1,2022,2022,1,0,0,4.0,0.0,baja,12,Quillacollo,False
+parque-tunari,32720_47_67,1549,1,1,2019,2019,1,0,0,4.0,0.0,baja,8,Cocapata,False
+parque-tunari,32720_48_29,1550,1,1,2012,2012,1,0,0,4.0,0.0,baja,10,Quillacollo,False
+parque-tunari,32720_48_30,1551,1,1,2016,2016,1,0,0,4.0,0.0,baja,6,Quillacollo,False
+parque-tunari,32720_48_32,1552,1,1,2026,2026,0,0,0,0.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_48_34,1553,1,1,2026,2026,0,0,0,0.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_48_40,1554,1,1,2025,2025,1,0,0,4.0,0.0,baja,10,Quillacollo,False
+parque-tunari,32720_48_53,1555,1,1,2026,2026,0,0,0,0.0,0.0,baja,10,Quillacollo,False
+parque-tunari,32720_48_54,1556,1,1,2020,2020,1,0,0,4.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_48_56,1557,1,1,2021,2021,1,0,0,4.0,0.0,baja,10,Villa Tunari,False
+parque-tunari,32720_48_72,1558,1,1,2019,2019,1,0,0,4.0,0.0,baja,7,Cocapata,False
+parque-tunari,32720_49_30,1559,1,1,2020,2020,1,0,0,4.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_49_36,1560,1,1,2020,2020,1,0,0,4.0,0.0,baja,8,Quillacollo,False
+parque-tunari,32720_49_38,1561,1,1,2026,2026,0,0,0,0.0,0.0,baja,10,Quillacollo,False
+parque-tunari,32720_49_43,1562,1,1,2019,2019,1,0,0,4.0,0.0,baja,12,Tiquipaya,False
+parque-tunari,32720_49_64,1563,1,1,2018,2018,1,0,0,4.0,0.0,baja,7,Villa Tunari,False
+parque-tunari,32720_49_68,1564,1,1,2022,2022,1,0,0,4.0,0.0,baja,11,Cocapata,False
+parque-tunari,32720_4_36,1565,1,1,2004,2004,1,0,0,4.0,0.0,baja,6,Morochata,False
+parque-tunari,32720_4_41,1566,1,1,2026,2026,0,0,0,0.0,0.0,baja,6,Morochata,False
+parque-tunari,32720_50_35,1567,1,1,2026,2026,0,0,0,0.0,0.0,baja,9,Quillacollo,False
+parque-tunari,32720_50_38,1568,1,1,2026,2026,0,0,0,0.0,0.0,baja,10,Quillacollo,False
+parque-tunari,32720_50_46,1569,1,1,2025,2025,1,0,0,4.0,0.0,baja,8,Tiquipaya,False
+parque-tunari,32720_50_65,1570,1,1,2020,2020,1,0,0,4.0,0.0,baja,8,Villa Tunari,False
+parque-tunari,32720_50_67,1571,1,1,2009,2009,1,0,0,4.0,0.0,baja,6,Cocapata,False
+parque-tunari,32720_51_43,1572,1,1,2026,2026,0,0,0,0.0,0.0,baja,8,Tiquipaya,False
+parque-tunari,32720_51_51,1573,1,1,2026,2026,0,0,0,0.0,0.0,baja,10,Quillacollo,False
+parque-tunari,32720_51_59,1574,1,1,2012,2012,1,0,0,4.0,0.0,baja,9,Villa Tunari,False
+parque-tunari,32720_51_63,1575,1,1,2015,2015,1,0,0,4.0,0.0,baja,7,Villa Tunari,False
+parque-tunari,32720_52_37,1576,1,1,2011,2011,1,0,0,4.0,0.0,baja,7,Quillacollo,False
+parque-tunari,32720_52_39,1577,1,1,2026,2026,0,0,0,0.0,0.0,baja,10,Quillacollo,False
+parque-tunari,32720_52_53,1578,1,1,2020,2020,1,0,0,4.0,0.0,baja,6,Tiquipaya,False
+parque-tunari,32720_52_68,1579,1,1,2023,2023,1,0,0,4.0,0.0,baja,7,Cocapata,False
+parque-tunari,32720_53_36,1580,1,1,2019,2019,1,0,0,4.0,0.0,baja,10,Tiquipaya,False
+parque-tunari,32720_53_51,1581,1,1,2023,2023,1,0,0,4.0,0.0,baja,10,Tiquipaya,False
+parque-tunari,32720_53_62,1582,1,1,2020,2020,1,0,0,4.0,0.0,baja,8,Villa Tunari,False
+parque-tunari,32720_53_66,1583,1,1,2026,2026,0,0,0,0.0,0.0,baja,8,Villa Tunari,False
+parque-tunari,32720_54_54,1584,1,1,2016,2016,1,0,0,4.0,0.0,baja,10,Villa Tunari,False
+parque-tunari,32720_54_56,1585,1,1,2016,2016,1,0,0,4.0,0.0,baja,9,Villa Tunari,False
+parque-tunari,32720_54_57,1586,1,1,2016,2016,1,0,0,4.0,0.0,baja,9,Villa Tunari,False
+parque-tunari,32720_54_58,1587,1,1,2023,2023,1,0,0,4.0,0.0,baja,11,Villa Tunari,False
+parque-tunari,32720_54_64,1588,1,1,2026,2026,0,0,0,0.0,0.0,baja,8,Villa Tunari,False
+parque-tunari,32720_55_29,1589,1,1,2023,2023,1,0,0,4.0,0.0,baja,6,Tiquipaya,False
+parque-tunari,32720_55_54,1590,1,1,2026,2026,0,0,0,0.0,0.0,baja,7,Villa Tunari,False
+parque-tunari,32720_55_58,1591,1,1,2023,2023,1,0,0,4.0,0.0,baja,11,Villa Tunari,False
+parque-tunari,32720_56_29,1592,1,1,2001,2001,1,0,0,4.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_56_31,1593,1,1,2010,2010,1,0,0,4.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_56_42,1594,1,1,2020,2020,1,0,0,4.0,0.0,baja,7,Tiquipaya,False
+parque-tunari,32720_56_46,1595,1,1,2023,2023,1,0,0,4.0,0.0,baja,4,Tiquipaya,False
+parque-tunari,32720_56_50,1596,1,1,2003,2003,1,0,0,4.0,0.0,baja,8,Tiquipaya,False
+parque-tunari,32720_57_38,1597,1,1,2021,2021,1,0,0,4.0,0.0,baja,7,Tiquipaya,False
+parque-tunari,32720_57_45,1598,1,1,2021,2021,1,0,0,4.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_57_51,1599,1,1,2025,2025,1,0,0,4.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_57_58,1600,1,1,2019,2019,1,0,0,4.0,0.0,baja,7,Villa Tunari,False
+parque-tunari,32720_57_60,1601,1,1,2024,2024,1,0,0,4.0,0.0,baja,9,Villa Tunari,False
+parque-tunari,32720_58_26,1602,1,1,2010,2010,1,0,0,4.0,0.0,baja,8,Tiquipaya,False
+parque-tunari,32720_58_27,1603,1,1,2012,2012,1,0,0,4.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_58_37,1604,1,1,2010,2010,1,0,0,4.0,0.0,baja,9,Sacaba,False
+parque-tunari,32720_58_41,1605,1,1,2026,2026,0,0,0,0.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_58_44,1606,1,1,2020,2020,1,0,0,4.0,0.0,baja,8,Tiquipaya,False
+parque-tunari,32720_58_45,1607,1,1,2025,2025,1,0,0,4.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_58_51,1608,1,1,2020,2020,1,0,0,4.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_58_52,1609,1,1,2020,2020,1,0,0,4.0,0.0,baja,8,Tiquipaya,False
+parque-tunari,32720_58_53,1610,1,1,2016,2016,1,0,0,4.0,0.0,baja,7,Tiquipaya,False
+parque-tunari,32720_59_25,1611,1,1,2010,2010,1,0,0,4.0,0.0,baja,8,Tiquipaya,False
+parque-tunari,32720_59_26,1612,1,1,2012,2012,1,0,0,4.0,0.0,baja,9,Cochabamba,False
+parque-tunari,32720_59_27,1613,1,1,2012,2012,1,0,0,4.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_59_29,1614,1,1,2013,2013,1,0,0,4.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_59_32,1615,1,1,2020,2020,1,0,0,4.0,0.0,baja,6,Tiquipaya,False
+parque-tunari,32720_59_39,1616,1,1,2012,2012,1,0,0,4.0,0.0,baja,6,Sacaba,False
+parque-tunari,32720_59_54,1617,1,1,2025,2025,1,0,0,4.0,0.0,baja,9,Villa Tunari,False
+parque-tunari,32720_59_56,1618,1,1,2022,2022,1,0,0,4.0,0.0,baja,7,Villa Tunari,False
+parque-tunari,32720_5_25,1619,1,1,2026,2026,0,0,0,0.0,0.0,baja,7,Ayopaya,False
+parque-tunari,32720_5_39,1620,1,1,2025,2025,1,0,0,4.0,0.0,baja,11,Morochata,False
+parque-tunari,32720_5_40,1621,1,1,2022,2022,1,0,0,4.0,0.0,baja,11,Morochata,False
+parque-tunari,32720_60_25,1622,1,1,2012,2012,1,0,0,4.0,0.0,baja,9,Cochabamba,False
+parque-tunari,32720_60_29,1623,1,1,2019,2019,1,0,0,4.0,0.0,baja,10,Tiquipaya,False
+parque-tunari,32720_60_37,1624,1,1,2026,2026,0,0,0,0.0,0.0,baja,9,Sacaba,False
+parque-tunari,32720_60_44,1625,1,1,2021,2021,1,0,0,4.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_60_57,1626,1,1,2022,2022,1,0,0,4.0,0.0,baja,8,Villa Tunari,False
+parque-tunari,32720_61_33,1627,1,1,2025,2025,1,0,0,4.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_61_34,1628,1,1,2012,2012,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_61_36,1629,1,1,2014,2014,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_61_42,1630,1,1,2026,2026,0,0,0,0.0,0.0,baja,7,Tiquipaya,False
+parque-tunari,32720_61_56,1631,1,1,2018,2018,1,0,0,4.0,0.0,baja,8,Villa Tunari,False
+parque-tunari,32720_61_58,1632,1,1,2006,2006,1,0,0,4.0,0.0,baja,7,Villa Tunari,False
+parque-tunari,32720_62_33,1633,1,1,2025,2025,1,0,0,4.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_62_36,1634,1,1,2020,2020,1,0,0,4.0,0.0,baja,7,Sacaba,False
+parque-tunari,32720_62_41,1635,1,1,2022,2022,1,0,0,4.0,0.0,baja,10,Sacaba,False
+parque-tunari,32720_62_42,1636,1,1,2026,2026,0,0,0,0.0,0.0,baja,6,Tiquipaya,False
+parque-tunari,32720_62_49,1637,1,1,2020,2020,1,0,0,4.0,0.0,baja,7,Tiquipaya,False
+parque-tunari,32720_62_50,1638,1,1,2021,2021,1,0,0,4.0,0.0,baja,10,Tiquipaya,False
+parque-tunari,32720_62_51,1639,1,1,2020,2020,1,0,0,4.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_62_52,1640,1,1,2020,2020,1,0,0,4.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_62_54,1641,1,1,2007,2007,1,0,0,4.0,0.0,baja,8,Villa Tunari,False
+parque-tunari,32720_62_61,1642,1,1,2020,2020,1,0,0,4.0,0.0,baja,9,Villa Tunari,False
+parque-tunari,32720_63_35,1643,1,1,2020,2020,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_63_52,1644,1,1,2016,2016,1,0,0,4.0,0.0,baja,6,Tiquipaya,False
+parque-tunari,32720_64_28,1645,1,1,2024,2024,1,0,0,4.0,0.0,baja,7,Cochabamba,False
+parque-tunari,32720_64_29,1646,1,1,2016,2016,1,0,0,4.0,0.0,baja,9,Cochabamba,False
+parque-tunari,32720_64_31,1647,1,1,2012,2012,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_64_32,1648,1,1,2025,2025,1,0,0,4.0,0.0,baja,7,Sacaba,False
+parque-tunari,32720_64_40,1649,1,1,2019,2019,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_64_55,1650,1,1,2021,2021,1,0,0,4.0,0.0,baja,8,Villa Tunari,False
+parque-tunari,32720_65_34,1651,1,1,2003,2003,1,0,0,4.0,0.0,baja,7,Sacaba,False
+parque-tunari,32720_66_26,1652,1,1,2021,2021,1,0,0,4.0,0.0,baja,10,Cochabamba,False
+parque-tunari,32720_66_27,1653,1,1,2025,2025,1,0,0,4.0,0.0,baja,7,Sacaba,False
+parque-tunari,32720_66_31,1654,1,1,2026,2026,0,0,0,0.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_66_32,1655,1,1,2020,2020,1,0,0,4.0,0.0,baja,6,Sacaba,False
+parque-tunari,32720_66_38,1656,1,1,2022,2022,1,0,0,4.0,0.0,baja,11,Sacaba,False
+parque-tunari,32720_66_40,1657,1,1,2022,2022,1,0,0,4.0,0.0,baja,9,Sacaba,False
+parque-tunari,32720_66_46,1658,1,1,2016,2016,1,0,0,4.0,0.0,baja,10,Villa Tunari,False
+parque-tunari,32720_66_49,1659,1,1,2024,2024,1,0,0,4.0,0.0,baja,10,Villa Tunari,False
+parque-tunari,32720_66_50,1660,1,1,2024,2024,1,0,0,4.0,0.0,baja,9,Tiquipaya,False
+parque-tunari,32720_67_25,1661,1,1,2023,2023,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_67_36,1662,1,1,2026,2026,0,0,0,0.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_67_39,1663,1,1,2024,2024,1,0,0,4.0,0.0,baja,10,Sacaba,False
+parque-tunari,32720_67_41,1664,1,1,2026,2026,0,0,0,0.0,0.0,baja,6,Sacaba,False
+parque-tunari,32720_67_47,1665,1,1,2020,2020,1,0,0,4.0,0.0,baja,9,Villa Tunari,False
+parque-tunari,32720_67_52,1666,1,1,2015,2015,1,0,0,4.0,0.0,baja,6,Villa Tunari,False
+parque-tunari,32720_68_22,1667,1,1,2026,2026,0,0,0,0.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_68_39,1668,1,1,2022,2022,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_68_45,1669,1,1,2022,2022,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_68_48,1670,1,1,2019,2019,1,0,0,4.0,0.0,baja,6,Villa Tunari,False
+parque-tunari,32720_69_22,1671,1,1,2019,2019,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_69_25,1672,1,1,2022,2022,1,0,0,4.0,0.0,baja,10,Sacaba,False
+parque-tunari,32720_69_42,1673,1,1,2019,2019,1,0,0,4.0,0.0,baja,7,Sacaba,False
+parque-tunari,32720_69_47,1674,1,1,2024,2024,1,0,0,4.0,0.0,baja,7,Villa Tunari,False
+parque-tunari,32720_69_51,1675,1,1,2022,2022,1,0,0,4.0,0.0,baja,7,Villa Tunari,False
+parque-tunari,32720_6_25,1676,1,1,2026,2026,0,0,0,0.0,0.0,baja,7,Ayopaya,False
+parque-tunari,32720_6_30,1677,1,1,2004,2004,1,0,0,4.0,0.0,baja,10,Ayopaya,False
+parque-tunari,32720_6_35,1678,1,1,2005,2005,1,0,0,4.0,0.0,baja,8,Morochata,False
+parque-tunari,32720_6_40,1679,1,1,2021,2021,1,0,0,4.0,0.0,baja,10,Morochata,False
+parque-tunari,32720_70_38,1680,1,1,2019,2019,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_70_44,1681,1,1,2024,2024,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_70_53,1682,1,1,2026,2026,0,0,0,0.0,0.0,baja,8,Villa Tunari,False
+parque-tunari,32720_71_29,1683,1,1,2003,2003,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_71_34,1684,1,1,2022,2022,1,0,0,4.0,0.0,baja,7,Sacaba,False
+parque-tunari,32720_71_35,1685,1,1,2025,2025,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_71_38,1686,1,1,2026,2026,0,0,0,0.0,0.0,baja,7,Sacaba,False
+parque-tunari,32720_72_21,1687,1,1,2026,2026,0,0,0,0.0,0.0,baja,6,Sacaba,False
+parque-tunari,32720_72_25,1688,1,1,2026,2026,0,0,0,0.0,0.0,baja,6,Sacaba,False
+parque-tunari,32720_72_40,1689,1,1,2020,2020,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_72_43,1690,1,1,2020,2020,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_73_30,1691,1,1,2012,2012,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_73_39,1692,1,1,2019,2019,1,0,0,4.0,0.0,baja,7,Sacaba,False
+parque-tunari,32720_74_47,1693,1,1,2026,2026,0,0,0,0.0,0.0,baja,7,Villa Tunari,False
+parque-tunari,32720_74_48,1694,1,1,2026,2026,0,0,0,0.0,0.0,baja,7,Villa Tunari,False
+parque-tunari,32720_75_25,1695,1,1,2021,2021,1,0,0,4.0,0.0,baja,10,Sacaba,False
+parque-tunari,32720_75_32,1696,1,1,2020,2020,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_75_35,1697,1,1,2022,2022,1,0,0,4.0,0.0,baja,7,Sacaba,False
+parque-tunari,32720_76_36,1698,1,1,2024,2024,1,0,0,4.0,0.0,baja,9,Sacaba,False
+parque-tunari,32720_77_22,1699,1,1,2023,2023,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_77_24,1700,1,1,2023,2023,1,0,0,4.0,0.0,baja,9,Sacaba,False
+parque-tunari,32720_77_36,1701,1,1,2024,2024,1,0,0,4.0,0.0,baja,10,Sacaba,False
+parque-tunari,32720_77_37,1702,1,1,2005,2005,1,0,0,4.0,0.0,baja,7,Sacaba,False
+parque-tunari,32720_77_43,1703,1,1,2019,2019,1,0,0,4.0,0.0,baja,6,Sacaba,False
+parque-tunari,32720_78_18,1704,1,1,2006,2006,1,0,0,4.0,0.0,baja,7,Sacaba,False
+parque-tunari,32720_78_20,1705,1,1,2018,2018,1,0,0,4.0,0.0,baja,10,Sacaba,False
+parque-tunari,32720_78_32,1706,1,1,2023,2023,1,0,0,4.0,0.0,baja,3,Sacaba,False
+parque-tunari,32720_78_39,1707,1,1,2026,2026,0,0,0,0.0,0.0,baja,8,Colomi,False
+parque-tunari,32720_78_45,1708,1,1,2012,2012,1,0,0,4.0,0.0,baja,8,Colomi,False
+parque-tunari,32720_78_46,1709,1,1,2022,2022,1,0,0,4.0,0.0,baja,7,Colomi,False
+parque-tunari,32720_78_47,1710,1,1,2019,2019,1,0,0,4.0,0.0,baja,6,Colomi,False
+parque-tunari,32720_79_18,1711,1,1,2023,2023,1,0,0,4.0,0.0,baja,5,Sacaba,False
+parque-tunari,32720_79_20,1712,1,1,2007,2007,1,0,0,4.0,0.0,baja,8,Sacaba,False
+parque-tunari,32720_79_36,1713,1,1,2012,2012,1,0,0,4.0,0.0,baja,9,Sacaba,False
+parque-tunari,32720_79_39,1714,1,1,2026,2026,0,0,0,0.0,0.0,baja,8,Colomi,False
+parque-tunari,32720_79_40,1715,1,1,2022,2022,1,0,0,4.0,0.0,baja,7,Colomi,False
+parque-tunari,32720_7_23,1716,1,1,2022,2022,1,0,0,4.0,0.0,baja,4,Ayopaya,False
+parque-tunari,32720_7_25,1717,1,1,2019,2019,1,0,0,4.0,0.0,baja,6,Ayopaya,False
+parque-tunari,32720_81_28,1718,1,1,2008,2008,1,0,0,4.0,0.0,baja,7,Sacaba,False
+parque-tunari,32720_81_31,1719,1,1,2022,2022,1,0,0,4.0,0.0,baja,10,Colomi,False
+parque-tunari,32720_82_27,1720,1,1,2023,2023,1,0,0,4.0,0.0,baja,7,Colomi,False
+parque-tunari,32720_82_38,1721,1,1,2024,2024,1,0,0,4.0,0.0,baja,8,Colomi,False
+parque-tunari,32720_84_35,1722,1,1,2026,2026,0,0,0,0.0,0.0,baja,8,Colomi,False
+parque-tunari,32720_87_28,1723,1,1,2023,2023,1,0,0,4.0,0.0,baja,8,Colomi,False
+parque-tunari,32720_87_32,1724,1,1,2023,2023,1,0,0,4.0,0.0,baja,8,Colomi,False
+parque-tunari,32720_8_24,1725,1,1,2022,2022,1,0,0,4.0,0.0,baja,11,Ayopaya,False
+parque-tunari,32720_8_30,1726,1,1,2022,2022,1,0,0,4.0,0.0,baja,9,Ayopaya,False
+parque-tunari,32720_8_31,1727,1,1,2007,2007,1,0,0,4.0,0.0,baja,7,Ayopaya,False
+parque-tunari,32720_9_39,1728,1,1,2021,2021,1,0,0,4.0,0.0,baja,6,Morochata,False
+municipio-cochabamba,32720_65_12,1,54,54,2012,2026,13,12,9,52.0,92.3,muy_alta,10,Distrito 8,True
+municipio-cochabamba,32720_66_15,2,59,58,2012,2026,10,9,6,40.0,69.2,muy_alta,11,Distrito 14,True
+municipio-cochabamba,32720_53_13,3,13,10,2014,2025,7,5,4,28.0,38.5,alta,5,Distrito 9,False
+municipio-cochabamba,32720_62_27,4,19,6,2015,2025,4,4,4,16.0,30.8,alta,10,Distrito 13,False
+municipio-cochabamba,32720_66_13,5,15,11,2016,2025,7,4,2,28.0,30.8,alta,11,Distrito 8,False
+municipio-cochabamba,32720_59_17,6,10,10,2018,2024,5,4,3,20.0,30.8,alta,6,Distrito 4,False
+municipio-cochabamba,32720_63_23,7,8,6,2012,2020,5,4,3,20.0,30.8,alta,8,Distrito 13,False
+municipio-cochabamba,32720_57_18,8,5,5,2013,2021,5,4,0,20.0,30.8,alta,2,Distrito 4,False
+municipio-cochabamba,32720_66_12,9,23,23,2015,2026,4,3,2,16.0,23.1,media,9,Distrito 8,False
+municipio-cochabamba,32720_58_6,10,11,6,2006,2026,5,3,1,20.0,23.1,media,10,Distrito 9,False
+municipio-cochabamba,32720_54_14,11,7,5,2013,2022,4,3,1,16.0,23.1,media,5,Distrito 9,False
+municipio-cochabamba,32720_53_15,12,4,4,2012,2021,4,3,1,16.0,23.1,media,6,Distrito 9,False
+municipio-cochabamba,32720_60_28,13,4,3,2016,2020,3,3,2,12.0,23.1,media,9,Distrito 13,False
+municipio-cochabamba,32720_54_12,14,3,3,2022,2025,3,3,3,12.0,23.1,media,7,Distrito 9,False
+municipio-cochabamba,32720_54_15,15,3,3,2018,2021,3,3,1,12.0,23.1,media,5,Distrito 9,False
+municipio-cochabamba,32720_62_30,16,3,3,2013,2018,3,3,3,12.0,23.1,media,9,Distrito 13,False
+municipio-cochabamba,32720_62_28,17,17,3,2019,2025,2,2,2,8.0,15.4,media,8,Distrito 13,False
+municipio-cochabamba,32720_62_29,18,10,4,2013,2026,3,2,2,12.0,15.4,media,6,Distrito 13,False
+municipio-cochabamba,32720_61_27,19,9,5,2001,2025,5,2,2,20.0,15.4,media,8,Distrito 13,False
+municipio-cochabamba,32720_53_14,20,8,6,2012,2021,4,2,1,16.0,15.4,media,9,Distrito 9,False
+municipio-cochabamba,32720_63_28,21,8,4,2019,2025,3,2,2,12.0,15.4,media,8,Distrito 13,False
+municipio-cochabamba,32720_63_29,22,8,4,2013,2025,2,2,2,8.0,15.4,media,9,Distrito 13,False
+municipio-cochabamba,32720_65_27,23,8,3,2019,2024,3,2,2,12.0,15.4,media,7,Distrito 13,False
+municipio-cochabamba,32720_59_6,24,7,4,2020,2026,2,2,2,8.0,15.4,media,10,Distrito 9,False
+municipio-cochabamba,32720_53_10,25,6,5,2012,2022,4,2,2,16.0,15.4,media,8,Distrito 9,False
+municipio-cochabamba,32720_61_25,26,6,3,2012,2024,3,2,2,12.0,15.4,media,8,Distrito 13,False
+municipio-cochabamba,32720_63_26,27,6,2,2019,2021,2,2,2,8.0,15.4,media,10,Distrito 13,False
+municipio-cochabamba,32720_67_15,28,6,6,2016,2026,4,2,0,16.0,15.4,media,6,Distrito 14,False
+municipio-cochabamba,32720_55_14,29,5,5,2015,2025,4,2,2,16.0,15.4,media,7,Distrito 9,False
+municipio-cochabamba,32720_57_19,30,5,4,2017,2026,3,2,0,12.0,15.4,media,12,Distrito 4,False
+municipio-cochabamba,32720_58_7,31,5,3,2013,2026,2,2,1,8.0,15.4,media,6,Distrito 9,False
+municipio-cochabamba,32720_60_26,32,5,5,2010,2023,5,2,2,20.0,15.4,media,8,Distrito 13,False
+municipio-cochabamba,32720_65_28,33,5,2,2023,2024,2,2,1,8.0,15.4,media,7,Distrito 13,False
+municipio-cochabamba,32720_51_11,34,4,3,2013,2023,2,2,1,8.0,15.4,media,6,Distrito 9,False
+municipio-cochabamba,32720_54_8,35,4,4,2012,2026,3,2,2,12.0,15.4,media,9,Distrito 9,False
+municipio-cochabamba,32720_61_26,36,4,3,2015,2026,2,2,2,8.0,15.4,media,8,Distrito 13,False
+municipio-cochabamba,32720_61_30,37,4,3,2019,2024,3,2,1,12.0,15.4,media,8,Distrito 13,False
+municipio-cochabamba,32720_62_16,38,4,3,2020,2024,3,2,0,12.0,15.4,media,1,Distrito 5,False
+municipio-cochabamba,32720_64_17,39,4,2,2015,2021,2,2,2,8.0,15.4,media,10,Distrito 6,False
+municipio-cochabamba,32720_65_24,40,4,2,2015,2017,2,2,2,8.0,15.4,media,8,Distrito 13,False
+municipio-cochabamba,32720_52_10,41,3,2,2013,2015,2,2,2,8.0,15.4,media,7,Distrito 9,False
+municipio-cochabamba,32720_53_8,42,3,3,2009,2016,3,2,1,12.0,15.4,media,1,Distrito 9,False
+municipio-cochabamba,32720_55_12,43,3,2,2023,2024,2,2,1,8.0,15.4,media,9,Distrito 9,False
+municipio-cochabamba,32720_60_27,44,3,3,2001,2020,3,2,2,12.0,15.4,media,8,Distrito 13,False
+municipio-cochabamba,32720_63_24,45,3,3,2013,2019,3,2,0,12.0,15.4,media,5,Distrito 13,False
+municipio-cochabamba,32720_51_12,46,2,2,2013,2023,2,2,1,8.0,15.4,media,6,Distrito 9,False
+municipio-cochabamba,32720_52_12,47,2,2,2013,2020,2,2,1,8.0,15.4,media,3,Distrito 9,False
+municipio-cochabamba,32720_57_20,48,2,2,2018,2019,2,2,2,8.0,15.4,media,7,Distrito 4,False
+municipio-cochabamba,32720_64_7,49,2,2,2014,2025,2,2,1,8.0,15.4,media,6,Distrito 15,False
+municipio-cochabamba,32720_65_14,50,2,2,2023,2024,2,2,2,8.0,15.4,media,9,Distrito 8,False
+municipio-cochabamba,32720_52_13,51,7,6,2010,2021,4,1,1,16.0,7.7,baja,10,Distrito 9,False
+municipio-cochabamba,32720_54_11,52,6,5,2021,2026,1,1,1,4.0,7.7,baja,5,Distrito 9,False
+municipio-cochabamba,32720_60_14,53,6,6,2021,2025,3,1,0,12.0,7.7,baja,1,Distrito 9,False
+municipio-cochabamba,32720_62_26,54,6,2,2019,2019,1,1,1,4.0,7.7,baja,9,Distrito 13,False
+municipio-cochabamba,32720_65_26,55,5,3,2017,2024,3,1,0,12.0,7.7,baja,10,Distrito 13,False
+municipio-cochabamba,32720_50_11,56,4,3,2009,2013,2,1,1,8.0,7.7,baja,9,Distrito 9,False
+municipio-cochabamba,32720_56_7,57,4,3,2013,2026,2,1,1,8.0,7.7,baja,9,Distrito 9,False
+municipio-cochabamba,32720_61_24,58,4,4,2021,2026,3,1,0,12.0,7.7,baja,8,Distrito 13,False
+municipio-cochabamba,32720_61_5,59,4,3,2014,2026,1,1,1,4.0,7.7,baja,10,Distrito 9,False
+municipio-cochabamba,32720_62_25,60,4,4,2021,2024,2,1,1,8.0,7.7,baja,6,Distrito 13,False
+municipio-cochabamba,32720_62_5,61,4,3,2014,2026,1,1,1,4.0,7.7,baja,10,Distrito 9,False
+municipio-cochabamba,32720_66_25,62,4,2,2017,2024,2,1,1,8.0,7.7,baja,8,Distrito 13,False
+municipio-cochabamba,32720_51_10,63,3,3,2013,2020,2,1,1,8.0,7.7,baja,9,Distrito 9,False
+municipio-cochabamba,32720_52_9,64,3,3,2012,2019,3,1,1,12.0,7.7,baja,5,Distrito 9,False
+municipio-cochabamba,32720_54_9,65,3,3,2013,2019,2,1,1,8.0,7.7,baja,6,Distrito 9,False
+municipio-cochabamba,32720_55_13,66,3,3,2015,2026,2,1,1,8.0,7.7,baja,6,Distrito 9,False
+municipio-cochabamba,32720_60_24,67,3,3,2016,2024,2,1,0,8.0,7.7,baja,6,Distrito 2,False
+municipio-cochabamba,32720_62_6,68,3,3,2012,2026,2,1,0,8.0,7.7,baja,5,Distrito 9,False
+municipio-cochabamba,32720_63_20,69,3,3,2016,2026,2,1,0,8.0,7.7,baja,1,Distrito 12,False
+municipio-cochabamba,32720_63_27,70,3,2,2019,2019,1,1,1,4.0,7.7,baja,9,Distrito 13,False
+municipio-cochabamba,32720_65_17,71,3,1,2021,2021,1,1,1,4.0,7.7,baja,10,Distrito 6,False
+municipio-cochabamba,32720_66_8,72,3,2,2012,2015,2,1,0,8.0,7.7,baja,9,Distrito 15,False
+municipio-cochabamba,32720_49_11,73,2,2,2013,2026,1,1,1,4.0,7.7,baja,10,Distrito 9,False
+municipio-cochabamba,32720_51_9,74,2,2,2014,2018,2,1,1,8.0,7.7,baja,8,Distrito 9,False
+municipio-cochabamba,32720_52_14,75,2,1,2025,2025,1,1,1,4.0,7.7,baja,9,Distrito 9,False
+municipio-cochabamba,32720_52_7,76,2,2,2009,2020,2,1,1,8.0,7.7,baja,9,Distrito 9,False
+municipio-cochabamba,32720_52_8,77,2,2,2020,2023,2,1,1,8.0,7.7,baja,6,Distrito 9,False
+municipio-cochabamba,32720_53_12,78,2,2,2010,2023,2,1,1,8.0,7.7,baja,8,Distrito 9,False
+municipio-cochabamba,32720_53_9,79,2,1,2013,2013,1,1,1,4.0,7.7,baja,7,Distrito 9,False
+municipio-cochabamba,32720_57_12,80,2,2,2020,2026,1,1,1,4.0,7.7,baja,7,Distrito 9,False
+municipio-cochabamba,32720_58_12,81,2,2,2019,2025,2,1,1,8.0,7.7,baja,5,Distrito 9,False
+municipio-cochabamba,32720_59_11,82,2,2,2022,2024,2,1,1,8.0,7.7,baja,5,Distrito 9,False
+municipio-cochabamba,32720_60_19,83,2,2,2023,2024,2,1,0,8.0,7.7,baja,1,Distrito 12,False
+municipio-cochabamba,32720_61_12,84,2,2,2019,2024,2,1,0,8.0,7.7,baja,1,Distrito 9,False
+municipio-cochabamba,32720_61_29,85,2,1,2019,2019,1,1,1,4.0,7.7,baja,9,Distrito 13,False
+municipio-cochabamba,32720_62_7,86,2,1,2018,2018,1,1,1,4.0,7.7,baja,9,Distrito 9,False
+municipio-cochabamba,32720_63_30,87,2,2,2013,2019,2,1,1,8.0,7.7,baja,9,Distrito 13,False
+municipio-cochabamba,32720_63_6,88,2,2,2014,2021,2,1,1,8.0,7.7,baja,9,Distrito 15,False
+municipio-cochabamba,32720_65_11,89,2,2,2016,2021,2,1,0,8.0,7.7,baja,5,Distrito 15,False
+municipio-cochabamba,32720_65_18,90,2,2,2013,2017,2,1,1,8.0,7.7,baja,7,Distrito 11,False
+municipio-cochabamba,32720_66_23,91,2,1,2015,2015,1,1,1,4.0,7.7,baja,9,Distrito 13,False
+municipio-cochabamba,32720_66_24,92,2,2,2003,2015,2,1,1,8.0,7.7,baja,9,Distrito 13,False
+municipio-cochabamba,32720_54_10,93,1,1,2025,2025,1,1,0,4.0,7.7,baja,6,Distrito 9,False
+municipio-cochabamba,32720_55_11,94,1,1,2018,2018,1,1,0,4.0,7.7,baja,5,Distrito 9,False
+municipio-cochabamba,32720_55_9,95,1,1,2019,2019,1,1,0,4.0,7.7,baja,5,Distrito 9,False
+municipio-cochabamba,32720_56_14,96,1,1,2019,2019,1,1,1,4.0,7.7,baja,8,Distrito 9,False
+municipio-cochabamba,32720_60_15,97,1,1,2016,2016,1,1,1,4.0,7.7,baja,10,Distrito 5,False
+municipio-cochabamba,32720_60_17,98,1,1,2014,2014,1,1,0,4.0,7.7,baja,5,Distrito 4,False
+municipio-cochabamba,32720_60_21,99,1,1,2025,2025,1,1,0,4.0,7.7,baja,2,Distrito 3,False
+municipio-cochabamba,32720_60_23,100,1,1,2014,2014,1,1,1,4.0,7.7,baja,7,Distrito 2,False
+municipio-cochabamba,32720_61_14,101,1,1,2017,2017,1,1,0,4.0,7.7,baja,3,Distrito 5,False
+municipio-cochabamba,32720_61_17,102,1,1,2013,2013,1,1,1,4.0,7.7,baja,8,Distrito 4,False
+municipio-cochabamba,32720_62_10,103,1,1,2014,2014,1,1,1,4.0,7.7,baja,7,Distrito 9,False
+municipio-cochabamba,32720_62_15,104,1,1,2018,2018,1,1,0,4.0,7.7,baja,1,Distrito 5,False
+municipio-cochabamba,32720_62_21,105,1,1,2020,2020,1,1,0,4.0,7.7,baja,4,Distrito 12,False
+municipio-cochabamba,32720_62_24,106,1,1,2016,2016,1,1,0,4.0,7.7,baja,5,Distrito 13,False
+municipio-cochabamba,32720_63_21,107,1,1,2019,2019,1,1,0,4.0,7.7,baja,1,Distrito 12,False
+municipio-cochabamba,32720_63_25,108,1,1,2021,2021,1,1,1,4.0,7.7,baja,10,Distrito 13,False
+municipio-cochabamba,32720_64_23,109,1,1,2013,2013,1,1,1,4.0,7.7,baja,8,Distrito 13,False
+municipio-cochabamba,32720_64_24,110,1,1,2021,2021,1,1,1,4.0,7.7,baja,8,Distrito 13,False
+municipio-cochabamba,32720_64_25,111,1,1,2017,2017,1,1,0,4.0,7.7,baja,11,Distrito 13,False
+municipio-cochabamba,32720_64_8,112,1,1,2014,2014,1,1,1,4.0,7.7,baja,8,Distrito 15,False
+municipio-cochabamba,32720_65_13,113,1,1,2025,2025,1,1,1,4.0,7.7,baja,8,Distrito 8,False
+municipio-cochabamba,32720_67_21,114,1,1,2016,2016,1,1,0,4.0,7.7,baja,5,Distrito 1,False
+municipio-cochabamba,32720_71_10,115,1,1,2013,2013,1,1,1,4.0,7.7,baja,10,Distrito 8,False
+municipio-cochabamba,32720_61_28,116,6,3,2019,2026,2,0,0,8.0,0.0,baja,6,Distrito 13,False
+municipio-cochabamba,32720_53_11,117,5,3,2012,2026,2,0,0,8.0,0.0,baja,8,Distrito 9,False
+municipio-cochabamba,32720_64_26,118,5,1,2021,2021,1,0,0,4.0,0.0,baja,10,Distrito 13,False
+municipio-cochabamba,32720_65_29,119,5,2,2023,2024,2,0,0,8.0,0.0,baja,1,Distrito 13,False
+municipio-cochabamba,32720_64_27,120,4,2,2019,2024,2,0,0,8.0,0.0,baja,9,Distrito 13,False
+municipio-cochabamba,32720_67_9,121,4,4,2025,2026,1,0,0,4.0,0.0,baja,5,Distrito 8,False
+municipio-cochabamba,32720_55_15,122,3,3,2020,2022,3,0,0,12.0,0.0,baja,10,Distrito 9,False
+municipio-cochabamba,32720_57_7,123,3,1,2026,2026,0,0,0,0.0,0.0,baja,10,Distrito 9,False
+municipio-cochabamba,32720_57_9,124,3,2,2024,2026,1,0,0,4.0,0.0,baja,7,Distrito 9,False
+municipio-cochabamba,32720_59_14,125,3,2,2022,2026,1,0,0,4.0,0.0,baja,10,Distrito 9,False
+municipio-cochabamba,32720_63_7,126,3,2,2019,2026,1,0,0,4.0,0.0,baja,8,Distrito 15,False
+municipio-cochabamba,32720_65_25,127,3,3,2017,2024,3,0,0,12.0,0.0,baja,7,Distrito 13,False
+municipio-cochabamba,32720_65_6,128,3,2,2020,2022,2,0,0,8.0,0.0,baja,10,Distrito 15,False
+municipio-cochabamba,32720_66_7,129,3,3,2006,2026,2,0,0,8.0,0.0,baja,7,Distrito 15,False
+municipio-cochabamba,32720_52_11,130,2,2,2013,2019,2,0,0,8.0,0.0,baja,8,Distrito 9,False
+municipio-cochabamba,32720_56_8,131,2,1,2026,2026,0,0,0,0.0,0.0,baja,9,Distrito 9,False
+municipio-cochabamba,32720_57_8,132,2,2,2020,2026,1,0,0,4.0,0.0,baja,6,Distrito 9,False
+municipio-cochabamba,32720_59_7,133,2,2,2025,2026,1,0,0,4.0,0.0,baja,8,Distrito 9,False
+municipio-cochabamba,32720_61_6,134,2,1,2026,2026,0,0,0,0.0,0.0,baja,10,Distrito 9,False
+municipio-cochabamba,32720_61_9,135,2,2,2018,2019,2,0,0,8.0,0.0,baja,6,Distrito 9,False
+municipio-cochabamba,32720_65_10,136,2,2,2016,2024,2,0,0,8.0,0.0,baja,4,Distrito 15,False
+municipio-cochabamba,32720_65_7,137,2,1,2012,2012,1,0,0,4.0,0.0,baja,9,Distrito 15,False
+municipio-cochabamba,32720_68_14,138,2,1,2020,2020,1,0,0,4.0,0.0,baja,6,Distrito 8,False
+municipio-cochabamba,32720_71_11,139,2,2,2008,2014,2,0,0,8.0,0.0,baja,6,Distrito 8,False
+municipio-cochabamba,32720_50_10,140,1,1,2020,2020,1,0,0,4.0,0.0,baja,10,Distrito 9,False
+municipio-cochabamba,32720_51_8,141,1,1,2009,2009,1,0,0,4.0,0.0,baja,9,Distrito 9,False
+municipio-cochabamba,32720_53_7,142,1,1,2020,2020,1,0,0,4.0,0.0,baja,10,Distrito 9,False
+municipio-cochabamba,32720_55_8,143,1,1,2023,2023,1,0,0,4.0,0.0,baja,6,Distrito 9,False
+municipio-cochabamba,32720_57_13,144,1,1,2018,2018,1,0,0,4.0,0.0,baja,8,Distrito 9,False
+municipio-cochabamba,32720_57_15,145,1,1,2025,2025,1,0,0,4.0,0.0,baja,2,Distrito 9,False
+municipio-cochabamba,32720_58_18,146,1,1,2021,2021,1,0,0,4.0,0.0,baja,11,Distrito 4,False
+municipio-cochabamba,32720_58_19,147,1,1,2009,2009,1,0,0,4.0,0.0,baja,6,Distrito 3,False
+municipio-cochabamba,32720_58_8,148,1,1,2026,2026,0,0,0,0.0,0.0,baja,10,Distrito 9,False
+municipio-cochabamba,32720_59_24,149,1,1,2009,2009,1,0,0,4.0,0.0,baja,9,Distrito 2,False
+municipio-cochabamba,32720_59_26,150,1,1,2012,2012,1,0,0,4.0,0.0,baja,9,Distrito 13,False
+municipio-cochabamba,32720_60_11,151,1,1,2018,2018,1,0,0,4.0,0.0,baja,7,Distrito 9,False
+municipio-cochabamba,32720_60_25,152,1,1,2012,2012,1,0,0,4.0,0.0,baja,9,Distrito 13,False
+municipio-cochabamba,32720_60_4,153,1,1,2019,2019,1,0,0,4.0,0.0,baja,8,Distrito 9,False
+municipio-cochabamba,32720_60_5,154,1,1,2023,2023,1,0,0,4.0,0.0,baja,8,Distrito 9,False
+municipio-cochabamba,32720_60_6,155,1,1,2025,2025,1,0,0,4.0,0.0,baja,4,Distrito 9,False
+municipio-cochabamba,32720_60_8,156,1,1,2018,2018,1,0,0,4.0,0.0,baja,7,Distrito 9,False
+municipio-cochabamba,32720_61_11,157,1,1,2026,2026,0,0,0,0.0,0.0,baja,7,Distrito 9,False
+municipio-cochabamba,32720_61_13,158,1,1,2020,2020,1,0,0,4.0,0.0,baja,8,Distrito 9,False
+municipio-cochabamba,32720_61_23,159,1,1,2012,2012,1,0,0,4.0,0.0,baja,7,Distrito 2,False
+municipio-cochabamba,32720_61_4,160,1,1,2010,2010,1,0,0,4.0,0.0,baja,6,Distrito 9,False
+municipio-cochabamba,32720_62_17,161,1,1,2009,2009,1,0,0,4.0,0.0,baja,7,Distrito 10,False
+municipio-cochabamba,32720_62_4,162,1,1,2010,2010,1,0,0,4.0,0.0,baja,6,Distrito 9,False
+municipio-cochabamba,32720_63_14,163,1,1,2026,2026,0,0,0,0.0,0.0,baja,3,Distrito 5,False
+municipio-cochabamba,32720_63_16,164,1,1,2002,2002,1,0,0,4.0,0.0,baja,8,Distrito 6,False
+municipio-cochabamba,32720_63_22,165,1,1,2013,2013,1,0,0,4.0,0.0,baja,9,Distrito 1,False
+municipio-cochabamba,32720_63_31,166,1,1,2012,2012,1,0,0,4.0,0.0,baja,8,Distrito 13,False
+municipio-cochabamba,32720_63_5,167,1,1,2021,2021,1,0,0,4.0,0.0,baja,9,Distrito 9,False
+municipio-cochabamba,32720_63_9,168,1,1,2018,2018,1,0,0,4.0,0.0,baja,7,Distrito 9,False
+municipio-cochabamba,32720_64_11,169,1,1,2023,2023,1,0,0,4.0,0.0,baja,5,Distrito 15,False
+municipio-cochabamba,32720_64_28,170,1,1,2024,2024,1,0,0,4.0,0.0,baja,7,Distrito 13,False
+municipio-cochabamba,32720_64_29,171,1,1,2016,2016,1,0,0,4.0,0.0,baja,9,Distrito 13,False
+municipio-cochabamba,32720_65_15,172,1,1,2026,2026,0,0,0,0.0,0.0,baja,10,Distrito 7,False
+municipio-cochabamba,32720_65_16,173,1,1,2021,2021,1,0,0,4.0,0.0,baja,6,Distrito 7,False
+municipio-cochabamba,32720_65_8,174,1,1,2012,2012,1,0,0,4.0,0.0,baja,9,Distrito 15,False
+municipio-cochabamba,32720_66_26,175,1,1,2021,2021,1,0,0,4.0,0.0,baja,10,Distrito 13,False
+municipio-cochabamba,32720_69_11,176,1,1,2014,2014,1,0,0,4.0,0.0,baja,6,Distrito 8,False
+municipio-cochabamba,32720_70_11,177,1,1,2011,2011,1,0,0,4.0,0.0,baja,10,Distrito 8,False
+periurbanos-gamc,32720_66_15,1,58,57,2012,2026,10,9,6,40.0,69.2,muy_alta,11,Zonas periurbanas (GAMC),True
+periurbanos-gamc,32720_54_15,2,6,6,2013,2024,6,6,3,24.0,46.2,alta,5,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_53_15,3,10,10,2012,2022,7,5,2,28.0,38.5,alta,6,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_54_12,4,3,3,2022,2025,3,3,3,12.0,23.1,media,7,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_52_13,5,6,6,2010,2025,4,2,1,16.0,15.4,media,10,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_53_13,6,5,5,2015,2025,5,2,1,20.0,15.4,media,10,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_67_15,7,5,5,2016,2019,4,2,0,16.0,15.4,media,4,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_54_14,8,4,3,2018,2021,2,2,1,8.0,15.4,media,5,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_71_9,9,3,3,2013,2015,2,2,2,8.0,15.4,media,5,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_54_11,10,5,4,2021,2026,1,1,1,4.0,7.7,baja,5,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_53_10,11,4,3,2012,2022,2,1,1,8.0,7.7,baja,10,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_53_16,12,4,4,2012,2024,3,1,0,12.0,7.7,baja,9,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_66_6,13,4,4,2006,2026,3,1,1,12.0,7.7,baja,7,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_52_9,14,3,3,2012,2019,3,1,1,12.0,7.7,baja,5,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_55_14,15,3,3,2016,2021,2,1,1,8.0,7.7,baja,6,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_65_7,16,3,2,2012,2019,2,1,1,8.0,7.7,baja,9,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_50_11,17,2,1,2013,2013,1,1,1,4.0,7.7,baja,10,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_53_9,18,2,1,2013,2013,1,1,1,4.0,7.7,baja,7,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_54_9,19,2,2,2013,2019,2,1,0,8.0,7.7,baja,6,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_55_16,20,2,2,2012,2018,2,1,1,8.0,7.7,baja,7,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_59_11,21,2,2,2022,2024,2,1,1,8.0,7.7,baja,5,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_66_8,22,2,2,2012,2015,2,1,0,8.0,7.7,baja,6,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_52_10,23,1,1,2013,2013,1,1,1,4.0,7.7,baja,9,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_54_10,24,1,1,2025,2025,1,1,0,4.0,7.7,baja,6,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_55_13,25,1,1,2015,2015,1,1,1,4.0,7.7,baja,7,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_55_9,26,1,1,2019,2019,1,1,0,4.0,7.7,baja,5,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_57_20,27,1,1,2019,2019,1,1,1,4.0,7.7,baja,7,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_58_24,28,1,1,2020,2020,1,1,1,4.0,7.7,baja,8,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_61_14,29,1,1,2017,2017,1,1,0,4.0,7.7,baja,3,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_61_25,30,1,1,2024,2024,1,1,1,4.0,7.7,baja,8,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_62_10,31,1,1,2014,2014,1,1,1,4.0,7.7,baja,7,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_62_24,32,1,1,2016,2016,1,1,0,4.0,7.7,baja,5,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_62_6,33,1,1,2013,2013,1,1,0,4.0,7.7,baja,5,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_62_7,34,1,1,2018,2018,1,1,1,4.0,7.7,baja,9,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_63_24,35,1,1,2013,2013,1,1,0,4.0,7.7,baja,6,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_64_8,36,1,1,2014,2014,1,1,1,4.0,7.7,baja,8,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_65_6,37,1,1,2020,2020,1,1,1,4.0,7.7,baja,7,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_66_7,38,3,3,2006,2026,1,0,0,4.0,0.0,baja,7,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_67_9,39,3,3,2025,2026,1,0,0,4.0,0.0,baja,5,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_53_11,40,2,2,2012,2026,1,0,0,4.0,0.0,baja,9,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_61_9,41,2,2,2018,2019,2,0,0,8.0,0.0,baja,6,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_52_11,42,1,1,2013,2013,1,0,0,4.0,0.0,baja,8,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_52_14,43,1,1,2025,2025,1,0,0,4.0,0.0,baja,9,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_53_12,44,1,1,2010,2010,1,0,0,4.0,0.0,baja,8,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_53_14,45,1,1,2018,2018,1,0,0,4.0,0.0,baja,11,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_54_8,46,1,1,2026,2026,0,0,0,0.0,0.0,baja,9,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_55_15,47,1,1,2021,2021,1,0,0,4.0,0.0,baja,10,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_55_8,48,1,1,2023,2023,1,0,0,4.0,0.0,baja,6,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_57_12,49,1,1,2026,2026,0,0,0,0.0,0.0,baja,8,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_58_21,50,1,1,2023,2023,1,0,0,4.0,0.0,baja,6,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_58_25,51,1,1,2019,2019,1,0,0,4.0,0.0,baja,6,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_59_25,52,1,1,2010,2010,1,0,0,4.0,0.0,baja,8,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_60_14,53,1,1,2025,2025,1,0,0,4.0,0.0,baja,6,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_60_4,54,1,1,2011,2011,1,0,0,4.0,0.0,baja,6,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_60_8,55,1,1,2018,2018,1,0,0,4.0,0.0,baja,7,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_61_13,56,1,1,2020,2020,1,0,0,4.0,0.0,baja,8,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_63_9,57,1,1,2018,2018,1,0,0,4.0,0.0,baja,7,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_69_11,58,1,1,2014,2014,1,0,0,4.0,0.0,baja,6,Zonas periurbanas (GAMC),False
+periurbanos-gamc,32720_70_11,59,1,1,2011,2011,1,0,0,4.0,0.0,baja,10,Zonas periurbanas (GAMC),False
+zona-cota-2750,32720_62_27,1,19,6,2015,2025,4,4,4,16.0,30.8,alta,10,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_63_23,2,7,5,2012,2020,4,3,2,16.0,23.1,media,8,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_60_28,3,4,3,2016,2020,3,3,2,12.0,23.1,media,9,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_62_30,4,3,3,2013,2018,3,3,3,12.0,23.1,media,9,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_62_28,5,17,3,2019,2025,2,2,2,8.0,15.4,media,8,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_62_29,6,10,4,2013,2026,3,2,2,12.0,15.4,media,6,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_61_27,7,9,5,2001,2025,5,2,2,20.0,15.4,media,8,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_63_28,8,8,4,2019,2025,3,2,2,12.0,15.4,media,8,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_63_29,9,8,4,2013,2025,2,2,2,8.0,15.4,media,9,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_65_27,10,8,3,2019,2024,3,2,2,12.0,15.4,media,7,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_65_28,11,7,3,2023,2024,2,2,1,8.0,15.4,media,7,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_65_29,12,7,4,2015,2024,3,2,1,12.0,15.4,media,1,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_61_25,13,6,3,2012,2024,3,2,2,12.0,15.4,media,8,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_63_26,14,6,2,2019,2021,2,2,2,8.0,15.4,media,10,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_60_26,15,5,5,2010,2023,5,2,2,20.0,15.4,media,8,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_61_26,16,4,3,2015,2026,2,2,2,8.0,15.4,media,8,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_61_30,17,4,3,2019,2024,3,2,1,12.0,15.4,media,8,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_65_24,18,4,2,2015,2017,2,2,2,8.0,15.4,media,8,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_60_27,19,3,3,2001,2020,3,2,2,12.0,15.4,media,8,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_63_24,20,3,3,2013,2019,3,2,0,12.0,15.4,media,5,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_62_26,21,6,2,2019,2019,1,1,1,4.0,7.7,baja,9,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_65_26,22,5,3,2017,2024,3,1,0,12.0,7.7,baja,10,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_62_25,23,4,4,2021,2024,2,1,1,8.0,7.7,baja,6,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_66_25,24,4,2,2017,2024,2,1,1,8.0,7.7,baja,8,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_63_27,25,3,2,2019,2019,1,1,1,4.0,7.7,baja,9,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_65_31,26,3,1,2021,2021,1,1,1,4.0,7.7,baja,7,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_61_29,27,2,1,2019,2019,1,1,1,4.0,7.7,baja,9,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_63_30,28,2,2,2013,2019,2,1,1,8.0,7.7,baja,9,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_66_23,29,2,1,2015,2015,1,1,1,4.0,7.7,baja,9,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_66_24,30,2,2,2003,2015,2,1,1,8.0,7.7,baja,9,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_62_24,31,1,1,2016,2016,1,1,0,4.0,7.7,baja,5,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_63_25,32,1,1,2021,2021,1,1,1,4.0,7.7,baja,10,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_64_23,33,1,1,2013,2013,1,1,1,4.0,7.7,baja,8,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_64_24,34,1,1,2021,2021,1,1,1,4.0,7.7,baja,8,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_64_25,35,1,1,2017,2017,1,1,0,4.0,7.7,baja,11,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_61_28,36,6,3,2019,2026,2,0,0,8.0,0.0,baja,6,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_64_26,37,5,1,2021,2021,1,0,0,4.0,0.0,baja,10,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_64_27,38,4,2,2019,2024,2,0,0,8.0,0.0,baja,9,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_65_25,39,3,3,2017,2024,3,0,0,12.0,0.0,baja,7,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_61_24,40,2,2,2022,2026,1,0,0,4.0,0.0,baja,8,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_63_31,41,2,1,2012,2012,1,0,0,4.0,0.0,baja,8,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_65_32,42,2,2,2014,2021,2,0,0,8.0,0.0,baja,7,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_59_25,43,1,1,2010,2010,1,0,0,4.0,0.0,baja,8,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_59_26,44,1,1,2012,2012,1,0,0,4.0,0.0,baja,9,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_60_25,45,1,1,2012,2012,1,0,0,4.0,0.0,baja,9,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_64_28,46,1,1,2024,2024,1,0,0,4.0,0.0,baja,7,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_64_29,47,1,1,2016,2016,1,0,0,4.0,0.0,baja,9,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_64_31,48,1,1,2012,2012,1,0,0,4.0,0.0,baja,8,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_64_32,49,1,1,2025,2025,1,0,0,4.0,0.0,baja,7,Zona Cota 2750 (GAMC),False
+zona-cota-2750,32720_66_26,50,1,1,2021,2021,1,0,0,4.0,0.0,baja,10,Zona Cota 2750 (GAMC),False

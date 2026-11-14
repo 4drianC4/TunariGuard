@@ -22,7 +22,7 @@ async function bootstrap() {
   const openApi = new DocumentBuilder()
     .setTitle('Tunari Guard API')
     .setDescription(
-      'Focos de calor MODIS y VIIRS para los 16 distritos de Cochabamba. ' +
+      'Focos de calor MODIS y VIIRS para el Parque Nacional Tunari y los 15 distritos de Cochabamba. ' +
         'Una detección térmica no confirma un incendio.',
     )
     .setVersion('0.1.0')

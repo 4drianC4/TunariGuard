@@ -4,6 +4,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { envSchema } from './infrastructure/config/env.schema.js';
 import { DatabaseModule } from './infrastructure/database/database.module.js';
 import { StorageModule } from './infrastructure/storage/storage.module.js';
+import { AnalisisModule } from './modules/analisis/analisis.module.js';
 import { DistrictsModule } from './modules/districts/districts.module.js';
 import { HealthModule } from './modules/health/health.module.js';
 import { IngestionModule } from './modules/ingestion/ingestion.module.js';
@@ -23,6 +24,7 @@ import { ReplayModule } from './modules/replay/replay.module.js';
     IngestionModule,
     RealtimeModule,
     ReplayModule,
+    AnalisisModule,
   ],
 })
 export class AppModule {}
