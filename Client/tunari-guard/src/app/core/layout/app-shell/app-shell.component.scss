@@ -5,3 +5,23 @@
 @media(min-width:1900px){.content{padding-inline:34px}}
 @media(max-width:1100px) and (min-width:801px){.app-layout{grid-template-columns:240px minmax(0,1fr)}.content{padding-inline:18px}}
 @media(max-width:800px){.app-layout{grid-template-columns:minmax(0,1fr)}.content{padding:18px 14px 28px}}
+
+
+/* TUNARIGUARD_RESPONSIVE_V3_SHELL_START */
+@media (min-width: 801px) {
+  .app-layout { grid-template-columns: auto minmax(0, 1fr); }
+  .app-layout > app-sidebar { width: 286px; min-width: 0; transition: width .2s ease; }
+  .app-layout > app-sidebar.tg-collapsed { width: 80px; }
+}
+@media (min-width: 801px) and (max-width: 1100px) {
+  .app-layout > app-sidebar { width: 240px; }
+  .app-layout > app-sidebar.tg-collapsed { width: 80px; }
+}
+@media (max-width: 800px) {
+  .app-layout { grid-template-columns: minmax(0, 1fr); max-width: 100%; }
+  .app-layout > app-sidebar { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-layout > app-sidebar { transition: none; }
+}
+/* TUNARIGUARD_RESPONSIVE_V3_SHELL_END */
