@@ -1,75 +1,149 @@
-<section class="tg-alerts">
-   <app-page-header
-    section="Alertas"
-    title="Alertas y seguimiento"
-    description="Detección, priorización y seguimiento de posibles incendios forestales."
-  />
-
-  <section class="tg-alerts__panel tg-alerts__statistical" aria-live="polite" aria-labelledby="alerta-estadistica">
-    <h2 id="alerta-estadistica">Último corte de la alerta estadística</h2>
-    @let datos = resumen();
-    @if (datos.area) { <p>{{ datos.area }}</p> }
-    @if (datos.alerta; as alerta) {
-      <p>
-        <strong>{{ alerta.nivel_alerta.replace('_', ' ') }}</strong> ·
-        Corte <time [attr.datetime]="alerta.fecha_corte">{{ alerta.fecha_corte }}</time> ·
-        {{ alerta.celdas_dia_observadas }} celdas-día · {{ alerta.satelite_base }}
-        @if (alerta.mediana_historica_tramo !== null) { · Mediana del mismo tramo {{ alerta.mediana_historica_tramo }} }
-      </p>
-      <small>{{ alerta.lectura }}. La señal requiere verificación para confirmar un incendio.</small>
-    } @else if (datos.estado === 'cargando') {
-      <p>Consultando el último corte…</p>
-    } @else if (datos.estado === 'sin_corte') {
-      <p>Esta área no tiene un corte disponible.</p>
-    } @else {
-      <p>No se pudo consultar el último corte.</p>
-    }
-  </section>
-
-  <div class="tg-alerts__kpis" aria-label="Resumen de alertas DEMO">
-    <div class="tg-alerts__kpi critical"><span class="tg-alerts__kpi-symbol">🔥</span><div><strong>{{ counts().critical }}</strong><span>Alertas críticas</span><small>↑ Prioridad inmediata</small></div></div>
-    <div class="tg-alerts__kpi high"><span class="tg-alerts__kpi-symbol">🔥</span><div><strong>{{ counts().high }}</strong><span>Alertas altas</span><small>↑ Requieren seguimiento</small></div></div>
-    <div class="tg-alerts__kpi medium"><span class="tg-alerts__kpi-symbol">🔥</span><div><strong>{{ counts().medium }}</strong><span>Alertas medias</span><small>↓ Revisión programada</small></div></div>
-    <div class="tg-alerts__kpi review"><span class="tg-alerts__kpi-symbol">✓</span><div><strong>{{ counts().review }}</strong><span>En revisión</span><small>● Seguimiento activo</small></div></div>
-  </div>
-
-  <button type="button" class="tg-alerts__mobile-filter" (click)="toggleFilters()" [attr.aria-expanded]="mobileFiltersOpen()">⚑ {{ mobileFiltersOpen() ? 'Ocultar filtros' : 'Mostrar filtros' }}</button>
-  <form class="tg-alerts__filters" [class.tg-alerts__filters--open]="mobileFiltersOpen()" (ngSubmit)="applyFilters()">
-    <label><span>Desde</span><input type="date" name="from" [(ngModel)]="dateFrom" aria-label="Fecha inicial" /></label>
-    <label><span>Hasta</span><input type="date" name="to" [(ngModel)]="dateTo" aria-label="Fecha final" /></label>
-    <label><span>Distrito</span><select name="district" [(ngModel)]="district">@for (d of districts; track d) { <option [value]="d">{{ d }}</option> }</select></label>
-    <label><span>Severidad</span><select name="severity" [(ngModel)]="severity"><option>Todas</option><option>Crítica</option><option>Alta</option><option>Media</option></select></label>
-    <div class="tg-alerts__filter-actions"><button type="button" class="tg-alerts__btn-light" (click)="clearFilters()">✕ Limpiar</button><button type="submit" class="tg-alerts__btn-main">⌕ Aplicar filtros</button></div>
+<section class="alerts-page">
+  <app-page-header section="Alertas" title="Alertas y seguimiento"
+    description="Revisa alertas de detecciones térmicas y el contexto mensual de cada área vigilada." />
+  @if (data(); as info) {
+    <div class="summary">
+      @for (item of [
+        { label: 'Críticas', count: info.counts.critical, level: 4 },
+        { label: 'Altas', count: info.counts.high, level: 3 },
+        { label: 'Medias', count: info.counts.medium, level: 2 },
+        { label: 'En revisión', count: info.counts.byStatus['En revisión'], level: 3 }
+      ]; track item.label) {
+        <article class="tg-card summary-item" [style.--level-color]="colors[item.level]"><strong>{{ item.count | number }}</strong>{{ item.label }}</article>
+      }
+    </div>
+  }
+  <button type="button" class="mobile-filter button" (click)="mobileFiltersOpen.set(!mobileFiltersOpen())"
+    [attr.aria-expanded]="mobileFiltersOpen()" aria-controls="alert-filters">{{ mobileFiltersOpen() ? 'Ocultar filtros' : 'Mostrar filtros' }}</button>
+  <form id="alert-filters" class="tg-card filters"
+    [class.filters-open]="mobileFiltersOpen()" (ngSubmit)="applyFilters()">
+    <label>Desde<input type="date" name="from" [(ngModel)]="draft.desde" /></label>
+    <label>Hasta<input type="date" name="to" [(ngModel)]="draft.hasta" /></label>
+    <label>Área vigilada<select name="area" [(ngModel)]="draft.area_id">
+      <option value="">Todas las áreas</option>
+      @for (area of areas(); track area.areaId) { <option [value]="area.areaId">{{ area.areaName }}</option> }
+    </select></label>
+    <label>Severidad<select name="severity" [(ngModel)]="draft.severidad">
+      <option value="">Todas</option>
+      @for (item of severityOptions; track item) { <option [value]="item">{{ item }}</option> }
+    </select></label>
+    <label>Estado<select name="status" [(ngModel)]="draft.estado">
+      <option value="">Todos</option>
+      @for (item of statuses; track item) { <option [value]="item">{{ item }}</option> }
+    </select></label>
+    <label>Fuente<select name="source" [(ngModel)]="draft.fuente">
+      <option value="real">Operativas reales</option><option value="replay">Simulación histórica</option>
+      <option value="simulated">Importaciones simuladas</option><option value="">Todas</option>
+    </select></label>
+    <div class="actions"><button type="button" class="button" (click)="clearFilters()">Restablecer</button><button type="submit" class="tg-map-button">Aplicar filtros</button></div>
+    @if (filterError()) { <p role="alert">{{ filterError() }}</p> }
   </form>
 
-  <div class="tg-alerts__workspace">
-    <section class="tg-alerts__panel tg-alerts__map-panel" id="tg-alert-map" aria-label="Mapa ilustrativo de alertas"><h2>▧ Mapa de anomalías térmicas <span title="Posiciones aproximadas para demostración">ⓘ</span></h2>
-      <div class="tg-alerts__map"><div class="tg-alerts__map-canvas" [style.transform]="'scale(' + mapZoom() + ')'">
-        @for (a of filtered(); track a.id) {<button type="button" class="tg-alerts__pin" [class.tg-alerts__pin--selected]="selectedId() === a.id" [class.tg-alerts__pin--critical]="a.severity === 'Crítica'" [class.tg-alerts__pin--high]="a.severity === 'Alta'" [style.left.%]="a.x" [style.top.%]="a.y" (click)="selectAlert(a.id)" [attr.aria-label]="a.id + ': ' + a.district + ', ' + a.severity" [title]="a.id + ' · ' + a.district"></button>}
-        <span class="tg-alerts__map-place">Cochabamba</span></div>
-        <div class="tg-alerts__map-controls"><button type="button" (click)="zoom(.2)" aria-label="Acercar">+</button><button type="button" (click)="zoom(-.2)" aria-label="Alejar">−</button><button type="button" (click)="resetZoom()" aria-label="Restablecer zoom">⌖</button></div>
-        <div class="tg-alerts__map-legend"><b>Severidad (DEMO)</b><span><i class="critical"></i> Crítica</span><span><i class="high"></i> Alta</span><span><i class="medium"></i> Media</span></div>
-        <div class="tg-alerts__scale">0 ━━━ 10 ━━━ 20 km</div>
-      </div><small class="tg-alerts__note">Mapa ilustrativo: coordenadas y puntos DEMO, no georreferenciación operativa.</small>
+  @if (result.isLoading()) { <p class="notice" role="status">Consultando alertas…</p> }
+  @if (result.error(); as error) {
+    <p class="notice" role="alert">{{ errorMessage(error) }} <button type="button" class="button" (click)="result.reload()">Reintentar</button></p>
+  }
+  <div class="workspace">
+    <section class="tg-card" id="tg-alert-map">
+      <h2><svg class="section-icon" aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#map"></use></svg> Mapa de anomalías térmicas <app-map-info topic="el mapa de alertas" text="Cada punto ubica una alerta de la página actual. Una alerta puede agrupar varias detecciones de una misma pasada satelital en un área vigilada." /></h2>
+      <app-alert-map [alerts]="data()?.items ?? []" [selected]="selectedId()" [focusRequest]="focusRequest()" (alertSelect)="select($event)" />
+      @if (data()?.total === 0) { <p class="notice">No hay ubicaciones de alertas para mostrar con estos filtros.</p> }
+      <div class="legend" aria-label="Severidad de alertas">
+        @for (item of severityOptions; track item) { <span><i [style.background]="colors[severityLevel[item]]"></i>{{ item }}</span> }
+      </div>
+    </section>
+    <section class="tg-card">
+      <h2><svg class="section-icon" aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#bell"></use></svg> Alertas priorizadas @if (data(); as info) { <span>({{ info.total | number }})</span> }</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Alerta</th><th>Área</th><th>Severidad</th><th>Detección</th><th>Estado</th></tr></thead>
+          <tbody>
+            @for (alert of data()?.items ?? []; track alert.uuid) {
+              <tr [class.selected-row]="selectedId() === alert.uuid" (click)="select(alert)">
+                <td><button type="button" class="alert-link" (click)="$event.stopPropagation(); select(alert)" [attr.aria-pressed]="selectedId() === alert.uuid">{{ alert.id }}</button>
+                  @if (alert.simulated) { <small class="demo-label">Simulada</small> }</td>
+                <td>{{ alert.district }}</td>
+                <td><span class="level-pill" [style.--level-color]="colors[severityLevel[alert.severity]]">{{ alert.severity }}</span></td>
+                <td>{{ alert.detectedAtUtc | date:'dd/MM/yyyy HH:mm':'-0400' }}</td>
+                <td><span class="level-pill" [style.--level-color]="colors[statusColors[alert.status]]">{{ alert.status }}</span></td>
+              </tr>
+            } @empty {
+              <tr><td colspan="5" class="empty">{{ result.isLoading() || result.error() ? 'Consulta no disponible todavía.' : 'No hay alertas con estos filtros.' }}</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      @if (data(); as info) {
+        <div class="pagination"><span>Página {{ info.page }} de {{ info.pages }} · Hora de Bolivia</span>
+          <div><button type="button" aria-label="Página anterior" [disabled]="page() <= 1" (click)="setPage(page() - 1)">‹</button>
+          <button type="button" aria-label="Página siguiente" [disabled]="page() >= info.pages" (click)="setPage(page() + 1)">›</button></div>
+        </div>
+      }
     </section>
 
-    <section class="tg-alerts__panel tg-alerts__list-panel"><h2>♨ Alertas priorizadas <span class="tg-alerts__count">({{ filtered().length }})</span></h2>
-      <div class="tg-alerts__tablewrap"><table><thead><tr><th>ID</th><th>Distrito</th><th>Severidad</th><th>Detección</th><th>Estado</th></tr></thead><tbody>
-        @for (a of visible(); track a.id) {<tr [class.tg-alerts__row-active]="selectedId() === a.id" (click)="selectAlert(a.id)" (keydown.enter)="selectAlert(a.id)" tabindex="0" [attr.aria-label]="'Seleccionar alerta ' + a.id"><td><b>{{ a.id }}</b></td><td>{{ a.district }}</td><td><span class="tg-alerts__pill" [class]="'tg-alerts__pill ' + severityClass(a.severity)">{{ a.severity }}</span></td><td>{{ a.detected }}</td><td><span class="tg-alerts__pill" [class]="'tg-alerts__pill ' + statusClass(currentStatus(a))">{{ currentStatus(a) }}</span></td></tr>}
-        @empty {<tr><td colspan="5" class="tg-alerts__empty">No hay alertas DEMO con estos filtros.</td></tr>}
-      </tbody></table></div>
-      <div class="tg-alerts__pagination"><span>Mostrando {{ filtered().length ? (page() - 1) * pageSize + 1 : 0 }}–{{ page() * pageSize < filtered().length ? page() * pageSize : filtered().length }} de {{ filtered().length }}</span><div><button type="button" (click)="setPage(page()-1)" [disabled]="page() === 1">‹</button>@for (p of [1,2,3,4,5,6]; track p) {@if (p <= pages()) {<button type="button" [class.active]="page()===p" (click)="setPage(p)">{{ p }}</button>}}<button type="button" (click)="setPage(page()+1)" [disabled]="page() === pages()">›</button></div></div>
-    </section>
+    @if (selected(); as alert) {
+      <section class="tg-card full-row">
+        <header class="heading"><h2>{{ alert.id }} · {{ alert.district }}</h2>
+          <span class="level-pill" [style.--level-color]="colors[severityLevel[alert.severity]]">{{ alert.severity }}</span>
+          @if (alert.simulated) { <span class="demo-label">{{ alert.mode === 'replay' ? 'Simulación histórica' : 'Importación simulada' }}</span> }
+          <button type="button" class="button" (click)="showOnMap()">Ver en mapa</button>
+          <button type="button" class="button" (click)="selectedId.set('')">Cerrar detalle</button>
+        </header>
+        @if (detail.error()) {
+          <p class="notice" role="status">No se pudo actualizar el detalle. <button type="button" class="button" (click)="detail.reload()">Reintentar</button></p>
+        }
+        <p class="notice">{{ alert.message }}</p>
+        <div class="detail">
+          <dl class="facts">
+            <div><dt>Detección (Bolivia)</dt><dd>{{ alert.detectedAtUtc | date:'dd/MM/yyyy HH:mm':'-0400' }}</dd></div>
+            <div><dt>Sensor y satélite</dt><dd>{{ alert.source }} · {{ alert.satellite }}</dd></div>
+            <div><dt>Coordenadas</dt><dd>{{ alert.lat | number:'1.4-4' }}, {{ alert.lng | number:'1.4-4' }}</dd></div>
+            <div><dt>Detecciones agrupadas</dt><dd>{{ alert.detectionCount | number }}</dd></div>
+            <div><dt>Confianza</dt><dd>{{ alert.confidence == null ? (alert.confidenceLevel ?? 'Sin dato') : alert.confidence + ' %' }}</dd></div>
+            <div><dt>Potencia máxima (FRP)</dt><dd>{{ alert.maxFrpMw == null ? 'Sin dato' : (alert.maxFrpMw | number:'1.0-2') + ' MW' }}</dd></div>
+            <div><dt>Ubicación en el parque</dt><dd>{{ alert.inPark ? 'Dentro del Parque Nacional Tunari' : 'Fuera del parque' }}</dd></div>
+          </dl>
+          <form class="editor" (ngSubmit)="save(alert)">
+            <h3>Seguimiento</h3>
+            @if (alert.statusChangedAtUtc) { <p>Última actualización · {{ alert.statusChangedAtUtc | date:'dd/MM/yyyy HH:mm':'-0400' }}</p> }
+            <label>Estado<select name="editStatus" [(ngModel)]="editStatus" [disabled]="saving()">
+              @for (item of statuses; track item) { <option [value]="item">{{ item }}</option> }
+            </select></label>
+            <label>Nota de seguimiento<textarea name="note" [(ngModel)]="editNote" maxlength="1000" rows="2" [disabled]="saving()"></textarea></label>
+            @if (saved()) { <p role="status">Seguimiento guardado.</p> }
+            @if (saveError()) { <p role="alert">{{ saveError() }}</p> }
+            <button type="submit" class="tg-map-button" [disabled]="saving() || (editStatus === alert.status && editNote.trim() === (alert.note ?? ''))">
+              {{ saving() ? 'Guardando…' : 'Guardar seguimiento' }}
+            </button>
+          </form>
+        </div>
+      </section>
+    }
 
-    <aside class="tg-alerts__panel tg-alerts__detail"><h2>🔥 Detalle y seguimiento</h2>
-      @if (selected(); as a) {
-        <div class="tg-alerts__detail-badges"><strong>{{ a.id }}</strong><span [class]="'tg-alerts__pill ' + severityClass(a.severity)">Severidad: {{ a.severity }}</span></div>
-        <dl><div><dt>Distrito</dt><dd>{{ a.district }}</dd></div><div><dt>Detección</dt><dd>{{ a.detected }}</dd></div><div><dt>Fuente</dt><dd>{{ a.source }}</dd></div><div><dt>Ubicación DEMO</dt><dd>{{ a.lat }}, {{ a.lng }}</dd></div><div><dt>Confianza DEMO</dt><dd>{{ a.confidence }}%</dd></div></dl>
-        <h3>Seguimiento</h3><ol class="tg-alerts__timeline"><li class="done"><b>Alerta detectada</b><small>{{ a.detected }}</small></li><li [class.done]="selectedStatus() !== 'Pendiente'"><b>{{ selectedStatus() }}</b><small>Seguimiento en demostración</small></li><li [class.done]="selectedStatus() === 'Verificada'"><b>Acción</b><small>{{ selectedStatus() === 'Verificada' ? 'Verificada (DEMO)' : 'Pendiente' }}</small></li></ol>
-        <label class="tg-alerts__status-label">Actualizar estado DEMO<select [ngModel]="selectedStatus()" (ngModelChange)="setStatus($event)" name="selectedStatus"><option>Pendiente</option><option>En revisión</option><option>En análisis</option><option>Verificada</option></select></label>
-        <button type="button" class="tg-alerts__btn-main tg-alerts__map-link" (click)="showAlertOnMap()">⌖ Ver en mapa</button>
-      } @else {<p class="tg-alerts__empty">Selecciona una alerta para ver su detalle.</p>}
-    </aside>
+    <section class="tg-card full-row">
+      <header class="heading"><h2>Contexto mensual <app-map-info topic="el contexto mensual" text="Compara la actividad térmica hasta la fecha de corte con lo habitual para la misma zona y época." /></h2>
+        @if (monthly.hasValue() && context(); as item) {
+          <label>Área <select #areaSelect [value]="item.area_id" (change)="monthlyArea.set(areaSelect.value)">
+            @for (area of monthly.value()?.items ?? []; track area.area_id) {
+              <option [value]="area.area_id" [selected]="area.area_id === item.area_id">{{ area.nombre_visible }}</option>
+            }
+          </select></label>
+        }
+      </header>
+      @if (monthly.isLoading()) { <p role="status">Cargando contexto mensual…</p> }
+      @else if (monthly.error(); as error) {
+        <p role="alert">{{ errorMessage(error) }} <button type="button" class="button" (click)="monthly.reload()">Reintentar</button></p>
+      } @else if (context(); as item) {
+        @let level = monthlyLevel[item.nivel_alerta];
+        <span class="level-pill" [style.--level-color]="level === null ? '#b9b6aa' : colors[level]">{{ item.title }}</span>
+        <p class="notice">{{ item.message }}</p>
+        <dl class="facts">
+          <div><dt>Fecha de corte</dt><dd>{{ item.fecha_corte | date:'dd/MM/yyyy':'UTC' }}</dd></div>
+          <div><dt>Celdas-día observadas</dt><dd>{{ item.celdas_dia_observadas | number }}</dd></div>
+          <div><dt>Esperado por el modelo</dt><dd>{{ (item.esperado_modelo | number:'1.0-2') ?? 'Sin dato' }}</dd></div>
+          <div><dt>Satélite de referencia</dt><dd>{{ item.satelite_base }}</dd></div>
+        </dl>
+      } @else { <p>Sin contexto mensual disponible.</p> }
+    </section>
   </div>
-  <p class="tg-alerts__footer">⚠️ MVP académico · Todas las alertas, cantidades, ubicaciones y estados de esta pantalla son DEMO. No utilizar para decisiones de emergencia.</p>
 </section>

@@ -1,129 +1,164 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, resource, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { catchError, distinctUntilChanged, map, of, startWith, switchMap } from 'rxjs';
-import { environment } from '../../../../../environments/environment';
+import { auditTime } from 'rxjs';
+import { RealtimeClientService } from '../../../../data-access/realtime/realtime-client.service';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { MapInfoComponent } from '../../../map/components/map-info.component';
+import { AlertMapComponent } from '../../components/alert-map/alert-map.component';
+import { ALERT_COLORS, MONTHLY_LEVEL, SEVERITY_LEVEL, type AlertEvent, type AlertStatus } from '../../alert-event';
+import { AlertsApi } from '../../data-access/alerts-api.service';
 
-type Severity = 'Crítica' | 'Alta' | 'Media';
-type Status = 'En revisión' | 'Pendiente' | 'En análisis' | 'Verificada';
-interface AlertEvent {
-  id: string; district: string; severity: Severity; status: Status;
-  detected: string; date: string; time: string; source: string;
-  confidence: number; lat: number; lng: number; x: number; y: number;
-}
-interface AlertaEstadistica {
-  fecha_corte: string;
-  nivel_alerta: string;
-  satelite_base: string;
-  celdas_dia_observadas: number;
-  mediana_historica_tramo: number | null;
-  lectura: string;
-}
-interface ResumenAlerta {
-  estado: 'cargando' | 'disponible' | 'sin_corte' | 'error';
-  area?: string;
-  alerta?: AlertaEstadistica;
-}
-const seeds: Omit<AlertEvent, 'id' | 'date' | 'detected' | 'time'>[] = [
-  { district: 'Tiquipaya', severity: 'Crítica', status: 'En revisión', source: 'VIIRS (NASA)', confidence: 94, lat: -17.3456, lng: -66.1823, x: 43, y: 33 },
-  { district: 'Sacaba', severity: 'Alta', status: 'Pendiente', source: 'VIIRS (NASA)', confidence: 90, lat: -17.3921, lng: -66.0381, x: 69, y: 42 },
-  { district: 'Colcapirhua', severity: 'Alta', status: 'Pendiente', source: 'MODIS (NASA)', confidence: 88, lat: -17.3971, lng: -66.2370, x: 29, y: 57 },
-  { district: 'Vinto', severity: 'Media', status: 'En análisis', source: 'VIIRS (NASA)', confidence: 82, lat: -17.3920, lng: -66.3171, x: 78, y: 76 },
-  { district: 'Quillacollo', severity: 'Media', status: 'En análisis', source: 'MODIS (NASA)', confidence: 85, lat: -17.3990, lng: -66.2820, x: 20, y: 47 },
-  { district: 'Cochabamba', severity: 'Crítica', status: 'En revisión', source: 'VIIRS (NASA)', confidence: 93, lat: -17.3651, lng: -66.1604, x: 61, y: 54 },
-  { district: 'Sipe Sipe', severity: 'Alta', status: 'Verificada', source: 'MODIS (NASA)', confidence: 89, lat: -17.4532, lng: -66.3610, x: 52, y: 67 },
-  { district: 'Tiquipaya', severity: 'Media', status: 'Pendiente', source: 'VIIRS (NASA)', confidence: 79, lat: -17.3502, lng: -66.1951, x: 35, y: 28 },
-];
-const minutes = ['10:24', '09:57', '09:21', '08:47', '08:30', '07:42', '06:56', '06:10'];
-const allAlerts: AlertEvent[] = Array.from({ length: 26 }, (_, i) => {
-  const seed = seeds[i % seeds.length];
-  const day = 14 - Math.floor(i / 8);
-  const date = `2026-11-${String(day).padStart(2, '0')}`;
-  const time = minutes[i % minutes.length];
-  return { ...seed, id: `AL-${String(142 - i).padStart(4, '0')}`, date, time,
-    detected: `${day} nov, ${time}`, x: Math.min(87, seed.x + (i % 3) * 2), y: Math.min(86, seed.y + (i % 2) * 3) };
-});
+const initialFilters = { desde: '', hasta: '', area_id: '', severidad: '', estado: '', fuente: 'real' };
 
 @Component({
   selector: 'app-alerts-page',
-  standalone: true,
-  imports: [FormsModule, PageHeaderComponent],
+  imports: [DatePipe, DecimalPipe, FormsModule, PageHeaderComponent, AlertMapComponent, MapInfoComponent],
   templateUrl: './alerts-page.component.html',
   styleUrl: './alerts-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AlertsPageComponent {
-  readonly resumen = signal<ResumenAlerta>({ estado: 'cargando' });
-  private readonly http = inject(HttpClient);
-  private readonly ruta = inject(ActivatedRoute);
-  readonly alerts = allAlerts;
-  readonly districts = ['Todos los distritos', 'Tiquipaya', 'Sacaba', 'Colcapirhua', 'Vinto', 'Quillacollo', 'Cochabamba', 'Sipe Sipe'];
-  dateFrom = '2026-11-01'; dateTo = '2026-11-14'; district = 'Todos los distritos'; severity = 'Todas';
-  readonly activeFrom = signal('2026-11-01'); readonly activeTo = signal('2026-11-14');
-  readonly activeDistrict = signal('Todos los distritos'); readonly activeSeverity = signal('Todas');
-  readonly page = signal(1); readonly pageSize = 5; readonly selectedId = signal('AL-0142');
-  readonly mobileFiltersOpen = signal(false); readonly mapZoom = signal(1);
-  readonly statuses = signal<Record<string, Status>>({});
-  readonly filtered = computed(() => this.alerts.filter(a =>
-    a.date >= this.activeFrom() && a.date <= this.activeTo() &&
-    (this.activeDistrict() === 'Todos los distritos' || a.district === this.activeDistrict()) &&
-    (this.activeSeverity() === 'Todas' || a.severity === this.activeSeverity())
-  ));
-  readonly visible = computed(() => this.filtered().slice((this.page() - 1) * this.pageSize, this.page() * this.pageSize));
-  readonly pages = computed(() => Math.max(1, Math.ceil(this.filtered().length / this.pageSize)));
-  readonly selected = computed(() => this.alerts.find(a => a.id === this.selectedId()) ?? null);
-  readonly selectedStatus = computed(() => this.statuses()[this.selectedId()] ?? this.selected()?.status ?? 'Pendiente');
-  readonly counts = computed(() => ({
-    critical: this.filtered().filter(a => a.severity === 'Crítica').length,
-    high: this.filtered().filter(a => a.severity === 'Alta').length,
-    medium: this.filtered().filter(a => a.severity === 'Media').length,
-    review: this.filtered().filter(a => (this.statuses()[a.id] ?? a.status) === 'En revisión').length,
-  }));
+  private readonly api = inject(AlertsApi);
+  readonly colors = ALERT_COLORS;
+  readonly severityLevel = SEVERITY_LEVEL;
+  readonly monthlyLevel = MONTHLY_LEVEL;
+  readonly applied = signal(initialFilters);
+  draft = { ...initialFilters };
+  readonly page = signal(1);
+  readonly selectedId = signal('');
+  readonly focusRequest = signal(0);
+  readonly mobileFiltersOpen = signal(false);
+  readonly filterError = signal('');
+  readonly saveError = signal('');
+  readonly saving = signal(false);
+  readonly saved = signal(false);
+  private editorBase?: AlertEvent;
+  editStatus: AlertStatus = 'Pendiente';
+  editNote = '';
+
+  readonly result = resource({
+    params: () => ({ filters: this.applied(), page: this.page() }),
+    loader: ({ params: { filters, page }, abortSignal }) => this.api.list({
+      ...(filters.desde ? { desde: filters.desde } : {}),
+      ...(filters.hasta ? { hasta: filters.hasta } : {}),
+      ...(filters.area_id ? { area_id: filters.area_id } : {}),
+      ...(filters.severidad ? { severidad: filters.severidad } : {}),
+      ...(filters.estado ? { estado: filters.estado } : {}),
+      ...(filters.fuente === 'real' ? { modo: 'live', origen: 'REAL' } :
+        filters.fuente === 'replay' ? { modo: 'replay' } :
+        filters.fuente === 'simulated' ? { modo: 'live', origen: 'SIMULATED' } : {}),
+      page, limit: 10,
+    }, abortSignal),
+  });
+  readonly monthly = resource({ loader: ({ abortSignal }) => this.api.monthly(abortSignal) });
+  readonly monthlyArea = signal('');
+  readonly context = computed(() => {
+    const items = this.monthly.hasValue() ? this.monthly.value().items : [];
+    const id = this.monthlyArea() || this.applied().area_id;
+    return items.find((item) => item.area_id === id) ??
+      items.find((item) => item.area_id === 'parque-tunari') ?? items[0];
+  });
+  private readonly areaCatalog = resource({ loader: ({ abortSignal }) => this.api.list({ limit: 1 }, abortSignal) });
+  readonly areas = computed(() => this.areaCatalog.hasValue() ? this.areaCatalog.value().areas : this.data()?.areas ?? []);
+  readonly data = computed(() => this.result.hasValue() ? this.result.value() : undefined);
+  readonly detail = resource({
+    params: () => this.selectedId() || undefined,
+    loader: ({ params, abortSignal }) => this.api.detail(params, abortSignal),
+  });
+  readonly selected = computed(() => this.detail.hasValue() && this.detail.value().uuid === this.selectedId()
+    ? this.detail.value() : this.data()?.items.find((item) => item.uuid === this.selectedId()));
+  readonly severityOptions = ['Media', 'Alta', 'Crítica'] as const;
+  readonly statuses: AlertStatus[] = ['Pendiente', 'En revisión', 'En análisis', 'Verificada'];
+  readonly statusColors: Record<AlertStatus, number> = {
+    Pendiente: 2, 'En revisión': 3, 'En análisis': 1, Verificada: 0,
+  };
 
   constructor() {
-    this.ruta.queryParamMap.pipe(
-      map((params) => params.get('area') || 'parque-tunari'),
-      distinctUntilChanged(),
-      switchMap((areaId) => {
-        const areaUrl = `${environment.apiBaseUrl}/areas/${encodeURIComponent(areaId)}`;
-        return this.http.get<{ nombre_visible: string }>(areaUrl).pipe(
-          switchMap((area) => this.http.get<AlertaEstadistica[]>(`${areaUrl}/alerta-mes-en-curso`).pipe(
-            map((filas): ResumenAlerta => ({
-              estado: filas.length ? 'disponible' : 'sin_corte', area: area.nombre_visible, alerta: filas[0],
-            })),
-          )),
-          catchError((error: HttpErrorResponse) => of<ResumenAlerta>({ estado: error.status === 404 ? 'sin_corte' : 'error' })),
-          startWith<ResumenAlerta>({ estado: 'cargando' }),
-        );
-      }),
-      takeUntilDestroyed(),
-    ).subscribe((resumen) => this.resumen.set(resumen));
+    inject(RealtimeClientService).alertChanges$.pipe(auditTime(300), takeUntilDestroyed()).subscribe(() => {
+      this.result.reload();
+      this.detail.reload();
+      this.areaCatalog.reload();
+    });
+    effect(() => {
+      if (!this.detail.hasValue() || this.saving()) return;
+      const current = this.detail.value();
+      const base = this.editorBase;
+      if (base?.uuid === current.uuid && this.editStatus === base.status && this.editNote === (base.note ?? '')) {
+        this.setEditor(current);
+      }
+    });
+    effect(() => {
+      const data = this.data();
+      if (!data) return;
+      if (this.page() > data.pages) this.page.set(data.pages);
+    });
   }
 
   applyFilters(): void {
-    if (this.dateFrom > this.dateTo) { const old = this.dateFrom; this.dateFrom = this.dateTo; this.dateTo = old; }
-    this.activeFrom.set(this.dateFrom); this.activeTo.set(this.dateTo);
-    this.activeDistrict.set(this.district); this.activeSeverity.set(this.severity);
-    this.page.set(1); this.mobileFiltersOpen.set(false);
-    if (!this.filtered().some(a => a.id === this.selectedId())) this.selectedId.set(this.filtered()[0]?.id ?? '');
+    if (this.draft.desde && this.draft.hasta && this.draft.desde > this.draft.hasta) {
+      this.filterError.set('La fecha inicial debe ser anterior o igual a la final.');
+      return;
+    }
+    this.filterError.set('');
+    this.selectedId.set('');
+    this.monthlyArea.set('');
+    this.page.set(1);
+    this.applied.set({ ...this.draft });
+    this.mobileFiltersOpen.set(false);
   }
+
   clearFilters(): void {
-    this.dateFrom = '2026-11-01'; this.dateTo = '2026-11-14';
-    this.district = 'Todos los distritos'; this.severity = 'Todas'; this.applyFilters();
+    this.draft = { ...initialFilters };
+    this.applyFilters();
   }
-  setPage(page: number): void { this.page.set(Math.max(1, Math.min(this.pages(), page))); }
-  selectAlert(id: string): void { this.selectedId.set(id); }
-  toggleFilters(): void { this.mobileFiltersOpen.update(v => !v); }
-  setStatus(status: Status): void {
-    const id = this.selectedId(); if (id) this.statuses.update(values => ({ ...values, [id]: status }));
+
+  setPage(page: number): void {
+    this.selectedId.set('');
+    this.page.set(page);
   }
-  zoom(delta: number): void { this.mapZoom.update(v => Math.max(1, Math.min(1.8, +(v + delta).toFixed(1)))); }
-  resetZoom(): void { this.mapZoom.set(1); }
-  severityClass(severity: Severity): string { return severity === 'Crítica' ? 'critical' : severity === 'Alta' ? 'high' : 'medium'; }
-  statusClass(status: Status): string { return status === 'En revisión' ? 'review' : status === 'Verificada' ? 'verified' : status === 'En análisis' ? 'analysis' : 'pending'; }
-  currentStatus(a: AlertEvent): Status { return this.statuses()[a.id] ?? a.status; }
-  showAlertOnMap(): void { document.getElementById('tg-alert-map')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+
+  select(alert: AlertEvent): void {
+    this.saved.set(false);
+    this.selectedId.set(alert.uuid);
+    this.setEditor(alert);
+  }
+
+  private setEditor(alert: AlertEvent): void {
+    this.editorBase = alert;
+    this.editStatus = alert.status;
+    this.editNote = alert.note ?? '';
+    this.saveError.set('');
+  }
+
+  async save(alert: AlertEvent): Promise<void> {
+    if (this.saving()) return;
+    this.saved.set(false);
+    this.saving.set(true);
+    this.saveError.set('');
+    try {
+      const updated = await this.api.update(alert.uuid, this.editStatus, this.editNote);
+      if (this.selectedId() === updated.uuid) {
+        this.setEditor(updated);
+        this.detail.set(updated);
+        this.saved.set(true);
+      }
+      this.detail.reload();
+      this.result.reload();
+    } catch (error) {
+      if (this.selectedId() === alert.uuid) this.saveError.set(this.errorMessage(error));
+    } finally {
+      this.saving.set(false);
+    }
+  }
+
+  errorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : 'No se pudo completar la consulta.';
+  }
+
+  showOnMap(): void {
+    this.focusRequest.update((value) => value + 1);
+    document.getElementById('tg-alert-map')?.scrollIntoView({ block: 'nearest' });
+  }
 }
