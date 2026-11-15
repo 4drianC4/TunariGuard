@@ -36,8 +36,6 @@ import { monthlyContext } from './domain/monthly-context.js';
  */
 /** Cada cuánto se revisa si "llegaron" detecciones simuladas (su fecha y hora ya se cumplió). */
 const ARRIVAL_CHECK_MS = 60_000;
-/** Margen hacia atrás al agrupar, para no partir una pasada entre dos revisiones. */
-const PASS_LOOKBACK_MS = 30 * 60_000;
 /** Al arrancar, cuánto hacia atrás se generan las alertas de simulados que llegaron con el servidor apagado. */
 const CATCH_UP_MS = 7 * 24 * 3_600_000;
 
@@ -85,9 +83,8 @@ export class AlertsService implements OnApplicationBootstrap, OnModuleDestroy {
       const llegaron = await this.repository.simulatedBetween(desde, now);
       if (!llegaron.length) return;
       this.events.emit(OBSERVATIONS_ARRIVED, { observationIds: llegaron } satisfies ObservationsArrivedEvent);
-      // Con margen hacia atrás para agrupar la pasada completa; las alertas repetidas se omiten.
-      const pasada = await this.repository.simulatedBetween(new Date(desde.getTime() - PASS_LOOKBACK_MS), now);
-      await this.generate({ observationIds: pasada, upTo: now }, 'LIVE');
+      // Los simulados en vivo se agrupan por minuto exacto, así que basta con lo recién llegado.
+      await this.generate({ observationIds: llegaron, upTo: now }, 'LIVE');
     } catch (error) {
       this.logger.error('No se pudieron revisar las detecciones simuladas', error as Error);
     }

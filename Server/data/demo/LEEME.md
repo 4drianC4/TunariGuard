@@ -5,11 +5,13 @@ Entrega v3 del equipo de datos (14-nov-2026). **Todo lo de esta carpeta es inven
 | Archivo | Qué es |
 | --- | --- |
 | `SIMULADO_proyeccion_2026-11-14_a_2031-12-31.csv` | 4.153 detecciones VIIRS **inventadas** (NOAA-20 y NOAA-21), del 17-nov-2026 al 27-dic-2031, en formato FIRMS |
+| `ALERTAS_DEFENSA_2026-11-14_2200_a_2026-11-15_2000_cada5min.csv` | 423 detecciones VIIRS **inventadas** para la defensa: una o dos cada 5 minutos, del 14-nov 22:00 al 15-nov 20:00 (hora de Bolivia). Cada una genera su alerta al llegar su hora |
 | `serie_proyeccion_mensual.csv` | Por mes: índice esperado por el modelo y detecciones generadas. Se expone en `GET /api/v1/proyeccion/mensual` |
 
 SHA-256 (de la entrega):
 - `3a5180a24471cb8d6e29f0cd5a2ff824d0760f48c7760784f21bc4b28aaad06d`: proyección
 - `ac8335d32a76527df236a3a32d9de4ecb96a711c13430cf386cca5d8d1e36c2b`: serie mensual
+- `ee6d37022306e8cf24231eddc243323a461d7c6e0d6080ac56377579bf9977a0`: alertas de la defensa
 
 ## Cómo se usa
 
