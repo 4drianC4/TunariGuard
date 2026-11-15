@@ -109,19 +109,31 @@
         <p class="mt-2 text-xs text-[#737064]">El mapa muestra detecciones georreferenciadas MODIS/VIIRS, insumos del análisis. El endpoint histórico no devuelve geometrías de focos armonizados.</p>
       </div>
     </article>
-
-    <article class="tg-card harm-card harm-process-card">
-      <h2><span>⚙</span> Proceso de armonización <small>REFERENCIA METODOLÓGICA</small></h2>
-      <div class="harm-steps">
-        <div class="harm-step"><div class="harm-step-icon">▤</div><strong>Ingesta</strong><span>Carga de detecciones MODIS y VIIRS</span></div>
-        <div class="harm-step"><div class="harm-step-icon">▽</div><strong>Limpieza</strong><span>Control de calidad y filtrado</span></div>
-        <div class="harm-step"><div class="harm-step-icon">◎</div><strong>Matching espacial</strong><span>Vinculación por proximidad</span></div>
-        <div class="harm-step"><div class="harm-step-icon">◷</div><strong>Matching temporal</strong><span>Vinculación por ventana de tiempo</span></div>
-        <div class="harm-step"><div class="harm-step-icon harm-step-last">▱</div><strong>Salida armonizada</strong><span>Serie unificada con procedencia</span></div>
+    <article class="tg-card harm-card harm-table-card">
+      <h2><span>☷</span> Eventos candidatos recientes <small>API</small></h2>
+      <div class="harm-table-scroll"><table>
+        <thead><tr><th>Periodo</th><th>Área</th><th>Detecciones</th><th>Sensores</th><th>FRP máx. (MW)</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let event of paginatedEvents(); trackBy:trackEvent">
+            <td>{{ formatDate(event.fecha_inicio) }}<span *ngIf="event.fecha_fin !== event.fecha_inicio"> – {{ formatDate(event.fecha_fin) }}</span></td>
+            <td>{{ areas().find(a => a.area_id === event.area_id)?.nombre_visible ?? event.area_id ?? '—' }}</td>
+            <td>{{ event.detecciones }}</td>
+            <td><span *ngFor="let source of formatSources(event.fuentes)" class="harm-sensor-tag" [class.viirs]="source.includes('VIIRS')">{{ source }}</span></td>
+            <td>{{ event.frp_max_mw === null ? '—' : (event.frp_max_mw | number:'1.0-1') }}</td>
+            <td><span class="harm-status" [class.single]="!event.es_multisensor">● &nbsp;{{ event.es_multisensor ? 'Multisensor' : 'Unisensor' }}</span></td>
+          </tr>
+          <tr *ngIf="!loading() && events().length === 0"><td colspan="6" class="harm-empty">No hay eventos candidatos para el área y periodo seleccionados.</td></tr>
+        </tbody>
+      </table></div>
+      <div class="flex items-center justify-between gap-3 border-t border-[#e8e1d6] px-3 py-3">
+        <span class="text-xs text-[#737064]">Página {{ eventPage() }} de {{ eventTotalPages() }} · {{ events().length }} eventos</span>
+        <div class="flex gap-2">
+          <button type="button" class="rounded-lg border border-[#ded6ca] px-3 py-1.5 text-xs font-semibold disabled:opacity-40" (click)="previousEventPage()" [disabled]="eventPage() <= 1">Anterior</button>
+          <button type="button" class="rounded-lg border border-[#ded6ca] px-3 py-1.5 text-xs font-semibold disabled:opacity-40" (click)="nextEventPage()" [disabled]="eventPage() >= eventTotalPages()">Siguiente</button>
+        </div>
       </div>
-      <div class="harm-method"><span>ⓘ</span><div><strong>Resumen metodológico</strong><p>La serie armonizada se consulta desde el historial del área seleccionada. Las etapas del proceso mostradas aquí describen el flujo metodológico; no representan el estado en tiempo real de un trabajo de procesamiento.</p></div></div>
+      <p class="px-3 pb-3 text-xs text-[#737064]">Son eventos candidatos agrupados por proximidad temporal y espacial; no son incendios confirmados.</p>
     </article>
-
     <article class="tg-card harm-card harm-chart-card">
       <h2><span>⌁</span> Evolución temporal de actividad <small>API · ANUAL</small></h2>
       <div class="harm-chart-legend">
@@ -129,7 +141,7 @@
         <span *ngIf="viirs"><i class="harm-line viirs"></i>VIIRS</span>
         <span><i class="harm-line unified"></i>Armonizada</span>
       </div>
-      <div class="harm-chart-scroll" style="overflow-x:auto">
+      <div class="harm-chart-scroll">
         <svg
           [attr.viewBox]="'0 0 ' + chartWidth() + ' 208'"
           preserveAspectRatio="xMidYMid meet"
@@ -158,30 +170,16 @@
       <p class="px-3 pb-3 text-xs text-[#737064]">Cada punto representa un año. El valor anual corresponde a la suma de las mediciones mensuales disponibles en ese año. Pasa el cursor sobre un punto para ver el año y el valor exacto. Los espacios indican años sin dato disponible. MODIS y VIIRS son conteos brutos; no son directamente comparables con el índice armonizado.</p>
     </article>
 
-    <article class="tg-card harm-card harm-table-card">
-      <h2><span>☷</span> Eventos candidatos recientes <small>API</small></h2>
-      <div class="harm-table-scroll"><table>
-        <thead><tr><th>Periodo</th><th>Área</th><th>Detecciones</th><th>Sensores</th><th>FRP máx. (MW)</th><th>Estado</th></tr></thead>
-        <tbody>
-          <tr *ngFor="let event of paginatedEvents(); trackBy:trackEvent">
-            <td>{{ formatDate(event.fecha_inicio) }}<span *ngIf="event.fecha_fin !== event.fecha_inicio"> – {{ formatDate(event.fecha_fin) }}</span></td>
-            <td>{{ areas().find(a => a.area_id === event.area_id)?.nombre_visible ?? event.area_id ?? '—' }}</td>
-            <td>{{ event.detecciones }}</td>
-            <td><span *ngFor="let source of formatSources(event.fuentes)" class="harm-sensor-tag" [class.viirs]="source.includes('VIIRS')">{{ source }}</span></td>
-            <td>{{ event.frp_max_mw === null ? '—' : (event.frp_max_mw | number:'1.0-1') }}</td>
-            <td><span class="harm-status" [class.single]="!event.es_multisensor">● &nbsp;{{ event.es_multisensor ? 'Multisensor' : 'Unisensor' }}</span></td>
-          </tr>
-          <tr *ngIf="!loading() && events().length === 0"><td colspan="6" class="harm-empty">No hay eventos candidatos para el área y periodo seleccionados.</td></tr>
-        </tbody>
-      </table></div>
-      <div class="flex items-center justify-between gap-3 border-t border-[#e8e1d6] px-3 py-3">
-        <span class="text-xs text-[#737064]">Página {{ eventPage() }} de {{ eventTotalPages() }} · {{ events().length }} eventos</span>
-        <div class="flex gap-2">
-          <button type="button" class="rounded-lg border border-[#ded6ca] px-3 py-1.5 text-xs font-semibold disabled:opacity-40" (click)="previousEventPage()" [disabled]="eventPage() <= 1">Anterior</button>
-          <button type="button" class="rounded-lg border border-[#ded6ca] px-3 py-1.5 text-xs font-semibold disabled:opacity-40" (click)="nextEventPage()" [disabled]="eventPage() >= eventTotalPages()">Siguiente</button>
-        </div>
+    <article class="tg-card harm-card harm-process-card">
+      <h2><span>⚙</span> Proceso de armonización <small>REFERENCIA METODOLÓGICA</small></h2>
+      <div class="harm-steps">
+        <div class="harm-step"><div class="harm-step-icon">▤</div><strong>Ingesta</strong><span>Carga de detecciones MODIS y VIIRS</span></div>
+        <div class="harm-step"><div class="harm-step-icon">▽</div><strong>Limpieza</strong><span>Control de calidad y filtrado</span></div>
+        <div class="harm-step"><div class="harm-step-icon">◎</div><strong>Matching espacial</strong><span>Vinculación por proximidad</span></div>
+        <div class="harm-step"><div class="harm-step-icon">◷</div><strong>Matching temporal</strong><span>Vinculación por ventana de tiempo</span></div>
+        <div class="harm-step"><div class="harm-step-icon harm-step-last">▱</div><strong>Salida armonizada</strong><span>Serie unificada con procedencia</span></div>
       </div>
-      <p class="px-3 pb-3 text-xs text-[#737064]">Son eventos candidatos agrupados por proximidad temporal y espacial; no son incendios confirmados.</p>
+      <div class="harm-method"><span>ⓘ</span><div><strong>Resumen metodológico</strong><p>La serie armonizada se consulta desde el historial del área seleccionada. Las etapas del proceso mostradas aquí describen el flujo metodológico; no representan el estado en tiempo real de un trabajo de procesamiento.</p></div></div>
     </article>
   </div>
   <footer class="harm-footer"><span>🔥</span><strong>La armonización mejora la continuidad y comparabilidad histórica de las observaciones.</strong><small>Los datos y advertencias proceden de la API.</small></footer>

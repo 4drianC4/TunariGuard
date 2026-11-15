@@ -1,4 +1,4 @@
-/* Distribución en dos columnas para las cuatro cards bajo los filtros. */
+/* Distribución simplificada: mapa + eventos arriba; gráfica a todo el ancho abajo. */
 :host {
   display: block;
   width: 100%;
@@ -16,28 +16,45 @@
 .harm-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: stretch;
+  align-items: start;
   gap: 16px;
 }
 
-/* Cada card ocupa una columna: mapa/proceso arriba y gráfica/eventos abajo. */
 .harm-map-card,
-.harm-process-card,
-.harm-chart-card,
 .harm-table-card {
   grid-column: auto;
   min-width: 0;
   align-self: stretch;
 }
 
-/* La gráfica usa el ancho interior completo de SU card, no el de la página. */
+.harm-chart-card {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+/* Mapa y tabla mantienen altura según su propio contenido. */
+.harm-map-card,
+.harm-table-card {
+  height: auto;
+}
+
+/* Gráfica a todo el ancho interior de su card, que ocupa las dos columnas. */
+.harm-chart-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.harm-chart-legend {
+  flex: 0 0 auto;
+}
+
 .harm-chart-scroll {
   display: block;
   width: 100%;
   min-width: 0;
   max-width: 100%;
   overflow-x: hidden;
-  padding: 0 12px 8px;
+  padding: 4px 12px 8px;
   box-sizing: border-box;
 }
 
@@ -49,17 +66,18 @@
   height: auto;
 }
 
-.harm-map-card > div,
-.harm-process-card,
-.harm-chart-card,
-.harm-table-card {
-  min-width: 0;
+.harm-chart-card > p {
+  flex: 0 0 auto;
 }
 
 .harm-table-scroll {
   width: 100%;
   min-width: 0;
   overflow-x: auto;
+}
+
+.harm-table-scroll table {
+  width: 100%;
 }
 
 @media (max-width: 760px) {
@@ -69,9 +87,8 @@
   }
 
   .harm-map-card,
-  .harm-process-card,
-  .harm-chart-card,
-  .harm-table-card {
+  .harm-table-card,
+  .harm-chart-card {
     grid-column: 1 / -1;
   }
 
@@ -81,5 +98,45 @@
 
   .harm-chart-scroll svg {
     min-width: 520px;
+  }
+}
+
+
+/* El proceso metodológico vuelve como última card, debajo de la gráfica. */
+.harm-process-card {
+  grid-column: 1 / -1;
+  display: block;
+  height: auto;
+  min-height: 0;
+}
+
+.harm-process-card .harm-steps {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+}
+
+.harm-process-card .harm-step {
+  flex: 1 1 150px;
+  min-width: 130px;
+}
+
+.harm-process-card .harm-method {
+  margin: 8px 16px 16px;
+}
+
+@media (max-width: 760px) {
+  .harm-process-card {
+    grid-column: 1 / -1;
+  }
+
+  .harm-process-card .harm-steps {
+    display: block;
+  }
+
+  .harm-process-card .harm-step {
+    min-width: 0;
   }
 }
