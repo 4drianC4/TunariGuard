@@ -1,7 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   alertIdSchema,
+  backfillAlertsSchema,
+  type BackfillAlertsBody,
   listAlertsSchema,
   monthlyContextSchema,
   updateAlertSchema,
@@ -45,6 +47,19 @@ export class AlertsController {
   @ApiOperation({ summary: 'Borra las alertas de demostración (generadas en replay o con datos simulados)' })
   deleteDemo() {
     return this.alerts.deleteDemo();
+  }
+
+  @Post('regenerar')
+  @HttpCode(200)
+  @ApiOperation({
+    summary: 'Genera las alertas de detecciones ya cargadas (carga histórica, sin esperar un replay)',
+    description:
+      'Aplica las mismas reglas que la importación sobre las detecciones del periodo. Por defecto es un ensayo ' +
+      '(`aplicar: false`): solo cuenta. Con `aplicar: true` crea las alertas (modo live, con una nota). Repetir la ' +
+      'llamada no duplica. No emite eventos en tiempo real.',
+  })
+  backfill(@Body({ schema: backfillAlertsSchema }) body: BackfillAlertsBody) {
+    return this.alerts.backfill(body);
   }
 
   @Get(':id')

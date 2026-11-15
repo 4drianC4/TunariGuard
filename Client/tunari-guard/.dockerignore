@@ -1,0 +1,6 @@
+node_modules
+dist
+.angular
+respaldo-app-codificacion
+*.bak*
+*.log

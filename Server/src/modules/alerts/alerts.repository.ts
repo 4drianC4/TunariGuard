@@ -106,6 +106,15 @@ export class AlertsRepository {
     }));
   }
 
+  /** Id y hora de las observaciones de un origen en [desde, hasta), en orden cronológico (para generar alertas retroactivas). */
+  async observationTimes(fromUtc: Date, toUtc: Date, origin: 'REAL' | 'SIMULATED'): Promise<{ id: string; acquiredAt: Date }[]> {
+    const rows = await this.prisma.$queryRaw<{ id: string; acquired_at: Date }[]>`
+      SELECT id, acquired_at FROM observations
+      WHERE origin = ${origin}::"DataOrigin" AND acquired_at >= ${fromUtc} AND acquired_at < ${toUtc}
+      ORDER BY acquired_at, id`;
+    return rows.map((r) => ({ id: r.id, acquiredAt: r.acquired_at }));
+  }
+
   /** Guarda las alertas nuevas; las repetidas (misma huella) se omiten. Devuelve solo las nuevas. */
   async insertMany(candidates: AlertCandidate[]): Promise<AlertRecord[]> {
     if (!candidates.length) return [];

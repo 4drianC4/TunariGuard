@@ -63,6 +63,8 @@ export interface AlertCandidate {
   message: string;
   observationIds: string[];
   batchId: string | null;
+  /** Comentario opcional (p. ej. «reconstrucción histórica» en las alertas generadas retroactivamente). */
+  note?: string;
 }
 
 /** Agrupa detecciones en alertas: por área y satélite, y dentro de eso por pasada. */

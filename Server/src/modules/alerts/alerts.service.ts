@@ -24,9 +24,10 @@ import {
   type ReplayPassEvent,
 } from '../../shared/domain-events.js';
 import { AlertsRepository } from './alerts.repository.js';
-import type { ListAlertsQuery, MonthlyContextQuery, UpdateAlertBody } from './alerts.schemas.js';
+import type { BackfillAlertsBody, ListAlertsQuery, MonthlyContextQuery, UpdateAlertBody } from './alerts.schemas.js';
 import { SEVERITY_LABELS, STATUS_LABELS, severityFromLabel, statusFromLabel, toAlertDto } from './domain/alert-dto.js';
-import { buildAlerts, type AlertModeValue } from './domain/alert-rules.js';
+import { chunkAtGaps } from './domain/backfill-chunks.js';
+import { buildAlerts, PASS_WINDOW_MINUTES, type AlertModeValue } from './domain/alert-rules.js';
 import { monthlyContext } from './domain/monthly-context.js';
 
 /**
@@ -38,6 +39,8 @@ import { monthlyContext } from './domain/monthly-context.js';
 const ARRIVAL_CHECK_MS = 60_000;
 /** Al arrancar, cuánto hacia atrás se generan las alertas de simulados que llegaron con el servidor apagado. */
 const CATCH_UP_MS = 7 * 24 * 3_600_000;
+/** Tamaño aproximado de cada bloque al generar alertas retroactivas (se corta solo entre pasadas). */
+const BACKFILL_CHUNK = 5_000;
 
 @Injectable()
 export class AlertsService implements OnApplicationBootstrap, OnModuleDestroy {
@@ -131,6 +134,53 @@ export class AlertsService implements OnApplicationBootstrap, OnModuleDestroy {
       // Una falla al generar alertas no debe tumbar la importación ni el replay.
       this.logger.error('No se pudieron generar alertas', error as Error);
     }
+  }
+
+  /**
+   * Genera de golpe las alertas de detecciones que ya están cargadas (sin esperar el ritmo de un replay).
+   * Usa las mismas reglas que la importación (modo LIVE) y la misma huella, así que repetir la llamada
+   * no duplica nada. No anuncia por Socket.IO: es carga histórica, no una novedad.
+   * Con `aplicar: false` solo cuenta lo que se crearía.
+   */
+  async backfill(body: BackfillAlertsBody) {
+    const started = Date.now();
+    // Los días se piden en hora de Bolivia (UTC−4): el día D va de D 04:00Z a D+1 04:00Z.
+    const fromUtc = new Date(`${body.desde}T04:00:00Z`);
+    const toUtc = new Date(new Date(`${body.hasta}T04:00:00Z`).getTime() + 86_400_000);
+    const now = new Date();
+    const rows = await this.repository.observationTimes(fromUtc, toUtc, body.origen);
+    const useFuego = await this.repository.fuegoAvailable();
+
+    const bySeverity = { CRITICAL: 0, HIGH: 0, MEDIUM: 0 };
+    let candidates = 0;
+    let created = 0;
+    let detectionsInAreas = 0;
+    for (const ids of chunkAtGaps(rows, BACKFILL_CHUNK, PASS_WINDOW_MINUTES)) {
+      const detections = await this.repository.detections({ observationIds: ids, upTo: now }, useFuego);
+      detectionsInAreas += detections.length;
+      const alerts = buildAlerts(detections, 'LIVE').map((a) => ({ ...a, note: body.nota }));
+      candidates += alerts.length;
+      if (body.aplicar) {
+        const inserted = await this.repository.insertMany(alerts);
+        created += inserted.length;
+        for (const a of inserted) bySeverity[a.severity] += 1;
+      } else {
+        for (const a of alerts) bySeverity[a.severity] += 1;
+      }
+    }
+    return {
+      aplicado: body.aplicar,
+      desde: body.desde,
+      hasta: body.hasta,
+      origen: body.origen,
+      observaciones_revisadas: rows.length,
+      detecciones_en_areas_vigiladas: detectionsInAreas,
+      alertas_candidatas: candidates,
+      alertas_nuevas: body.aplicar ? created : null,
+      alertas_ya_existentes: body.aplicar ? candidates - created : null,
+      por_severidad: { critica: bySeverity.CRITICAL, alta: bySeverity.HIGH, media: bySeverity.MEDIUM },
+      segundos: Number(((Date.now() - started) / 1000).toFixed(1)),
+    };
   }
 
   async list(q: ListAlertsQuery) {

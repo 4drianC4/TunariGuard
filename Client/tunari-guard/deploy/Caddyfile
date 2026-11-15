@@ -1,0 +1,37 @@
+# Tunari Guard en producción. {$SITE_ADDRESS} viene de .env.production: por defecto el DOMAIN
+# (p. ej. ivento.tech), o :80 si otro proxy del servidor ya maneja HTTPS.
+# Caddy obtiene y renueva solo el certificado HTTPS (Let's Encrypt) si el dominio apunta a este
+# servidor y los puertos 80 y 443 están abiertos.
+{$SITE_ADDRESS} {
+	encode zstd gzip
+
+	# API REST y Swagger (/api/docs)
+	handle /api/* {
+		reverse_proxy api:3000
+	}
+
+	# Tiempo real (Socket.IO, namespace /realtime). Caddy pasa el WebSocket sin configuración extra.
+	handle /socket.io/* {
+		reverse_proxy api:3000
+	}
+
+	# Frontend Angular: cualquier otra ruta (/mapa, /alertas…) devuelve index.html.
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+}
+
+# Opcional: redirigir www al dominio principal. Descomentar solo si existe el registro DNS de www;
+# si no, Caddy reintentaría sin fin obtener su certificado.
+# www.{$DOMAIN} {
+# 	redir https://{$DOMAIN}{uri} permanent
+# }
