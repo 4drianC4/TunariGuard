@@ -12,6 +12,8 @@ export class LiveUpdatesService {
   readonly status = this.client.status;
   readonly observationsChanged$ = this.client.changes$.pipe(auditTime(250));
   readonly replay$ = this.client.replay$;
+  readonly alertNotifications$ = this.client.alertNotifications$;
+  readonly removedAlerts$ = this.client.removedAlerts$;
 
   start(): void {
     if (this.enabled) this.client.connect();

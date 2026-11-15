@@ -5,6 +5,7 @@
  *
  *   npm run datos:cargar                          detecciones reales (históricas + novedades de noviembre de 2026)
  *   npm run datos:demo                            proyección SIMULADA nov-2026 a 2031 (data/demo) + comando de replay
+ *   npm run datos:demo -- --solo-defensa           solo las detecciones simuladas con cadencia de 5 minutos
  *   npm run datos:reemplazar-simulados -- 2026-11-13           ensayo: cuántas simuladas hasta ese día se borrarían
  *   npm run datos:reemplazar-simulados -- 2026-11-13 --aplicar borra las simuladas hasta ese día (hora de Bolivia)
  *   npm run datos:limpiar-simulados -- --aplicar               borra TODAS las simuladas (p. ej. el SIMULADO 2027 anterior)
@@ -17,6 +18,13 @@ import { fileURLToPath } from 'node:url';
 
 const DATA = join(dirname(fileURLToPath(import.meta.url)), '..', 'data');
 const API = `${process.env.API_URL ?? `http://localhost:${process.env.PORT ?? 3000}`}/api/v1`;
+
+// Una o dos detecciones simuladas cada 5 minutos (14-nov 22:00 a 15-nov 20:00, Bolivia).
+const DEFENSA = {
+  file: 'demo/ALERTAS_DEFENSA_2026-11-14_2200_a_2026-11-15_2000_cada5min.csv',
+  dataset: 'ALERTAS DEFENSA 14-15 nov 2026',
+  origin: 'SIMULATED',
+};
 
 const CONJUNTOS = {
   historico: [
@@ -34,12 +42,7 @@ const CONJUNTOS = {
       dataset: 'PROYECCION SIMULADA 2026-11 a 2031-12',
       origin: 'SIMULATED',
     },
-    {
-      // Para la defensa: una o dos detecciones simuladas cada 5 minutos (14-nov 22:00 a 15-nov 20:00, Bolivia).
-      file: 'demo/ALERTAS_DEFENSA_2026-11-14_2200_a_2026-11-15_2000_cada5min.csv',
-      dataset: 'ALERTAS DEFENSA 14-15 nov 2026',
-      origin: 'SIMULATED',
-    },
+    DEFENSA,
   ],
 };
 
@@ -52,11 +55,12 @@ if (cual === 'reemplazar' || cual === 'limpiar') {
   process.exit(0);
 }
 
-const archivos = CONJUNTOS[cual];
+const soloDefensa = cual === 'demo' && resto.includes('--solo-defensa');
+const archivos = soloDefensa ? [DEFENSA] : CONJUNTOS[cual];
 if (!archivos) fallar(`Comando desconocido: ${cual}. Usa historico, demo, reemplazar o limpiar.`);
 
 await avisarSiNoHayDistritos();
-if (cual === 'demo') await avisarDemoAnterior();
+if (cual === 'demo' && !soloDefensa) await avisarDemoAnterior();
 
 for (const { file, dataset, origin } of archivos) {
   const form = new FormData();
@@ -76,7 +80,11 @@ for (const { file, dataset, origin } of archivos) {
   );
 }
 
-if (cual === 'demo') {
+if (soloDefensa) {
+  console.log('\nCalendario de la defensa: 14-nov-2026 22:00 a 15-nov-2026 20:00 (hora de Bolivia).');
+  console.log('Mientras esté vigente, el servidor revisa cada minuto las detecciones que ya llegaron.');
+  console.log('En Alertas selecciona «Importaciones simuladas» y aplica el filtro.');
+} else if (cual === 'demo') {
   console.log(
     '\nLa proyección empieza el 17-nov-2026: cada detección simulada "llega" cuando se cumple su fecha y hora,\n' +
       'y en ese momento aparece en el mapa (hotspots:new) y genera su alerta (alert:new), marcada como simulada.',

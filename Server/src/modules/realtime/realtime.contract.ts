@@ -16,6 +16,7 @@ export const ServerEvents = {
   ReplayStatus: 'replay:status',
   DistrictsUpdated: 'districts:updated',
   AlertNew: 'alert:new',
+  AlertNotifications: 'alert:notifications',
   AlertUpdated: 'alert:updated',
   AlertRemoved: 'alert:removed',
 } as const;
@@ -95,6 +96,12 @@ export interface AlertNewPayload {
   count: number;
   alerts: AlertDto[];
   truncated: boolean;
+  emittedAtUtc: string;
+}
+
+/** Todas las alertas nuevas, repartidas en bloques para la campanita. */
+export interface AlertNotificationsPayload {
+  alerts: AlertDto[];
   emittedAtUtc: string;
 }
 

@@ -176,6 +176,7 @@
 
 .notifications__panel {
   position: absolute;
+  z-index: 1;
   top: calc(100% + 14px);
   right: 0;
 
@@ -326,16 +327,6 @@
   color: #c86a45;
 }
 
-.notification-item__icon--success {
-  background: #eaf4e7;
-  color: #548a52;
-}
-
-.notification-item__icon--info {
-  background: #eaf0f7;
-  color: #5b7c9f;
-}
-
 .notification-item__content {
   display: flex;
   flex-direction: column;
@@ -381,18 +372,13 @@
 
 .notifications__footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   gap: 12px;
   padding: 14px 20px;
 
   border-top: 1px solid #edf0e9;
   background: #fafbf9;
-}
-
-.notifications__footer span {
-  font-size: 10px;
-  color: #9aa498;
 }
 
 .notifications__footer button {
@@ -402,6 +388,98 @@
   font-size: 12px;
   font-weight: 750;
   cursor: pointer;
+}
+
+.alert-toast-region {
+  position: absolute;
+  inset-block-start: calc(100% + 12px);
+  inset-inline-start: clamp(12px, 3vw, 30px);
+  width: min(360px, calc(100% - 24px));
+  pointer-events: none;
+}
+
+.alert-toast {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 11px;
+  padding: 12px 9px 12px 12px;
+  border: 1px solid #e4dbc9;
+  border-inline-start: 5px solid var(--alert-accent, #6d9362);
+  border-radius: 16px;
+  background: #fffcf7;
+  color: #304033;
+  box-shadow: 0 12px 32px rgba(28, 43, 30, .16);
+  animation: notificationEnter .18s ease-out;
+  pointer-events: auto;
+}
+
+.alert-toast__avatar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #ebd5af;
+  border-radius: 50%;
+  background: #f2dfbf;
+}
+
+.alert-toast__avatar img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.alert-toast__content {
+  overflow-wrap: anywhere;
+}
+
+.alert-toast__content strong {
+  display: block;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.alert-toast__content p {
+  display: -webkit-box;
+  margin: 4px 0 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: #52614f;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.alert-toast__content small {
+  display: block;
+  margin-top: 6px;
+  color: #52614f;
+  font-weight: 650;
+}
+
+.alert-toast__close {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #52614f;
+  font-size: 23px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.alert-toast__close:hover {
+  background: #f1eadc;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .alert-toast {
+    animation: none;
+  }
 }
 
 /* ACCESIBILIDAD */

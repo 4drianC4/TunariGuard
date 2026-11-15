@@ -52,6 +52,7 @@
         <span
           *ngIf="unreadCount > 0"
           class="notifications__count"
+          aria-live="polite"
         >
           {{ unreadCount > 9 ? '9+' : unreadCount }}
         </span>
@@ -91,38 +92,18 @@
 
         <div class="notifications__list">
           <button
-            *ngFor="let item of notifications; trackBy: trackNotification"
+            *ngFor="let item of notifications(); trackBy: trackNotification"
             type="button"
             class="notification-item"
             [class.notification-item--unread]="!item.read"
             (click)="openNotification(item)"
           >
-            <span
-              class="notification-item__icon"
-              [ngClass]="'notification-item__icon--' + item.type"
-            >
-              <svg *ngIf="item.type === 'alert'"
-                   viewBox="0 0 24 24" fill="none"
+            <span class="notification-item__icon notification-item__icon--alert">
+              <svg viewBox="0 0 24 24" fill="none"
                    stroke="currentColor" stroke-width="2"
                    aria-hidden="true">
                 <path d="M12 3 2 21h20L12 3Z"/>
                 <path d="M12 9v5M12 18h.01"/>
-              </svg>
-
-              <svg *ngIf="item.type === 'success'"
-                   viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="2"
-                   aria-hidden="true">
-                <circle cx="12" cy="12" r="9"/>
-                <path d="m8 12 3 3 5-6"/>
-              </svg>
-
-              <svg *ngIf="item.type === 'info'"
-                   viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="2"
-                   aria-hidden="true">
-                <circle cx="12" cy="12" r="9"/>
-                <path d="M12 11v5M12 7h.01"/>
               </svg>
             </span>
 
@@ -145,7 +126,7 @@
           </button>
 
           <div
-            *ngIf="notifications.length === 0"
+            *ngIf="notifications().length === 0"
             class="notifications__empty"
           >
             No hay notificaciones disponibles.
@@ -153,7 +134,6 @@
         </div>
 
         <div class="notifications__footer">
-          <span>Datos de demostración</span>
           <button type="button" (click)="goToAlerts()">
             Ver alertas
             <span aria-hidden="true">→</span>
@@ -163,3 +143,25 @@
     </div>
   </div>
 </header>
+
+<div class="alert-toast-region" role="status" aria-atomic="true">
+  @if (toast(); as notice) {
+    <div class="alert-toast" [style.--alert-accent]="notice.color">
+      <span class="alert-toast__avatar">
+        <img src="/assets/tuni-piezas/tuni-cabeza.webp" alt="" width="44" height="44" draggable="false">
+      </span>
+      <div class="alert-toast__content">
+        <strong>{{ notice.alert.title }}</strong>
+        <p>{{ notice.alert.message }}</p>
+        @if (notice.others === 1) {
+          <small>1 alerta más en la campanita</small>
+        } @else if (notice.others > 1) {
+          <small>{{ notice.others }} alertas más en la campanita</small>
+        }
+      </div>
+      <button type="button" class="alert-toast__close" aria-label="Cerrar aviso" (click)="dismissToast()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  }
+</div>

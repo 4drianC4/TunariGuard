@@ -12,7 +12,7 @@ import { io } from 'socket.io-client';
 
 const base = process.env.API_URL ?? `http://localhost:${process.env.PORT ?? 3000}`;
 const districts = process.argv.slice(2);
-const hora = () => new Date().toLocaleTimeString();
+const hora = () => new Date().toLocaleTimeString('es-BO', { timeZone: 'America/La_Paz' });
 
 const socket = io(`${base}/realtime`, { transports: ['websocket'] });
 
@@ -69,6 +69,11 @@ socket.on('alert:new', (msg) => {
     console.log(`           ${iconos[a.severity] ?? '•'} ${a.id} ${a.severity} · ${a.district} · ${a.detectionCount} det. · ${a.detected}${a.simulated ? ' · SIMULADO' : ''}`);
   }
   if (msg.alerts.length > 5) console.log(`           … y ${msg.count - 5} más`);
+});
+
+socket.on('alert:notifications', ({ alerts }) => {
+  const sample = alerts.slice(0, 5).map((a) => a.id).join(', ');
+  console.log(`[${hora()}] 🔔 alert:notifications  ${alerts.length} alerta(s) para la campanita · ${sample}`);
 });
 
 socket.on('alert:removed', ({ alertIds }) => {

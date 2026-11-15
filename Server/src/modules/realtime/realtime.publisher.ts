@@ -24,6 +24,7 @@ import {
   type AlertNewPayload,
   type AlertRemovedPayload,
   type AlertUpdatedPayload,
+  type AlertNotificationsPayload,
   type DistrictsUpdatedPayload,
   type HotspotsNewPayload,
   type HotspotsRemovedPayload,
@@ -145,13 +146,22 @@ export class RealtimePublisher {
   @OnEvent(ALERTS_CREATED)
   onAlertsCreated(event: AlertsCreatedEvent): void {
     const alerts = event.alerts as AlertDto[];
+    const newestFirst = [...alerts].reverse();
+    const emittedAtUtc = new Date().toISOString();
     this.gateway.emitToAll(ServerEvents.AlertNew, {
       count: alerts.length,
-      // Las más recientes primero, como la lista de la vista.
-      alerts: [...alerts].reverse().slice(0, MAX_ALERTS_PER_MESSAGE),
+      alerts: newestFirst.slice(0, MAX_ALERTS_PER_MESSAGE),
       truncated: alerts.length > MAX_ALERTS_PER_MESSAGE,
-      emittedAtUtc: new Date().toISOString(),
+      emittedAtUtc,
     } satisfies AlertNewPayload);
+
+    // El panel antepone cada bloque recibido, así que el más reciente viaja al final.
+    for (const part of chunk(newestFirst, MAX_ALERTS_PER_MESSAGE).reverse()) {
+      this.gateway.emitToAll(ServerEvents.AlertNotifications, {
+        alerts: part,
+        emittedAtUtc,
+      } satisfies AlertNotificationsPayload);
+    }
   }
 
   @OnEvent(ALERT_UPDATED)
