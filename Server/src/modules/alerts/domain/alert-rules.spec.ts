@@ -68,6 +68,15 @@ describe('buildAlerts', () => {
     expect(primera.dedupeKey).toBe('LIVE|REAL|distrito-09|NOAA20|2026-11-14T18:30');
   });
 
+  it('con datos simulados en vivo agrupa solo por minuto exacto (una alerta por llegada)', () => {
+    const t = (iso: string) => new Date(iso);
+    const sim = (iso: string) => det({ origin: 'SIMULATED', acquiredAt: t(iso) });
+    const dets = [sim('2026-11-15T02:00:00Z'), sim('2026-11-15T02:05:00Z'), sim('2026-11-15T02:05:00Z'), sim('2026-11-15T02:10:00Z')];
+    expect(buildAlerts(dets, 'LIVE').map((a) => a.detectionCount)).toEqual([1, 2, 1]);
+    // En un replay se siguen agrupando como una pasada.
+    expect(buildAlerts(dets, 'REPLAY').map((a) => a.detectionCount)).toEqual([4]);
+  });
+
   it('arma un mensaje que no afirma un incendio y marca los datos simulados', () => {
     const [real] = buildAlerts(
       [det({ areaId: 'mun-tiquipaya', areaName: 'Sector del Tunari en Tiquipaya', areaType: 'municipio_parque', inPark: true, confidenceLevel: 'HIGH', frpMw: 12.34 })],

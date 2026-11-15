@@ -34,6 +34,12 @@ const CONJUNTOS = {
       dataset: 'PROYECCION SIMULADA 2026-11 a 2031-12',
       origin: 'SIMULATED',
     },
+    {
+      // Para la defensa: una o dos detecciones simuladas cada 5 minutos (14-nov 22:00 a 15-nov 20:00, Bolivia).
+      file: 'demo/ALERTAS_DEFENSA_2026-11-14_2200_a_2026-11-15_2000_cada5min.csv',
+      dataset: 'ALERTAS DEFENSA 14-15 nov 2026',
+      origin: 'SIMULATED',
+    },
   ],
 };
 

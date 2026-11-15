@@ -22,17 +22,13 @@ describe('AlertsService.checkArrivals (proyección simulada que llega a su hora)
     expect(repository.detections).not.toHaveBeenCalled();
   });
 
-  it('anuncia lo que llegó y genera alertas solo con lo ya ocurrido, mirando 30 min atrás', async () => {
+  it('anuncia lo que llegó y genera alertas solo con lo recién llegado', async () => {
     const { service, repository, events } = setup(['obs-1', 'obs-2']);
     const t1 = new Date('2026-11-17T17:35:00Z');
     await service.checkArrivals(t1);
     expect(events.emit).toHaveBeenCalledWith(OBSERVATIONS_ARRIVED, { observationIds: ['obs-1', 'obs-2'] });
 
-    const [, segunda] = repository.simulatedBetween.mock.calls;
-    const [desde, hasta] = segunda as [Date, Date];
-    const [[desdeAnuncio]] = repository.simulatedBetween.mock.calls as [[Date, Date]];
-    expect(desdeAnuncio.getTime() - desde.getTime()).toBe(30 * 60_000);
-    expect(hasta).toBe(t1);
+    expect(repository.simulatedBetween).toHaveBeenCalledTimes(1);
     expect(repository.detections).toHaveBeenCalledWith({ observationIds: ['obs-1', 'obs-2'], upTo: t1 }, true);
     // Sin alertas nuevas (insertMany vacío) no se emite alert:new.
     expect(events.emit).not.toHaveBeenCalledWith(ALERTS_CREATED, expect.anything());

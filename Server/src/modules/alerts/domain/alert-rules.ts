@@ -77,7 +77,11 @@ export function buildAlerts(detections: readonly DetectionForAlert[], mode: Aler
 
   const alerts: AlertCandidate[] = [];
   for (const group of byAreaAndPlatform.values()) {
-    for (const pass of splitIntoPasses(group)) alerts.push(toAlert(pass, mode));
+    // Los datos simulados que llegan en vivo (proyección, alertas de la defensa) pueden venir cada
+    // pocos minutos: se agrupan solo si comparten el minuto exacto. Así cada llegada da su alerta y
+    // el resultado no depende de cuándo se revise.
+    const windowMinutes = mode === 'LIVE' && group[0]!.origin === 'SIMULATED' ? 0 : PASS_WINDOW_MINUTES;
+    for (const pass of splitIntoPasses(group, windowMinutes)) alerts.push(toAlert(pass, mode));
   }
   return alerts.sort((a, b) => a.detectedAt.getTime() - b.detectedAt.getTime() || a.areaId.localeCompare(b.areaId));
 }
@@ -95,13 +99,13 @@ export function severityOf(pass: readonly DetectionForAlert[]): Severity {
   return 'MEDIUM';
 }
 
-function splitIntoPasses(group: DetectionForAlert[]): DetectionForAlert[][] {
+function splitIntoPasses(group: DetectionForAlert[], windowMinutes: number): DetectionForAlert[][] {
   const sorted = [...group].sort((a, b) => a.acquiredAt.getTime() - b.acquiredAt.getTime());
   const passes: DetectionForAlert[][] = [];
   let current: DetectionForAlert[] = [];
   for (const d of sorted) {
     const last = current.at(-1);
-    if (last && d.acquiredAt.getTime() - last.acquiredAt.getTime() > PASS_WINDOW_MINUTES * 60_000) {
+    if (last && d.acquiredAt.getTime() - last.acquiredAt.getTime() > windowMinutes * 60_000) {
       passes.push(current);
       current = [];
     }
