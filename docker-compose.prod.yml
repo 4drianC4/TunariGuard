@@ -59,6 +59,9 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       TUNI_CHAT_MODEL: ${TUNI_CHAT_MODEL:-}
       FIRMS_MAP_KEY: ${FIRMS_MAP_KEY:-}
+      # Sincronización con NASA FIRMS (detecciones nuevas → alertas en vivo)
+      FIRMS_SYNC_ENABLED: ${FIRMS_SYNC_ENABLED:-true}
+      FIRMS_SYNC_INTERVAL_MINUTES: ${FIRMS_SYNC_INTERVAL_MINUTES:-10}
 
   web:
     build: ./Client/tunari-guard

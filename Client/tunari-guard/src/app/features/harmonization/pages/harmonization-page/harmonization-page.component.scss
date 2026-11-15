@@ -1,1 +1,85 @@
-/* Estilos de la vista en src/styles.scss para respetar el presupuesto Angular de 8 kB. */
+/* Distribución en dos columnas para las cuatro cards bajo los filtros. */
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.harm-page,
+.harm-grid,
+.harm-card {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.harm-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 16px;
+}
+
+/* Cada card ocupa una columna: mapa/proceso arriba y gráfica/eventos abajo. */
+.harm-map-card,
+.harm-process-card,
+.harm-chart-card,
+.harm-table-card {
+  grid-column: auto;
+  min-width: 0;
+  align-self: stretch;
+}
+
+/* La gráfica usa el ancho interior completo de SU card, no el de la página. */
+.harm-chart-scroll {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  padding: 0 12px 8px;
+  box-sizing: border-box;
+}
+
+.harm-chart-scroll svg {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: auto;
+}
+
+.harm-map-card > div,
+.harm-process-card,
+.harm-chart-card,
+.harm-table-card {
+  min-width: 0;
+}
+
+.harm-table-scroll {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+@media (max-width: 760px) {
+  .harm-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .harm-map-card,
+  .harm-process-card,
+  .harm-chart-card,
+  .harm-table-card {
+    grid-column: 1 / -1;
+  }
+
+  .harm-chart-scroll {
+    overflow-x: auto;
+  }
+
+  .harm-chart-scroll svg {
+    min-width: 520px;
+  }
+}

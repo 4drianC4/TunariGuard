@@ -1285,3 +1285,32 @@ select.tg-filter-control {
     flex: 1 1 auto;
   }
 }
+
+app-mascot-assistant .tuni-answer,
+app-mascot-assistant .tuni-excerpt {
+  white-space: pre-wrap;
+}
+
+app-mascot-assistant .tuni-citations {
+  margin-top: 8px;
+}
+
+app-mascot-assistant .tuni-citations details {
+  border-top: 1px solid #cdddcf;
+  padding: 5px 0;
+}
+
+app-mascot-assistant .tuni-citations summary {
+  cursor: pointer;
+  color: #2d6749;
+  font-weight: 700;
+}
+
+app-mascot-assistant .tuni-citations .tuni-citation-scope,
+app-mascot-assistant .tuni-citations .tuni-excerpt {
+  margin: 5px 0;
+}
+
+app-mascot-assistant .tuni-citation-scope {
+  font-style: italic;
+}

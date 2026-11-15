@@ -6,7 +6,8 @@ import { HistorialService } from '../analisis/historial.service.js';
 import { listAlertsSchema } from '../alerts/alerts.schemas.js';
 import { AlertsService } from '../alerts/alerts.service.js';
 import type { FuenteTuni, RespuestaTuni } from './tuni-respuesta.js';
-import type { SateliteTuni } from './tuni.schemas.js';
+import type { ContextoDetecciones, SateliteTuni } from './tuni.schemas.js';
+import { nombreDelMes, type PeriodoIncendios } from './tuni-fechas.js';
 
 const defaultArea = 'parque-tunari';
 const nombrePorDefecto = 'Parque Nacional Tunari';
@@ -42,6 +43,11 @@ const deteccion = z.object({
   origen_dato: z.string(),
 });
 const areaSchema = z.object({ area_id: z.string(), nombre_visible: z.string(), nombre: z.string().optional() });
+const casoDocumentado = z.object({
+  fecha_documentada: isoDay,
+  lugar_reportado: z.string(),
+  descripcion: z.string(),
+});
 
 @Injectable()
 export class TuniDatosService {
@@ -102,19 +108,23 @@ export class TuniDatosService {
     };
   }
 
-  async estadoMes(area: string | null): Promise<RespuestaTuni> {
+  async estadoMes(area: string | null, corte: string | null = null): Promise<RespuestaTuni> {
     const seleccion = await this.area(area);
     if (!seleccion) return areaDesconocida(area);
+    if (corte !== null && !isoDay.safeParse(corte).success) return sinDatos('Indica una fecha de corte válida.');
 
     const apiPath = `/areas/${encodeURIComponent(seleccion.area_id)}/alerta-mes-en-curso`;
     const fuente: FuenteTuni = {
-      label: 'Ver alerta estadística',
+      label: corte ? 'Ver alertas del área' : 'Ver alerta estadística',
       route: '/alertas',
       query: { area: seleccion.area_id },
-      apiPath,
+      apiPath: corte ? `${apiPath}?historial=true` : apiPath,
     };
-    const [fila] = await this.analisis.alertaMesEnCurso(seleccion.area_id, false);
-    if (!fila) return sinDatos(`No hay un corte de alerta mensual disponible para ${seleccion.nombre_visible}.`, fuente);
+    const fila = await this.cortePublicado(seleccion.area_id, corte);
+    if (!fila) {
+      const periodo = corte ? ` al ${fecha(corte)}` : '';
+      return sinDatos(`No hay un corte de alerta mensual disponible para ${seleccion.nombre_visible}${periodo}.`, fuente);
+    }
     const dato = alerta.parse(fila);
     const nivel = dato.nivel_alerta.replace('_', ' ');
     const vigente = dato.mes.slice(0, 7) === fechaLocal.format(new Date()).slice(0, 7);
@@ -133,12 +143,49 @@ export class TuniDatosService {
     const lectura = mediana === null ? ''
       : ` Se observaron ${numero.format(valor)} celdas-día frente a una mediana de ${numero.format(mediana)} para el mismo tramo.`;
     return {
-      answer: `Al ${fecha(dato.fecha_corte)}, el nivel estadístico de ${seleccion.nombre_visible} era ${nivel}.${lectura} ` +
-        (vigente ? 'La lectura corresponde al tramo observado del mes.' : 'Este es el último corte disponible y corresponde a un mes anterior.') +
+      answer: `Al ${fecha(dato.fecha_corte)}, el nivel estadístico de ${seleccion.nombre_visible} era ${nivel}.${lectura} El satélite del corte fue ${dato.satelite_base}. ` +
+        (corte || vigente ? 'La lectura corresponde al tramo observado del mes.' : 'Este es el último corte disponible y corresponde a un mes anterior.') +
         ` ${deteccionAviso}`,
       dataSource: 'tunari_guard',
       facts,
       source: fuente,
+    };
+  }
+
+  async incendiosDocumentados(periodos: PeriodoIncendios[], area: string | null = null): Promise<RespuestaTuni> {
+    if (area && (await this.area(area))?.area_id !== defaultArea) {
+      return sinDatos('El catálogo del Tunari contiene lugares reportados en prensa. Para ese filtro necesitaría un registro con los límites y la ubicación de cada caso.');
+    }
+    const incompletos = periodos.filter(({ anio }) => anio === null);
+    if (incompletos.length) {
+      const meses = new Intl.ListFormat('es-BO').format(incompletos.map(({ mes }) => nombreDelMes(mes)));
+      return {
+        answer: `¿De qué año quieres consultar los incendios reportados en ${meses}? En TunariGuard puedo revisar los casos publicados en prensa que están en el catálogo del Tunari.`,
+        dataSource: 'unavailable',
+        periodosIncendios: periodos,
+      };
+    }
+
+    const casos = z.array(casoDocumentado).parse(await this.analisis.casosDocumentados());
+    const resultados = periodos.map(({ anio, mes: numeroMes }) => {
+      const periodo = `${anio}-${String(numeroMes).padStart(2, '0')}`;
+      return {
+        etiqueta: mes(periodo),
+        casos: casos.filter(({ fecha_documentada }) => fecha_documentada.startsWith(periodo + '-')),
+      };
+    });
+    const resumen = resultados.map(({ etiqueta, casos }) => {
+      if (!casos.length) return `En ${etiqueta} el catálogo no contiene casos reportados.`;
+      const lugares = new Intl.ListFormat('es-BO').format([...new Set(casos.map(({ lugar_reportado }) => lugar_reportado))]);
+      return `En ${etiqueta} hay ${casos.length === 1 ? 'un caso reportado' : `${casos.length} casos reportados`} en ${lugares}.`;
+    });
+    return {
+      answer: resumen.join(' ') + ' El catálogo se basa en una selección de reportes de prensa y su cobertura es parcial.',
+      dataSource: 'tunari_guard',
+      facts: resultados.flatMap(({ casos }) => casos.map(({ fecha_documentada, lugar_reportado, descripcion }) => ({
+        label: `${fecha(fecha_documentada)} · ${lugar_reportado}`,
+        value: descripcion,
+      }))),
     };
   }
 
@@ -153,6 +200,7 @@ export class TuniDatosService {
       fuente: satelite ?? undefined, limite: 5, orden: 'fecha_desc',
     });
     if (!query.success) return sinDatos('Indica un rango de fechas válido con la fecha inicial antes de la final.');
+    const contextoDetecciones: ContextoDetecciones = { area: areaId, desde, hasta, satelite };
     const { cuerpo, cabeceras } = await this.analisis.detecciones(query.data);
     const params = new URLSearchParams({ area_id: areaId, orden: 'fecha_desc', limite: '5' });
     if (desde) params.set('desde', desde);
@@ -163,7 +211,11 @@ export class TuniDatosService {
     const filas = z.array(deteccion).parse(cuerpo);
     if (!filas.length) {
       const filtro = satelite ? ` de ${satelite}` : '';
-      return sinDatos(`No encontré detecciones${filtro} cargadas para ${seleccion.nombre_visible} en el intervalo consultado. Esto puede deberse a la cobertura disponible.`);
+      const periodo = desde && desde === hasta ? `el ${fecha(desde)}` : 'en el intervalo consultado';
+      return {
+        ...sinDatos(`No encontré detecciones${filtro} cargadas para ${seleccion.nombre_visible} ${periodo}. Esto puede deberse a la cobertura disponible.`),
+        contextoDetecciones,
+      };
     }
 
     const facts = filas.map((fila) => ({
@@ -179,6 +231,7 @@ export class TuniDatosService {
       dataSource: 'tunari_guard',
       facts,
       source: fuente,
+      contextoDetecciones,
     };
   }
 
@@ -189,8 +242,7 @@ export class TuniDatosService {
       return sinDatos('Indica una fecha de corte válida para verificar la alerta.');
     }
     const { area_id: areaId, nombre_visible: nombre } = seleccion;
-    const filas = await this.analisis.alertaMesEnCurso(areaId, corte !== null);
-    const publicada = filas.find((fila) => fila['factor_de_enlace'] === 1 && (corte === null || fila['fecha_corte'] === corte));
+    const publicada = await this.cortePublicado(areaId, corte);
     if (!publicada) {
       const periodo = corte ? ` al ${fecha(corte)}` : '';
       return sinDatos(`No hay una alerta mensual publicada para ${nombre}${periodo}.`);
@@ -306,6 +358,12 @@ export class TuniDatosService {
       facts,
       source: fuente,
     };
+  }
+
+  private async cortePublicado(area: string, corte: string | null) {
+    const filas = await this.analisis.alertaMesEnCurso(area, corte !== null);
+    if (corte === null) return filas[0];
+    return filas.find((fila) => fila['factor_de_enlace'] === 1 && fila['fecha_corte'] === corte);
   }
 
   private async area(input: string | null) {

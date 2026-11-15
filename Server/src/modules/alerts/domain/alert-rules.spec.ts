@@ -1,4 +1,4 @@
-import { boliviaTime, buildAlerts, severityOf, type DetectionForAlert } from './alert-rules.js';
+import { boliviaTime, buildAlerts, severityOf, shouldNotify, type DetectionForAlert } from './alert-rules.js';
 
 let n = 0;
 function det(overrides: Partial<DetectionForAlert> = {}): DetectionForAlert {
@@ -90,6 +90,16 @@ describe('buildAlerts', () => {
     const [demo] = buildAlerts([det()], 'REPLAY');
     expect(demo!.message.startsWith('[Datos simulados] ')).toBe(true);
     expect(demo!.dedupeKey.startsWith('REPLAY|')).toBe(true);
+  });
+});
+
+describe('shouldNotify', () => {
+  const now = new Date('2026-11-15T12:00:00Z');
+  it('anuncia lo reciente y el replay, pero no los registros históricos', () => {
+    expect(shouldNotify({ mode: 'LIVE', detectedAt: new Date('2026-11-15T03:00:00Z') }, now)).toBe(true);
+    expect(shouldNotify({ mode: 'LIVE', detectedAt: new Date('2026-11-13T12:00:00Z') }, now)).toBe(true); // justo 48 h
+    expect(shouldNotify({ mode: 'LIVE', detectedAt: new Date('2026-10-25T17:37:00Z') }, now)).toBe(false);
+    expect(shouldNotify({ mode: 'REPLAY', detectedAt: new Date('2024-08-20T17:51:00Z') }, now)).toBe(true);
   });
 });
 

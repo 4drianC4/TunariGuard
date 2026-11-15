@@ -1,7 +1,8 @@
-import { HttpException, HttpStatus, Injectable, ServiceUnavailableException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger, ServiceUnavailableException } from '@nestjs/common';
 
 @Injectable()
 export class TuniOpenaiService {
+  private readonly logger = new Logger(TuniOpenaiService.name);
   get disponible(): boolean {
     return !!this.key();
   }
@@ -39,6 +40,7 @@ export class TuniOpenaiService {
     }
 
     if (!response.ok) {
+      this.logger.warn(`OpenAI rechazó la llamada a ${path} con HTTP ${response.status}.`);
       throw new HttpException(
         'El proveedor de IA no pudo completar la solicitud',
         response.status === 429 ? 429 : HttpStatus.BAD_GATEWAY,
