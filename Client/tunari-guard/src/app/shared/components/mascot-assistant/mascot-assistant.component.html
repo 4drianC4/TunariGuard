@@ -39,7 +39,7 @@
           @for (item of respuestas(); track $index) {
             <div class="chat-message" [class.from-tuni]="item.role === 'assistant'" [class.from-user]="item.role === 'user'">
               <span class="message-author">{{ item.role === 'assistant' ? 'Tuni' : 'Tú' }}</span>
-              <p>{{ item.text }}</p>
+              <p class="tuni-answer">{{ item.text }}</p>
               @if (item.role === 'assistant') {
                 @if (item.facts?.length) {
                   <dl class="tuni-facts">
@@ -50,8 +50,18 @@
                 }
                 @if (item.source; as source) {
                   <div class="tuni-source">
-                    @if (source.section) { <small>{{ source.section }}</small> }
                     <a [routerLink]="source.route" [queryParams]="source.query" (click)="cerrar()">{{ source.label }} ↗</a>
+                  </div>
+                }
+                @if (item.citas?.length) {
+                  <div class="tuni-citations" aria-label="Fuentes de la explicación">
+                    @for (cita of item.citas; track cita.id) {
+                      <details>
+                        <summary>{{ cita.titulo }}</summary>
+                        @if (cita.alcance) { <p class="tuni-citation-scope">{{ cita.alcance }}</p> }
+                        <p class="tuni-excerpt">{{ cita.texto }}</p>
+                      </details>
+                    }
                   </div>
                 }
                 <button type="button" class="tuni-speak-btn" (click)="escuchar(item.text)" [disabled]="conversacionContinua() || ((reproduciendo() || cargandoVoz()) && !reproduciendo())" [attr.aria-label]="reproduciendo() || cargandoVoz() ? 'Detener voz' : 'Escuchar respuesta'">
