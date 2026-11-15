@@ -1,4 +1,6 @@
 import { DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
+import { DetectionDatesService } from '../../../../application/services/detection-dates.service';
+import { DetectionDateDirective } from '../../../../shared/directives/detection-date.directive';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, resource, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -14,12 +16,13 @@ const initialFilters = { desde: '', hasta: '', area_id: '', severidad: '', estad
 
 @Component({
   selector: 'app-alerts-page',
-  imports: [DatePipe, DecimalPipe, PercentPipe, FormsModule, PageHeaderComponent, AlertMapComponent, MapInfoComponent],
+  imports: [DetectionDateDirective, DatePipe, DecimalPipe, PercentPipe, FormsModule, PageHeaderComponent, AlertMapComponent, MapInfoComponent],
   templateUrl: './alerts-page.component.html',
   styleUrl: './alerts-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AlertsPageComponent {
+  readonly dates = inject(DetectionDatesService);
   private readonly api = inject(AlertsApi);
   readonly colors = ALERT_COLORS;
   readonly severityLevel = SEVERITY_LEVEL;
@@ -97,11 +100,9 @@ export class AlertsPageComponent {
   }
 
   applyFilters(): void {
-    if (this.draft.desde && this.draft.hasta && this.draft.desde > this.draft.hasta) {
-      this.filterError.set('La fecha inicial debe ser anterior o igual a la final.');
-      return;
-    }
-    this.filterError.set('');
+    const error = this.dates.rangeError(this.draft.desde, this.draft.hasta);
+    this.filterError.set(error);
+    if (error) return;
     this.selectedId.set('');
     this.monthlyArea.set('');
     this.page.set(1);

@@ -1,4 +1,4 @@
-import { addOpenStreetMap } from '../../utils/map-basemap';
+import { addBoliviaBasemap, addOpenStreetMap } from '../../utils/map-basemap';
 import { MapInfoComponent } from '../map-info.component';
 import { AfterViewInit, Component, DestroyRef, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -209,7 +209,8 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     });
     this.resizeObserver.observe(this.mapContainer.nativeElement);
     L.control.scale({ imperial: false, position: 'topright' }).addTo(this.map);
-    addOpenStreetMap(this.map);
+    if (this.compact) addOpenStreetMap(this.map);
+    else addBoliviaBasemap(this.map);
     this.map.createPane('map-detections').style.zIndex = '410';
     this.canvasRenderer = L.canvas({
       pane: 'map-detections',

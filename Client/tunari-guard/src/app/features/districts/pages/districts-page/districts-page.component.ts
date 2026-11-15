@@ -1,4 +1,6 @@
 import { DistrictAnalysisComponent } from '../../components/district-analysis/district-analysis.component';
+import { DetectionDatesService } from '../../../../application/services/detection-dates.service';
+import { DetectionDateDirective } from '../../../../shared/directives/detection-date.directive';
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
@@ -22,12 +24,14 @@ function shiftDate(date: string, days: number): string {
 
 @Component({
   selector: 'app-districts-page',
-  imports: [FormsModule, PageHeaderComponent, MapInfoComponent, DistrictMapComponent, DistrictAnalysisComponent],
+  imports: [DetectionDateDirective, FormsModule, PageHeaderComponent, MapInfoComponent, DistrictMapComponent, DistrictAnalysisComponent],
   templateUrl: './districts-page.component.html',
   styleUrl: './districts-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DistrictsPageComponent {
+  readonly dates = inject(DetectionDatesService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly analysis = inject(MapAnalysisService);
   private readonly mapData = inject(MapDataService);
   private request?: AbortController;
@@ -111,16 +115,25 @@ export class DistrictsPageComponent {
   });
 
   constructor() {
-    inject(DestroyRef).onDestroy(() => this.request?.abort());
-    void this.load(true);
+    this.destroyRef.onDestroy(() => this.request?.abort());
+    void this.dates.load().then(() => {
+      if (this.destroyRef.destroyed) return;
+      const initial = this.applied();
+      const from = this.dates.clamp(initial.from);
+      const to = this.dates.clamp(initial.to);
+      if (this.dateFrom === initial.from) this.dateFrom = from;
+      if (this.dateTo === initial.to) this.dateTo = to;
+      this.applied.set({ ...initial, from, to });
+      return this.load(true);
+    });
   }
 
   applyFilters(): void {
-    if (!this.dateFrom || !this.dateTo || this.dateFrom > this.dateTo) {
-      this.validation.set('Selecciona un rango de fechas válido.');
-      return;
-    }
-    this.validation.set('');
+    const error = !this.dateFrom || !this.dateTo
+      ? 'Selecciona un rango de fechas válido.'
+      : this.dates.rangeError(this.dateFrom, this.dateTo);
+    this.validation.set(error);
+    if (error) return;
     const previous = this.applied();
     this.applied.set({ from: this.dateFrom, to: this.dateTo, source: this.source, district: this.district, level: this.level });
     this.mobileFiltersOpen.set(false);
@@ -130,8 +143,8 @@ export class DistrictsPageComponent {
   }
 
   resetFilters(): void {
-    this.dateFrom = DEFAULT_ARCHIVE_FROM;
-    this.dateTo = this.latestArchiveDate ?? boliviaDate.format(new Date());
+    this.dateFrom = this.dates.clamp(DEFAULT_ARCHIVE_FROM);
+    this.dateTo = this.dates.clamp(this.latestArchiveDate ?? this.dates.today);
     this.source = 'archive';
     this.district = '';
     this.level = '';
@@ -150,9 +163,10 @@ export class DistrictsPageComponent {
         const latest = await this.analysis.latestDetectionDate('municipio-cochabamba', request.signal);
         if (request.signal.aborted) return;
         if (latest && latest >= this.applied().from) {
-          this.latestArchiveDate = latest;
-          if (this.dateTo === this.applied().to) this.dateTo = latest;
-          this.applied.update((filters) => ({ ...filters, to: latest }));
+          const end = this.dates.clamp(latest);
+          this.latestArchiveDate = end;
+          if (this.dateTo === this.applied().to) this.dateTo = end;
+          this.applied.update((filters) => ({ ...filters, to: end }));
         }
       }
       const { from, to, source } = this.applied();

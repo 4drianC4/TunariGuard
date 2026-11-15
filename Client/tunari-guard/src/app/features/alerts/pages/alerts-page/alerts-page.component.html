@@ -37,8 +37,8 @@
     <form id="alert-filters" class="tg-card tg-filter-panel" [class.tg-filter-panel--open]="mobileFiltersOpen()"
       aria-label="Filtros de alertas" (ngSubmit)="applyFilters()">
       <div class="tg-filter-fields">
-        <label class="tg-filter-field">Desde<input class="tg-filter-control" type="date" name="from" [(ngModel)]="draft.desde" /></label>
-        <label class="tg-filter-field">Hasta<input class="tg-filter-control" type="date" name="to" [(ngModel)]="draft.hasta" /></label>
+        <label class="tg-filter-field">Desde<input class="tg-filter-control" type="date" name="from" tgDetectionDate="day" [(ngModel)]="draft.desde" /></label>
+        <label class="tg-filter-field">Hasta<input class="tg-filter-control" type="date" name="to" tgDetectionDate="day" [(ngModel)]="draft.hasta" /></label>
         <label class="tg-filter-field">Área vigilada<select class="tg-filter-control" name="area" [(ngModel)]="draft.area_id">
           <option value="">Todas las áreas</option>
           @for (area of areas(); track area.areaId) { <option [value]="area.areaId">{{ area.areaName }}</option> }

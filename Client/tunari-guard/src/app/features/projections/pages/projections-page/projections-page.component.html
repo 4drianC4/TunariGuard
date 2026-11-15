@@ -51,13 +51,13 @@
       aria-label="Filtros de proyección" (ngSubmit)="apply()">
       <div class="tg-filter-fields">
         <label class="tg-filter-field"><span>Serie de tiempo</span><select class="tg-filter-control" name="serie" [(ngModel)]="draftSeries"><option *ngFor="let option of seriesOptions" [ngValue]="option.value">{{option.label}}</option></select></label>
-        <label class="tg-filter-field"><span>Rango histórico</span><select class="tg-filter-control" name="historico" [(ngModel)]="draftStart"><option *ngFor="let year of historicalStarts" [ngValue]="year">{{year}} – 2026</option></select></label>
+        <label class="tg-filter-field"><span>Rango histórico</span><select class="tg-filter-control" name="historico" [(ngModel)]="draftStart" [disabled]="!historicalStarts().length">@if (!historicalStarts().length) { <option [ngValue]="draftStart">Sin años disponibles</option> }<option *ngFor="let year of historicalStarts()" [ngValue]="year">{{year}} – 2026</option></select></label>
         <label class="tg-filter-field"><span>Horizonte de proyección</span><select class="tg-filter-control" name="horizonte" [(ngModel)]="draftHorizon"><option *ngFor="let h of horizons" [ngValue]="h">{{h}} años (2027 – {{2026 + h}})</option></select></label>
         <label class="tg-filter-field"><span>Distrito</span><select class="tg-filter-control" name="distrito" [(ngModel)]="draftDistrict"><option *ngFor="let d of districts">{{d}}</option></select></label>
         <label class="tg-filter-field"><span>Modelo</span><select class="tg-filter-control" name="modelo" [(ngModel)]="draftModel"><option *ngFor="let m of models" [ngValue]="m.name">{{m.name}}</option></select></label>
       </div>
       <div class="tg-filter-actions">
-        <button class="tg-filter-button tg-filter-button--primary" type="submit">Actualizar</button>
+        <button class="tg-filter-button tg-filter-button--primary" type="submit" [disabled]="!historicalStarts().length">Actualizar</button>
       </div>
     </form>
   </div>

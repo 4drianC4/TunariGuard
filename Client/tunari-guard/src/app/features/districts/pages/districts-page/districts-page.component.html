@@ -59,8 +59,8 @@
     <form id="district-filters" class="tg-card tg-filter-panel" [class.tg-filter-panel--open]="mobileFiltersOpen()"
       aria-label="Filtros de distritos" (ngSubmit)="applyFilters()">
       <div class="tg-filter-fields">
-        <label class="tg-filter-field">Desde<input class="tg-filter-control" type="date" name="from" [(ngModel)]="dateFrom" /></label>
-        <label class="tg-filter-field">Hasta<input class="tg-filter-control" type="date" name="to" [(ngModel)]="dateTo" /></label>
+        <label class="tg-filter-field">Desde<input class="tg-filter-control" type="date" name="from" tgDetectionDate="day" [(ngModel)]="dateFrom" /></label>
+        <label class="tg-filter-field">Hasta<input class="tg-filter-control" type="date" name="to" tgDetectionDate="day" [(ngModel)]="dateTo" /></label>
         <label class="tg-filter-field">Distrito<select class="tg-filter-control" name="district" [(ngModel)]="district"><option value="">Todos los distritos</option>@for (d of districts(); track d.id) {<option [value]="d.id">{{ d.name }}</option>}</select></label>
         <label class="tg-filter-field">Fuente<select class="tg-filter-control" name="source" [(ngModel)]="source"><option value="archive">Archivo histórico</option><option value="live">Monitoreo FIRMS</option></select></label>
         <label class="tg-filter-field">Nivel de actividad<select class="tg-filter-control" name="activity" [(ngModel)]="level"><option value="">Todos</option>@for (item of levels; track item.level) {<option [value]="item.level">{{ item.level }}</option>}</select></label>

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { DetectionDatesService } from '../../../../application/services/detection-dates.service';
 import { PageHeaderComponent } from
   '../../../../shared/components/page-header/page-header.component';
 
@@ -21,6 +22,7 @@ interface Sample { year: number; value: number; }
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectionsPageComponent {
+  private readonly dates = inject(DetectionDatesService);
   readonly mobileFiltersOpen = signal(false);
   readonly seriesOptions: {value: SeriesKey; label: string}[] = [
     {value:'harmonizadas', label:'Anomalías térmicas (MODIS + VIIRS)'},
@@ -29,7 +31,11 @@ export class ProjectionsPageComponent {
     {value:'actividad', label:'Índice de actividad (mensual)'},
   ];
   readonly districts = ['Todos los distritos', 'Tiquipaya', 'Sacaba', 'Vinto', 'Colcapirhua', 'Quillacollo'];
-  readonly historicalStarts = [2018, 2019, 2020, 2021, 2022];
+  readonly historicalStarts = computed(() => {
+    const min = this.dates.min('year');
+    const max = this.dates.max('year');
+    return [2018, 2019, 2020, 2021, 2022].filter((year) => year >= Number(min) && year <= Number(max));
+  });
   readonly horizons = [3, 5, 7];
   readonly models: ModelStat[] = [
     {name:'SARIMA', mae:12.8, rmse:16.9, mape:14.2, r2:.82, growth:.86},
@@ -58,6 +64,16 @@ export class ProjectionsPageComponent {
   scenario: ScenarioKey = 'base';
   showModelDetails = false;
   message = '';
+
+  constructor() {
+    effect(() => {
+      const starts = this.historicalStarts();
+      const first = starts[0];
+      if (first === undefined) return;
+      if (!starts.includes(this.draftStart)) this.draftStart = first;
+      if (!starts.includes(this.active.start)) this.active = { ...this.active, start: first };
+    });
+  }
 
   get stat(): ModelStat { return this.models.find(m => m.name === this.active.model)!; }
   get seriesLabel(): string { return this.seriesOptions.find(s=>s.value===this.active.series)!.label; }
@@ -106,6 +122,10 @@ export class ProjectionsPageComponent {
   get visibleYearLabels():number[] { return this.chartYears.filter((year,i)=>i===0||i===this.chartYears.length-1||year===2026||i%2===0); }
 
   apply():void {
+    if (!this.historicalStarts().includes(this.draftStart)) {
+      this.message = 'No hay un año inicial disponible para la proyección DEMO.';
+      return;
+    }
     this.active={series:this.draftSeries,start:this.draftStart,horizon:this.draftHorizon,district:this.draftDistrict,model:this.draftModel};
     this.message='Proyección DEMO actualizada con la configuración seleccionada.';
   }

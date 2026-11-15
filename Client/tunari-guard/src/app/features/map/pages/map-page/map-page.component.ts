@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect } from '@angular/core';
+import { DetectionDatesService } from '../../../../application/services/detection-dates.service';
 import { inject } from '@angular/core';
 import type * as L from 'leaflet';
 import { HotspotMapComponent } from '../../components/hotspot-map/hotspot-map.component';
@@ -14,7 +15,17 @@ import { PageHeaderComponent } from '../../../../shared/components/page-header/p
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MapPageComponent {
+  readonly dates = inject(DetectionDatesService);
   readonly mapState = inject(MapStateService);
+
+  constructor() {
+    effect(() => {
+      const current = this.mapState.period();
+      const from = this.dates.clamp(current.from);
+      const to = this.dates.clamp(current.to);
+      if (from !== current.from || to !== current.to) this.mapState.setPeriod({ from, to });
+    });
+  }
 
   onContextChange({ areaId, period }: { areaId: string; period: MapPeriod }): void {
     this.mapState.areaId.set(areaId);

@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { DetectionDatesService } from '../../../../application/services/detection-dates.service';
+import { DetectionDateDirective } from '../../../../shared/directives/detection-date.directive';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MapInfoComponent } from '../../../map/components/map-info.component';
@@ -42,12 +44,13 @@ interface DownloadRecord {
 @Component({
   selector: 'app-reports-page',
   standalone: true,
-  imports: [DecimalPipe, FormsModule, PageHeaderComponent, MapInfoComponent],
+  imports: [DetectionDateDirective, DecimalPipe, FormsModule, PageHeaderComponent, MapInfoComponent],
   templateUrl: './reports-page.component.html',
   styleUrl: './reports-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReportsPageComponent implements OnInit, OnDestroy {
+  readonly dates = inject(DetectionDatesService);
   private readonly api = inject(ReportsApiService);
   private request?: AbortController;
   private defaults: ReportFilters = {
@@ -136,7 +139,7 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
     const controller = this.beginRequest();
     try {
       const [areas, coverage] = await Promise.all([
-        this.api.areas(controller.signal), this.api.coverage(controller.signal),
+        this.api.areas(controller.signal), this.api.coverage(controller.signal), this.dates.load(),
       ]);
       if (controller.signal.aborted) return;
       if (!areas.length || !/^\d{4}-\d{2}-\d{2}$/.test(coverage)) {
@@ -147,8 +150,8 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
       this.defaults = {
         ...this.defaults,
         area: areas.find((area) => area.area_id === 'parque-tunari')?.area_id ?? areas[0].area_id,
-        from: coverage.slice(0, 4) + '-01-01',
-        to: coverage,
+        from: this.dates.clamp(coverage.slice(0, 4) + '-01-01'),
+        to: this.dates.clamp(coverage),
       };
       this.filters = { ...this.defaults };
       await this.apply();
@@ -163,8 +166,8 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
     const to = this.filters.to || this.defaults.to;
     this.filters = {
       ...this.filters, kind,
-      from: kind === 'detections' ? (from.length === 7 ? from + '-01' : from) : from.slice(0, 7),
-      to: kind === 'detections' ? (to.length === 7 ? this.lastDayOf(to) : to) : to.slice(0, 7),
+      from: kind === 'detections' ? this.dates.clamp(from.length === 7 ? from + '-01' : from) : from.slice(0, 7),
+      to: kind === 'detections' ? this.dates.clamp(to.length === 7 ? this.lastDayOf(to) : to) : to.slice(0, 7),
       source: kind === 'detections' ? 'ALL' : 'HARMONIZED',
       confidence: '', alertLevel: '',
     };
@@ -175,13 +178,9 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
     const controller = this.beginRequest();
     const filters = { ...this.filters };
     try {
-      const pattern = this.monthly ? /^\d{4}-(0[1-9]|1[0-2])$/ : /^\d{4}-(0[1-9]|1[0-2])-\d{2}$/;
-      if (!pattern.test(filters.from) || !pattern.test(filters.to) || filters.from > filters.to) {
-        throw new Error('Selecciona un período válido. El inicio debe ser anterior o igual al fin.');
-      }
-      if (this.monthly && (filters.from < '2000-01' || filters.to > '2100-12')) {
-        throw new Error('Selecciona meses entre los años 2000 y 2100.');
-      }
+      if (!filters.from || !filters.to) throw new Error('Selecciona un período válido.');
+      const rangeError = this.dates.rangeError(filters.from, filters.to, this.monthly ? 'month' : 'day');
+      if (rangeError) throw new Error(rangeError);
       const data = await this.api.load(filters, controller.signal);
       if (controller.signal.aborted) return;
       const selectedArea = this.areas().find((entry) => entry.area_id === filters.area);

@@ -1,4 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { DetectionDatesService } from '../../../../application/services/detection-dates.service';
+import { DetectionDateDirective } from '../../../../shared/directives/detection-date.directive';
 import { DecimalPipe } from '@angular/common';
 
 import { MetricsService } from '../../../../application/services/metrics.service';
@@ -12,13 +14,15 @@ import { HistoryTableComponent } from '../../components/history-table/history-ta
 @Component({
   selector: 'app-history-page',
   standalone: true,
-  imports: [DecimalPipe, HistoryCalendarComponent, HistoryChartComponent, HistoryTableComponent],
+  imports: [DetectionDateDirective, DecimalPipe, HistoryCalendarComponent, HistoryChartComponent, HistoryTableComponent],
   templateUrl: './history-page.component.html',
   styleUrl: './history-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HistoryPageComponent {
+  readonly dates = inject(DetectionDatesService);
   readonly metrics = inject(MetricsService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly districtsService = inject(DistrictsService);
   readonly areas = signal<readonly District[]>([]);
   readonly areasLoading = signal(true);
@@ -69,7 +73,12 @@ export class HistoryPageComponent {
         const defaultArea = areas.find(area => area.area_id === 'parque-tunari') ?? areas[0];
         if (defaultArea) {
           this.areaId.set(defaultArea.area_id);
-          this.applyFilters();
+          void this.dates.load().then(() => {
+            if (this.destroyRef.destroyed) return;
+            this.fromYear.update((year) => year === null ? null : Number(this.dates.clamp(String(year), 'year')));
+            this.toYear.update((year) => year === null ? null : Number(this.dates.clamp(String(year), 'year')));
+            this.applyFilters();
+          });
         } else {
           this.areasError.set('El endpoint no devolvió áreas disponibles.');
         }
@@ -96,16 +105,9 @@ export class HistoryPageComponent {
       this.filterError.set('Ingresa el identificador del área.');
       return;
     }
-    if (fromYear !== null && (!Number.isInteger(fromYear) || fromYear < 1900 || fromYear > 2200)) {
-      this.filterError.set('El año inicial debe ser un año válido.');
-      return;
-    }
-    if (toYear !== null && (!Number.isInteger(toYear) || toYear < 1900 || toYear > 2200)) {
-      this.filterError.set('El año final debe ser un año válido.');
-      return;
-    }
-    if (fromYear !== null && toYear !== null && fromYear > toYear) {
-      this.filterError.set('El año inicial no puede ser posterior al año final.');
+    const error = this.dates.rangeError(String(fromYear ?? ''), String(toYear ?? ''), 'year');
+    if (error) {
+      this.filterError.set(error);
       return;
     }
 
@@ -124,8 +126,8 @@ export class HistoryPageComponent {
     this.areaId.set(defaultArea?.area_id ?? '');
     this.source.set('HARMONIZED');
     this.measure.set('celdas_dia');
-    this.fromYear.set(2001);
-    this.toYear.set(2026);
+    this.fromYear.set(Number(this.dates.min('year')));
+    this.toYear.set(Number(this.dates.max('year')));
     this.applyFilters();
   }
 }

@@ -38,10 +38,10 @@
             </label>
           }
           <label class="tg-filter-field"><span>Fecha inicial</span>
-            <input class="tg-filter-control" [type]="monthly ? 'month' : 'date'" name="from" [(ngModel)]="filters.from" required />
+            <input class="tg-filter-control" [type]="monthly ? 'month' : 'date'" name="from" [tgDetectionDate]="monthly ? 'month' : 'day'" [(ngModel)]="filters.from" required />
           </label>
           <label class="tg-filter-field"><span>Fecha final</span>
-            <input class="tg-filter-control" [type]="monthly ? 'month' : 'date'" name="to" [(ngModel)]="filters.to" required />
+            <input class="tg-filter-control" [type]="monthly ? 'month' : 'date'" name="to" [tgDetectionDate]="monthly ? 'month' : 'day'" [(ngModel)]="filters.to" required />
           </label>
           @if (showSource(filters.kind)) {
             <label class="tg-filter-field">

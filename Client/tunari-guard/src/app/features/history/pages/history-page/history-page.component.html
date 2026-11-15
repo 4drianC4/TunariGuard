@@ -47,11 +47,11 @@
         </label>
         <label class="tg-filter-field">
           Desde año
-          <input class="tg-filter-control" type="number" min="1900" max="2200" [value]="fromYear() ?? ''" (input)="onFromYearChange($any($event.target).value)" placeholder="2001" />
+          <input class="tg-filter-control" type="number" tgDetectionDate="year" [value]="fromYear() ?? ''" (input)="onFromYearChange($any($event.target).value)" placeholder="2001" />
         </label>
         <label class="tg-filter-field">
           Hasta año
-          <input class="tg-filter-control" type="number" min="1900" max="2200" [value]="toYear() ?? ''" (input)="onToYearChange($any($event.target).value)" placeholder="2026" />
+          <input class="tg-filter-control" type="number" tgDetectionDate="year" [value]="toYear() ?? ''" (input)="onToYearChange($any($event.target).value)" placeholder="2026" />
         </label>
       </div>
       <div class="tg-filter-actions">
