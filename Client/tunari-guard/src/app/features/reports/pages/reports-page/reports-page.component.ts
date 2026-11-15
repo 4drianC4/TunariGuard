@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MapInfoComponent } from '../../../map/components/map-info.component';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { exportReport, type ExportFormat } from '../../data-access/report-export';
 import {
@@ -26,6 +27,7 @@ interface ReportView {
   filters: ReportFilters;
   area: string;
   areaNotice: string | null;
+  method: string;
   data: ReportData;
 }
 
@@ -40,7 +42,7 @@ interface DownloadRecord {
 @Component({
   selector: 'app-reports-page',
   standalone: true,
-  imports: [DecimalPipe, FormsModule, PageHeaderComponent],
+  imports: [DecimalPipe, FormsModule, PageHeaderComponent, MapInfoComponent],
   templateUrl: './reports-page.component.html',
   styleUrl: './reports-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -54,6 +56,12 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
 
   readonly reportTypes = reportTypes;
   readonly sourceLabels = sourceLabels;
+  readonly icons: Record<ReportKind, string> = {
+    detections: 'fire', alerts: 'bell', districts: 'districts', history: 'trend', comparison: 'harmonization',
+  };
+  readonly exportLabels: Record<ExportFormat, string> = {
+    PDF: 'Resumen, hasta 20 filas', CSV: 'Todas las filas', Excel: 'Todas las filas y contexto', GeoJSON: 'Puntos geográficos',
+  };
   readonly kinds = Object.keys(reportTypes) as ReportKind[];
   readonly areas = signal<ReportArea[]>([]);
   readonly coverage = signal('');
@@ -85,7 +93,6 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
     const view = this.view();
     if (!view) return null;
     const { kind } = view.filters;
-    if (kind === 'alerts') return null;
     let entries: { label: string; values: (number | null)[] }[];
     if (view.data.detections) {
       const counts = new Map<string, number>();
@@ -93,23 +100,25 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
         const month = detection.fecha_bo.slice(0, 7);
         counts.set(month, (counts.get(month) ?? 0) + 1);
       }
-      entries = [...counts].map(([label, count]) => ({ label, values: [count] }));
+      entries = [...counts].sort(([a], [b]) => a.localeCompare(b)).map(([label, count]) => ({ label, values: [count] }));
     } else {
-      const end = kind === 'comparison' ? 3 : 2;
+      const start = kind === 'alerts' ? 4 : 1;
+      const end = kind === 'alerts' ? 6 : kind === 'comparison' ? 3 : 2;
       entries = view.data.rows.map((row) => ({
         label: String(row[0]),
-        values: row.slice(1, end).map((value) => typeof value === 'number' ? value : null),
+        values: row.slice(start, end).map((value) => typeof value === 'number' ? value : null),
       }));
     }
     const displayed = kind === 'districts' ? entries : entries.slice(-12);
     if (!displayed.some((entry) => entry.values.some((value) => value !== null))) return null;
     const max = Math.max(1, ...displayed.flatMap((entry) => entry.values.map((value) => value ?? 0)));
-    return { entries: displayed, max, comparison: kind === 'comparison', shortened: entries.length > displayed.length };
+    const step = Math.pow(10, Math.floor(Math.log10(max)));
+    const limit = Math.ceil(max / step) * step;
+    return { entries: displayed, max: limit, ticks: [limit, limit / 2, 0], comparison: kind === 'comparison', shortened: entries.length > displayed.length };
   });
 
   filters = { ...this.defaults };
   filtersExpanded = false;
-  format: ExportFormat = 'PDF';
 
   get monthly(): boolean { return this.filters.kind !== 'detections'; }
   showSource(kind: ReportKind): boolean {
@@ -149,6 +158,7 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
   }
 
   changeKind(kind: ReportKind): void {
+    if (kind === this.filters.kind) return;
     const from = this.filters.from || this.defaults.from;
     const to = this.filters.to || this.defaults.to;
     this.filters = {
@@ -177,8 +187,12 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
       const selectedArea = this.areas().find((entry) => entry.area_id === filters.area);
       const area = filters.kind === 'districts' ? 'Distritos de Cochabamba' : selectedArea?.nombre_visible ?? filters.area;
       const areaNotice = filters.kind === 'districts' ? null : selectedArea?.advertencia ?? null;
-      this.view.set({ filters, area, areaNotice, data });
-      if (!this.formats.includes(this.format)) this.format = 'PDF';
+      const method = filters.kind === 'detections' ? 'Conteo de registros satelitales' :
+        filters.kind === 'alerts' ? 'Comparación con el mismo mes de años anteriores' :
+        filters.kind === 'comparison' || filters.source === 'MODIS' || filters.source === 'VIIRS' ? 'Celdas-día por sensor' :
+        selectedArea?.metodo_indice === 'mixto_calibrado' && filters.kind !== 'districts' ? 'Índice armonizado MODIS y VIIRS' :
+        'VIIRS en escala MODIS';
+      this.view.set({ filters, area, areaNotice, method, data });
       this.loading.set(false);
     } catch (error) {
       this.finishError(error, controller);
@@ -188,12 +202,13 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
   reset(): void {
     const kind = this.filters.kind;
     this.filters = { ...this.defaults };
-    this.changeKind(kind);
+    if (kind === this.defaults.kind) void this.apply();
+    else this.changeKind(kind);
   }
 
-  generate(): void {
+  generate(format: ExportFormat): void {
     const view = this.view();
-    if (!view?.data.rows.length || !this.formats.includes(this.format)) return;
+    if (!view?.data.rows.length || !this.formats.includes(format)) return;
     const { filters, data } = view;
     const title = this.reportTypes[filters.kind];
     const now = new Date();
@@ -206,6 +221,7 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
       'Generado: ' + date,
       'Fuente: NASA FIRMS · paquete de análisis fuego',
       'Cobertura informada: ' + this.coverage(),
+      'Método: ' + view.method,
       ...(this.showSource(filters.kind) ? ['Selección: ' + sourceLabels[filters.source]] : []),
       ...(filters.confidence ? ['Confianza mínima: ' + filters.confidence] : []),
       ...(filters.alertLevel ? ['Nivel de alerta: ' + filters.alertLevel.replaceAll('_', ' ')] : []),
@@ -214,9 +230,9 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
       ...(coverageNotice ? [coverageNotice] : []),
       ...(view.areaNotice ? [view.areaNotice] : []),
     ];
-    const { blob, extension } = exportReport(this.format, data, details);
+    const { blob, extension } = exportReport(format, data, details);
     const fileName = `TunariGuard_${filters.kind}_${filters.from}_${filters.to}.${extension}`;
-    const download = { title, date, format: this.format, fileName, blob };
+    const download = { title, date, format, fileName, blob };
     this.download(download);
     this.recent.update((records) => [download, ...records].slice(0, 6));
   }
