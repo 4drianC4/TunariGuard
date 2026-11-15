@@ -71,12 +71,13 @@ export class HarmonizationService {
     to: string;
     limit?: number;
   }): Observable<readonly AnalysisEvent[]> {
-    const params = new HttpParams()
-      .set('area_id', filters.areaId)
+    let params = new HttpParams()
       .set('desde', filters.from)
       .set('hasta', filters.to)
       .set('limite', String(filters.limit ?? 100))
       .set('offset', '0');
+
+    if (filters.areaId) params = params.set('area_id', filters.areaId);
 
     return this.http.get<readonly AnalysisEvent[]>(`${this.apiBaseUrl}/eventos`, { params });
   }

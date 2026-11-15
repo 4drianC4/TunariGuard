@@ -3,16 +3,6 @@
     <h2>Mapa de actividad armonizada</h2>
     <p>Cobertura por área · {{ period().start }} a {{ period().end }}</p>
   </div>
-  <label class="tg-filter-field">
-    Área en el mapa
-    <select class="tg-filter-control tg-filter-control--compact" #area [value]="selectedId()"
-      (change)="selectArea(area.value)" [disabled]="!areas().length">
-      <option value="">Todas las áreas</option>
-      @for (item of areas(); track item.properties.area_id) {
-        <option [value]="item.properties.area_id">{{ item.properties.nombre_visible }}</option>
-      }
-    </select>
-  </label>
 </div>
 
 <div #mapCanvas class="coverage-canvas" aria-label="Mapa interactivo de cobertura de la serie armonizada"></div>
