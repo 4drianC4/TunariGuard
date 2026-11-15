@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { isoDay, queryBoolean } from '../../shared/query-schemas.js';
+import { formBoolean, isoDay, queryBoolean } from '../../shared/query-schemas.js';
 
 const severidad = z.enum(['Crítica', 'Alta', 'Media']);
 const estado = z.enum(['Pendiente', 'En revisión', 'En análisis', 'Verificada']);
@@ -40,6 +40,22 @@ export const updateAlertSchema = z.object({
   note: z.string().trim().max(1000).optional().describe('Comentario del operador (opcional)'),
 });
 export type UpdateAlertBody = z.infer<typeof updateAlertSchema>;
+
+export const backfillAlertsSchema = z
+  .object({
+    desde: isoDay.describe('Primer día del periodo, inclusive (hora de Bolivia)'),
+    hasta: isoDay.describe('Último día del periodo, inclusive (hora de Bolivia)'),
+    origen: z.enum(['REAL', 'SIMULATED']).default('REAL').describe('Origen de las detecciones; por defecto solo las reales'),
+    nota: z
+      .string()
+      .trim()
+      .max(500)
+      .default('Reconstrucción histórica con detecciones reales (generación retroactiva)')
+      .describe('Comentario que se guarda en cada alerta creada'),
+    aplicar: formBoolean.default(false).describe('false (por defecto): ensayo, solo cuenta. true: crea las alertas'),
+  })
+  .refine((q) => q.desde <= q.hasta, { message: 'desde debe ser anterior o igual a hasta', path: ['desde'] });
+export type BackfillAlertsBody = z.infer<typeof backfillAlertsSchema>;
 
 export const monthlyContextSchema = z.object({
   area_id: z.string().trim().min(1).max(100).optional(),
