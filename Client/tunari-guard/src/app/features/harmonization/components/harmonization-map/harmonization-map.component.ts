@@ -1,7 +1,7 @@
 import { DecimalPipe } from '@angular/common';
 import {
   AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy,
-  computed, effect, inject, input, signal, untracked, viewChild,
+  computed, effect, inject, input, output, signal, untracked, viewChild,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import type { Feature, MultiPolygon, Polygon } from 'geojson';
@@ -35,8 +35,11 @@ const fills = { covered: '#70833a', missing: '#b6aea0', unavailable: '#c59661' }
 })
 export class HarmonizationMapComponent implements AfterViewInit, OnDestroy {
   readonly period = input.required<HarmonizationPeriod>();
+  readonly areaId = input('');
+  readonly areaSelected = output<string>();
+  readonly showModis = input(true);
+  readonly showViirs = input(true);
   readonly fills = fills;
-  readonly selectedId = signal('');
 
   private readonly api = inject(HarmonizationService);
   private readonly history = inject(HistoryService);
@@ -64,8 +67,8 @@ export class HarmonizationMapComponent implements AfterViewInit, OnDestroy {
   });
 
   private readonly coverageByArea = computed(() => this.coverage.hasValue() ? this.coverage.value() : undefined);
-  readonly selectedArea = computed(() => this.areas().find((area) => area.properties.area_id === this.selectedId()));
-  readonly selectedCoverage = computed(() => this.coverageByArea()?.get(this.selectedId()));
+  readonly selectedArea = computed(() => this.areas().find((area) => area.properties.area_id === this.areaId()));
+  readonly selectedCoverage = computed(() => this.coverageByArea()?.get(this.areaId()));
   readonly comparableCount = computed(() => this.areas().filter(
     (area) => (this.coverageByArea()?.get(area.properties.area_id)?.summary.monthsWithData ?? 0) > 0,
   ).length);
@@ -80,8 +83,11 @@ export class HarmonizationMapComponent implements AfterViewInit, OnDestroy {
     });
     effect(() => {
       const coverage = this.coverageByArea();
-      const selected = this.selectedId();
-      if (this.mapReady()) this.updateStyles(coverage, selected);
+      const selected = this.areaId();
+      if (this.mapReady()) {
+        this.updateStyles(coverage, selected);
+        untracked(() => this.zoomToArea(selected));
+      }
     });
   }
 
@@ -101,9 +107,10 @@ export class HarmonizationMapComponent implements AfterViewInit, OnDestroy {
   }
 
   selectArea(id: string, zoom = true): void {
-    this.selectedId.set(id);
-    if (!zoom) return;
+    if (zoom) this.zoomToArea(id);
+  }
 
+  private zoomToArea(id: string): void {
     const bounds = id ? this.shapes.get(id)?.getBounds() : this.layer?.getBounds();
     if (bounds?.isValid()) this.map?.fitBounds(bounds, { padding: [18, 18], maxZoom: 13, animate: false });
   }
@@ -150,7 +157,7 @@ export class HarmonizationMapComponent implements AfterViewInit, OnDestroy {
         if (!(shape instanceof L.Polygon)) return;
         const id = properties.area_id;
         this.shapes.set(id, shape);
-        shape.on('click', () => this.selectArea(id, false));
+        shape.on('click', () => this.areaSelected.emit(id));
         shape.on('add', () => {
           const element = shape.getElement();
           element?.setAttribute('tabindex', '0');
@@ -159,13 +166,13 @@ export class HarmonizationMapComponent implements AfterViewInit, OnDestroy {
             const key = (event as KeyboardEvent).key;
             if (key !== 'Enter' && key !== ' ') return;
             event.preventDefault();
-            this.selectArea(id, false);
+            this.areaSelected.emit(id);
           });
         });
       },
     }).addTo(this.map);
 
-    const selected = this.shapes.has(this.selectedId()) ? this.selectedId() : '';
+    const selected = this.shapes.has(this.areaId()) ? this.areaId() : '';
     this.selectArea(selected);
     this.updateStyles(this.coverageByArea(), selected);
   }

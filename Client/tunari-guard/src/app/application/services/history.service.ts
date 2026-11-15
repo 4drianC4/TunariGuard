@@ -23,9 +23,9 @@ export class HistoryService {
   private readonly apiBaseUrl = environment.apiBaseUrl.replace(/\/$/, '').replace(/\/api\/v1$/, '') + '/api/v1';
 
   getHistory(filters: HistoryFilters): Observable<HistoryApiResponse> {
-    let params = new HttpParams()
-      .set('area_id', filters.areaId)
-      .set('fuente', filters.source);
+    let params = new HttpParams().set('fuente', filters.source);
+
+    if (filters.areaId) params = params.set('area_id', filters.areaId);
 
     if (filters.measure) {
       params = params.set('medida', filters.measure);

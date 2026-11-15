@@ -113,7 +113,14 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.detectionLayer.addTo(this.map);
     this.areaLayer.addTo(this.map);
     this.drawnItems.addTo(this.map);
-    if (!this.compact) this.initializeDrawing();
+    if (!this.compact) {
+      // Si la herramienta de dibujo fallara, el mapa debe seguir cargando áreas y focos.
+      try {
+        this.initializeDrawing();
+      } catch (error) {
+        console.error('No se pudo activar el dibujo de áreas en el mapa', error);
+      }
+    }
     this.map.on('moveend', () => {
       this.renderDetections();
       if (!this.areaId && !this.selectedArea()) this.scheduleDetectionReload();
@@ -334,7 +341,9 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       this.isDrawingArea = false;
       this.mapContainer.nativeElement.classList.remove('map-drawing');
     });
-    this.map.on(L.Draw.Event.CREATED, (event: L.LeafletEvent) => {
+    // Nombres de evento como texto: en el build de producción `L.Draw` no existe en el namespace
+    // importado de leaflet (leaflet-draw lo agrega después), así que L.Draw.Event.* fallaba.
+    this.map.on('draw:created', (event: L.LeafletEvent) => {
       const drawEvent = event as L.DrawEvents.Created;
       if (!(drawEvent.layer instanceof L.Polygon)) return;
       this.drawnItems.clearLayers();
@@ -347,7 +356,7 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       this.emitAreaOfInterest();
       this.scheduleDetectionReload();
     });
-    this.map.on(L.Draw.Event.DELETED, () => {
+    this.map.on('draw:deleted', () => {
       this.selectedArea.set(null);
       this.polygon.set(undefined);
       this.areaOfInterestChange.emit(null);

@@ -323,7 +323,7 @@ export class MascotAssistantComponent implements OnInit, OnDestroy {
   private readonly enrutador = inject(Router);
   private suscripcionRutas?: Subscription;
   private temporizadorConsejo?: ReturnType<typeof setTimeout>;
-  private readonly duracionConsejoMs = 30_000;
+  private readonly duracionConsejoMs = 15_000;
   private readonly consejos: Record<string, TuniConsejo> = {
     '/inicio': { titulo: 'Bienvenido a TunariGuard', texto: 'Revisa los indicadores generales y entra al mapa para explorar los focos de calor.' },
     '/mapa': { titulo: 'Explora el mapa de focos', texto: 'Selecciona un punto y utiliza los filtros para consultar sus características y procedencia.' },

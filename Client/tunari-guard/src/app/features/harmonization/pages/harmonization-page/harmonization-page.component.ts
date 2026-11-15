@@ -51,9 +51,10 @@ export class HarmonizationPageComponent {
 
   startYear = 2001;
   endYear = new Date().getFullYear();
-  areaId = 'parque-tunari';
+  areaId = '';
   modis = true;
   viirs = true;
+  readonly appliedFilters = signal({ areaId: this.areaId, modis: this.modis, viirs: this.viirs });
 
   readonly chartRange = signal({ start: this.startYear, end: this.endYear });
   readonly chartYears = computed(() => {
@@ -90,9 +91,7 @@ export class HarmonizationPageComponent {
       .subscribe({
         next: areas => {
           this.areas.set(areas);
-          if (!areas.some(area => area.area_id === this.areaId)) {
-            this.areaId = areas.find(area => area.tipo === 'parque')?.area_id ?? areas[0]?.area_id ?? '';
-          }
+          if (this.areaId && !areas.some(area => area.area_id === this.areaId)) this.areaId = '';
           this.apply();
         },
         error: err => this.areasError.set(err?.error?.message ?? 'No fue posible cargar las áreas.'),
@@ -100,7 +99,7 @@ export class HarmonizationPageComponent {
   }
 
   apply(): void {
-    if (!this.areaId || !Number.isInteger(this.startYear) || !Number.isInteger(this.endYear)
+    if (!Number.isInteger(this.startYear) || !Number.isInteger(this.endYear)
       || this.startYear < 2000 || this.endYear > 2100 || this.startYear > this.endYear) {
       this.error.set('Selecciona un área y un rango de años válido (2000–2100).');
       return;
@@ -109,6 +108,7 @@ export class HarmonizationPageComponent {
     this.chartRange.update((range) =>
       range.start === this.startYear && range.end === this.endYear ? range : { start: this.startYear, end: this.endYear },
     );
+    this.appliedFilters.set({ areaId: this.areaId, modis: this.modis, viirs: this.viirs });
     this.loading.set(true);
     this.error.set(null);
 
@@ -159,10 +159,15 @@ export class HarmonizationPageComponent {
     });
   }
 
+  seleccionarAreaEnMapa(areaId: string): void {
+    this.areaId = areaId;
+    this.apply();
+  }
+
   reset(): void {
     this.startYear = 2001;
     this.endYear = new Date().getFullYear();
-    this.areaId = this.areas().find(area => area.tipo === 'parque')?.area_id ?? 'parque-tunari';
+    this.areaId = '';
     this.modis = true;
     this.viirs = true;
     this.apply();

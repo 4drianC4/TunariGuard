@@ -147,7 +147,9 @@
       <strong class="tuni-guide-v1__title">{{ consejoActual().titulo }}</strong>
       <p class="tuni-guide-v1__text">{{ consejoActual().texto }}</p>
       <button type="button" class="tuni-guide-v1__action" (click)="abrirAyudaDeEstaVista()">Ver ayuda en el chat <span aria-hidden="true">→</span></button>
-      <div class="tuni-guide-v1__timer" [class.tuni-guide-v1__timer--alterno]="secuenciaConsejo() % 2 === 1" aria-hidden="true"></div>
+      @if (consejoVisible()) {
+        <div class="tuni-guide-v1__timer" [class.tuni-guide-v1__timer--alterno]="secuenciaConsejo() % 2 === 1" [style.--duracion-consejo]="duracionConsejoMs + 'ms'" aria-hidden="true"></div>
+      }
     </aside>
   }
   <!-- TUNARIGUARD_TUNI_GUIDE_V1_END -->
