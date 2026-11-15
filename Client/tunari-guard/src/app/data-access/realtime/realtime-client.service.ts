@@ -20,6 +20,8 @@ interface ServerEvents {
   'sync:status': (payload: { lastBatch: { batchId: string } | null }) => void;
   'districts:updated': () => void;
   'hotspots:new': (payload: ReplayFrame) => void;
+  'alert:new': () => void;
+  'alert:updated': () => void;
   'replay:status': (payload: { running: boolean }) => void;
 }
 
@@ -31,11 +33,13 @@ export class RealtimeClientService {
   );
   private readonly connection = signal<'connecting' | 'connected' | 'offline'>('connecting');
   private readonly changes = new Subject<void>();
+  private readonly alertChanges = new Subject<void>();
   private readonly replay = new Subject<ReplayFrame | null>();
   private lastBatchId?: string;
 
   readonly status = this.connection.asReadonly();
   readonly changes$ = this.changes.asObservable();
+  readonly alertChanges$ = this.alertChanges.asObservable();
   readonly replay$ = this.replay.asObservable();
 
   constructor() {
@@ -43,6 +47,7 @@ export class RealtimeClientService {
       this.connection.set('connected');
       // Recover changes missed before the connection was ready or while offline.
       this.changes.next();
+      this.alertChanges.next();
     });
     this.socket.on('connect_error', () => this.connection.set('offline'));
     this.socket.on('disconnect', () => {
@@ -59,6 +64,8 @@ export class RealtimeClientService {
     this.socket.on('hotspots:new', (frame) => {
       if (frame.mode === 'replay') this.replay.next(frame);
     });
+    this.socket.on('alert:new', () => this.alertChanges.next());
+    this.socket.on('alert:updated', () => this.alertChanges.next());
     this.socket.on('replay:status', (status) => {
       if (!status.running) this.replay.next(null);
     });
@@ -66,6 +73,7 @@ export class RealtimeClientService {
       this.socket.removeAllListeners();
       this.socket.disconnect();
       this.changes.complete();
+      this.alertChanges.complete();
       this.replay.complete();
     });
   }
