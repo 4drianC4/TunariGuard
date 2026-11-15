@@ -3,7 +3,10 @@
     description="Consulta y exporta detecciones, actividad histórica y anomalías térmicas." />
 
   @if (coverage(); as lastDate) {
-    <p class="tr-notice tr-report-context">NASA FIRMS · Cobertura informada hasta {{ lastDate }}</p>
+    <div class="tg-card report-coverage">
+      <svg class="report-icon" aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#history"></use></svg>
+      <div><span>Cobertura informada del paquete</span><strong>Hasta {{ lastDate }}</strong></div>
+    </div>
   }
 
   @if (areas().length) {
@@ -12,7 +15,8 @@
       Filtros <span>{{ filtersExpanded ? 'Cerrar' : 'Mostrar' }}</span>
     </button>
 
-    <form id="report-filters" class="tr-filters" [class.tr-open]="filtersExpanded" (ngSubmit)="apply()">
+    <form id="report-filters" class="tg-card report-filters" [class.filters-open]="filtersExpanded" (ngSubmit)="apply()">
+      <header><h2>Filtros del reporte</h2></header>
       <label class="tr-field">
         <span>Tipo de reporte</span>
         <select name="kind" [ngModel]="filters.kind" (ngModelChange)="changeKind($event)">
@@ -31,16 +35,12 @@
           </select>
         </label>
       }
-      <div class="tr-field tr-date">
-        <span>{{ monthly ? 'Período mensual' : 'Rango de fechas' }}</span>
-        <div class="tr-date-inputs">
-          <input [type]="monthly ? 'month' : 'date'" name="from" aria-label="Inicio del período"
-            [(ngModel)]="filters.from" required />
-          <span aria-hidden="true">—</span>
-          <input [type]="monthly ? 'month' : 'date'" name="to" aria-label="Fin del período"
-            [(ngModel)]="filters.to" required />
-        </div>
-      </div>
+      <label class="tr-field"><span>Fecha inicial</span>
+        <input [type]="monthly ? 'month' : 'date'" name="from" [(ngModel)]="filters.from" required />
+      </label>
+      <label class="tr-field"><span>Fecha final</span>
+        <input [type]="monthly ? 'month' : 'date'" name="to" [(ngModel)]="filters.to" required />
+      </label>
       @if (showSource(filters.kind)) {
         <label class="tr-field">
           <span>Fuente</span>
@@ -77,11 +77,21 @@
         </label>
       }
       <div class="tr-filter-actions">
-        <button class="tr-clear" type="button" (click)="reset()">Restablecer</button>
-        <button class="tr-primary" type="submit" [disabled]="loading()">Aplicar filtros</button>
+        <button class="tr-clear" type="button" (click)="reset()">Limpiar filtros</button>
+        <button class="tr-primary" type="submit" [disabled]="loading()">Actualizar</button>
       </div>
     </form>
   }
+
+  <nav class="report-tabs" aria-label="Tipos de reporte">
+    @for (kind of kinds; track kind) {
+      <button type="button" (click)="changeKind(kind)" [disabled]="!areas().length"
+        [attr.aria-pressed]="filters.kind === kind">
+        <svg class="report-icon" aria-hidden="true"><use [attr.href]="'/assets/tunari-ui/iconos.svg#' + icons[kind]"></use></svg>
+        {{ reportTypes[kind] }}
+      </button>
+    }
+  </nav>
 
   @if (loading()) {
     <p class="tr-notice" role="status">Consultando el reporte…</p>
@@ -120,35 +130,65 @@
       </article>
     </div>
 
-    <div class="tr-content">
-      <div class="tr-report-results">
+    @if (report.areaNotice) {
+      <p class="tr-notice area-notice"><strong>Advertencia del área.</strong> {{ report.areaNotice }}</p>
+    }
+    <div class="report-overview">
+      <article class="tg-card report-chart">
+        <h2>{{ report.filters.kind === 'districts' ? 'Actividad por distrito' :
+          report.filters.kind === 'detections' ? 'Detecciones por mes' :
+          report.filters.kind === 'alerts' ? 'Actividad observada y esperada' : 'Actividad mensual' }}</h2>
         @if (chart(); as graph) {
-          <article class="tr-card">
-            <h2>{{ report.filters.kind === 'districts' ? 'Actividad por distrito' : 'Actividad mensual' }}</h2>
-            @if (graph.comparison) {
-              <p class="tr-footnote">Verde oscuro · MODIS / Verde claro · VIIRS</p>
-            }
-            <div class="tr-bars">
-              @for (entry of graph.entries; track entry.label) {
-                @for (value of entry.values; track $index; let sensor = $index) {
-                  <div [attr.aria-label]="graph.comparison ? entry.label + ' ' + (sensor === 0 ? 'MODIS' : 'VIIRS') : entry.label">
-                    <span>{{ entry.label }}</span>
-                    <i [class.dark]="sensor === 0" [class.light]="sensor > 0" aria-hidden="true">
-                      <b [style.width.%]="(value ?? 0) * 100 / graph.max"></b>
-                    </i>
-                    <strong>{{ value === null ? '—' : (value | number:'1.0-2') }}</strong>
+          @if (graph.comparison) { <p class="chart-key">Verde oscuro · MODIS / Verde claro · VIIRS</p> }
+          @if (report.filters.kind === 'alerts') { <p class="chart-key">Verde oscuro · Observada / Verde claro · Esperada</p> }
+          <div class="chart-scroll" tabindex="0" aria-label="Gráfico del reporte">
+            <div class="chart-frame">
+              <div class="chart-axis" aria-hidden="true">
+                @for (tick of graph.ticks; track tick) { <span>{{ tick | number:'1.0-2' }}</span> }
+              </div>
+              <div class="chart-plot" [style.--groups]="graph.entries.length">
+                @for (entry of graph.entries; track entry.label) {
+                  <div class="chart-group">
+                    <div class="chart-bars">
+                      @for (value of entry.values; track $index; let sensor = $index) {
+                        <span class="chart-bar" [class.secondary]="sensor > 0" [class.missing]="value === null"
+                          [class.latest]="report.filters.kind === 'detections' && entry === graph.entries[graph.entries.length - 1]"
+                          [style.height.%]="(value ?? 0) * 100 / graph.max"
+                          [title]="entry.label + ' · ' + (value ?? 'Sin dato')"></span>
+                      }
+                    </div>
+                    <span class="chart-label" [title]="entry.label">{{ entry.label }}</span>
                   </div>
                 }
-              }
+              </div>
             </div>
-            @if (graph.shortened) {
-              <p class="tr-footnote">Se muestran los últimos 12 meses disponibles. La tabla incluye todo el período consultado.</p>
-            }
-          </article>
+          </div>
+          @if (graph.shortened) { <p class="chart-key">Últimos 12 meses disponibles. La tabla incluye todo el período consultado.</p> }
+        } @else { <p class="tr-empty">Sin datos para graficar.</p> }
+      </article>
+      <article class="tg-card report-info">
+        <h2>Información del reporte</h2>
+        <dl>
+          <div><dt>Área</dt><dd>{{ report.area }}</dd></div>
+          <div><dt>Método <app-map-info topic="el método del reporte"
+            text="Los conteos suman registros. Las celdas-día cuentan zonas con detecciones por día. El índice armonizado expresa la actividad en una escala común." /></dt><dd>{{ report.method }}</dd></div>
+          <div><dt>Unidad</dt><dd>{{ report.data.headline.unit }}</dd></div>
+          <div><dt>Cobertura</dt><dd>{{ coverage() }}</dd></div>
+        </dl>
+        <p class="report-reading">Una detección térmica indica presencia de calor. Los registros NRT son provisionales.</p>
+      </article>
+      <article class="tg-card report-download">
+        <h2>Descargar reporte</h2>
+        @for (option of formats; track option) {
+          <button class="tr-file" type="button" (click)="generate(option)" [disabled]="!report.data.rows.length">
+            <span class="tr-file-icon">{{ option }}</span><span class="tr-file-meta">{{ exportLabels[option] }}</span>
+            <span class="tr-download" aria-hidden="true">↓</span>
+          </button>
         }
-
-        <article class="tr-card tr-summary">
-          <h2>{{ reportTypes[report.filters.kind] }}</h2>
+      </article>
+    </div>
+        <article class="tg-card tr-summary">
+          <h2>Detalle · {{ reportTypes[report.filters.kind] }} <small>{{ pageSize }} por página</small></h2>
           @if (report.data.rows.length) {
             <div class="tr-table-wrap" tabindex="0" aria-label="Tabla del reporte">
               <table>
@@ -158,12 +198,13 @@
                 <tbody>
                   @for (row of visibleRows(); track $index) {
                     <tr>
-                      @for (value of row; track $index) { <td>{{ value ?? '—' }}</td> }
+                      @for (value of row; track $index) { <td>{{ value ?? 'Sin dato' }}</td> }
                     </tr>
                   }
                 </tbody>
               </table>
             </div>
+            <div class="report-page-count">Mostrando {{ page() * pageSize + 1 }}–{{ page() * pageSize + visibleRows().length }} de {{ report.data.rows.length | number }} filas</div>
             @if (pageCount() > 1) {
               <div class="tr-pagination">
                 <button class="tr-clear" type="button" (click)="page.set(page() - 1)" [disabled]="page() === 0">Anterior</button>
@@ -176,30 +217,16 @@
               {{ coverageNotice() ? 'El paquete cargado no devuelve filas para este período.' : 'Sin resultados para estos filtros.' }}
             </p>
           }
-          <p class="tr-info">{{ report.data.notice }}</p>
-          @if (report.areaNotice) { <p class="tr-info">{{ report.areaNotice }}</p> }
         </article>
-      </div>
-
-      <aside class="tr-side">
-        <article class="tr-card tr-export">
-          <h2>Descargar reporte</h2>
-          <div class="tr-formats" role="group" aria-label="Formato de exportación">
-            @for (option of formats; track option) {
-              <button type="button" (click)="format = option" [class.active]="format === option"
-                [attr.aria-pressed]="format === option">{{ option }}</button>
-            }
-          </div>
-          <button class="tr-generate tr-primary" type="button" (click)="generate()" [disabled]="!report.data.rows.length">
-            Generar y descargar
-          </button>
-          @if (format === 'PDF') {
-            <small class="tr-disclaimer">Resumen con filtros y hasta 20 filas. CSV exporta el detalle completo.</small>
-          } @else if (format === 'Excel') {
-            <small class="tr-disclaimer">Libro en formato XML de Excel.</small>
-          }
-        </article>
-        <article class="tr-card tr-recent">
+    <article class="tg-card report-notes">
+      <h2>Consideraciones importantes</h2>
+      <p>{{ report.data.notice }}</p>
+      @if (report.filters.kind !== 'detections') {
+        <p>Las celdas-día cuentan zonas con detecciones por día. Los valores sin dato indican falta de información comparable.</p>
+      }
+    </article>
+    @if (recent().length) {
+        <article class="tg-card tr-recent">
           <h2>Reportes de esta sesión</h2>
           @for (record of recent(); track record) {
             <button type="button" class="tr-file" (click)="download(record)">
@@ -211,7 +238,6 @@
             <p class="tr-empty-recent">Todavía no generaste reportes.</p>
           }
         </article>
-      </aside>
-    </div>
+    }
   }
 </section>

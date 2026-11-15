@@ -18,12 +18,17 @@ export interface ReportArea {
   area_id: string;
   nombre_visible: string;
   advertencia: string | null;
+  metodo_indice: 'mixto_calibrado' | 'viirs_reescalado' | null;
 }
 
 interface Detection {
   id_deteccion: string;
   fecha_bo: string;
   fecha_hora_utc: string;
+  fecha_hora_bo: string | null;
+  sensor: string | null;
+  plataforma: string | null;
+  dia_noche: string | null;
   fuente: string;
   distrito: string | null;
   confianza_clase: string | null;
@@ -38,6 +43,9 @@ interface Alert {
   nivel_alerta: string;
   base_alertas: string;
   probabilidad_exceso: number | null;
+  categoria_alerta: string | null;
+  celdas_dia_base: number | null;
+  esperado_modelo: number | null;
   lectura_modelo: string | null;
 }
 
@@ -112,7 +120,7 @@ export class ReportsApiService {
 
   private async detections(filters: ReportFilters, signal: AbortSignal): Promise<ReportData> {
     const params = new URLSearchParams({
-      area_id: filters.area, desde: filters.from, hasta: filters.to, limite: '10000',
+      area_id: filters.area, desde: filters.from, hasta: filters.to, limite: '10000', orden: 'fecha_desc',
     });
     if (filters.source === 'MODIS' || filters.source === 'VIIRS') {
       for (const source of satelliteSources[filters.source]) params.append('fuente', source);
@@ -121,9 +129,12 @@ export class ReportsApiService {
 
     const detections: Detection[] = [];
     let offset = 0;
+    let total: number | undefined;
     while (true) {
       params.set('offset', String(offset));
       const response = await this.request('/detecciones?' + params, signal);
+      const count = response.headers.get('X-Total-Count');
+      if (count !== null) total ??= Number(count);
       const batch = await response.json() as Detection[];
       detections.push(...batch);
       const next = response.headers.get('X-Next-Offset');
@@ -134,11 +145,17 @@ export class ReportsApiService {
       }
       offset = nextOffset;
     }
+    if (total !== undefined && total !== detections.length) {
+      throw new Error('El total cambió durante la consulta. Actualiza el reporte para cargar todas las filas.');
+    }
     return {
-      columns: ['ID', 'Fecha local', 'Fecha y hora UTC', 'Fuente', 'Distrito', 'Confianza', 'FRP (MW)', 'Latitud', 'Longitud', 'Origen'],
+      columns: ['ID', 'Fecha local', 'Hora local', 'Fecha y hora UTC', 'Sensor', 'Fuente', 'Plataforma',
+        'Distrito', 'Confianza', 'FRP (MW)', 'Latitud', 'Longitud', 'Día / noche', 'Origen'],
       rows: detections.map((d) => [
-        d.id_deteccion, d.fecha_bo, d.fecha_hora_utc, d.fuente, d.distrito, d.confianza_clase,
-        d.frp_mw, d.lat, d.lon, d.origen_dato,
+        d.id_deteccion, d.fecha_bo, d.fecha_hora_bo?.slice(11, 19) ?? null, d.fecha_hora_utc,
+        d.sensor, d.fuente, d.plataforma, d.distrito, d.confianza_clase,
+        d.frp_mw, d.lat, d.lon, d.dia_noche === 'D' ? 'Día' : d.dia_noche === 'N' ? 'Noche' : null,
+        d.origen_dato?.toLowerCase() === 'nrt' ? 'NRT (provisional)' : d.origen_dato,
       ]),
       headline: { label: 'Detecciones térmicas', value: detections.length, unit: 'detecciones' },
       notice: 'Fuente NASA FIRMS, archivo analizado del esquema fuego. Una detección térmica no confirma un incendio. Los registros NRT son provisionales.',
@@ -157,9 +174,9 @@ export class ReportsApiService {
     if (filters.alertLevel) params.set('nivel', filters.alertLevel);
     const alerts = await this.json<Alert[]>(`/areas/${encodeURIComponent(filters.area)}/alertas?${params}`, signal);
     return {
-      columns: ['Mes', 'Nivel de alerta', 'Base del modelo', 'Probabilidad de un mes igual o mayor (%)', 'Interpretación'],
+      columns: ['Mes', 'Nivel de alerta', 'Categoría', 'Base del modelo', 'Celdas-día observadas', 'Esperado por el modelo', 'Probabilidad de un mes igual o mayor (%)', 'Interpretación'],
       rows: alerts.map((a) => [
-        a.mes.slice(0, 7), a.nivel_alerta.replaceAll('_', ' '), a.base_alertas,
+        a.mes.slice(0, 7), a.nivel_alerta.replaceAll('_', ' '), a.categoria_alerta, a.base_alertas, a.celdas_dia_base, a.esperado_modelo,
         a.probabilidad_exceso === null ? null : Number((100 * a.probabilidad_exceso).toFixed(4)),
         a.lectura_modelo,
       ]),
