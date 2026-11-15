@@ -1,1 +1,211 @@
-/* El estilo visual de Proyecciones esta aislado en src/styles.scss. */
+/* Estilos propios del módulo de proyecciones mensuales. */
+.tg-projections-page .projection-model-banner {
+  display:flex;align-items:center;gap:14px;padding:15px 18px;margin:0 0 14px;
+  border:1px solid #e8e4da;border-radius:14px;background:linear-gradient(110deg,#fffdfa,#f7f8f1);
+}
+.tg-projections-page .projection-model-icon {
+  display:grid;place-items:center;width:48px;height:48px;flex:0 0 48px;border-radius:12px;
+  background:#e7efdc;color:#42652b;font-size:34px;font-weight:800;
+}
+.tg-projections-page .projection-model-banner>div:nth-child(2){display:grid;gap:2px;min-width:0}
+.tg-projections-page .projection-eyebrow{font-size:9px;font-weight:850;letter-spacing:.1em;color:#8a8e80}
+.tg-projections-page .projection-model-banner strong{font-size:17px;color:#263b20}
+.tg-projections-page .projection-model-banner p{margin:0;color:#74796d;font-size:12px}
+.tg-projections-page .projection-simulated-badge{margin-left:auto;padding:6px 10px;border-radius:999px;background:#fff0d9;color:#a95416;font-size:10px;font-weight:850;letter-spacing:.06em}
+.tg-projections-page .projection-kpis{margin-bottom:14px}
+.tg-projections-page .projection-filter-fields{grid-template-columns:repeat(2,minmax(180px,240px))}
+.tg-projections-page .projection-filter-actions{display:flex;align-items:center;gap:8px}
+.tg-projections-page .projection-filter-actions button:disabled{opacity:.55;cursor:wait}
+.tg-projections-page .projection-feedback{margin:0 0 12px;padding:10px 13px;border-radius:9px;background:#edf4e6;color:#38552a;font-size:13px}
+.tg-projections-page .projection-error{background:#fff0ed;color:#a33e2d}
+.tg-projections-page .projection-state{display:flex;align-items:center;justify-content:center;gap:12px;min-height:180px;color:#526149}
+.tg-projections-page .projection-spinner{width:22px;height:22px;border:3px solid #dfe6d8;border-top-color:#557a38;border-radius:50%;animation:projection-spin .8s linear infinite}
+@keyframes projection-spin{to{transform:rotate(360deg)}}
+.tg-projections-page .projection-charts-grid{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(280px,1fr);gap:14px;margin-bottom:14px}
+.tg-projections-page .projection-chart-card,.tg-projections-page .projection-index-card{min-width:0;min-height:320px}
+.tg-projections-page .projection-chart-wrap{width:100%;overflow:hidden}
+.tg-projections-page .projection-chart-wrap svg{display:block;width:100%;height:auto;min-height:230px}
+.tg-projections-page .projection-legend{padding:8px 0 2px}
+.tg-projections-page .projection-legend i.future{background:#e8752b}
+.tg-projections-page .projection-card-description{margin:-4px 0 10px;color:#73786e;font-size:12px}
+.tg-projections-page .projection-index-bars{height:208px;display:flex;align-items:flex-end;gap:3px;padding:10px 4px 0;border-bottom:1px solid #dfe1d8;overflow:hidden}
+.tg-projections-page .projection-index-bar-item{height:100%;flex:1;min-width:2px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px}
+.tg-projections-page .projection-index-track{height:calc(100% - 18px);width:100%;display:flex;align-items:flex-end;justify-content:center}
+.tg-projections-page .projection-index-bar{width:min(100%,13px);min-height:2px;border-radius:4px 4px 0 0;background:linear-gradient(180deg,#e98a43,#bd5e27)}
+.tg-projections-page .projection-index-bar-item small{font-size:9px;color:#777d70;white-space:nowrap}
+.tg-projections-page .projection-index-summary{display:flex;justify-content:space-between;align-items:center;margin-top:10px;color:#6d7367;font-size:11px}
+.tg-projections-page .projection-index-summary strong{font-size:15px;color:#293e20}
+.tg-projections-page .projection-evaluation-card,.tg-projections-page .projection-comparison-card,.tg-projections-page .projection-detail-card{margin-bottom:14px}
+.tg-projections-page .projection-evaluation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.tg-projections-page .projection-metric{padding:13px 15px;border:1px solid #ece9e1;border-radius:11px;background:#fffefa}
+.tg-projections-page .projection-metric>span{display:block;color:#74796e;font-size:11px;font-weight:750}
+.tg-projections-page .projection-metric>strong{display:block;margin:5px 0;color:#293f21;font-size:27px;line-height:1.1}
+.tg-projections-page .projection-metric>strong small{font-size:15px;margin-left:2px}
+.tg-projections-page .projection-metric p{margin:0;color:#85897f;font-size:10px;line-height:1.4}
+.tg-projections-page .projection-method-note{margin:11px 2px 0;color:#777d71;font-size:11px}
+.tg-projections-page .projection-comparison-card table,.tg-projections-page .projection-detail-card table{width:100%;border-collapse:separate;border-spacing:0;text-align:left;font-size:14px;white-space:nowrap}
+.tg-projections-page .projection-comparison-card th,.tg-projections-page .projection-detail-card th{padding:9px 10px;background:#f5f5ef;color:#596052;font-size:12px;font-weight:850}
+.tg-projections-page .projection-comparison-card td,.tg-projections-page .projection-detail-card td{padding:11px 10px;border-bottom:1px solid #efede6;color:#42483e}
+.tg-projections-page .projection-model-selected{background:#f0f5e9}
+.tg-projections-page .projection-selected-label{display:inline-block;margin-left:8px;padding:3px 6px;border-radius:99px;background:#e1ecd5;color:#42612e;font-size:9px;font-weight:800}
+.tg-projections-page .projection-wape-bars{display:grid;gap:9px;margin:16px 10px 4px}
+.tg-projections-page .projection-wape-row{display:grid;grid-template-columns:145px minmax(80px,1fr) 55px;align-items:center;gap:10px;font-size:11px;color:#62685c}
+.tg-projections-page .projection-wape-track{height:9px;border-radius:99px;background:#eeeee8;overflow:hidden}
+.tg-projections-page .projection-wape-track>div{height:100%;border-radius:99px;background:#a9b49a}
+.tg-projections-page .projection-wape-track>div.projection-wape-best{background:#557a38}
+.tg-projections-page .projection-wape-row>strong{text-align:right;color:#35462c}
+.tg-projections-page .projection-empty{padding:28px;text-align:center;color:#384b2e}
+.tg-projections-page .projection-empty p{margin:7px 0 0;color:#7b8075;font-size:12px}
+.tg-projections-page .projection-disclaimer{display:flex;gap:10px;align-items:flex-start;margin:14px 0;padding:13px 15px;border:1px solid #f0d7b7;border-radius:12px;background:#fff7ec;color:#87501f}
+.tg-projections-page .projection-disclaimer strong{white-space:nowrap;font-size:12px}
+.tg-projections-page .projection-disclaimer p{margin:0;color:#775b3c;font-size:12px;line-height:1.5}
+.tg-projections-page .projection-footer{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.tg-projections-page .projection-footer>span{color:#85897f;font-size:11px}
+.tg-projections-page .projection-footer button{border:0;border-radius:9px;padding:9px 13px;background:#365a27;color:#fff;font-size:12px;font-weight:750}
+.tg-projections-page .projection-footer button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:900px){
+ .tg-projections-page .projection-charts-grid{grid-template-columns:1fr}
+ .tg-projections-page .projection-index-card{min-height:270px}
+}
+@media(max-width:650px){
+ .tg-projections-page .projection-model-banner{align-items:flex-start;padding:12px}
+ .tg-projections-page .projection-model-icon{width:40px;height:40px;flex-basis:40px;font-size:28px}
+ .tg-projections-page .projection-simulated-badge{font-size:8px;padding:5px 7px}
+ .tg-projections-page .projection-filter-fields{grid-template-columns:1fr 1fr}
+ .tg-projections-page .projection-evaluation-grid{grid-template-columns:1fr}
+ .tg-projections-page .projection-disclaimer{display:block}
+ .tg-projections-page .projection-disclaimer p{margin-top:6px}
+ .tg-projections-page .projection-footer{align-items:flex-start;flex-direction:column}
+ .tg-projections-page .projection-wape-row{grid-template-columns:112px minmax(50px,1fr) 48px;gap:7px}
+}
+
+/* Disposición solicitada: gráfico longitudinal a todo el ancho y tres cards debajo. */
+.tg-projections-page .projection-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+.tg-projections-page .projection-timeline-card {
+  grid-column: 1 / -1;
+  min-width: 0;
+  min-height: 360px;
+}
+.tg-projections-page .projection-chart-subtitle {
+  margin: 4px 0 0;
+  color: #777d71;
+  font-size: 11px;
+  font-weight: 450;
+}
+.tg-projections-page .projection-timeline-wrap {
+  min-height: 285px;
+}
+.tg-projections-page .projection-timeline-wrap svg {
+  width: 100%;
+  height: 300px;
+  min-height: 300px;
+}
+.tg-projections-page .projection-timeline-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  padding: 8px 2px 2px;
+  color: #596052;
+  font-size: 11px;
+}
+.tg-projections-page .projection-timeline-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.tg-projections-page .projection-timeline-legend small {
+  color: #85897f;
+  font-size: 10px;
+}
+.tg-projections-page .projection-history-dot,
+.tg-projections-page .projection-forecast-dot {
+  display: inline-block;
+  width: 18px;
+  height: 3px;
+  border-radius: 5px;
+  background: #526b4c;
+}
+.tg-projections-page .projection-forecast-dot {
+  background: repeating-linear-gradient(90deg, #e8752b 0 6px, transparent 6px 9px);
+}
+.tg-projections-page .projection-support-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  align-items: stretch;
+}
+.tg-projections-page .projection-support-grid > article {
+  min-width: 0;
+  margin: 0;
+  height: 100%;
+}
+.tg-projections-page .projection-evaluation-card,
+.tg-projections-page .projection-comparison-card {
+  min-height: 0;
+}
+.tg-projections-page .projection-evaluation-grid {
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+.tg-projections-page .projection-metric {
+  padding: 10px 11px;
+}
+.tg-projections-page .projection-metric > strong {
+  font-size: 23px;
+}
+.tg-projections-page .projection-method-note {
+  line-height: 1.5;
+}
+.tg-projections-page .projection-comparison-card table {
+  font-size: 13px;
+}
+.tg-projections-page .projection-comparison-card th,
+.tg-projections-page .projection-comparison-card td {
+  padding: 8px 6px;
+}
+.tg-projections-page .projection-comparison-card .projection-selected-label {
+  display: block;
+  width: max-content;
+  margin: 4px 0 0;
+}
+.tg-projections-page .projection-wape-row {
+  grid-template-columns: minmax(80px, 1fr) minmax(45px, 1fr) 48px;
+  gap: 6px;
+  font-size: 12px;
+}
+.tg-projections-page .projection-detail-card {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.tg-projections-page .projection-inline-note,
+.tg-projections-page .projection-inline-warning {
+  margin: 8px 0 0;
+  color: #777d71;
+  font-size: 11px;
+}
+.tg-projections-page .projection-inline-warning {
+  color: #a15a25;
+}
+@media (max-width: 900px) {
+  .tg-projections-page .projection-support-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 760px) {
+  .tg-projections-page .projection-support-grid {
+    grid-template-columns: 1fr;
+  }
+  .tg-projections-page .projection-support-grid > article,
+  .tg-projections-page .projection-comparison-card,
+  .tg-projections-page .projection-detail-card {
+    grid-column: 1 / -1;
+  }
+  .tg-projections-page .projection-timeline-wrap svg {
+    height: 250px;
+    min-height: 250px;
+  }
+}

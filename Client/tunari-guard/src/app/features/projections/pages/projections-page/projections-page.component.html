@@ -1,130 +1,241 @@
-<section class="tg-forecast-page" aria-label="Proyecciones de anomalías térmicas DEMO">
-
-   <app-page-header
+<section class="tg-forecast-page tg-projections-page" aria-label="Proyecciones mensuales de actividad">
+  <app-page-header
     section="Proyecciones"
-    title="Proyecciones de anomalías térmicas"
-    description="Análisis y pronóstico ilustrativo para los próximos años, con configuración de serie de tiempo."
+    title="Proyecciones de actividad"
+    description="Explora la actividad mensual simulada y la evaluación del modelo utilizado."
   />
 
-  <section class="tg-kpis tg-kpis--fit" aria-label="Indicadores de proyección DEMO">
+  <div class="projection-model-banner">
+    <div class="projection-model-icon" aria-hidden="true">∿</div>
+    <div>
+      <span class="projection-eyebrow">MODELO UTILIZADO</span>
+      <strong>Binomial negativa</strong>
+      <p>Modelo empleado para generar la proyección mensual.</p>
+    </div>
+    <span class="projection-simulated-badge">SIMULADA</span>
+  </div>
+
+  <section class="tg-kpis tg-kpis--fit projection-kpis" aria-label="Indicadores del período consultado">
     <article class="tg-kpi">
       <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#fire"></use></svg></span>
       <div class="tg-kpi-copy">
-        <span class="tg-kpi-title">{{ projectedChange >= 0 ? 'Aumento' : 'Reducción' }} proyectado</span>
-        <div class="tg-kpi-number">{{ projectedChange > 0 ? '+' : '' }}{{ projectedChange }} <small>%</small></div>
-        <small class="tg-kpi-note">(2027 – {{ 2026 + active.horizon }})</small>
+        <span class="tg-kpi-title">Detecciones esperadas</span>
+        <div class="tg-kpi-number">{{ totalEsperado | number:'1.0-2' }}</div>
+        <small class="tg-kpi-note">Suma del período consultado</small>
       </div>
     </article>
     <article class="tg-kpi">
-      <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#history"></use></svg></span>
+      <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#target"></use></svg></span>
       <div class="tg-kpi-copy">
-        <span class="tg-kpi-title">Promedio anual proyectado</span>
-        <div class="tg-kpi-number">{{ annualAverage }}</div>
-        <small class="tg-kpi-note">Datos sintéticos</small>
+        <span class="tg-kpi-title">Detecciones generadas</span>
+        <div class="tg-kpi-number">{{ totalGenerado | number:'1.0-0' }}</div>
+        <small class="tg-kpi-note">Datos simulados generados</small>
       </div>
     </article>
     <article class="tg-kpi">
       <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#trend"></use></svg></span>
       <div class="tg-kpi-copy">
-        <span class="tg-kpi-title">Tendencia de crecimiento</span>
-        <div class="tg-kpi-number">{{ growthIndex }}</div>
-        <small class="tg-kpi-note">(índice anual acumulado)</small>
+        <span class="tg-kpi-title">Índice promedio esperado</span>
+        <div class="tg-kpi-number">{{ indicePromedio | number:'1.0-2' }}</div>
+        <small class="tg-kpi-note">Celdas-día MODIS-equivalentes</small>
       </div>
     </article>
     <article class="tg-kpi">
-      <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#target"></use></svg></span>
+      <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#history"></use></svg></span>
       <div class="tg-kpi-copy">
-        <span class="tg-kpi-title">Desempeño ilustrativo</span>
-        <div class="tg-kpi-number">{{ (stat.r2 * 100) | number:'1.0-0' }} <small>%</small></div>
-        <small class="tg-kpi-note">(R² = {{ stat.r2 | number:'1.2-2' }} · DEMO)</small>
+        <span class="tg-kpi-title">Meses consultados</span>
+        <div class="tg-kpi-number">{{ items().length }}</div>
+        <small class="tg-kpi-note">Registros devueltos por la API</small>
       </div>
     </article>
   </section>
 
-  <div class="tg-filter-group">
+  <div class="tg-filter-group projection-filter-group">
     <button type="button" class="tg-filter-toggle" (click)="mobileFiltersOpen.set(!mobileFiltersOpen())"
       [attr.aria-expanded]="mobileFiltersOpen()" aria-controls="projection-filters">
       <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10m-7 5h4" /></svg>
       {{ mobileFiltersOpen() ? 'Ocultar filtros' : 'Mostrar filtros' }}
     </button>
     <form id="projection-filters" class="tg-card tg-filter-panel" [class.tg-filter-panel--open]="mobileFiltersOpen()"
-      aria-label="Filtros de proyección" (ngSubmit)="apply()">
-      <div class="tg-filter-fields">
-        <label class="tg-filter-field"><span>Serie de tiempo</span><select class="tg-filter-control" name="serie" [(ngModel)]="draftSeries"><option *ngFor="let option of seriesOptions" [ngValue]="option.value">{{option.label}}</option></select></label>
-        <label class="tg-filter-field"><span>Rango histórico</span><select class="tg-filter-control" name="historico" [(ngModel)]="draftStart" [disabled]="!historicalStarts().length">@if (!historicalStarts().length) { <option [ngValue]="draftStart">Sin años disponibles</option> }<option *ngFor="let year of historicalStarts()" [ngValue]="year">{{year}} – 2026</option></select></label>
-        <label class="tg-filter-field"><span>Horizonte de proyección</span><select class="tg-filter-control" name="horizonte" [(ngModel)]="draftHorizon"><option *ngFor="let h of horizons" [ngValue]="h">{{h}} años (2027 – {{2026 + h}})</option></select></label>
-        <label class="tg-filter-field"><span>Distrito</span><select class="tg-filter-control" name="distrito" [(ngModel)]="draftDistrict"><option *ngFor="let d of districts">{{d}}</option></select></label>
-        <label class="tg-filter-field"><span>Modelo</span><select class="tg-filter-control" name="modelo" [(ngModel)]="draftModel"><option *ngFor="let m of models" [ngValue]="m.name">{{m.name}}</option></select></label>
+      aria-label="Filtros de proyección mensual" (ngSubmit)="applyFilters()">
+      <div class="tg-filter-fields projection-filter-fields">
+        <label class="tg-filter-field">
+          <span>Desde</span>
+          <input class="tg-filter-control" type="month" name="desde" [(ngModel)]="draftDesde" />
+        </label>
+        <label class="tg-filter-field">
+          <span>Hasta</span>
+          <input class="tg-filter-control" type="month" name="hasta" [(ngModel)]="draftHasta" />
+        </label>
       </div>
-      <div class="tg-filter-actions">
-        <button class="tg-filter-button tg-filter-button--primary" type="submit" [disabled]="!historicalStarts().length">Actualizar</button>
+      <div class="tg-filter-actions projection-filter-actions">
+        <button class="tg-filter-button tg-filter-button--primary" type="submit" [disabled]="loading()">Consultar</button>
+        <button class="tg-filter-button" type="button" (click)="clearFilters()" [disabled]="loading()">Ver todo el período</button>
       </div>
     </form>
   </div>
 
-  <div class="tg-forecast-main-grid">
-    <article class="tg-forecast-card tg-forecast-chart-card">
-      <div class="tg-forecast-card-title"><h2>↗ &nbsp; Proyección de anomalías térmicas</h2><span>DEMO · {{active.district}}</span></div>
-      <div class="tg-forecast-chart-top"><span class="tg-forecast-hist-strip">Histórico (DEMO)</span><span class="tg-forecast-future-strip">Proyección ({{active.horizon}} años)</span></div>
-      <div class="tg-forecast-svg-wrap">
-        <svg viewBox="0 0 870 290" role="img" [attr.aria-label]="'Gráfico DEMO de '+seriesLabel+' entre '+active.start+' y '+(2026+active.horizon)">
-          <defs><linearGradient id="tgProjectionBand" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f8b763" stop-opacity=".34"/><stop offset="100%" stop-color="#f8b763" stop-opacity=".08"/></linearGradient></defs>
-          <g *ngFor="let grid of [0,1,2,3,4]">
-            <line x1="55" [attr.y1]="45+grid*47.5" x2="820" [attr.y2]="45+grid*47.5" stroke="#e7e7dd" stroke-width="1" />
-            <text x="43" [attr.y]="49+grid*47.5" text-anchor="end" font-size="12" fill="#5b6153">{{(chartCeiling * (4-grid) / 4) | number:'1.0-0'}}</text>
-          </g>
-          <line [attr.x1]="x(2026)" y1="35" [attr.x2]="x(2026)" y2="238" stroke="#a5a99a" stroke-width="1.5" stroke-dasharray="7 5"/>
-          <polygon [attr.points]="bandPoints" fill="url(#tgProjectionBand)" />
-          <polyline [attr.points]="historyPoints" fill="none" stroke="#345b20" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
-          <polyline [attr.points]="futurePoints" fill="none" stroke="#ef650e" stroke-width="4" stroke-dasharray="10 7" stroke-linecap="round" stroke-linejoin="round" />
-          <g *ngFor="let point of historic"><circle [attr.cx]="x(point.year)" [attr.cy]="y(point.value)" r="4.6" fill="#365e21" stroke="white" stroke-width="1.5"><title>{{point.year}} · {{point.value}} (DEMO)</title></circle></g>
-          <g *ngFor="let point of forecast"><circle [attr.cx]="x(point.year)" [attr.cy]="y(point.value)" r="4.8" fill="#f26911" stroke="white" stroke-width="1.5"><title>{{point.year}} · {{point.value}} (DEMO)</title></circle></g>
-          <text *ngFor="let year of visibleYearLabels" [attr.x]="x(year)" y="265" text-anchor="middle" font-size="12" font-weight="600" fill="#343b30">{{year}}</text>
-          <text transform="rotate(-90 13 160)" x="13" y="160" text-anchor="middle" font-size="11" fill="#4a5044">{{active.series === 'actividad' ? 'Índice relativo DEMO' : 'N.º de anomalías DEMO'}}</text>
-        </svg>
+  <p *ngIf="error()" class="projection-feedback projection-error" role="alert">{{ error() }}</p>
+  <p *ngIf="message && !error()" class="projection-feedback" role="status">{{ message }}</p>
+
+  <div *ngIf="loading()" class="projection-state" role="status">
+    <span class="projection-spinner"></span>
+    <strong>Cargando proyección mensual…</strong>
+  </div>
+
+  <ng-container *ngIf="!loading() && !error()">
+    <div *ngIf="hasTimeline; else emptyProjection" class="projection-layout">
+      <article class="tg-forecast-card projection-chart-card projection-timeline-card">
+        <div class="tg-forecast-card-title">
+          <div>
+            <h2>↗ &nbsp; Evolución histórica y proyección</h2>
+            <p class="projection-chart-subtitle">Índice armonizado observado hasta el último mes disponible y continuidad con el índice esperado por el modelo.</p>
+          </div>
+          <span>{{ timeline[0].mes }} – {{ timeline[timeline.length - 1].mes }}</span>
+        </div>
+        <div class="projection-chart-wrap projection-timeline-wrap">
+          <svg viewBox="0 0 1120 300" preserveAspectRatio="none" role="img" aria-label="Serie histórica del índice armonizado y continuación proyectada">
+            <g *ngFor="let tick of [0,1,2,3,4]">
+              <line x1="62" [attr.y1]="45 + tick * 51" x2="1092" [attr.y2]="45 + tick * 51" stroke="#e8e7df" />
+              <text x="51" [attr.y]="49 + tick * 51" text-anchor="end" font-size="11" fill="#73786e">
+                {{ (maxTimelineValue * (4 - tick) / 4) | number:'1.0-1' }}
+              </text>
+            </g>
+            <line *ngIf="hasHistoryAndProjection"
+              [attr.x1]="projectionStartX" y1="35"
+              [attr.x2]="projectionStartX" y2="250"
+              stroke="#d9a16f" stroke-dasharray="5 5" />
+            <polyline *ngIf="historyPoints" [attr.points]="historyPoints" fill="none" stroke="#526b4c" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+            <polyline *ngIf="projectionPoints" [attr.points]="projectionPoints" fill="none" stroke="#e8752b" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="8 5" />
+            <g *ngFor="let point of timeline; let i = index">
+              <circle [attr.cx]="chartX(i)" [attr.cy]="chartY(point.value, maxTimelineValue)" r="2.5" [attr.fill]="point.type === 'history' ? '#526b4c' : '#e8752b'">
+                <title>{{ point.mes }} · {{ point.type === 'history' ? 'Índice armonizado' : 'Índice esperado' }}: {{ point.value | number:'1.0-2' }}</title>
+              </circle>
+            </g>
+            <g *ngFor="let tick of timelineTicks">
+              <text [attr.x]="chartX(tick.index)" y="278" text-anchor="middle" font-size="10" fill="#555c50">{{ tick.label }}</text>
+            </g>
+          </svg>
+        </div>
+        <div class="projection-timeline-legend">
+          <span><i class="projection-history-dot"></i> Historial armonizado <small>{{ historyRangeLabel }}</small></span>
+          <span><i class="projection-forecast-dot"></i> Proyección del modelo <small>{{ projectionRangeLabel }}</small></span>
+        </div>
+        <p *ngIf="historyLoading()" class="projection-inline-note">
+  Cargando historial armonizado…
+</p>
+
+<p
+  *ngIf="historyError() && !historyLoading()"
+  class="projection-inline-warning"
+  role="status"
+>
+  {{ historyError() }}
+  Se muestra únicamente la proyección disponible.
+</p>
+      </article>
+
+      <div class="projection-support-grid">
+        <article class="tg-forecast-card projection-evaluation-card">
+          <div class="tg-forecast-card-title">
+            <h2>◎ &nbsp; Evaluación del modelo</h2>
+            <span>Binomial negativa</span>
+          </div>
+          <div class="projection-evaluation-grid">
+            <div class="projection-metric">
+              <span>WAPE anual</span>
+              <strong>{{ evaluation.wapeAnual | number:'1.1-1' }}<small>%</small></strong>
+              <p>Error porcentual absoluto ponderado. Cuanto menor, menor diferencia agregada entre valores observados y estimados.</p>
+            </div>
+            <div class="projection-metric">
+              <span>Cobertura del intervalo del 90 %</span>
+              <strong>{{ evaluation.cobertura | number:'1.1-1' }}<small>%</small></strong>
+              <p>Porcentaje observado de valores que quedaron dentro del intervalo. El objetivo nominal es 90 %.</p>
+            </div>
+            <div class="projection-metric">
+              <span>Sesgo</span>
+              <strong>{{ evaluation.sesgo > 0 ? '+' : '' }}{{ evaluation.sesgo | number:'1.1-1' }}<small>%</small></strong>
+              <p>Desviación sistemática reportada por el equipo de datos. La interpretación del signo depende de su fórmula.</p>
+            </div>
+          </div>
+          <p class="projection-method-note">Son métricas de evaluación del modelo y no cambian al modificar el rango mensual consultado.</p>
+        </article>
+
+        <article class="tg-forecast-card projection-comparison-card">
+          <div class="tg-forecast-card-title">
+            <h2>▤ &nbsp; Comparación de modelos</h2>
+            <span>Menor WAPE = menor error</span>
+          </div>
+          <div class="tg-forecast-table-scroll">
+            <table>
+              <thead><tr><th>Modelo</th><th>WAPE mensual</th><th>WAPE anual</th><th>Sesgo</th></tr></thead>
+              <tbody>
+                <tr *ngFor="let model of models" [class.projection-model-selected]="model.name === selectedModel">
+                  <td><strong>{{ model.name }}</strong><span *ngIf="model.name === selectedModel" class="projection-selected-label">Seleccionado</span></td>
+                  <td>{{ model.wapeMensual | number:'1.1-1' }} %</td>
+                  <td><strong>{{ model.wapeAnual | number:'1.1-1' }} %</strong></td>
+                  <td>{{ model.sesgo > 0 ? '+' : '' }}{{ model.sesgo | number:'1.1-1' }} %</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="projection-wape-bars">
+            <div *ngFor="let model of models" class="projection-wape-row">
+              <span>{{ model.name }}</span>
+              <div class="projection-wape-track"><div [class.projection-wape-best]="model.name === selectedModel" [style.width.%]="model.wapeAnual"></div></div>
+              <strong>{{ model.wapeAnual | number:'1.1-1' }} %</strong>
+            </div>
+          </div>
+        </article>
       </div>
-      <div class="tg-forecast-legend"><span><i class="history"></i> Observado (DEMO)</span><span><i class="future"></i> Proyección (DEMO)</span><span><i class="band"></i> Banda ilustrativa</span></div>
-    </article>
-    <article class="tg-forecast-card tg-forecast-scenarios">
-      <div class="tg-forecast-card-title"><h2>ⓘ &nbsp; Escenarios de proyección</h2><span>DEMO</span></div>
-      <button *ngFor="let item of scenarios" type="button" class="tg-forecast-scenario" [class.selected]="scenario === item.key" [class.optimistic]="item.key === 'optimista'" [class.critical]="item.key === 'critico'" (click)="setScenario(item.key)" [attr.aria-pressed]="scenario === item.key">
-        <span class="tg-forecast-radio">{{scenario === item.key ? '✓' : ''}}</span><span><strong>{{item.name}}</strong><small>{{item.caption}}</small></span>
-      </button>
-      <p class="tg-forecast-scenario-note">{{scenarioLabel}} activo · proyecciones sintéticas, no predicciones meteorológicas.</p>
-    </article>
-  </div>
 
-  <div class="tg-forecast-bottom-grid">
-    <article class="tg-forecast-card tg-forecast-model-card">
-      <div class="tg-forecast-card-title"><h2>♧ &nbsp; Comparación de modelos</h2><span>Validación DEMO</span></div>
-      <div class="tg-forecast-table-scroll"><table><thead><tr><th>Modelo</th><th>MAE ↓</th><th>RMSE ↓</th><th>MAPE ↓</th><th>R² ↑</th></tr></thead><tbody>
-        <tr *ngFor="let model of models" (click)="setModel(model.name)" [class.active]="active.model===model.name" tabindex="0" (keydown.enter)="setModel(model.name)" (keydown.space)="setModel(model.name);$event.preventDefault()" [attr.aria-selected]="active.model===model.name" [attr.title]="'Seleccionar modelo DEMO '+model.name"><td><span class="tg-forecast-select-mark">{{active.model===model.name ? '✓' : '○'}}</span> {{model.name}}</td><td>{{model.mae}}</td><td>{{model.rmse}}</td><td>{{model.mape}} %</td><td>{{model.r2 | number:'1.2-2'}}</td></tr>
-      </tbody></table></div>
-    </article>
-    <article class="tg-forecast-card tg-forecast-errors-card">
-      <div class="tg-forecast-card-title"><h2>Error de predicción (MAPE por año)</h2><span>DEMO</span></div>
-      <div class="tg-forecast-error-avg">MAPE promedio: {{stat.mape}} %</div>
-      <div class="tg-forecast-bars" role="img" [attr.aria-label]="'Barras de MAPE sintético para '+active.model">
-        <div *ngFor="let item of errorBars" class="tg-forecast-bar-item"><div class="tg-forecast-bar-track"><div [style.height.%]="item.value / 20 * 100" [attr.title]="item.year+': '+item.value+'%'"></div></div><span>{{item.year}}</span></div>
+    <article class="tg-forecast-card projection-detail-card">
+      <div class="tg-forecast-card-title">
+        <h2>▦ &nbsp; Detalle mensual</h2>
+        <span>{{ items().length }} registros</span>
+      </div>
+      <div class="tg-forecast-table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Mes</th>
+              <th>Días simulados</th>
+              <th>Índice esperado</th>
+              <th>Factor k</th>
+              <th>Detecciones esperadas</th>
+              <th>Detecciones generadas</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of items()">
+              <td><strong>{{ item.mes }}</strong></td>
+              <td>{{ item.dias_simulados }}</td>
+              <td>{{ item.indice_esperado_modelo | number:'1.0-2' }}</td>
+              <td>{{ item.k_detecciones_por_celda_dia | number:'1.0-2' }}</td>
+              <td>{{ item.esperado_detecciones | number:'1.0-2' }}</td>
+              <td>{{ item.detecciones_generadas | number:'1.0-0' }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </article>
-    <article class="tg-forecast-card tg-forecast-recommend">
-      <div class="tg-forecast-card-title"><h2>🏆 &nbsp; Modelo recomendado</h2></div>
-      <div class="tg-forecast-recommend-body"><strong>Prophet</strong><p>Mejor perfil de métricas de ejemplo (R² = 0.87, MAE = 9.8, MAPE = 11.9 %).</p><small>Comparación DEMO. No se ha entrenado ni validado ningún modelo real.</small></div>
+    </div>
+  </ng-container>
+
+  <ng-template #emptyProjection>
+    <article class="tg-forecast-card projection-empty">
+      <strong>No hay datos para el período seleccionado.</strong>
+      <p>Prueba con otro rango de meses o consulta todo el período disponible.</p>
     </article>
+  </ng-template>
+
+  <div class="projection-disclaimer">
+    <strong>ⓘ Advertencia sobre los resultados simulados</strong>
+    <p>{{ notice() }}</p>
   </div>
 
-  <div *ngIf="showModelDetails" class="tg-forecast-details" id="forecast-model-details">
-    <strong>Detalle de {{active.model}} · demostración</strong>
-    <p>Se muestran curvas sintéticas con perfiles predefinidos para SARIMA, Prophet y XGBoost. El sistema no ajusta parámetros ni utiliza un modelo entrenado. MAE, RMSE, MAPE, R² y la banda de variación son únicamente ejemplos para validar la interfaz.</p>
-    <p>Antes de utilizar pronósticos operativos se requieren series NASA FIRMS verificadas, calibración MODIS/VIIRS, control de cobertura satelital, particiones temporales, validación fuera de muestra e incertidumbre estadística.</p>
+  <div class="tg-forecast-footer projection-footer">
+    <span>Datos mensuales proporcionados por el servicio de proyecciones.</span>
+    <button type="button" (click)="exportCsv()" [disabled]="!items().length">↓ &nbsp; Exportar datos (CSV)</button>
   </div>
-
-  <div class="tg-forecast-footer">
-    <div class="tg-forecast-disclaimer">ⓘ &nbsp; <strong>Nota:</strong> todos los resultados son DEMO con series sintéticas (2018–2026). Las proyecciones no sustituyen el monitoreo satelital ni predicen incendios confirmados.</div>
-    <button type="button" (click)="toggleModelDetails()" [attr.aria-expanded]="showModelDetails" aria-controls="forecast-model-details">▤ &nbsp; {{showModelDetails ? 'Ocultar detalles' : 'Ver detalles del modelo'}}</button>
-    <button type="button" (click)="exportPdf()">↓ &nbsp; Exportar resultados (PDF)</button>
-    <button type="button" (click)="exportCsv()">▦ &nbsp; Exportar datos (CSV)</button>
-  </div>
-  <p *ngIf="message" class="tg-forecast-live" role="status">{{message}}</p>
 </section>
