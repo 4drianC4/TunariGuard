@@ -41,6 +41,19 @@
               <span class="message-author">{{ item.role === 'assistant' ? 'Tuni' : 'Tú' }}</span>
               <p>{{ item.text }}</p>
               @if (item.role === 'assistant') {
+                @if (item.facts?.length) {
+                  <dl class="tuni-facts">
+                    @for (fact of item.facts; track $index) {
+                      <div><dt>{{ fact.label }}</dt><dd>{{ fact.value }}</dd></div>
+                    }
+                  </dl>
+                }
+                @if (item.source; as source) {
+                  <div class="tuni-source">
+                    @if (source.section) { <small>{{ source.section }}</small> }
+                    <a [routerLink]="source.route" [queryParams]="source.query" (click)="cerrar()">{{ source.label }} ↗</a>
+                  </div>
+                }
                 <button type="button" class="tuni-speak-btn" (click)="escuchar(item.text)" [disabled]="conversacionContinua() || ((reproduciendo() || cargandoVoz()) && !reproduciendo())" [attr.aria-label]="reproduciendo() || cargandoVoz() ? 'Detener voz' : 'Escuchar respuesta'">
                   <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a5 5 0 0 1 0 6"/><path d="M18 6a9 9 0 0 1 0 12"/></svg>
                   {{ reproduciendo() || cargandoVoz() ? 'Detener audio' : 'Escuchar' }}
@@ -61,7 +74,11 @@
         <button type="button" class="tuni-voice-toggle" [class.active]="conversacionContinua()" [attr.aria-pressed]="conversacionContinua()" (click)="alternarConversacion()">{{ conversacionContinua() ? 'Detener' : 'Activar' }}</button>
       </div>
       <div class="tuni-ai-compose">
-        <p class="tuni-ai-note">Asistente IA · No conectado a alertas en tiempo real</p>
+        <div class="tuni-quick-actions" aria-label="Consultas rápidas del Parque Nacional Tunari">
+          @for (consulta of consultasRapidas; track consulta.id) {
+            <button type="button" (click)="enviarPregunta(consulta)" [disabled]="procesando() || grabando()">{{ consulta.label }}</button>
+          }
+        </div>
         @if (estadoVoz()) { <p class="tuni-ai-status" role="status">{{ estadoVoz() }}</p> }
         @if (procesando() && !estadoVoz()) { <p role="status" class="tuni-ai-status">Tuni está procesando tu solicitud…</p> }
         @if (errorIA()) { <p class="tuni-ai-error" role="alert">{{ errorIA() }}</p> }

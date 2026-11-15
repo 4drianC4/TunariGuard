@@ -61,3 +61,31 @@ export interface AlertsCreatedEvent {
 export interface AlertUpdatedEvent {
   alert: unknown;
 }
+
+export const OBSERVATIONS_ARRIVED = 'observations.arrived';
+
+/**
+ * Observaciones simuladas (proyección) cuya fecha y hora ya se cumplió: se anuncian como si
+ * acabaran de llegar. Los datos reales no pasan por aquí (se anuncian al importarse).
+ */
+export interface ObservationsArrivedEvent {
+  observationIds: string[];
+}
+
+export const SIMULATED_REMOVED = 'observations.simulated-removed';
+
+/** Se borraron observaciones simuladas (reemplazo por datos reales o limpieza). */
+export interface SimulatedRemovedEvent {
+  observationIds: string[];
+  /** Último día (hora de Bolivia) borrado; null si se borraron todas. */
+  hasta: string | null;
+}
+
+export const ALERTS_REMOVED = 'alerts.removed';
+
+/** Alertas borradas (las de observaciones simuladas que ya no existen). */
+export interface AlertsRemovedEvent {
+  /** Códigos AL-0001 (el `id` del DTO de alertas). */
+  alertIds: string[];
+  uuids: string[];
+}

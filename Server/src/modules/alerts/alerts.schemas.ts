@@ -8,7 +8,14 @@ export const listAlertsSchema = z
   .object({
     desde: isoDay.optional().describe('Desde, inclusive (YYYY-MM-DD, día en hora de Bolivia)'),
     hasta: isoDay.optional().describe('Hasta, inclusive (YYYY-MM-DD)'),
-    area_id: z.string().trim().min(1).max(100).optional().describe('distrito-09, mun-tiquipaya, parque-tunari…'),
+    area_id: z
+      .string()
+      .trim()
+      .min(1)
+      .max(100)
+      .optional()
+      .describe('distrito-09, mun-tiquipaya… · parque-tunari incluye sus sectores · municipio-cochabamba, sus 15 distritos'),
+    en_parque: queryBoolean.optional().describe('true: solo alertas dentro del Parque Tunari (incluye sus sectores por municipio)'),
     severidad: severidad.optional(),
     estado: estado.optional(),
     modo: z.enum(['live', 'replay']).optional().describe('live: importaciones · replay: generadas en una reproducción (demo)'),

@@ -17,6 +17,7 @@ export const ServerEvents = {
   DistrictsUpdated: 'districts:updated',
   AlertNew: 'alert:new',
   AlertUpdated: 'alert:updated',
+  AlertRemoved: 'alert:removed',
 } as const;
 
 export const ClientEvents = {
@@ -45,9 +46,10 @@ export interface HotspotsNewPayload {
  * TODOS los clientes (también a los suscritos a distritos) y antes del `hotspots:new` del lote.
  */
 export interface HotspotsRemovedPayload {
-  reason: 'nrt_replaced_by_standard';
-  batchId: string;
-  dataset: string;
+  /** nrt_replaced_by_standard: llegó el dato estándar · simulated_replaced_by_real: llegaron datos reales. */
+  reason: 'nrt_replaced_by_standard' | 'simulated_replaced_by_real';
+  batchId: string | null;
+  dataset: string | null;
   removedIds: string[];
   emittedAtUtc: string;
 }
@@ -99,6 +101,14 @@ export interface AlertNewPayload {
 /** Una alerta cambió de estado (otro operador la revisó). Se puede actualizar la fila en su lugar. */
 export interface AlertUpdatedPayload {
   alert: AlertDto;
+  emittedAtUtc: string;
+}
+
+/** Alertas que dejaron de existir (sus detecciones simuladas se reemplazaron por datos reales). */
+export interface AlertRemovedPayload {
+  /** Códigos AL-0001, iguales al `id` de cada alerta en GET /alertas. */
+  alertIds: string[];
+  uuids: string[];
   emittedAtUtc: string;
 }
 

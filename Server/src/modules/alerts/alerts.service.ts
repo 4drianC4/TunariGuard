@@ -1,10 +1,23 @@
-import { Injectable, Logger, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  type OnApplicationBootstrap,
+  type OnModuleDestroy,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import {
   ALERT_UPDATED,
   ALERTS_CREATED,
+  ALERTS_REMOVED,
   BATCH_COMPLETED,
+  OBSERVATIONS_ARRIVED,
   REPLAY_PASS,
+  SIMULATED_REMOVED,
+  type AlertsRemovedEvent,
+  type ObservationsArrivedEvent,
+  type SimulatedRemovedEvent,
   type AlertsCreatedEvent,
   type AlertUpdatedEvent,
   type BatchCompletedEvent,
@@ -21,19 +34,84 @@ import { monthlyContext } from './domain/monthly-context.js';
  * guardan con su estado de revisión y se anuncian en tiempo real. También traduce a mensaje el
  * nivel_alerta mensual del paquete fuego (contexto, sin tiempo real: cambia como mucho a diario).
  */
+/** Cada cuánto se revisa si "llegaron" detecciones simuladas (su fecha y hora ya se cumplió). */
+const ARRIVAL_CHECK_MS = 60_000;
+/** Margen hacia atrás al agrupar, para no partir una pasada entre dos revisiones. */
+const PASS_LOOKBACK_MS = 30 * 60_000;
+/** Al arrancar, cuánto hacia atrás se generan las alertas de simulados que llegaron con el servidor apagado. */
+const CATCH_UP_MS = 7 * 24 * 3_600_000;
+
 @Injectable()
-export class AlertsService {
+export class AlertsService implements OnApplicationBootstrap, OnModuleDestroy {
   private readonly logger = new Logger(AlertsService.name);
+  private timer: NodeJS.Timeout | null = null;
+  private lastCheck = new Date();
 
   constructor(
     private readonly repository: AlertsRepository,
     private readonly events: EventEmitter2,
   ) {}
 
+  /**
+   * La proyección simulada llega al futuro: sus detecciones se "publican" cuando se cumple su fecha
+   * y hora. Cada minuto se anuncian las que llegaron (hotspots:new) y se generan sus alertas.
+   */
+  onApplicationBootstrap(): void {
+    this.lastCheck = new Date();
+    // Si el servidor estuvo apagado, genera las alertas de lo que llegó mientras tanto (sin repetir
+    // las que ya existen). No reanuncia esos puntos en el mapa: el frontend los carga por REST.
+    void this.catchUp(this.lastCheck);
+    this.timer = setInterval(() => void this.checkArrivals(), ARRIVAL_CHECK_MS);
+    this.timer.unref();
+  }
+
+  private async catchUp(now: Date): Promise<void> {
+    try {
+      const pendientes = await this.repository.simulatedBetween(new Date(now.getTime() - CATCH_UP_MS), now);
+      if (pendientes.length) await this.generate({ observationIds: pendientes, upTo: now }, 'LIVE');
+    } catch {
+      // Sin base de datos al arrancar: PrismaService ya avisa con un mensaje claro.
+    }
+  }
+
+  onModuleDestroy(): void {
+    if (this.timer) clearInterval(this.timer);
+  }
+
+  async checkArrivals(now = new Date()): Promise<void> {
+    const desde = this.lastCheck;
+    this.lastCheck = now;
+    try {
+      const llegaron = await this.repository.simulatedBetween(desde, now);
+      if (!llegaron.length) return;
+      this.events.emit(OBSERVATIONS_ARRIVED, { observationIds: llegaron } satisfies ObservationsArrivedEvent);
+      // Con margen hacia atrás para agrupar la pasada completa; las alertas repetidas se omiten.
+      const pasada = await this.repository.simulatedBetween(new Date(desde.getTime() - PASS_LOOKBACK_MS), now);
+      await this.generate({ observationIds: pasada, upTo: now }, 'LIVE');
+    } catch (error) {
+      this.logger.error('No se pudieron revisar las detecciones simuladas', error as Error);
+    }
+  }
+
   @OnEvent(BATCH_COMPLETED, { async: true })
   async onBatchCompleted(event: BatchCompletedEvent): Promise<void> {
     if (event.inserted === 0) return;
-    await this.generate({ batchId: event.batchId }, 'LIVE');
+    await this.generate({ batchId: event.batchId, upTo: new Date() }, 'LIVE');
+  }
+
+  @OnEvent(SIMULATED_REMOVED, { async: true })
+  async onSimulatedRemoved(event: SimulatedRemovedEvent): Promise<void> {
+    try {
+      const removed = await this.repository.deleteSimulatedFor(event.observationIds);
+      if (removed.length) {
+        this.events.emit(ALERTS_REMOVED, {
+          alertIds: removed.map((r) => r.code),
+          uuids: removed.map((r) => r.uuid),
+        } satisfies AlertsRemovedEvent);
+      }
+    } catch (error) {
+      this.logger.error('No se pudieron borrar las alertas simuladas', error as Error);
+    }
   }
 
   @OnEvent(REPLAY_PASS, { async: true })
@@ -41,7 +119,10 @@ export class AlertsService {
     await this.generate({ observationIds: event.observationIds }, 'REPLAY');
   }
 
-  private async generate(scope: { batchId: string } | { observationIds: string[] }, mode: AlertModeValue): Promise<void> {
+  private async generate(
+    scope: ({ batchId: string } | { observationIds: string[] }) & { upTo?: Date },
+    mode: AlertModeValue,
+  ): Promise<void> {
     try {
       const useFuego = await this.repository.fuegoAvailable();
       const detections = await this.repository.detections(scope, useFuego);
@@ -56,12 +137,19 @@ export class AlertsService {
   }
 
   async list(q: ListAlertsQuery) {
+    // Áreas que agrupan a otras: el parque incluye sus sectores por municipio y el municipio
+    // de Cochabamba sus 15 distritos.
+    const parque = q.area_id === 'parque-tunari';
+    const municipio = q.area_id === 'municipio-cochabamba';
+    const areaIds = municipio ? Array.from({ length: 15 }, (_, i) => `distrito-${String(i + 1).padStart(2, '0')}`) : undefined;
     const { rows, total, bySeverity, byStatus, areas } = await this.repository.list(
       {
         // Los días se piden en hora de Bolivia (UTC−4): el día D va de D 04:00Z a D+1 04:00Z.
         fromUtc: q.desde ? new Date(`${q.desde}T04:00:00Z`) : undefined,
         toUtc: q.hasta ? new Date(new Date(`${q.hasta}T04:00:00Z`).getTime() + 86_400_000) : undefined,
-        areaId: q.area_id,
+        areaId: parque || municipio ? undefined : q.area_id,
+        areaIds,
+        inPark: parque ? true : q.en_parque,
         severity: q.severidad ? severityFromLabel(q.severidad) : undefined,
         status: q.estado ? statusFromLabel(q.estado) : undefined,
         mode: q.modo === 'replay' ? 'REPLAY' : q.modo === 'live' ? 'LIVE' : undefined,

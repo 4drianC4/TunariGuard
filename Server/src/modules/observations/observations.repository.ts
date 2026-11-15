@@ -150,6 +150,40 @@ export class ObservationsRepository {
   }
 
   /**
+   * Observaciones simuladas hasta un día (hora de Bolivia, inclusive) o todas si `hasta` es null.
+   * Con `aplicar` las borra; sin él solo cuenta (ensayo). Nunca toca datos reales.
+   */
+  async simulatedUpTo(hasta: string | null, aplicar: boolean) {
+    const filtro = hasta
+      ? Prisma.sql`origin = 'SIMULATED' AND (acquired_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/La_Paz')::date <= ${hasta}::date`
+      : Prisma.sql`origin = 'SIMULATED'`;
+    const [conteo] = await this.prisma.$queryRaw<{ simulados: number; a_borrar: number; reales: number }[]>`
+      SELECT count(*) FILTER (WHERE origin = 'SIMULATED')::int AS simulados,
+             count(*) FILTER (WHERE ${filtro})::int AS a_borrar,
+             count(*) FILTER (WHERE origin = 'REAL')::int AS reales
+      FROM observations`;
+    const ids = aplicar
+      ? (await this.prisma.$queryRaw<{ id: string }[]>`DELETE FROM observations WHERE ${filtro} RETURNING id`).map((r) => r.id)
+      : [];
+    if (ids.length) {
+      // Los lotes simulados que quedaron sin detecciones ya no representan nada.
+      await this.prisma.$executeRaw`
+        DELETE FROM import_batches b
+        WHERE b.origin = 'SIMULATED' AND NOT EXISTS (SELECT 1 FROM observations o WHERE o.batch_id = b.id)`;
+    }
+    return { simulados: conteo!.simulados, aBorrar: conteo!.a_borrar, reales: conteo!.reales, borradosIds: ids };
+  }
+
+  /** Ids de observaciones simuladas adquiridas en (desde, hasta]: las que "llegan" en ese intervalo. */
+  async simulatedArrivedBetween(desde: Date, hasta: Date): Promise<string[]> {
+    const rows = await this.prisma.$queryRaw<{ id: string }[]>`
+      SELECT id FROM observations
+      WHERE origin = 'SIMULATED' AND acquired_at > ${desde} AND acquired_at <= ${hasta}
+      ORDER BY acquired_at`;
+    return rows.map((r) => r.id);
+  }
+
+  /**
    * Asigna cada observación al distrito cuyo polígono la cubre (ST_Covers: el borde cuenta
    * como dentro). Si ningún polígono la cubre queda OUTSIDE; si la cubren varios, AMBIGUOUS.
    * Nunca se asigna al distrito más cercano. Sin distritos cargados, todo queda PENDING.

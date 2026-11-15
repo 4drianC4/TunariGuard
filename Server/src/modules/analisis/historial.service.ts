@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { AnalisisRepository, type Fila } from './analisis.repository.js';
+import { AnalisisRepository } from './analisis.repository.js';
 import type { HistorialDistritosQuery, HistorialQuery } from './analisis.schemas.js';
 import {
   agruparPorArea,
@@ -81,7 +81,7 @@ export class HistorialService {
   }
 
   /** Unidad y aviso que el frontend debe mostrar junto a las cifras. */
-  private async contexto(o: Opciones, viirsReescalado: boolean): Promise<Fila> {
+  private async contexto(o: Opciones, viirsReescalado: boolean): Promise<{ source: FuenteHistorial; unit: string; notice: string }> {
     const base = 'Una detección satelital de calor no es un incendio confirmado.';
     if (o.fuente === 'HARMONIZED') {
       return {

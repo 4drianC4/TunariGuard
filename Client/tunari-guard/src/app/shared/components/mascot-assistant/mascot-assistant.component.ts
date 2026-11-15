@@ -1,13 +1,27 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 // TUNARIGUARD_TUNI_VOICE_RADAR_V2
 import { TuniEnhancementComponent } from '../tuni-enhancement/tuni-enhancement.component';
 import { Subscription } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 type TuniEstado = 'bienvenida' | 'saludo' | 'alerta' | 'satelite' | 'ayuda';
 type ChatItem = { role: 'tuni' | 'user'; text: string };
 type TuniConsejo = { titulo: string; texto: string };
+type ConsultaRapida = 'estado_mes' | 'ultimas_detecciones' | 'comparar_meses';
+interface ReferenciaTuni {
+  label: string;
+  route: string;
+  query?: Record<string, string>;
+  section?: string;
+}
+interface RespuestaTuni {
+  answer: string;
+  facts?: { label: string; value: string }[];
+  source?: ReferenciaTuni;
+}
+type MensajeTuni = { role: 'user' | 'assistant'; text: string; facts?: RespuestaTuni['facts']; source?: ReferenciaTuni };
 
 // TUNARIGUARD_TUNI_SABINA_V22
 import { TuniSabinaVoiceComponent } from '../tuni-sabina-voice/tuni-sabina-voice.component';
@@ -24,7 +38,12 @@ export class MascotAssistantComponent implements OnInit, OnDestroy {
   // TUNI_VOZ_V3_START: audio exclusivo y conversacion por turnos
   private readonly http = inject(HttpClient);
   readonly pregunta = signal('');
-  readonly respuestas = signal<{ role: 'user' | 'assistant'; text: string }[]>([]);
+  readonly respuestas = signal<MensajeTuni[]>([]);
+  readonly consultasRapidas: { id: ConsultaRapida; label: string; pregunta: string }[] = [
+    { id: 'estado_mes', label: 'Estado del mes', pregunta: '¿Cómo está el Tunari este mes?' },
+    { id: 'ultimas_detecciones', label: 'Focos recientes', pregunta: '¿Dónde se vieron los últimos focos del Tunari?' },
+    { id: 'comparar_meses', label: 'Comparar meses', pregunta: 'Compara el último mes completo con el año anterior en el Tunari.' },
+  ];
   readonly procesando = signal(false);
   readonly grabando = signal(false);
   readonly errorIA = signal('');
@@ -44,28 +63,30 @@ export class MascotAssistantComponent implements OnInit, OnDestroy {
   private tiempoMaximoVoz?: ReturnType<typeof setTimeout>;
   private sesionVoz = 0;
   private iniciandoMicrofono = false;
-  private readonly api = '/api/v1/tuni';
+  private readonly api = `${environment.apiBaseUrl}/tuni`;
 
-  enviarPregunta(): void {
-    const message = this.pregunta().trim();
+  enviarPregunta(rapida?: { id: ConsultaRapida; pregunta: string }): void {
+    const message = rapida?.pregunta ?? this.pregunta().trim();
     if (!message || this.procesando()) return;
-    const history = this.respuestas().slice(-8);
-    this.pregunta.set('');
+    const history = this.respuestas().slice(-8).map(({ role, text }) => ({ role, text }));
+    if (!rapida) this.pregunta.set('');
     this.errorIA.set('');
     this.procesando.set(true);
     this.estadoVoz.set('Tuni está pensando...');
     this.respuestas.update(items => [...items, { role: 'user', text: message }]);
     const sesion = this.sesionVoz;
-    this.solicitudChat = this.http.post<{ answer: string }>(`${this.api}/chat`, { message, history }).subscribe({
+    this.solicitudChat = this.http.post<RespuestaTuni>(`${this.api}/chat`, { message, history, consulta: rapida?.id }).subscribe({
       next: r => {
-        this.respuestas.update(items => [...items, { role: 'assistant', text: r.answer }]);
+        this.respuestas.update(items => [...items, { role: 'assistant', text: r.answer, facts: r.facts, source: r.source }]);
         this.procesando.set(false);
         if (this.conversacionContinua() && sesion === this.sesionVoz) this.reproducirVoz(r.answer, true);
         else this.estadoVoz.set('');
       },
-      error: () => {
+      error: (error: HttpErrorResponse) => {
         this.procesando.set(false);
-        this.errorIA.set('No se pudo consultar a Tuni. Comprueba la conexión con NestJS y OpenAI.');
+        this.errorIA.set(error.status === 404
+          ? 'El servidor todavía no tiene habilitado el chat de Tuni.'
+          : 'No se pudo consultar a Tuni. Intenta de nuevo en un momento.');
         this.detenerConversacion();
       },
     });
@@ -377,7 +398,7 @@ export class MascotAssistantComponent implements OnInit, OnDestroy {
       default:
         return [
           { role: 'tuni', text: 'Bienvenido a TunariGuard. Soy Tuni, tu asistente de ayuda.' },
-          { role: 'tuni', text: 'Puedo darte una bienvenida, simular alertas, explicar la parte satelital y orientarte dentro del sistema.' },
+          { role: 'tuni', text: 'Pregúntame por la actividad del Tunari, los focos recientes o cómo se interpretan los datos satelitales.' },
         ];
     }
   });

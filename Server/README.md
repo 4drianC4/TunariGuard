@@ -65,14 +65,15 @@ Qué hace cada paso:
 Después, **con el servidor ya corriendo**, en otra terminal carga las detecciones en tu base. Cada uno tiene su propia base en Docker, así que todos deben hacer este paso:
 
 ```bash
-npm run datos:cargar   # 11.923 detecciones reales de 2001 a 2026 (MODIS y VIIRS)
-npm run datos:demo     # opcional: 1.109 detecciones SIMULADAS de 2027 para la demo en tiempo real
+npm run datos:cargar   # 11.932 detecciones reales: 2001 a 2026 + 9 novedades NRT de noviembre de 2026
+npm run datos:demo     # opcional: proyección SIMULADA nov-2026 a 2031 (4.153 detecciones) para alertas en vivo
 ```
 
 - Los CSV están en el repo: `data/fuego/formato_firms/` (reales) y `data/demo/` (simulados).
 - Repetirlo no duplica nada.
 - Si falta el servidor o no hay distritos, el script lo avisa.
-- Resultado esperado de `datos:cargar`: 11.923 nuevas, 0 rechazadas y 680 en distritos.
+- Resultado esperado de `datos:cargar`: 11.932 nuevas (11.923 + 9), 0 rechazadas.
+- Las detecciones simuladas de la proyección **llegan a su hora**: cada una aparece en el mapa y genera su alerta cuando se cumple su fecha y hora. Cuando llegan datos reales de esos días, se reemplazan con `npm run datos:reemplazar-simulados` (ver [`data/demo/LEEME.md`](data/demo/LEEME.md)).
 
 Cuando el equipo de datos entregue CSV nuevos, se agregan a esas carpetas con un commit, y cada compañero solo hace `git pull` y vuelve a correr el comando.
 
@@ -291,7 +292,7 @@ Son reglas operativas para priorizar la revisión, no el modelo estadístico. Es
 
 | Endpoint | Qué hace |
 | --- | --- |
-| `GET /alertas` | Lista paginada, de la más reciente a la más antigua. Filtros: `desde`, `hasta` (días en hora de Bolivia), `area_id`, `severidad` (`Crítica`/`Alta`/`Media`), `estado`, `modo` (`live`/`replay`), `origen`, `page`, `limit`. Incluye `counts` por severidad y estado sobre todo el filtro (para las tarjetas de resumen) y `areas` con alertas (para el selector) |
+| `GET /alertas` | Lista paginada, de la más reciente a la más antigua. Filtros: `desde`, `hasta` (días en hora de Bolivia), `area_id` (`parque-tunari` incluye sus sectores por municipio y `municipio-cochabamba` sus 15 distritos), `en_parque`, `severidad` (`Crítica`/`Alta`/`Media`), `estado`, `modo` (`live`/`replay`), `origen`, `page`, `limit`. Incluye `counts` por severidad y estado sobre todo el filtro (para las tarjetas de resumen) y `areas` con alertas (para el selector) |
 | `GET /alertas/{id}` | Una alerta, por uuid o por código `AL-0001` |
 | `PATCH /alertas/{id}` | Cambia el estado: `{ "status": "Verificada", "note": "…" }`. Estados: `Pendiente`, `En revisión`, `En análisis`, `Verificada`. Se guarda y se avisa a todos con `alert:updated` |
 | `GET /alertas/contexto-mensual` | El **nivel_alerta** del mes en curso por área, traducido a un mensaje (`area_id`, `solo_alertas=true`) |
@@ -304,18 +305,31 @@ Cada alerta tiene la forma que usa la vista: `id` (`AL-3194`), `district` (nombr
 Ejemplo de `message`:
 > 2 detecciones de calor VIIRS (Suomi-NPP) en Sector del Tunari en Quillacollo, dentro del Parque Nacional Tunari, el 2026-10-25 a las 13:37 (hora de Bolivia). Confianza alta. Potencia radiativa máxima: 8.7 MW. Requiere verificación: una detección satelital no confirma un incendio.
 
+**En el chat (Tuni):** `POST /tuni/chat` responde con estas mismas alertas a preguntas como "¿hay alertas?", "alertas críticas en el Tunari", "alertas pendientes de Cochabamba" o "últimas alertas del distrito 9". Devuelve el total por severidad, las 5 más recientes y un enlace a `/alertas` con el filtro aplicado. Esas frases no necesitan clave de IA; con `LLM_API_KEY`, Tuni también entiende otras formas de preguntarlo (herramienta `alertas_operativas`). El botón rápido del chat puede enviar `consulta: "alertas_operativas"`.
+
 **Contexto mensual (`nivel_alerta`):** es el nivel que calcula el modelo del equipo de datos para el mes en curso. Va de `normal` y `elevada` a `alta` y `muy_alta`, más `sin_baseline` cuando no hay historia suficiente. El backend solo lo convierte en mensaje, por ejemplo:
 
 > Actividad extremadamente inusual en Parque Nacional Tunari: en los primeros 12 días de noviembre de 2026 se registraron 14 celdas-día de calor (NOAA-20), cuando lo esperable según el modelo era ~3.5. Un tramo así o más alto ocurre en el 1 % de los casos o menos (según el modelo). Es una señal estadística: requiere verificación y no confirma un incendio.
 
 Cambia como mucho una vez al día, al cargar un corte nuevo (`npm run fuego:alerta-mes`). Por eso **no tiene evento de tiempo real**: se consulta por REST, por ejemplo como un aviso arriba de la página.
 
+**Proyección simulada (`datos:demo`):** las detecciones inventadas de 2026 a 2031 **no generan alertas al importarse**. Cada una genera su alerta cuando llega su hora: el servidor revisa cada minuto. Esas alertas son de origen `SIMULATED` (`simulated: true`).
+
+Al reemplazar simulados por reales (`POST /ingestion/simulados/borrar` o `npm run datos:reemplazar-simulados`), sus alertas se borran y se avisa con `alert:removed`. Si el servidor estuvo apagado, al arrancar genera las alertas de lo que llegó en los últimos 7 días, sin repetir.
+
 **Volumen:**
 - La primera carga de la historia (`datos:cargar`) genera unas 3.200 alertas de 2001 a 2026, que la vista filtra por fecha.
 - Reimportar no crea alertas nuevas.
 - Repetir un replay tampoco duplica sus alertas.
 
-### 4.9 Errores
+### 4.9 Proyección y reemplazo de simulados
+
+| Endpoint | Qué hace |
+| --- | --- |
+| `GET /proyeccion/mensual` | Serie mensual de la proyección **simulada** (nov-2026 a dic-2031): índice esperado por el modelo y detecciones generadas (`desde`, `hasta` en `YYYY-MM`). Es un futuro posible, no un pronóstico |
+| `POST /ingestion/simulados/borrar` | `{ "hasta": "2026-11-13", "aplicar": true }`: borra las detecciones simuladas hasta ese día (hora de Bolivia) y sus alertas, y avisa por Socket.IO. Sin `aplicar` es un ensayo. Sin `hasta` borra todas las simuladas. Nunca toca datos reales |
+
+### 4.10 Errores
 
 | Código | Cuándo |
 | --- | --- |
@@ -364,7 +378,8 @@ Sin tiempo real, el frontend tendría que preguntar cada pocos segundos si hay a
 | --- | --- | --- |
 | `alert:new` | Al generarse alertas (importación o replay) | `count`: cuántas son. `alerts`: hasta 100, de la más reciente a la más antigua, con la misma forma que `GET /alertas`. `truncated`: si había más de 100. Llega a todos los clientes |
 | `alert:updated` | Cuando alguien cambia el estado de una alerta (`PATCH /alertas/{id}`) | `alert`: la alerta actualizada, para reemplazar esa fila en su lugar |
-| `hotspots:removed` | Cuando el dato estándar borra NRT provisionales, antes del `hotspots:new` del mismo lote | `removedIds`: ids a quitar del mapa. `reason`: `nrt_replaced_by_standard`. Llega a todos los clientes, aunque estén suscritos solo a algunos distritos |
+| `alert:removed` | Cuando se reemplazan simulados por reales y sus alertas dejan de existir | `alertIds`: códigos `AL-0001` (el `id` de cada alerta) a quitar de la lista; `uuids` |
+| `hotspots:removed` | Cuando el dato estándar borra NRT provisionales, antes del `hotspots:new` del mismo lote | `removedIds`: ids a quitar del mapa. `reason`: `nrt_replaced_by_standard`, o `simulated_replaced_by_real` cuando se reemplazan simulados por reales. Llega a todos los clientes, aunque estén suscritos solo a algunos distritos |
 | `hotspots:new` | Al importarse focos nuevos, y en cada paso de la reproducción | `collection`: FeatureCollection GeoJSON de puntos, listo para agregar al mapa. `mode`: `live` (recién importado) o `replay` (demo). `simulated`: `true` si es demo o datos de prueba, y hay que mostrarlo. `simulatedTimeUtc`: en replay, el momento histórico reproducido. `dataset`, `batchId`, `emittedAtUtc` |
 | `sync:status` | Al terminar cada importación y al conectarse | `lastBatch`: nombre del dataset, filas nuevas, duplicadas y rechazadas, `announced`, `upgradedToStandard` y `removedObsolete`. Si `announced` es `false`, o si `upgradedToStandard`/`removedObsolete` son mayores que 0, conviene recargar con `GET /observations` |
 | `replay:status` | En cada paso de la reproducción, al detenerse y al conectarse | `running`, `step`, `totalSteps`, `intervalMs`, `loop`, `observationCount`, `simulatedTimeUtc` |
@@ -429,10 +444,10 @@ npm run realtime:watch -- distrito-09 distrito-13   # solo esos distritos
 La forma más vistosa para la demo es con los datos simulados de 2027:
 
 ```bash
-npm run datos:demo   # importa los simulados e imprime el comando de replay
+npm run datos:demo   # importa la proyección simulada e imprime un comando de replay
 ```
 
-Ese replay (12 al 16 de agosto de 2027) da 33 pasadas con 186 detecciones. Otras opciones:
+El replay sugerido (6 al 10 de julio de 2027, uno de los tramos más intensos de la proyección) muestra los focos y las alertas llegando pasada a pasada. Otras opciones:
 
 ```bash
 # A) Reproducción histórica: una pasada cada 2 s
@@ -515,6 +530,7 @@ socket.on('alert:new', ({ count, alerts }) => {
   // Aviso "N alertas nuevas · Ver" (no reordenar la lista sola). alerts[0] es la más reciente.
 });
 socket.on('alert:updated', ({ alert }) => { /* reemplazar la fila con alert.id por la nueva */ });
+socket.on('alert:removed', ({ alertIds }) => { /* quitar de la lista las alertas con esos id */ });
 socket.on('replay:status', (status) => { /* barra de progreso de la demo */ });
 socket.on('districts:updated', () => { /* recarga GET /districts y GET /observations */ });
 ```
@@ -594,8 +610,10 @@ Si quien sube el archivo está en otra computadora de la red, pon `S3_PUBLIC_END
 | `start:dev` | Servidor con recarga automática (API + tiempo real) |
 | `build` / `start:prod` | Compilar y ejecutar la versión de producción (`dist/`) |
 | `realtime:watch` | Oyente de consola del tiempo real (`-- distrito-09` para filtrar) |
-| `datos:cargar` | Carga en tu base las 11.923 detecciones reales del repo (con el servidor corriendo) |
-| `datos:demo` | Carga las detecciones simuladas de 2027 e imprime el comando de replay (también genera alertas simuladas) |
+| `datos:cargar` | Carga en tu base las detecciones reales del repo: históricas y novedades (con el servidor corriendo) |
+| `datos:demo` | Carga la proyección simulada 2026–2031; sus detecciones y alertas llegan a su hora |
+| `datos:reemplazar-simulados -- AAAA-MM-DD [--aplicar]` | Borra las simuladas hasta ese día cuando ya hay datos reales (sin `--aplicar`, ensayo) |
+| `datos:limpiar-simulados -- [--aplicar]` | Borra todas las detecciones simuladas y sus alertas |
 | `db:up` / `db:down` | Levantar o detener PostgreSQL y MinIO |
 | `db:doctor` | Diagnosticar problemas de conexión a la base |
 | `prisma:deploy` | Aplicar las migraciones |

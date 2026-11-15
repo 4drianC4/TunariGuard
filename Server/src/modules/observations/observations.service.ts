@@ -32,6 +32,16 @@ export class ObservationsService {
     return ranges.length ? this.repository.deleteObsoleteNrt(batchId, origin, ranges) : Promise.resolve([]);
   }
 
+  /** Cuenta (y con `aplicar` borra) las observaciones simuladas hasta un día de Bolivia. */
+  simulatedUpTo(hasta: string | null, aplicar: boolean) {
+    return this.repository.simulatedUpTo(hasta, aplicar);
+  }
+
+  /** Observaciones simuladas cuya fecha se cumplió entre dos instantes. */
+  simulatedArrivedBetween(desde: Date, hasta: Date): Promise<string[]> {
+    return this.repository.simulatedArrivedBetween(desde, hasta);
+  }
+
   /** Asigna distritos a todo un lote, una vez insertados todos sus bloques. */
   assignBatchDistricts(batchId: string): Promise<AssignmentSummary> {
     return this.repository.assignDistricts(batchId);

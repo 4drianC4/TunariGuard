@@ -4,8 +4,14 @@ import type { AlertDto } from '../alerts/domain/alert-dto.js';
 import {
   ALERT_UPDATED,
   ALERTS_CREATED,
+  ALERTS_REMOVED,
   BATCH_COMPLETED,
   DISTRICTS_UPDATED,
+  OBSERVATIONS_ARRIVED,
+  SIMULATED_REMOVED,
+  type AlertsRemovedEvent,
+  type ObservationsArrivedEvent,
+  type SimulatedRemovedEvent,
   type AlertsCreatedEvent,
   type AlertUpdatedEvent,
   type BatchCompletedEvent,
@@ -16,6 +22,7 @@ import { chunk, fanOutByDistrict } from './domain/fan-out.js';
 import {
   ServerEvents,
   type AlertNewPayload,
+  type AlertRemovedPayload,
   type AlertUpdatedPayload,
   type DistrictsUpdatedPayload,
   type HotspotsNewPayload,
@@ -64,8 +71,13 @@ export class RealtimePublisher {
 
       this.gateway.emitSticky(ServerEvents.SyncStatus, { lastBatch } satisfies SyncStatusPayload);
 
+      const ahora = Date.now();
       for (const ids of chunk(insertedIds, IDS_PER_QUERY)) {
-        const features = await this.observations.featuresByIds(ids);
+        // Las detecciones simuladas del futuro (proyección) se anuncian cuando llega su hora.
+        const features = (await this.observations.featuresByIds(ids)).filter(
+          (f) => Date.parse(f.properties.acquiredAtUtc) <= ahora,
+        );
+        if (!features.length) continue;
         this.publishHotspots(features, {
           mode: 'live',
           simulated: event.origin === 'SIMULATED',
@@ -87,6 +99,47 @@ export class RealtimePublisher {
   @OnEvent(DISTRICTS_UPDATED)
   onDistrictsUpdated(event: DistrictsUpdatedEvent): void {
     this.gateway.emitToAll(ServerEvents.DistrictsUpdated, event satisfies DistrictsUpdatedPayload);
+  }
+
+  /** Detecciones simuladas de la proyección cuya hora llegó: se anuncian como datos en vivo. */
+  @OnEvent(OBSERVATIONS_ARRIVED, { async: true })
+  async onObservationsArrived(event: ObservationsArrivedEvent): Promise<void> {
+    try {
+      for (const ids of chunk(event.observationIds, IDS_PER_QUERY)) {
+        this.publishHotspots(await this.observations.featuresByIds(ids), {
+          mode: 'live',
+          simulated: true,
+          batchId: null,
+          dataset: 'Proyección simulada',
+          simulatedTimeUtc: null,
+        });
+      }
+    } catch (error) {
+      this.logger.error('No se pudieron anunciar las detecciones simuladas', error as Error);
+    }
+  }
+
+  @OnEvent(SIMULATED_REMOVED)
+  onSimulatedRemoved(event: SimulatedRemovedEvent): void {
+    const emittedAtUtc = new Date().toISOString();
+    for (const ids of chunk(event.observationIds, REMOVED_IDS_PER_MESSAGE)) {
+      this.gateway.emitToAll(ServerEvents.HotspotsRemoved, {
+        reason: 'simulated_replaced_by_real',
+        batchId: null,
+        dataset: null,
+        removedIds: ids,
+        emittedAtUtc,
+      } satisfies HotspotsRemovedPayload);
+    }
+  }
+
+  @OnEvent(ALERTS_REMOVED)
+  onAlertsRemoved(event: AlertsRemovedEvent): void {
+    this.gateway.emitToAll(ServerEvents.AlertRemoved, {
+      alertIds: event.alertIds,
+      uuids: event.uuids,
+      emittedAtUtc: new Date().toISOString(),
+    } satisfies AlertRemovedPayload);
   }
 
   @OnEvent(ALERTS_CREATED)

@@ -9,6 +9,10 @@ export interface AlertFilter {
   fromUtc?: Date;
   toUtc?: Date;
   areaId?: string;
+  /** Varias áreas a la vez (p. ej. los 15 distritos del municipio). */
+  areaIds?: string[];
+  /** Solo alertas dentro del Parque Tunari (incluye sus sectores por municipio). */
+  inPark?: boolean;
   severity?: Severity;
   status?: AlertStatusValue;
   mode?: 'LIVE' | 'REPLAY';
@@ -47,11 +51,16 @@ export class AlertsRepository {
    * Con el paquete fuego: distrito de Cochabamba si cae en uno; si no, el sector del Tunari por
    * municipio (solo dentro del parque) o el parque. Sin el paquete: los distritos de la app.
    */
-  async detections(scope: { batchId: string } | { observationIds: string[] }, useFuego: boolean): Promise<DetectionForAlert[]> {
-    const filter =
+  async detections(
+    scope: ({ batchId: string } | { observationIds: string[] }) & { upTo?: Date },
+    useFuego: boolean,
+  ): Promise<DetectionForAlert[]> {
+    const base =
       'batchId' in scope
         ? Prisma.sql`o.batch_id = ${scope.batchId}::uuid`
         : Prisma.sql`o.id = ANY (${scope.observationIds}::uuid[])`;
+    // Solo lo que ya ocurrió: una detección simulada del futuro todavía no genera alerta.
+    const filter = scope.upTo ? Prisma.sql`${base} AND o.acquired_at <= ${scope.upTo}` : base;
 
     const rows = useFuego
       ? await this.prisma.$queryRaw<DetectionRow[]>`
@@ -129,7 +138,7 @@ export class AlertsRepository {
       // Áreas con alertas en el periodo (sin filtrar por área), para el selector de la vista.
       this.prisma.alert.groupBy({
         by: ['areaId', 'areaName'],
-        where: whereOf({ ...filter, areaId: undefined }),
+        where: whereOf({ ...filter, areaId: undefined, areaIds: undefined }),
         _count: { _all: true },
         orderBy: { areaName: 'asc' },
       }),
@@ -159,6 +168,25 @@ export class AlertsRepository {
     return row as AlertRecord;
   }
 
+  /** Ids de observaciones simuladas adquiridas en (desde, hasta]. */
+  async simulatedBetween(desde: Date, hasta: Date): Promise<string[]> {
+    const rows = await this.prisma.$queryRaw<{ id: string }[]>`
+      SELECT id FROM observations
+      WHERE origin = 'SIMULATED' AND acquired_at > ${desde} AND acquired_at <= ${hasta}
+      ORDER BY acquired_at`;
+    return rows.map((r) => r.id);
+  }
+
+  /** Borra las alertas simuladas que incluyen alguna de esas observaciones. Devuelve uuid y código. */
+  async deleteSimulatedFor(observationIds: string[]): Promise<{ uuid: string; code: string }[]> {
+    if (!observationIds.length) return [];
+    const rows = await this.prisma.$queryRaw<{ id: string; number: number }[]>`
+      DELETE FROM alerts
+      WHERE origin = 'SIMULATED' AND observation_ids && ${observationIds}::uuid[]
+      RETURNING id, number`;
+    return rows.map((r) => ({ uuid: r.id, code: `AL-${String(r.number).padStart(4, '0')}` }));
+  }
+
   /** Borra las alertas de demostración: generadas en un replay o de datos simulados. */
   async deleteDemo(): Promise<number> {
     const { count } = await this.prisma.alert.deleteMany({ where: { OR: [{ mode: 'REPLAY' }, { origin: 'SIMULATED' }] } });
@@ -179,7 +207,8 @@ export class AlertsRepository {
 function whereOf(f: AlertFilter): Prisma.AlertWhereInput {
   return {
     ...(f.fromUtc || f.toUtc ? { detectedAt: { gte: f.fromUtc, lt: f.toUtc } } : {}),
-    areaId: f.areaId,
+    areaId: f.areaId ?? (f.areaIds ? { in: f.areaIds } : undefined),
+    inPark: f.inPark,
     severity: f.severity,
     status: f.status,
     mode: f.mode,

@@ -176,6 +176,16 @@ export class AnalisisRepository {
     return rows[0]?.total ?? 0;
   }
 
+  async mesesConDeteccionesProvisionales(areaId: string, primero: string, segundo: string): Promise<string[]> {
+    const rows = await this.query<{ mes: string }>(Prisma.sql`
+      SELECT DISTINCT to_char(d.fecha_bo, 'YYYY-MM') AS mes
+      FROM fuego.detecciones d
+      WHERE d.origen_dato = 'NRT' AND fuego.pertenece_a_area(d, ${areaId})
+        AND ((d.fecha_bo >= ${primero}::date AND d.fecha_bo < ${primero}::date + interval '1 month')
+          OR (d.fecha_bo >= ${segundo}::date AND d.fecha_bo < ${segundo}::date + interval '1 month'))`);
+    return rows.map(({ mes }) => mes);
+  }
+
   buscarDetecciones(poligono: unknown, desde?: string, hasta?: string, fuentes?: string[]): Promise<Fila[]> {
     return this.filas(Prisma.sql`
       SELECT ${DETECCION_JSON} AS fila
