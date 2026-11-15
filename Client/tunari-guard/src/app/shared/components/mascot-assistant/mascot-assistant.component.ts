@@ -14,14 +14,28 @@ interface ReferenciaTuni {
   label: string;
   route: string;
   query?: Record<string, string>;
-  section?: string;
+}
+interface CitaTuni {
+  id: string;
+  titulo: string;
+  texto: string;
+  alcance?: string;
+}
+interface ContextoDetecciones {
+  area: string;
+  desde: string | null;
+  hasta: string | null;
+  satelite: string | null;
 }
 interface RespuestaTuni {
   answer: string;
   facts?: { label: string; value: string }[];
   source?: ReferenciaTuni;
+  citas?: CitaTuni[];
+  contextoDetecciones?: ContextoDetecciones;
+  periodosIncendios?: { mes: number; anio: number | null }[];
 }
-type MensajeTuni = { role: 'user' | 'assistant'; text: string; facts?: RespuestaTuni['facts']; source?: ReferenciaTuni };
+type MensajeTuni = Omit<RespuestaTuni, 'answer'> & { role: 'user' | 'assistant'; text: string };
 
 // TUNARIGUARD_TUNI_SABINA_V22
 import { TuniSabinaVoiceComponent } from '../tuni-sabina-voice/tuni-sabina-voice.component';
@@ -68,7 +82,9 @@ export class MascotAssistantComponent implements OnInit, OnDestroy {
   enviarPregunta(rapida?: { id: ConsultaRapida; pregunta: string }): void {
     const message = rapida?.pregunta ?? this.pregunta().trim();
     if (!message || this.procesando()) return;
-    const history = this.respuestas().slice(-8).map(({ role, text }) => ({ role, text }));
+    const history = this.respuestas().slice(-8).map(({ role, text, contextoDetecciones, periodosIncendios }) =>
+      ({ role, text: text.slice(0, 1500), contextoDetecciones, periodosIncendios }),
+    );
     if (!rapida) this.pregunta.set('');
     this.errorIA.set('');
     this.procesando.set(true);
@@ -77,7 +93,8 @@ export class MascotAssistantComponent implements OnInit, OnDestroy {
     const sesion = this.sesionVoz;
     this.solicitudChat = this.http.post<RespuestaTuni>(`${this.api}/chat`, { message, history, consulta: rapida?.id }).subscribe({
       next: r => {
-        this.respuestas.update(items => [...items, { role: 'assistant', text: r.answer, facts: r.facts, source: r.source }]);
+        const { answer, ...detalle } = r;
+        this.respuestas.update(items => [...items, { role: 'assistant', text: answer, ...detalle }]);
         this.procesando.set(false);
         if (this.conversacionContinua() && sesion === this.sesionVoz) this.reproducirVoz(r.answer, true);
         else this.estadoVoz.set('');
