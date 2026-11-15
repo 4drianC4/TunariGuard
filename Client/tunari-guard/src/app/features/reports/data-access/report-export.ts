@@ -1,3 +1,4 @@
+import { createReportPdf, type ReportExportContext } from './report-pdf';
 import type { ReportData, ReportValue } from './reports-api.service';
 
 export type ExportFormat = 'PDF' | 'CSV' | 'Excel' | 'GeoJSON';
@@ -8,9 +9,10 @@ const spreadsheetText = (value: ReportValue): string => {
   return typeof value === 'string' && /^[\s]*[=+\-@]|^[\t\r\n]/.test(text) ? "'" + text : text;
 };
 
-export function exportReport(
-  format: ExportFormat, data: ReportData, metadata: string[],
-): { blob: Blob; extension: string } {
+export async function exportReport(
+  format: ExportFormat, data: ReportData, context: ReportExportContext,
+): Promise<{ blob: Blob; extension: string }> {
+  if (format === 'PDF') return { blob: await createReportPdf(data, context), extension: 'pdf' };
   const rows = [data.columns, ...data.rows];
   switch (format) {
     case 'CSV': {
@@ -20,6 +22,13 @@ export function exportReport(
       return { blob: new Blob(['\ufeff', csv], { type: 'text/csv;charset=utf-8' }), extension: 'csv' };
     }
     case 'Excel': {
+      const metadata = [
+        'Tunari Guard · ' + context.title,
+        'Generado: ' + context.date,
+        ...context.fields.map(([label, value]) => label + ': ' + value),
+        data.headline.label + ': ' + (data.headline.value ?? 'Sin cobertura') + ' ' + data.headline.unit,
+        ...context.notices,
+      ];
       const xmlEscape = (value: string): string => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
       const worksheet = (name: string, values: ReportValue[][]): string => {
         const body = values.map((row) => '<Row>' + row.map((value) => {
@@ -41,45 +50,5 @@ export function exportReport(
       const json = JSON.stringify({ type: 'FeatureCollection', features });
       return { blob: new Blob([json], { type: 'application/geo+json' }), extension: 'geojson' };
     }
-    case 'PDF': {
-      const detail = data.rows.slice(0, 20).map((row) => row.map(textValue).join(' | '));
-      const lines = [
-        ...metadata, '', data.columns.join(' | '), ...detail,
-        ...(data.rows.length > 20 ? ['Detalle limitado a 20 filas. El CSV incluye todas las filas.'] : []),
-      ];
-      return { blob: summaryPdf(lines), extension: 'pdf' };
-    }
   }
-}
-
-function summaryPdf(lines: string[]): Blob {
-  const plain = (value: string): string => value.normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '').replace(/[^\x20-\x7e]/g, '?');
-  const escaped = (value: string): string => value.replace(/[\\()]/g, '\\$&');
-  const wrapped = lines.flatMap((line) => plain(line).match(/.{1,120}(?:\s|$)|.{1,120}/g) ?? ['']);
-  const pageIds: number[] = [];
-  const objects = ['', '', '<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>'];
-  for (let offset = 0; offset < wrapped.length; offset += 40) {
-    const pageId = objects.length + 1;
-    pageIds.push(pageId);
-    const commands = wrapped.slice(offset, offset + 40).map((line) => `(${escaped(line)}) Tj T*`);
-    const stream = ['BT', '/F1 10 Tf', '44 553 Td', '13 TL', ...commands, 'ET'].join('\n');
-    objects.push(
-      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 842 595] /Resources << /Font << /F1 3 0 R >> >> /Contents ${pageId + 1} 0 R >>`,
-      `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`,
-    );
-  }
-  objects[0] = '<< /Type /Catalog /Pages 2 0 R >>';
-  objects[1] = `<< /Type /Pages /Count ${pageIds.length} /Kids [${pageIds.map((id) => id + ' 0 R').join(' ')}] >>`;
-  let pdf = '%PDF-1.4\n';
-  const offsets = objects.map((object, index) => {
-    const offset = pdf.length;
-    pdf += `${index + 1} 0 obj\n${object}\nendobj\n`;
-    return offset;
-  });
-  const xref = pdf.length;
-  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
-  pdf += offsets.map((offset) => String(offset).padStart(10, '0') + ' 00000 n \n').join('');
-  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
-  return new Blob([pdf], { type: 'application/pdf' });
 }

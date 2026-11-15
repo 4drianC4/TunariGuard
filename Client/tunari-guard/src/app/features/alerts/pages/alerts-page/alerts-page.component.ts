@@ -9,7 +9,7 @@ import { RealtimeClientService } from '../../../../data-access/realtime/realtime
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { MapInfoComponent } from '../../../map/components/map-info.component';
 import { AlertMapComponent } from '../../components/alert-map/alert-map.component';
-import { ALERT_COLORS, MONTHLY_LEVEL, SEVERITY_LEVEL, type AlertEvent, type AlertStatus } from '../../alert-event';
+import { ALERT_COLORS, SEVERITY_LEVEL, type AlertEvent, type AlertStatus } from '../../alert-event';
 import { AlertsApi } from '../../data-access/alerts-api.service';
 
 const initialFilters = { desde: '', hasta: '', area_id: '', severidad: '', estado: '', fuente: 'real' };
@@ -26,7 +26,6 @@ export class AlertsPageComponent {
   private readonly api = inject(AlertsApi);
   readonly colors = ALERT_COLORS;
   readonly severityLevel = SEVERITY_LEVEL;
-  readonly monthlyLevel = MONTHLY_LEVEL;
   readonly applied = signal(initialFilters);
   draft = { ...initialFilters };
   readonly page = signal(1);
@@ -49,21 +48,13 @@ export class AlertsPageComponent {
       ...(filters.area_id ? { area_id: filters.area_id } : {}),
       ...(filters.severidad ? { severidad: filters.severidad } : {}),
       ...(filters.estado ? { estado: filters.estado } : {}),
-      ...(filters.fuente === 'real' ? { modo: 'live', origen: 'REAL' } :
-        filters.fuente === 'replay' ? { modo: 'replay' } :
-        filters.fuente === 'simulated' ? { modo: 'live', origen: 'SIMULATED' } : {}),
+      modo: 'live',
+      ...(filters.fuente === 'real' ? { origen: 'REAL' } :
+        filters.fuente === 'simulated' ? { origen: 'SIMULATED' } : {}),
       page, limit: 10,
     }, abortSignal),
   });
-  readonly monthly = resource({ loader: ({ abortSignal }) => this.api.monthly(abortSignal) });
-  readonly monthlyArea = signal('');
-  readonly context = computed(() => {
-    const items = this.monthly.hasValue() ? this.monthly.value().items : [];
-    const id = this.monthlyArea() || this.applied().area_id;
-    return items.find((item) => item.area_id === id) ??
-      items.find((item) => item.area_id === 'parque-tunari') ?? items[0];
-  });
-  private readonly areaCatalog = resource({ loader: ({ abortSignal }) => this.api.list({ limit: 1 }, abortSignal) });
+  private readonly areaCatalog = resource({ loader: ({ abortSignal }) => this.api.list({ modo: 'live', limit: 1 }, abortSignal) });
   readonly areas = computed(() => this.areaCatalog.hasValue() ? this.areaCatalog.value().areas : this.data()?.areas ?? []);
   readonly data = computed(() => this.result.hasValue() ? this.result.value() : undefined);
   readonly detail = resource({
@@ -104,7 +95,6 @@ export class AlertsPageComponent {
     this.filterError.set(error);
     if (error) return;
     this.selectedId.set('');
-    this.monthlyArea.set('');
     this.page.set(1);
     this.applied.set({ ...this.draft });
     this.mobileFiltersOpen.set(false);

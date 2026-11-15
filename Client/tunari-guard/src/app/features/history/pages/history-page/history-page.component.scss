@@ -1,0 +1,42 @@
+.history-load-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem 1.25rem;
+  padding: .875rem 1rem;
+  border-inline-start: 4px solid #b77931;
+}
+
+.history-load-notice h2 {
+  margin: 0 0 .25rem;
+  color: #303722;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.history-load-notice p {
+  margin: 0;
+  color: #595a4c;
+  font-size: .875rem;
+}
+
+.history-load-retry {
+  min-height: 2.75rem;
+  padding: .375rem .875rem;
+  border: 1px solid #c8c1b4;
+  border-radius: .625rem;
+  background: #fffdf9;
+  color: #374725;
+  font-size: .8125rem;
+  font-weight: 750;
+}
+
+.history-load-retry:hover {
+  background: #eee9de;
+}
+
+.history-load-retry:focus-visible {
+  outline: 2px solid #526b4c;
+  outline-offset: 2px;
+}

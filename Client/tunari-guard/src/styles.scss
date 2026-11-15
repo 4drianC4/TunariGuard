@@ -242,14 +242,12 @@ app-sidebar.tg-responsive-v2 button:focus-visible {
     z-index: 100;
     display: block;
     width: 100%;
-    height: 66px;
-    min-height: 66px;
+    height: var(--tg-mobile-bar-height);
   }
   app-sidebar.tg-responsive-v2 .tg-sidebar {
     position: relative;
     width: 100%;
-    height: 66px;
-    min-height: 66px;
+    height: var(--tg-mobile-bar-height);
     padding: 0 13px;
     overflow: visible;
     border-right: none;
@@ -260,7 +258,7 @@ app-sidebar.tg-responsive-v2 button:focus-visible {
     justify-content: space-between;
     gap: 10px;
     width: 100%;
-    height: 66px;
+    height: var(--tg-mobile-bar-height);
   }
   app-sidebar.tg-responsive-v2 .tg-mobile-brand {
     display: inline-flex;
@@ -317,12 +315,16 @@ app-sidebar.tg-responsive-v2 button:focus-visible {
     padding: 17px 15px 22px;
     overflow-y: auto;
     overflow-x: hidden;
+    overscroll-behavior-y: contain;
     background: radial-gradient(ellipse 130% 76% at 30% 30%, #313b20 0%, #2d351e 36%, #252d1a 73%, #2b321e 100%);
     box-shadow: 12px 0 28px rgba(0, 0, 0, .24);
     transform: translateX(-105%);
     visibility: hidden;
     pointer-events: none;
     transition: transform .23s ease, visibility .23s;
+  }
+  .app-layout app-sidebar.tg-responsive-v2.tg-mobile-open {
+    z-index: 1100;
   }
   app-sidebar.tg-responsive-v2.tg-mobile-open .tg-mobile-overlay {
     opacity: 1;
@@ -472,9 +474,6 @@ app-sidebar.tg-responsive-v2 button:focus-visible {
   }
 
   /* Collapsed: logo and expand control share ONE exact position. */
-  app-sidebar.tg-responsive-v2.tg-collapsed .tg-sidebar {
-    position: relative;
-  }
   app-sidebar.tg-responsive-v2.tg-collapsed .tg-brand {
     position: relative;
     z-index: 2;

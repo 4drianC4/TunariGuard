@@ -31,7 +31,9 @@
               <option [value]="area.area_id">{{ area.nombre_visible || area.nombre }}</option>
             }
           </select>
-          @if (areasError()) { <span class="tg-filter-error">{{ areasError() }}</span> }
+          @if (!areasLoading() && !areasLoadFailed() && !areas().length) {
+            <span class="tg-filter-error">No hay áreas disponibles.</span>
+          }
         </label>
         <label class="tg-filter-field">
           Fuente
@@ -64,54 +66,64 @@
     </section>
   </div>
 
-  @if (metrics.error()) { <p class="tg-filter-error" role="alert">{{ metrics.error() }}</p> }
+  @if (areasLoadFailed() || metrics.error()) {
+    <section class="tg-card history-load-notice">
+      <div role="alert">
+        <h2>{{ areasLoadFailed() ? 'No pudimos cargar las áreas' : 'No pudimos cargar el historial' }}</h2>
+        <p>{{ areasLoadFailed()
+          ? 'Vuelve a consultar las áreas para seleccionar una y ver su historial.'
+          : 'Puedes volver a consultar el historial con los mismos filtros.' }}</p>
+      </div>
+      <button type="button" class="history-load-retry" (click)="retryLoad()">Reintentar</button>
+    </section>
+  } @else {
+    <section class="tg-kpis tg-kpis--fit" aria-label="Indicadores históricos">
+      <article class="tg-kpi">
+        <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#fire"></use></svg></span>
+        <div class="tg-kpi-copy">
+          <span class="tg-kpi-title">Actividad total</span>
+          <div class="tg-kpi-number">{{ metrics.summary().total | number:'1.0-2' }}</div>
+          <small class="tg-kpi-note">Total del periodo consultado</small>
+        </div>
+      </article>
+      <article class="tg-kpi">
+        <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#history"></use></svg></span>
+        <div class="tg-kpi-copy">
+          <span class="tg-kpi-title">Meses con datos</span>
+          <div class="tg-kpi-number">{{ metrics.summary().monthsWithData }}</div>
+          <small class="tg-kpi-note">Meses reportados por la API</small>
+        </div>
+      </article>
+      <article class="tg-kpi">
+        <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#target"></use></svg></span>
+        <div class="tg-kpi-copy">
+          <span class="tg-kpi-title">Mes de mayor actividad</span>
+          <div class="tg-kpi-number tg-kpi-number--text">{{ peakMonthLabel() }}</div>
+          <small class="tg-kpi-note">{{ metrics.summary().peak?.activityCount ?? 0 | number:'1.0-2' }} {{ metrics.unit() }}</small>
+        </div>
+      </article>
+      <article class="tg-kpi">
+        <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#trend"></use></svg></span>
+        <div class="tg-kpi-copy">
+          <span class="tg-kpi-title">Promedio mensual</span>
+          <div class="tg-kpi-number">{{ metrics.summary().monthlyAverage | number:'1.0-2' }}</div>
+          <small class="tg-kpi-note">Promedio informado por la API</small>
+        </div>
+      </article>
+    </section>
 
-  <section class="tg-kpis tg-kpis--fit" aria-label="Indicadores históricos">
-    <article class="tg-kpi">
-      <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#fire"></use></svg></span>
-      <div class="tg-kpi-copy">
-        <span class="tg-kpi-title">Actividad total</span>
-        <div class="tg-kpi-number">{{ metrics.summary().total | number:'1.0-2' }}</div>
-        <small class="tg-kpi-note">Total del periodo consultado</small>
-      </div>
-    </article>
-    <article class="tg-kpi">
-      <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#history"></use></svg></span>
-      <div class="tg-kpi-copy">
-        <span class="tg-kpi-title">Meses con datos</span>
-        <div class="tg-kpi-number">{{ metrics.summary().monthsWithData }}</div>
-        <small class="tg-kpi-note">Meses reportados por la API</small>
-      </div>
-    </article>
-    <article class="tg-kpi">
-      <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#target"></use></svg></span>
-      <div class="tg-kpi-copy">
-        <span class="tg-kpi-title">Mes de mayor actividad</span>
-        <div class="tg-kpi-number tg-kpi-number--text">{{ peakMonthLabel() }}</div>
-        <small class="tg-kpi-note">{{ metrics.summary().peak?.activityCount ?? 0 | number:'1.0-2' }} {{ metrics.unit() }}</small>
-      </div>
-    </article>
-    <article class="tg-kpi">
-      <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#trend"></use></svg></span>
-      <div class="tg-kpi-copy">
-        <span class="tg-kpi-title">Promedio mensual</span>
-        <div class="tg-kpi-number">{{ metrics.summary().monthlyAverage | number:'1.0-2' }}</div>
-        <small class="tg-kpi-note">Promedio informado por la API</small>
-      </div>
-    </article>
-  </section>
-
-  <section class="grid w-full min-w-0 grid-cols-1 items-stretch gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-    <article class="tg-card flex h-full w-full min-w-0 flex-col gap-3">
-      <div class="tg-card-heading tg-tight">
-        <div class="tg-card-titleline"><div><h2>Calendario histórico</h2><p>Actividad mensual para el área seleccionada.</p></div></div>
-        <span class="shrink-0 rounded-full bg-[#eee7d9] px-3 py-1 text-xs font-bold text-[#526b4c]">{{ metrics.selectedFromYear() ?? '—' }} – {{ metrics.selectedToYear() ?? '—' }}</span>
-      </div>
-      <app-history-calendar class="block w-full min-w-0" />
-    </article>
-    <div class="flex h-full w-full min-h-0 min-w-0"><app-history-chart class="block h-full w-full min-w-0" /></div>
-    <div class="w-full min-w-0 xl:col-span-2"><app-history-table /></div>
-  </section>
+    <section class="grid w-full min-w-0 grid-cols-1 items-stretch gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+      <article class="tg-card flex h-full w-full min-w-0 flex-col gap-3">
+        <div class="tg-card-heading tg-tight">
+          <div class="tg-card-titleline"><div><h2>Calendario histórico</h2><p>Actividad mensual para el área seleccionada.</p></div></div>
+          <span class="shrink-0 rounded-full bg-[#eee7d9] px-3 py-1 text-xs font-bold text-[#526b4c]">{{ metrics.selectedFromYear() ?? '—' }} – {{ metrics.selectedToYear() ?? '—' }}</span>
+        </div>
+        <app-history-calendar class="block w-full min-w-0" />
+      </article>
+      <div class="flex h-full w-full min-h-0 min-w-0"><app-history-chart class="block h-full w-full min-w-0" /></div>
+      <div class="w-full min-w-0 xl:col-span-2"><app-history-table /></div>
+    </section>
+  }
 
   <footer class="tg-demo-disclaimer">ⓘ {{ metrics.notice() }}</footer>
 </main>
