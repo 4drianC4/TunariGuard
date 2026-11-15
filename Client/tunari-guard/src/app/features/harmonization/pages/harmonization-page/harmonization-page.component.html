@@ -64,13 +64,13 @@
         <label class="tg-filter-field">
           Desde año
           <input class="tg-filter-control" type="number" name="startYear"
-            min="2000" max="2100" [(ngModel)]="startYear" />
+            min="2000" [max]="endYear" [(ngModel)]="startYear" />
         </label>
 
         <label class="tg-filter-field">
           Hasta año
           <input class="tg-filter-control" type="number" name="endYear"
-            min="2000" max="2100" [(ngModel)]="endYear" />
+            [min]="startYear" max="2100" [(ngModel)]="endYear" />
         </label>
 
         <fieldset class="tg-filter-field harm-sources">

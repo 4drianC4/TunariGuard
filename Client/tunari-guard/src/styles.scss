@@ -888,9 +888,9 @@ app-sidebar.tg-responsive-v2 button:focus-visible {
 .tuni-chat-v14 .tuni-guide-v1__close:focus-visible,
 .tuni-chat-v14 .tuni-guide-v1__action:focus-visible { outline:3px solid #e97934; outline-offset:3px; }
 .tuni-chat-v14 .tuni-guide-v1__timer {
-  position:absolute; bottom:0; left:20px; right:20px; height:3px; border-radius:3px;
+  position:absolute; bottom:0; left:18px; right:18px; height:3px; border-radius:3px;
   background:linear-gradient(90deg,#819d43,#d3ac56);
-  transform-origin:left; animation:tuniGuideV1Timer 30s linear forwards; opacity:.75;
+  transform-origin:left; animation:tuniGuideV1Timer var(--duracion-consejo,15s) linear forwards; opacity:.75;
 }
 .tuni-chat-v14 .tuni-guide-v1__timer--alterno { animation-name:tuniGuideV1TimerAlterno; }
 .tuni-chat-v14 .tuni-guide-v1__chat-context {
@@ -907,7 +907,7 @@ app-sidebar.tg-responsive-v2 button:focus-visible {
   .tuni-chat-v14 .tuni-guide-v1 { right:0; bottom:calc(100% + 12px); width:min(302px,calc(100vw - 24px)); padding:14px 15px 13px; border-radius:17px; }
   .tuni-chat-v14 .tuni-guide-v1__title { font-size:15px; }
   .tuni-chat-v14 .tuni-guide-v1__text { font-size:12px; }
-  .tuni-chat-v14 .tuni-guide-v1__timer { left:16px; right:16px; }
+  .tuni-chat-v14 .tuni-guide-v1__timer { left:15px; right:15px; }
 }
 @media (max-height:420px) {
   .tuni-chat-v14 .tuni-guide-v1 { padding:9px 12px; max-height:calc(100dvh - 92px); overflow-y:auto; }
