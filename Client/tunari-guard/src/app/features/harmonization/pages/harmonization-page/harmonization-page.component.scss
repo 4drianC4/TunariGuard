@@ -101,42 +101,179 @@
   }
 }
 
-
-/* El proceso metodológico vuelve como última card, debajo de la gráfica. */
-.harm-process-card {
-  grid-column: 1 / -1;
-  display: block;
-  height: auto;
-  min-height: 0;
+.harm-page {
+  display: grid;
+  gap: .875rem;
 }
 
-.harm-process-card .harm-steps {
+.harm-page > .tg-kpis { margin: 0; }
+
+.harm-kpi-viirs { --tg-kpi-accent: #ad760c; }
+
+.harm-kpi-viirs .tg-kpi-symbol {
+  color: #8a600c;
+  background: #f8edcf;
+}
+
+.harm-sources {
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.harm-sources legend {
+  margin-bottom: .25rem;
+  padding: 0;
+}
+
+.harm-source-options {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
+  gap: .25rem .875rem;
+}
+
+.harm-source-options label {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  cursor: pointer;
+}
+
+.harm-source-options input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #40552c;
+}
+
+.harm-source-options input:focus-visible {
+  outline: 2px solid #526b4c;
+  outline-offset: 2px;
+}
+
+.harm-filter-status {
+  margin: 0;
+  color: #595a4c;
+  font-size: .8125rem;
+}
+
+.harmonization-process {
+  grid-column: 1 / -1;
+  display: grid;
+  min-width: 0;
+  gap: 1rem;
+  padding: clamp(.875rem, 2vw, 1.25rem);
+  container-type: inline-size;
+}
+
+.harmonization-process-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 12px 16px;
+  gap: .5rem .75rem;
 }
 
-.harm-process-card .harm-step {
-  flex: 1 1 150px;
-  min-width: 130px;
+.harmonization-process-header h2 {
+  margin: 0;
+  color: #303722;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 800;
 }
 
-.harm-process-card .harm-method {
-  margin: 8px 16px 16px;
+.harmonization-reference {
+  padding: .25rem .625rem;
+  border-radius: 999px;
+  background: #e9ecd9;
+  color: #40552c;
+  font-size: .75rem;
+  font-weight: 750;
 }
 
-@media (max-width: 760px) {
-  .harm-process-card {
-    grid-column: 1 / -1;
-  }
+.harmonization-steps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: .625rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
 
-  .harm-process-card .harm-steps {
-    display: block;
-  }
+.harmonization-step {
+  display: grid;
+  align-content: start;
+  gap: .5rem;
+  min-width: 0;
+  padding: .75rem;
+  border: 1px solid #ded6ca;
+  border-radius: .75rem;
+  background: #fffdf9;
+}
 
-  .harm-process-card .harm-step {
-    min-width: 0;
+.harmonization-step--output {
+  border-color: #e8c9aa;
+  background: #fff5e8;
+}
+
+.harmonization-step .tg-kpi-symbol,
+.harmonization-benefit .tg-kpi-symbol {
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: 0 0 2.25rem;
+  border-radius: .625rem;
+}
+
+.harmonization-step .tg-kpi-symbol svg,
+.harmonization-benefit .tg-kpi-symbol svg {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+.harmonization-step strong,
+.harmonization-note h3,
+.harmonization-benefit strong {
+  color: #303722;
+  font-size: .875rem;
+  font-weight: 800;
+}
+
+.harmonization-step p,
+.harmonization-note p,
+.harmonization-benefit p {
+  margin: .25rem 0 0;
+  color: #595a4c;
+  font-size: .8125rem;
+  line-height: 1.45;
+}
+
+.harmonization-note {
+  padding: .75rem .875rem;
+  border-inline-start: 3px solid #526b24;
+  border-radius: .625rem;
+  background: #f0f3e8;
+}
+
+.harmonization-note h3 { margin: 0; }
+
+.harmonization-benefit {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .75rem 1rem;
+  border-inline-start: 4px solid #e55211;
+}
+
+@container (max-width: 49rem) {
+  .harmonization-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@container (max-width: 31rem) {
+  .harmonization-steps { grid-template-columns: 1fr; }
+
+  .harmonization-step {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: .75rem;
   }
 }

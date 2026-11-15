@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import type { FeatureCollection, MultiPolygon, Polygon } from 'geojson';
 import { Observable } from 'rxjs';
+import type { HistorySummary } from '../../domain/models/historical-record.model';
 import { environment } from '../../../environments/environment';
 
 export interface AnalysisArea {
@@ -9,6 +11,19 @@ export interface AnalysisArea {
   readonly nombre_visible: string;
   readonly nombre?: string;
   readonly advertencia?: string | null;
+}
+
+export type AnalysisBoundaries = FeatureCollection<Polygon | MultiPolygon | null, AnalysisArea>;
+
+export interface HarmonizationPeriod {
+  readonly start: number;
+  readonly end: number;
+}
+
+export interface DistrictHarmonizationHistory {
+  readonly unit: string;
+  readonly notice: string;
+  readonly districts: readonly { area_id: string; summary: HistorySummary }[];
 }
 
 export interface AnalysisEvent {
@@ -34,6 +49,20 @@ export class HarmonizationService {
     return this.http.get<readonly AnalysisArea[]>(`${this.apiBaseUrl}/areas`, {
       params: new HttpParams().set('formato', 'json'),
     });
+  }
+
+  getAreaBoundaries(): Observable<AnalysisBoundaries> {
+    return this.http.get<AnalysisBoundaries>(`${this.apiBaseUrl}/areas`, {
+      params: new HttpParams().set('formato', 'geojson'),
+    });
+  }
+
+  getDistrictHistory(period: HarmonizationPeriod): Observable<DistrictHarmonizationHistory> {
+    const params = new HttpParams()
+      .set('fuente', 'HARMONIZED')
+      .set('desde_anio', period.start)
+      .set('hasta_anio', period.end);
+    return this.http.get<DistrictHarmonizationHistory>(`${this.apiBaseUrl}/historial/distritos`, { params });
   }
 
   getEvents(filters: {

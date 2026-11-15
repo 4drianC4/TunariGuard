@@ -7,15 +7,15 @@
 
   <section class="tg-kpis tg-kpis--fit" aria-label="Indicadores de armonización">
     <article class="tg-kpi">
-      <span class="tg-kpi-symbol green">◈</span>
+      <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#target"></use></svg></span>
       <div class="tg-kpi-copy">
         <span class="tg-kpi-title">Actividad MODIS</span>
         <div class="tg-kpi-number">{{ modisTotal() === null ? '—' : (modisTotal() | number:'1.0-2') }}</div>
         <small class="tg-kpi-note">Datos de la API</small>
       </div>
     </article>
-    <article class="tg-kpi">
-      <span class="tg-kpi-symbol green">◈</span>
+    <article class="tg-kpi harm-kpi-viirs">
+      <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#target"></use></svg></span>
       <div class="tg-kpi-copy">
         <span class="tg-kpi-title">Actividad VIIRS</span>
         <div class="tg-kpi-number">{{ viirsTotal() === null ? '—' : (viirsTotal() | number:'1.0-2') }}</div>
@@ -23,7 +23,7 @@
       </div>
     </article>
     <article class="tg-kpi">
-      <span class="tg-kpi-symbol warm">◉</span>
+      <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#harmonization"></use></svg></span>
       <div class="tg-kpi-copy">
         <span class="tg-kpi-title">Actividad armonizada</span>
         <div class="tg-kpi-number">{{ harmonizedTotal() === null ? '—' : (harmonizedTotal() | number:'1.0-2') }}</div>
@@ -31,7 +31,7 @@
       </div>
     </article>
     <article class="tg-kpi">
-      <span class="tg-kpi-symbol green">▦</span>
+      <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#history"></use></svg></span>
       <div class="tg-kpi-copy">
         <span class="tg-kpi-title">Cobertura temporal</span>
         <div class="tg-kpi-number tg-kpi-number--text">{{ coverageLabel() }}</div>
@@ -73,15 +73,11 @@
             min="2000" max="2100" [(ngModel)]="endYear" />
         </label>
 
-        <fieldset class="tg-filter-field" style="border:0;padding:0;margin:0">
+        <fieldset class="tg-filter-field harm-sources">
           <legend>Fuentes</legend>
-          <div class="flex min-h-9 flex-wrap items-center gap-4 rounded-lg border border-[#c8c1b4] bg-[#fffdf9] px-3 py-2">
-            <label class="flex items-center gap-2 font-medium">
-              <input type="checkbox" name="modis" [(ngModel)]="modis" /> MODIS
-            </label>
-            <label class="flex items-center gap-2 font-medium">
-              <input type="checkbox" name="viirs" [(ngModel)]="viirs" /> VIIRS
-            </label>
+          <div class="tg-filter-control harm-source-options">
+            <label><input type="checkbox" name="modis" [(ngModel)]="modis" /> MODIS</label>
+            <label><input type="checkbox" name="viirs" [(ngModel)]="viirs" /> VIIRS</label>
           </div>
         </fieldset>
       </div>
@@ -94,8 +90,8 @@
         </button>
       </div>
 
-      <p *ngIf="areasLoading()" class="tg-filter-error">Cargando áreas…</p>
-      <p *ngIf="areasError()" class="tg-filter-error">{{ areasError() }}</p>
+      <p *ngIf="areasLoading()" class="harm-filter-status" role="status">Cargando áreas…</p>
+      <p *ngIf="areasError()" class="tg-filter-error" role="alert">{{ areasError() }}</p>
       <p *ngIf="startYear > endYear" class="tg-filter-error">El año inicial debe ser menor o igual al final.</p>
       <p *ngIf="error()" class="tg-filter-error" role="alert">{{ error() }}</p>
     </form>
@@ -103,11 +99,7 @@
 
   <div class="harm-grid">
     <article class="tg-card harm-card harm-map-card">
-      <h2><span>◫</span> Detecciones satelitales – {{ selectedArea()?.nombre_visible ?? 'Área seleccionada' }} <small>NASA FIRMS</small></h2>
-      <div class="p-3">
-        <app-hotspot-map [compact]="true" [areaId]="areaId" [period]="mapPeriod()" />
-        <p class="mt-2 text-xs text-[#737064]">El mapa muestra detecciones georreferenciadas MODIS/VIIRS, insumos del análisis. El endpoint histórico no devuelve geometrías de focos armonizados.</p>
-      </div>
+      <app-harmonization-map [period]="chartRange()" />
     </article>
     <article class="tg-card harm-card harm-table-card">
       <h2><span>☷</span> Eventos candidatos recientes <small>API</small></h2>
@@ -116,7 +108,7 @@
         <tbody>
           <tr *ngFor="let event of paginatedEvents(); trackBy:trackEvent">
             <td>{{ formatDate(event.fecha_inicio) }}<span *ngIf="event.fecha_fin !== event.fecha_inicio"> – {{ formatDate(event.fecha_fin) }}</span></td>
-            <td>{{ areas().find(a => a.area_id === event.area_id)?.nombre_visible ?? event.area_id ?? '—' }}</td>
+            <td>{{ areaNames().get(event.area_id ?? '') ?? event.area_id ?? '—' }}</td>
             <td>{{ event.detecciones }}</td>
             <td><span *ngFor="let source of formatSources(event.fuentes)" class="harm-sensor-tag" [class.viirs]="source.includes('VIIRS')">{{ source }}</span></td>
             <td>{{ event.frp_max_mw === null ? '—' : (event.frp_max_mw | number:'1.0-1') }}</td>
@@ -170,17 +162,44 @@
       <p class="px-3 pb-3 text-xs text-[#737064]">Cada punto representa un año. El valor anual corresponde a la suma de las mediciones mensuales disponibles en ese año. Pasa el cursor sobre un punto para ver el año y el valor exacto. Los espacios indican años sin dato disponible. MODIS y VIIRS son conteos brutos; no son directamente comparables con el índice armonizado.</p>
     </article>
 
-    <article class="tg-card harm-card harm-process-card">
-      <h2><span>⚙</span> Proceso de armonización <small>REFERENCIA METODOLÓGICA</small></h2>
-      <div class="harm-steps">
-        <div class="harm-step"><div class="harm-step-icon">▤</div><strong>Ingesta</strong><span>Carga de detecciones MODIS y VIIRS</span></div>
-        <div class="harm-step"><div class="harm-step-icon">▽</div><strong>Limpieza</strong><span>Control de calidad y filtrado</span></div>
-        <div class="harm-step"><div class="harm-step-icon">◎</div><strong>Matching espacial</strong><span>Vinculación por proximidad</span></div>
-        <div class="harm-step"><div class="harm-step-icon">◷</div><strong>Matching temporal</strong><span>Vinculación por ventana de tiempo</span></div>
-        <div class="harm-step"><div class="harm-step-icon harm-step-last">▱</div><strong>Salida armonizada</strong><span>Serie unificada con procedencia</span></div>
-      </div>
-      <div class="harm-method"><span>ⓘ</span><div><strong>Resumen metodológico</strong><p>La serie armonizada se consulta desde el historial del área seleccionada. Las etapas del proceso mostradas aquí describen el flujo metodológico; no representan el estado en tiempo real de un trabajo de procesamiento.</p></div></div>
-    </article>
+    <section class="tg-card harmonization-process" aria-labelledby="harmonization-process-title">
+      <header class="harmonization-process-header">
+        <h2 id="harmonization-process-title">Proceso de armonización</h2>
+        <span class="harmonization-reference">Referencia metodológica</span>
+      </header>
+      <ol class="harmonization-steps" role="list">
+        <li class="harmonization-step">
+          <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#reports"></use></svg></span>
+          <div><strong>Ingesta</strong><p>Carga de detecciones MODIS y VIIRS</p></div>
+        </li>
+        <li class="harmonization-step">
+          <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#check"></use></svg></span>
+          <div><strong>Limpieza</strong><p>Control de calidad y filtrado</p></div>
+        </li>
+        <li class="harmonization-step">
+          <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#target"></use></svg></span>
+          <div><strong>Matching espacial</strong><p>Vinculación por proximidad</p></div>
+        </li>
+        <li class="harmonization-step">
+          <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#history"></use></svg></span>
+          <div><strong>Matching temporal</strong><p>Vinculación por ventana de tiempo</p></div>
+        </li>
+        <li class="harmonization-step harmonization-step--output">
+          <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#harmonization"></use></svg></span>
+          <div><strong>Salida armonizada</strong><p>Serie unificada con procedencia</p></div>
+        </li>
+      </ol>
+      <aside class="harmonization-note" aria-labelledby="harmonization-note-title">
+        <h3 id="harmonization-note-title">Resumen metodológico</h3>
+        <p>La serie armonizada se consulta desde el historial del área seleccionada. Las etapas del proceso mostradas aquí describen el flujo metodológico; no representan el estado en tiempo real de un trabajo de procesamiento.</p>
+      </aside>
+    </section>
   </div>
-  <footer class="harm-footer"><span>🔥</span><strong>La armonización mejora la continuidad y comparabilidad histórica de las observaciones.</strong><small>Los datos y advertencias proceden de la API.</small></footer>
+
+  <footer class="tg-card harmonization-benefit">
+    <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#trend"></use></svg></span>
+    <div>
+      <strong>La armonización mejora la continuidad y comparabilidad histórica de las observaciones.</strong>
+    </div>
+  </footer>
 </section>

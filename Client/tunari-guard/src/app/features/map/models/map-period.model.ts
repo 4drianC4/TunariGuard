@@ -7,7 +7,7 @@ const todayInBolivia = new Intl.DateTimeFormat('en-CA', {
   timeZone: 'America/La_Paz',
 }).format(new Date());
 
-export const DEMO_MAP_PERIOD: Readonly<MapPeriod> = {
-  from: '2016-01-01',
+export const DEFAULT_ARCHIVE_PERIOD: Readonly<MapPeriod> = {
+  from: '2001-08-09',
   to: todayInBolivia,
 };

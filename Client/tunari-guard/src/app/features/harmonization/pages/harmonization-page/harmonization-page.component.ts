@@ -2,19 +2,18 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, of } from 'rxjs';
-import { catchError, finalize } from 'rxjs/operators';
+import { finalize } from 'rxjs/operators';
 
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { HistoryService } from '../../../../application/services/history.service';
 import { HarmonizationService, AnalysisArea, AnalysisEvent } from '../../../../application/services/harmonization.service';
-import { HistoryApiResponse, HistorySource } from '../../../../domain/models/historical-record.model';
-import { HotspotMapComponent } from '../../../map/components/hotspot-map/hotspot-map.component';
-import type { MapPeriod } from '../../../../domain/models/map-period.model';
+import type { HistoryApiResponse } from '../../../../domain/models/historical-record.model';
+import { HarmonizationMapComponent } from '../../components/harmonization-map/harmonization-map.component';
 
 @Component({
   selector: 'app-harmonization-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent, HotspotMapComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, HarmonizationMapComponent],
   templateUrl: './harmonization-page.component.html',
   styleUrl: './harmonization-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,6 +23,7 @@ export class HarmonizationPageComponent {
   private readonly harmonizationService = inject(HarmonizationService);
 
   readonly areas = signal<readonly AnalysisArea[]>([]);
+  readonly areaNames = computed(() => new Map(this.areas().map((area) => [area.area_id, area.nombre_visible])));
   readonly areasLoading = signal(false);
   readonly mobileFiltersOpen = signal(false);
   readonly areasError = signal<string | null>(null);
@@ -55,16 +55,7 @@ export class HarmonizationPageComponent {
   modis = true;
   viirs = true;
 
-  readonly selectedArea = computed(() =>
-    this.areas().find(area => area.area_id === this.areaId) ?? null,
-  );
-
-  readonly mapPeriod = computed<MapPeriod>(() => ({
-    from: `${this.startYear}-01-01`,
-    to: `${this.endYear}-12-31`,
-  }));
-
-  readonly chartRange = signal({ start: 2001, end: new Date().getFullYear() });
+  readonly chartRange = signal({ start: this.startYear, end: this.endYear });
   readonly chartYears = computed(() => {
     const range = this.chartRange();
     const years: number[] = [];
@@ -115,7 +106,9 @@ export class HarmonizationPageComponent {
       return;
     }
 
-    this.chartRange.set({ start: this.startYear, end: this.endYear });
+    this.chartRange.update((range) =>
+      range.start === this.startYear && range.end === this.endYear ? range : { start: this.startYear, end: this.endYear },
+    );
     this.loading.set(true);
     this.error.set(null);
 
@@ -243,11 +236,5 @@ export class HarmonizationPageComponent {
 
   trackEvent(_index: number, event: AnalysisEvent): string {
     return event.evento_id;
-  }
-
-  applyYearsFromInput(value: string, field: 'start' | 'end'): void {
-    const year = Number(value);
-    if (field === 'start') this.startYear = year;
-    else this.endYear = year;
   }
 }

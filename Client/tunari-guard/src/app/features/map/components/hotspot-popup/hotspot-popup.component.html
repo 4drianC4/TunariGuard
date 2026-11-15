@@ -3,7 +3,7 @@
     <header class="flex items-start justify-between gap-2">
       <div>
         <span class="block text-[9px] font-extrabold uppercase tracking-widest text-[#b84e20]">
-          {{ origin === 'DEMO' ? 'DETALLE · DEMOSTRACIÓN' : 'DETALLE DE OBSERVACIÓN' }}
+          DETALLE DE OBSERVACIÓN
         </span>
         <h2 class="mt-1 text-base font-semibold text-[#30351f]">{{ selected.sensor }} · {{ selected.platform }}</h2>
       </div>
@@ -41,8 +41,5 @@
       </details>
     }
 
-    @if (origin === 'DEMO') {
-      <p class="rounded-md bg-[#526b24]/15 p-3 text-xs leading-5 text-[#424037]">Registro ficticio para probar la interfaz; no es una medición FIRMS.</p>
-    }
   </section>
 }

@@ -1,0 +1,67 @@
+<div class="coverage-header">
+  <div>
+    <h2>Mapa de actividad armonizada</h2>
+    <p>Cobertura por área · {{ period().start }} a {{ period().end }}</p>
+  </div>
+  <label class="tg-filter-field">
+    Área en el mapa
+    <select class="tg-filter-control tg-filter-control--compact" #area [value]="selectedId()"
+      (change)="selectArea(area.value)" [disabled]="!areas().length">
+      <option value="">Todas las áreas</option>
+      @for (item of areas(); track item.properties.area_id) {
+        <option [value]="item.properties.area_id">{{ item.properties.nombre_visible }}</option>
+      }
+    </select>
+  </label>
+</div>
+
+<div #mapCanvas class="coverage-canvas" aria-label="Mapa interactivo de cobertura de la serie armonizada"></div>
+
+<ul class="coverage-legend" aria-label="Leyenda de cobertura" role="list">
+  <li><span [style.background]="fills.covered"></span> Con datos comparables</li>
+  <li><span [style.background]="fills.missing"></span> Sin valor comparable</li>
+  @if (failedCount()) {
+    <li><span [style.background]="fills.unavailable"></span> Consulta no disponible</li>
+  }
+</ul>
+
+@if (boundaries.error()) {
+  <div class="coverage-info">
+    <p role="alert">No se pudieron cargar los límites de las áreas.</p>
+    <button type="button" class="coverage-retry" (click)="boundaries.reload()">Reintentar</button>
+  </div>
+} @else if (boundaries.isLoading() || coverage.isLoading()) {
+  <p class="coverage-info" role="status">Consultando cobertura armonizada…</p>
+} @else if (!areas().length) {
+  <p class="coverage-info" role="status">El catálogo no contiene áreas con geometría disponible.</p>
+} @else {
+  @if (selectedArea(); as item) {
+    <section class="coverage-info coverage-selected" aria-label="Actividad armonizada del área">
+      <h3>{{ item.properties.nombre_visible }}</h3>
+      @let result = selectedCoverage();
+      @if (result === null) {
+        <p>La consulta del área no está disponible.</p>
+      } @else if (result) {
+        @if (result.summary.monthsWithData > 0) {
+          <p><strong>{{ result.summary.total | number:'1.0-2' }}</strong> {{ result.unit }}
+            · {{ result.summary.monthsWithData | number }} {{ result.summary.monthsWithData === 1 ? 'mes comparable' : 'meses comparables' }}</p>
+        } @else {
+          <p>Sin valor comparable en el periodo seleccionado.</p>
+        }
+        <p>{{ result.notice }}</p>
+      }
+      @if (item.properties.advertencia) { <p>{{ item.properties.advertencia }}</p> }
+    </section>
+  } @else {
+    <p class="coverage-info">{{ comparableCount() | number }} de {{ areas().length | number }} áreas con datos comparables.
+      Selecciona un área para consultar su índice.</p>
+  }
+  @if (failedCount()) {
+    <div class="coverage-info">
+      <p role="status">No se pudieron consultar {{ failedCount() | number }} {{ failedCount() === 1 ? 'área' : 'áreas' }}.</p>
+      <button type="button" class="coverage-retry" (click)="coverage.reload()">Reintentar</button>
+    </div>
+  }
+}
+<p class="coverage-disclaimer">Índice relativo en celdas-día MODIS-equivalentes. Los límites son referenciales y la cobertura corresponde al catálogo de la API.</p>
+

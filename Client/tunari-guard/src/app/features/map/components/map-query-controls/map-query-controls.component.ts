@@ -14,11 +14,9 @@ import type { MapPeriod } from '../../models/map-period.model';
 })
 export class MapQueryControlsComponent {
   readonly dates = inject(DetectionDatesService);
-  readonly archive = input.required<boolean>();
   readonly areaId = input.required<string>();
   readonly areas = input.required<readonly Omit<AnalysisArea, 'geometria'>[]>();
   readonly period = input.required<MapPeriod>();
-  readonly sourceChange = output<boolean>();
   readonly contextChange = output<{ areaId: string; period: MapPeriod }>();
   readonly centerArea = output<void>();
   readonly periodError = signal('');

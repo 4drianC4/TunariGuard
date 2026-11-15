@@ -7,14 +7,13 @@ import { PageHeaderComponent } from '../../../../shared/components/page-header/p
 import { MapInfoComponent } from '../../../map/components/map-info.component';
 import { MapAnalysisService, type DistrictBoundaries } from '../../../map/data-access/map-analysis.service';
 import { MapDataService } from '../../../map/data-access/map-data.service';
-import { DEMO_MAP_PERIOD } from '../../../map/models/map-period.model';
 import { Observation } from '../../../map/models/observation.model';
 import { DistrictMapComponent } from '../../components/district-map/district-map.component';
 import { ACTIVITY, DistrictActivity } from '../../district-activity';
 
 const boliviaDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/La_Paz' });
 const shortDate = new Intl.DateTimeFormat('es-BO', { day: 'numeric', month: 'short', timeZone: 'UTC' });
-const DEFAULT_ARCHIVE_FROM = DEMO_MAP_PERIOD.from;
+const DEFAULT_ARCHIVE_FROM = '2016-01-01';
 
 function shiftDate(date: string, days: number): string {
   const value = new Date(date + 'T00:00:00Z');
@@ -177,7 +176,7 @@ export class DistrictsPageComponent {
         boundaries,
         source === 'archive'
           ? this.analysis.detections('municipio-cochabamba', range, undefined, undefined, [], '', false, request.signal)
-          : this.mapData.loadObservations(range, { minConfidence: '', platforms: [], includeAllTypes: false }, request.signal)
+          : this.mapData.loadObservations(range, { minConfidence: '', platforms: [] }, request.signal)
             .then(({ observations }) => observations),
       ]);
       if (request.signal.aborted) return;

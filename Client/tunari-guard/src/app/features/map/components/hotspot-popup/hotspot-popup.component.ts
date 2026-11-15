@@ -2,7 +2,6 @@ import { MapInfoComponent } from '../map-info.component';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { DistrictAssignment, Observation, ObservationSource } from '../../models/observation.model';
-import { MapDataOrigin } from '../../models/map-data.model';
 
 @Component({
   selector: 'app-hotspot-popup',
@@ -26,6 +25,5 @@ export class HotspotPopupComponent {
     3: 'Fuente térmica costa afuera',
   };
   @Input() observation: Observation | null = null;
-  @Input() origin: MapDataOrigin = 'DEMO';
   @Output() readonly close = new EventEmitter<void>();
 }

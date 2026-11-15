@@ -29,6 +29,26 @@ describe('MapAnalysisService', () => {
     });
   });
 
+  it('publishes a small first page while fetching the rest of the archive', async () => {
+    const firstPage = vi.fn();
+    const fetch = vi.fn()
+      .mockResolvedValueOnce(Response.json([row], { headers: { 'X-Next-Offset': '1' } }))
+      .mockImplementationOnce(() => {
+        expect(firstPage).toHaveBeenCalledWith([expect.objectContaining({ id: 'archive-1' })]);
+        return Promise.resolve(Response.json([{ ...row, id_deteccion: 'archive-2' }]));
+      });
+    vi.stubGlobal('fetch', fetch);
+
+    const result = await new MapAnalysisService().detections(
+      'parque-tunari', period, undefined, undefined, [], '', false,
+      new AbortController().signal, firstPage,
+    );
+
+    expect(new URL(fetch.mock.calls[0][0], 'http://localhost').searchParams.get('limite')).toBe('1000');
+    expect(new URL(fetch.mock.calls[1][0], 'http://localhost').searchParams.get('limite')).toBe('10000');
+    expect(result.map(({ id }) => id)).toEqual(['archive-1', 'archive-2']);
+  });
+
   it('posts the drawn polygon and filters persistent sources in polygon results', async () => {
     const fetch = vi.fn().mockResolvedValue(Response.json([row, { ...row, fuente_persistente_probable: true }]));
     vi.stubGlobal('fetch', fetch);

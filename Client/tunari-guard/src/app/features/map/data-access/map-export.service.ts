@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as L from 'leaflet';
 import { Observation } from '../models/observation.model';
-import { MapDataOrigin } from '../models/map-data.model';
 import { MapPeriod } from '../../../domain/models/map-period.model';
 
 @Injectable({ providedIn: 'root' })
@@ -15,13 +14,12 @@ export class MapExportService {
   exportObservations(
     format: 'csv' | 'geojson',
     observations: readonly Observation[],
-    origin: MapDataOrigin,
     period: MapPeriod,
     filters: string,
   ): void {
     if (format === 'csv') {
       const metadata = {
-        data_origin: origin,
+        data_origin: 'ARCHIVE',
         period_from: period.from,
         period_to: period.to,
         filters_applied: filters,
@@ -42,10 +40,10 @@ export class MapExportService {
     const collection = {
       type: 'FeatureCollection',
       properties: {
-        data_origin: origin,
+        data_origin: 'ARCHIVE',
         period,
         filters,
-        warning: 'DEMO contiene registros ficticios; una detección satelital no es un incendio confirmado.',
+        warning: 'Una detección satelital no es un incendio confirmado.',
       },
       features: observations.map((item) => {
         const { position, ...properties } = item;

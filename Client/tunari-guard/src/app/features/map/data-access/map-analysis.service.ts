@@ -31,7 +31,6 @@ export interface DistrictTrend {
   ic90_superior: number | null;
 }
 
-export type MapOverlay = 'districts' | 'recurrencia' | 'puntos-calientes';
 const sources: Record<SatellitePlatform, string> = {
   TERRA: 'MODIS-Terra', AQUA: 'MODIS-Aqua', SNPP: 'VIIRS-Suomi-NPP',
   NOAA20: 'VIIRS-NOAA-20', NOAA21: 'VIIRS-NOAA-21',
@@ -77,15 +76,6 @@ export class MapAnalysisService {
     return this.json(this.areaPath(id) + '/tendencias', signal);
   }
 
-  async overlay(id: string, layer: MapOverlay, exclude: boolean, signal: AbortSignal): Promise<FeatureCollection> {
-    if (layer === 'districts') return this.districts(signal);
-    const path = this.areaPath(id) + '/' + layer;
-    if (layer === 'recurrencia') {
-      return this.json(path + '?excluir_fuentes_persistentes=' + exclude, signal);
-    }
-    return (await this.json<{ celdas: FeatureCollection }>(path, signal)).celdas;
-  }
-
   async latestDetectionDate(id: string, signal: AbortSignal): Promise<string | undefined> {
     const params = new URLSearchParams({ area_id: id, limite: '1', orden: 'fecha_desc' });
     const [row] = await this.json<ArchiveDetection[]>('/detecciones?' + params, signal);
@@ -96,18 +86,26 @@ export class MapAnalysisService {
   async detections(
     id: string, period: MapPeriod, bbox: string | undefined, polygon: Geometry | undefined,
     platforms: SatellitePlatform[], confidence: string, exclude: boolean, signal: AbortSignal,
+    onFirstPage?: (observations: Observation[]) => void,
   ): Promise<Observation[]> {
     const selectedSources = platforms.map((platform) => sources[platform]);
     const periodQuery = this.range(period);
-    const rows: ArchiveDetection[] = [];
+    const observations: Observation[] = [];
+    const append = (rows: ArchiveDetection[]) => {
+      for (const row of rows) {
+        if (exclude && row.fuente_persistente_probable) continue;
+        const observation = toObservation(row);
+        if (observation) observations.push(observation);
+      }
+    };
     if (polygon) {
       const matches = await this.json<ArchiveDetection[]>('/detecciones/buscar', signal, {
         poligono: polygon, ...periodQuery, fuentes: selectedSources.length ? selectedSources : undefined,
       });
-      for (const row of matches) rows.push(row);
+      append(matches);
     } else {
       const params = new URLSearchParams({
-        ...periodQuery, ...(id ? { area_id: id } : {}), ...(bbox ? { bbox } : {}), limite: '10000',
+        ...periodQuery, ...(id ? { area_id: id } : {}), ...(bbox ? { bbox } : {}), limite: onFirstPage ? '1000' : '10000',
         excluir_fuentes_persistentes: String(exclude),
       });
       if (confidence === 'HIGH') params.set('confianza_minima', 'alta');
@@ -117,19 +115,19 @@ export class MapAnalysisService {
       while (true) {
         params.set('offset', String(offset));
         const response = await this.request('/detecciones?' + params, signal);
-        for (const row of await response.json() as ArchiveDetection[]) rows.push(row);
+        append(await response.json() as ArchiveDetection[]);
         const next = response.headers.get('X-Next-Offset');
         if (next === null) break;
         const nextOffset = Number(next);
         if (!Number.isSafeInteger(nextOffset) || nextOffset <= offset) throw new Error('Paginación de detecciones inválida.');
+        if (offset === 0 && onFirstPage) {
+          onFirstPage(observations.slice());
+          params.set('limite', '10000');
+        }
         offset = nextOffset;
       }
     }
-    return rows.filter((row) => !exclude || !row.fuente_persistente_probable)
-      .flatMap((row) => {
-        const observation = toObservation(row);
-        return observation ? [observation] : [];
-      });
+    return observations;
   }
 
   private areaPath(id: string): string { return '/areas/' + encodeURIComponent(id); }
