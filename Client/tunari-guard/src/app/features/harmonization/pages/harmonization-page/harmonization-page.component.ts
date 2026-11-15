@@ -1,61 +1,253 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { forkJoin, of } from 'rxjs';
+import { catchError, finalize } from 'rxjs/operators';
 
-type Sensor = 'MODIS' | 'VIIRS';
-type Severity = 'Alta' | 'Media' | 'Baja';
-interface EventRow { date: string; district: string; sensors: Sensor[]; confidence: number; severity: Severity; lat: number; lon: number; }
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { HistoryService } from '../../../../application/services/history.service';
+import { HarmonizationService, AnalysisArea, AnalysisEvent } from '../../../../application/services/harmonization.service';
+import { HistoryApiResponse, HistorySource } from '../../../../domain/models/historical-record.model';
+import { HotspotMapComponent } from '../../../map/components/hotspot-map/hotspot-map.component';
+import type { MapPeriod } from '../../../../domain/models/map-period.model';
 
 @Component({
   selector: 'app-harmonization-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeaderComponent],
+  imports: [CommonModule, FormsModule, PageHeaderComponent, HotspotMapComponent],
   templateUrl: './harmonization-page.component.html',
   styleUrl: './harmonization-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HarmonizationPageComponent {
-  readonly districts = ['Todos los distritos', 'Tiquipaya', 'Sacaba', 'Cochabamba', 'Quillacollo', 'Colcapirhua'];
-  readonly years = Array.from({length: 27}, (_, i) => 2000 + i);
-  readonly modisSeries = [170,190,205,210,185,220,200,245,260,225,300,260,325,280,340,245,310,260,365,320,460,390,510,360,430,320,395];
-  readonly viirsSeries = [280,350,420,390,340,410,360,510,450,580,440,560,510,680,520,610,470,570,730,680,950,1210,860,980,760,840,790];
-  readonly harmonizedSeries = [540,760,680,820,600,720,580,940,760,1100,820,1030,940,1210,980,1150,870,1040,1290,1350,1700,2110,1510,1730,1370,1480,1500];
-  readonly events: EventRow[] = [
-    {date:'2026-09-25',district:'Tiquipaya',sensors:['MODIS','VIIRS'],confidence:.97,severity:'Alta',lat:30,lon:34},
-    {date:'2026-09-24',district:'Sacaba',sensors:['MODIS','VIIRS'],confidence:.95,severity:'Media',lat:67,lon:42},
-    {date:'2026-09-23',district:'Cochabamba',sensors:['MODIS','VIIRS'],confidence:.93,severity:'Baja',lat:49,lon:66},
-    {date:'2026-09-22',district:'Quillacollo',sensors:['VIIRS'],confidence:.90,severity:'Media',lat:23,lon:68},
-    {date:'2026-09-21',district:'Colcapirhua',sensors:['MODIS','VIIRS'],confidence:.94,severity:'Alta',lat:58,lon:55},
-    {date:'2026-09-18',district:'Sacaba',sensors:['VIIRS'],confidence:.88,severity:'Alta',lat:76,lon:62},
-    {date:'2026-09-16',district:'Tiquipaya',sensors:['MODIS'],confidence:.86,severity:'Baja',lat:37,lon:25}
-  ];
-  startDate = '2000-01-01';
-  endDate = '2026-12-31';
-  district = 'Todos los distritos';
-  severity = 'Todas';
+  private readonly historyService = inject(HistoryService);
+  private readonly harmonizationService = inject(HarmonizationService);
+
+  readonly areas = signal<readonly AnalysisArea[]>([]);
+  readonly areasLoading = signal(false);
+  readonly mobileFiltersOpen = signal(false);
+  readonly areasError = signal<string | null>(null);
+
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
+  readonly modisTotal = signal<number | null>(null);
+  readonly viirsTotal = signal<number | null>(null);
+  readonly harmonizedTotal = signal<number | null>(null);
+  readonly coverageLabel = signal('—');
+
+  readonly modisSeries = signal<readonly { year: number; total: number | null }[]>([]);
+  readonly viirsSeries = signal<readonly { year: number; total: number | null }[]>([]);
+  readonly harmonizedSeries = signal<readonly { year: number; total: number | null }[]>([]);
+  readonly events = signal<readonly AnalysisEvent[]>([]);
+  readonly eventPage = signal(1);
+  readonly eventPageSize = 8;
+  readonly eventTotalPages = computed(() =>
+    Math.max(1, Math.ceil(this.events().length / this.eventPageSize)),
+  );
+  readonly paginatedEvents = computed(() => {
+    const start = (this.eventPage() - 1) * this.eventPageSize;
+    return this.events().slice(start, start + this.eventPageSize);
+  });
+
+  startYear = 2001;
+  endYear = new Date().getFullYear();
+  areaId = 'parque-tunari';
   modis = true;
   viirs = true;
-  applied = {start:'2000-01-01',end:'2026-12-31',district:'Todos los distritos',severity:'Todas',modis:true,viirs:true};
-  zoom = 1;
-  get filteredEvents(): EventRow[] {
-    return this.events.filter(e => e.date >= this.applied.start && e.date <= this.applied.end
-      && (this.applied.district === 'Todos los distritos' || e.district === this.applied.district)
-      && (this.applied.severity === 'Todas' || e.severity === this.applied.severity)
-      && e.sensors.some(s => s === 'MODIS' ? this.applied.modis : this.applied.viirs));
+
+  readonly selectedArea = computed(() =>
+    this.areas().find(area => area.area_id === this.areaId) ?? null,
+  );
+
+  readonly mapPeriod = computed<MapPeriod>(() => ({
+    from: `${this.startYear}-01-01`,
+    to: `${this.endYear}-12-31`,
+  }));
+
+  readonly chartRange = signal({ start: 2001, end: new Date().getFullYear() });
+  readonly chartYears = computed(() => {
+    const range = this.chartRange();
+    const years: number[] = [];
+    for (let year = range.start; year <= range.end; year++) years.push(year);
+    return years;
+  });
+
+  readonly chartWidth = computed(() => Math.max(620, this.chartYears().length * 42 + 64));
+
+  readonly chartMax = computed(() => {
+    const values = [...this.modisSeries(), ...this.viirsSeries(), ...this.harmonizedSeries()]
+      .map(item => item.total)
+      .filter((value): value is number => value !== null);
+    return Math.max(1, ...values);
+  });
+
+  readonly chartTicks = computed(() => {
+    const max = this.chartMax();
+    const step = max / 4;
+    return [0, 1, 2, 3, 4].map(index => Math.round(step * index));
+  });
+
+  constructor() {
+    this.loadAreas();
   }
-  get matchedCount(): number { return this.filteredEvents.filter(e => e.sensors.length === 2).length; }
+
+  loadAreas(): void {
+    this.areasLoading.set(true);
+    this.areasError.set(null);
+    this.harmonizationService.getAreas()
+      .pipe(finalize(() => this.areasLoading.set(false)))
+      .subscribe({
+        next: areas => {
+          this.areas.set(areas);
+          if (!areas.some(area => area.area_id === this.areaId)) {
+            this.areaId = areas.find(area => area.tipo === 'parque')?.area_id ?? areas[0]?.area_id ?? '';
+          }
+          this.apply();
+        },
+        error: err => this.areasError.set(err?.error?.message ?? 'No fue posible cargar las áreas.'),
+      });
+  }
+
   apply(): void {
-    if (this.startDate > this.endDate) return;
-    this.applied = {start:this.startDate,end:this.endDate,district:this.district,severity:this.severity,modis:this.modis,viirs:this.viirs};
+    if (!this.areaId || !Number.isInteger(this.startYear) || !Number.isInteger(this.endYear)
+      || this.startYear < 2000 || this.endYear > 2100 || this.startYear > this.endYear) {
+      this.error.set('Selecciona un área y un rango de años válido (2000–2100).');
+      return;
+    }
+
+    this.chartRange.set({ start: this.startYear, end: this.endYear });
+    this.loading.set(true);
+    this.error.set(null);
+
+    const harmonized$ = this.historyService.getHistory({
+      areaId: this.areaId, source: 'HARMONIZED', measure: 'celdas_dia',
+      fromYear: this.startYear, toYear: this.endYear,
+    });
+    const modis$ = this.modis
+      ? this.historyService.getHistory({ areaId: this.areaId, source: 'MODIS', measure: 'celdas_dia', fromYear: this.startYear, toYear: this.endYear })
+      : of(null);
+    const viirs$ = this.viirs
+      ? this.historyService.getHistory({ areaId: this.areaId, source: 'VIIRS', measure: 'celdas_dia', fromYear: this.startYear, toYear: this.endYear })
+      : of(null);
+
+    forkJoin({
+      harmonized: harmonized$,
+      modis: modis$,
+      viirs: viirs$,
+      events: this.harmonizationService.getEvents({
+        areaId: this.areaId,
+        from: `${this.startYear}-01-01`,
+        to: `${this.endYear}-12-31`,
+        limit: 100,
+      }),
+    }).pipe(finalize(() => this.loading.set(false))).subscribe({
+      next: result => {
+        this.harmonizedTotal.set(result.harmonized.summary.total);
+        this.harmonizedSeries.set(this.toYearly(result.harmonized));
+        this.modisTotal.set(result.modis?.summary.total ?? null);
+        this.modisSeries.set(result.modis ? this.toYearly(result.modis) : []);
+        this.viirsTotal.set(result.viirs?.summary.total ?? null);
+        this.viirsSeries.set(result.viirs ? this.toYearly(result.viirs) : []);
+        const years = result.harmonized.records.map(record => record.year);
+        this.coverageLabel.set(years.length ? `${Math.min(...years)}–${Math.max(...years)}` : 'Sin datos');
+        this.events.set(result.events);
+        this.eventPage.set(1);
+      },
+      error: err => {
+        this.error.set(err?.error?.message ?? 'No fue posible consultar el historial y los eventos.');
+        this.modisTotal.set(null);
+        this.viirsTotal.set(null);
+        this.harmonizedTotal.set(null);
+        this.modisSeries.set([]);
+        this.viirsSeries.set([]);
+        this.harmonizedSeries.set([]);
+        this.events.set([]);
+      },
+    });
   }
+
   reset(): void {
-    this.startDate='2000-01-01'; this.endDate='2026-12-31'; this.district='Todos los distritos'; this.severity='Todas'; this.modis=true; this.viirs=true; this.apply();
+    this.startYear = 2001;
+    this.endYear = new Date().getFullYear();
+    this.areaId = this.areas().find(area => area.tipo === 'parque')?.area_id ?? 'parque-tunari';
+    this.modis = true;
+    this.viirs = true;
+    this.apply();
   }
-  seriesPoints(series: number[]): string {
-    return series.map((v,i) => `${(i*560/26).toFixed(1)},${(140-v*140/2500).toFixed(1)}`).join(' ');
+
+  private toYearly(response: HistoryApiResponse): { year: number; total: number | null }[] {
+    const values = new Map<number, number>();
+    for (const record of response.records ?? []) {
+      if (!Number.isInteger(record.year)) continue;
+      if (record.activityCount === null || record.activityCount === undefined) continue;
+      values.set(record.year, (values.get(record.year) ?? 0) + Number(record.activityCount));
+    }
+
+    return this.chartYears().map(year => ({
+      year,
+      total: values.has(year) ? values.get(year)! : null,
+    }));
   }
-  formatDate(date: string): string { const [y,m,d]=date.split('-'); return `${d}/${m}/${y}`; }
-  changeZoom(delta:number): void { this.zoom=Math.max(1,Math.min(2,this.zoom+delta)); }
-  trackEvent(_index:number, event:EventRow):string { return event.date+'-'+event.district; }
+
+  seriesPath(series: readonly { year: number; total: number | null }[]): string {
+    const max = this.chartMax();
+    const span = Math.max(this.chartYears().length - 1, 1);
+    const segments: string[] = [];
+    let drawing = false;
+
+    series.forEach((item, index) => {
+      if (item.total === null) {
+        drawing = false;
+        return;
+      }
+      const x = 32 + (index / span) * (this.chartWidth() - 64);
+      const y = 150 - (item.total / max) * 130;
+      segments.push(`${drawing ? 'L' : 'M'} ${x.toFixed(1)} ${y.toFixed(1)}`);
+      drawing = true;
+    });
+    return segments.join(' ');
+  }
+
+  seriesPoints(series: readonly { year: number; total: number | null }[]): { x: number; y: number; label: string; value: number }[] {
+    const max = this.chartMax();
+    const span = Math.max(this.chartYears().length - 1, 1);
+    return series.flatMap((item, index) => {
+      if (item.total === null) return [];
+      return [{
+        x: 32 + (index / span) * (this.chartWidth() - 64),
+        y: 150 - (item.total / max) * 130,
+        label: String(item.year),
+        value: item.total,
+      }];
+    });
+  }
+
+
+  previousEventPage(): void {
+    this.eventPage.update(page => Math.max(1, page - 1));
+  }
+
+  nextEventPage(): void {
+    this.eventPage.update(page => Math.min(this.eventTotalPages(), page + 1));
+  }
+
+  formatDate(value: string): string {
+    if (!value) return '—';
+    const [year, month, day] = value.slice(0, 10).split('-');
+    return `${day}/${month}/${year}`;
+  }
+
+  formatSources(value: string): string[] {
+    return (value ?? '').split('|').map(source => source.trim()).filter(Boolean);
+  }
+
+  trackEvent(_index: number, event: AnalysisEvent): string {
+    return event.evento_id;
+  }
+
+  applyYearsFromInput(value: string, field: 'start' | 'end'): void {
+    const year = Number(value);
+    if (field === 'start') this.startYear = year;
+    else this.endYear = year;
+  }
 }

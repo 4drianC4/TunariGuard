@@ -1,74 +1,188 @@
 <section class="harm-page">
-   
   <app-page-header
     section="armonización"
     title="Armonización MODIS–VIIRS"
     description="Vinculación espacio-temporal reproducible conservando observaciones originales y procedencia"
   />
-  <div class="harm-kpis" aria-label="Indicadores de demostración">
-    <article class="harm-kpi"><div class="harm-kpi-icon">◈</div><div><span>Detecciones MODIS</span><strong>12,458</strong></div><small>DEMO</small></article>
-    <article class="harm-kpi"><div class="harm-kpi-icon">◈</div><div><span>Detecciones VIIRS</span><strong>28,931</strong></div><small>DEMO</small></article>
-    <article class="harm-kpi harm-kpi-warm"><div class="harm-kpi-icon">🔗</div><div><span>Coincidencias armonizadas</span><strong>9,842</strong></div><small>DEMO</small></article>
-    <article class="harm-kpi"><div class="harm-kpi-icon">▦</div><div><span>Cobertura temporal</span><strong>2000–2026</strong></div><small>DEMO</small></article>
-  </div>
 
-  <form class="harm-filters" (ngSubmit)="apply()">
-    <div class="harm-filter-heading"><span class="harm-filter-symbol">▽</span><strong>Filtros de análisis</strong></div>
-    <label class="harm-field harm-dates"><span>Rango de fechas</span><div class="harm-date-pair"><input aria-label="Fecha inicial" type="date" name="start" [(ngModel)]="startDate" /><span>—</span><input aria-label="Fecha final" type="date" name="end" [(ngModel)]="endDate" /></div></label>
-    <fieldset class="harm-field harm-sensors"><legend>Sensor</legend><label><input type="checkbox" name="modis" [(ngModel)]="modis" /> MODIS</label><label><input type="checkbox" name="viirs" [(ngModel)]="viirs" /> VIIRS</label></fieldset>
-    <label class="harm-field"><span>Distrito</span><select name="district" [(ngModel)]="district"><option *ngFor="let d of districts" [value]="d">{{d}}</option></select></label>
-    <label class="harm-field"><span>Severidad</span><select name="severity" [(ngModel)]="severity"><option value="Todas">Todas</option><option value="Baja">🟢 Baja</option><option value="Media">🟠 Media</option><option value="Alta">🔴 Alta</option></select></label>
-    <div class="harm-filter-actions"><button class="harm-apply" type="submit">⌕ &nbsp; Aplicar</button><button type="button" class="harm-reset" (click)="reset()">Restablecer</button></div>
-    <p *ngIf="startDate > endDate" class="harm-invalid">La fecha inicial debe ser anterior a la final.</p>
-  </form>
-
-  <div class="harm-grid">
-    <article class="harm-card harm-map-card">
-      <h2><span>◫</span> Mapa de focos armonizados – Tunari / Cochabamba <small>DEMO</small></h2>
-      <div class="harm-map-layout">
-        <div class="harm-map" role="img" aria-label="Mapa ilustrativo de focos de calor de demostración sobre imagen de referencia de Tunari">
-          <div class="harm-map-background" [style.transform]="'scale('+zoom+')'"></div>
-          <div class="harm-map-points" [style.transform]="'scale('+zoom+')'">
-            <span *ngFor="let e of filteredEvents; index as i" class="harm-hotspot" [class.high]="e.severity==='Alta'" [class.medium]="e.severity==='Media'" [style.left.%]="e.lat" [style.top.%]="e.lon" [attr.title]="e.district+' · '+e.severity"></span>
-            <span *ngFor="let e of filteredEvents; index as i" class="harm-hotspot harm-secondary" [style.left.%]="e.lat+((i%3)-1)*4" [style.top.%]="e.lon+((i%4)-2)*4"></span>
-          </div>
-          <div class="harm-map-caption">Parque Nacional Tunari</div><div class="harm-map-north">▲<br>N</div>
-          <div class="harm-map-zoom"><button type="button" (click)="changeZoom(.2)" aria-label="Acercar mapa">+</button><button type="button" (click)="changeZoom(-.2)" aria-label="Alejar mapa">−</button></div>
-          <div class="harm-map-scale">0 ━━━━━ 20 km</div>
-        </div>
-        <aside class="harm-map-legend"><strong>Focos armonizados<br>(severidad)</strong><div><i class="harm-dot high"></i> Alta (≥ 350 K)</div><div><i class="harm-dot medium"></i> Media (330–350 K)</div><div><i class="harm-dot low"></i> Baja (&lt; 330 K)</div><hr/><div><i class="harm-boundary"></i> Límite Tunari</div><small>Ubicaciones ilustrativas · no georreferenciadas</small></aside>
+  <section class="tg-kpis tg-kpis--fit" aria-label="Indicadores de armonización">
+    <article class="tg-kpi">
+      <span class="tg-kpi-symbol green">◈</span>
+      <div class="tg-kpi-copy">
+        <span class="tg-kpi-title">Actividad MODIS</span>
+        <div class="tg-kpi-number">{{ modisTotal() === null ? '—' : (modisTotal() | number:'1.0-2') }}</div>
+        <small class="tg-kpi-note">Datos de la API</small>
       </div>
     </article>
-    <article class="harm-card harm-process-card">
-      <h2><span>⚙</span> Proceso de armonización</h2>
+    <article class="tg-kpi">
+      <span class="tg-kpi-symbol green">◈</span>
+      <div class="tg-kpi-copy">
+        <span class="tg-kpi-title">Actividad VIIRS</span>
+        <div class="tg-kpi-number">{{ viirsTotal() === null ? '—' : (viirsTotal() | number:'1.0-2') }}</div>
+        <small class="tg-kpi-note">Datos de la API</small>
+      </div>
+    </article>
+    <article class="tg-kpi">
+      <span class="tg-kpi-symbol warm">◉</span>
+      <div class="tg-kpi-copy">
+        <span class="tg-kpi-title">Actividad armonizada</span>
+        <div class="tg-kpi-number">{{ harmonizedTotal() === null ? '—' : (harmonizedTotal() | number:'1.0-2') }}</div>
+        <small class="tg-kpi-note">Datos de la API</small>
+      </div>
+    </article>
+    <article class="tg-kpi">
+      <span class="tg-kpi-symbol green">▦</span>
+      <div class="tg-kpi-copy">
+        <span class="tg-kpi-title">Cobertura temporal</span>
+        <div class="tg-kpi-number tg-kpi-number--text">{{ coverageLabel() }}</div>
+        <small class="tg-kpi-note">Periodo con registros</small>
+      </div>
+    </article>
+  </section>
+
+  <div class="tg-filter-group">
+    <button type="button" class="tg-filter-toggle" (click)="mobileFiltersOpen.set(!mobileFiltersOpen())"
+      [attr.aria-expanded]="mobileFiltersOpen()" aria-controls="harmonization-filters">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10m-7 5h4" /></svg>
+      {{ mobileFiltersOpen() ? 'Ocultar filtros' : 'Mostrar filtros' }}
+    </button>
+
+    <form id="harmonization-filters" class="tg-card tg-filter-panel"
+      [class.tg-filter-panel--open]="mobileFiltersOpen()" (ngSubmit)="apply()"
+      aria-label="Filtros de armonización">
+      <div class="tg-filter-fields">
+        <label class="tg-filter-field">
+          Área
+          <select class="tg-filter-control" name="areaId" [(ngModel)]="areaId"
+            [disabled]="areasLoading() || areas().length === 0">
+            <option *ngFor="let area of areas()" [value]="area.area_id">
+              {{ area.nombre_visible }}
+            </option>
+          </select>
+        </label>
+
+        <label class="tg-filter-field">
+          Desde año
+          <input class="tg-filter-control" type="number" name="startYear"
+            min="2000" max="2100" [(ngModel)]="startYear" />
+        </label>
+
+        <label class="tg-filter-field">
+          Hasta año
+          <input class="tg-filter-control" type="number" name="endYear"
+            min="2000" max="2100" [(ngModel)]="endYear" />
+        </label>
+
+        <fieldset class="tg-filter-field" style="border:0;padding:0;margin:0">
+          <legend>Fuentes</legend>
+          <div class="flex min-h-9 flex-wrap items-center gap-4 rounded-lg border border-[#c8c1b4] bg-[#fffdf9] px-3 py-2">
+            <label class="flex items-center gap-2 font-medium">
+              <input type="checkbox" name="modis" [(ngModel)]="modis" /> MODIS
+            </label>
+            <label class="flex items-center gap-2 font-medium">
+              <input type="checkbox" name="viirs" [(ngModel)]="viirs" /> VIIRS
+            </label>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="tg-filter-actions">
+        <button type="button" class="tg-filter-button" (click)="reset()">Restablecer</button>
+        <button type="submit" class="tg-filter-button tg-filter-button--primary"
+          [disabled]="loading() || areasLoading()">
+          {{ loading() ? 'Consultando...' : 'Aplicar filtros' }}
+        </button>
+      </div>
+
+      <p *ngIf="areasLoading()" class="tg-filter-error">Cargando áreas…</p>
+      <p *ngIf="areasError()" class="tg-filter-error">{{ areasError() }}</p>
+      <p *ngIf="startYear > endYear" class="tg-filter-error">El año inicial debe ser menor o igual al final.</p>
+      <p *ngIf="error()" class="tg-filter-error" role="alert">{{ error() }}</p>
+    </form>
+  </div>
+
+  <div class="harm-grid">
+    <article class="tg-card harm-card harm-map-card">
+      <h2><span>◫</span> Detecciones satelitales – {{ selectedArea()?.nombre_visible ?? 'Área seleccionada' }} <small>NASA FIRMS</small></h2>
+      <div class="p-3">
+        <app-hotspot-map [compact]="true" [areaId]="areaId" [period]="mapPeriod()" />
+        <p class="mt-2 text-xs text-[#737064]">El mapa muestra detecciones georreferenciadas MODIS/VIIRS, insumos del análisis. El endpoint histórico no devuelve geometrías de focos armonizados.</p>
+      </div>
+    </article>
+
+    <article class="tg-card harm-card harm-process-card">
+      <h2><span>⚙</span> Proceso de armonización <small>REFERENCIA METODOLÓGICA</small></h2>
       <div class="harm-steps">
         <div class="harm-step"><div class="harm-step-icon">▤</div><strong>Ingesta</strong><span>Carga de detecciones MODIS y VIIRS</span></div>
         <div class="harm-step"><div class="harm-step-icon">▽</div><strong>Limpieza</strong><span>Control de calidad y filtrado</span></div>
-        <div class="harm-step"><div class="harm-step-icon">◎</div><strong>Matching espacial</strong><span>Vinculación por proximidad (radio)</span></div>
+        <div class="harm-step"><div class="harm-step-icon">◎</div><strong>Matching espacial</strong><span>Vinculación por proximidad</span></div>
         <div class="harm-step"><div class="harm-step-icon">◷</div><strong>Matching temporal</strong><span>Vinculación por ventana de tiempo</span></div>
         <div class="harm-step"><div class="harm-step-icon harm-step-last">▱</div><strong>Salida armonizada</strong><span>Serie unificada con procedencia</span></div>
       </div>
-      <div class="harm-method"><span>ⓘ</span><div><strong>Resumen metodológico</strong><p>Integra detecciones MODIS y VIIRS mediante limpieza de datos, emparejamiento espacial (p. ej., ≤ 1 km) y temporal (p. ej., ± 24 h), preservando observaciones originales y su procedencia. Parámetros ilustrativos.</p></div></div>
+      <div class="harm-method"><span>ⓘ</span><div><strong>Resumen metodológico</strong><p>La serie armonizada se consulta desde el historial del área seleccionada. Las etapas del proceso mostradas aquí describen el flujo metodológico; no representan el estado en tiempo real de un trabajo de procesamiento.</p></div></div>
     </article>
-    <article class="harm-card harm-chart-card">
-      <h2><span>⌁</span> Evolución temporal de detecciones <small>DEMO</small></h2>
-      <div class="harm-chart-legend"><span><i class="harm-line modis"></i>MODIS</span><span><i class="harm-line viirs"></i>VIIRS</span><span><i class="harm-line unified"></i>Armonizada</span></div>
-      <div class="harm-chart-scroll"><svg viewBox="0 0 620 196" role="img" aria-label="Gráfico ilustrativo de evolución anual de detecciones de 2000 a 2026">
-        <g transform="translate(43,12)"><line *ngFor="let tick of [0,500,1000,1500,2000,2500]" x1="0" x2="560" [attr.y1]="140-tick*140/2500" [attr.y2]="140-tick*140/2500" stroke="#e8e6dd" stroke-width="1"/>
-        <text *ngFor="let tick of [0,500,1000,1500,2000,2500]" x="-8" [attr.y]="144-tick*140/2500" text-anchor="end" font-size="10" fill="#4e4e47">{{tick}}</text>
-        <text *ngFor="let yr of years; index as i" [attr.x]="i*560/26" y="157" text-anchor="middle" font-size="9" fill="#4e4e47" [attr.display]="i%2===0?'block':'none'">{{yr}}</text>
-        <polyline [attr.points]="seriesPoints(modisSeries)" fill="none" stroke="#477c2d" stroke-width="2.2" stroke-linejoin="round"/>
-        <polyline [attr.points]="seriesPoints(viirsSeries)" fill="none" stroke="#f5b500" stroke-width="2.2" stroke-linejoin="round"/>
-        <polyline [attr.points]="seriesPoints(harmonizedSeries)" fill="none" stroke="#f46b17" stroke-width="2.5" stroke-linejoin="round"/>
-        </g></svg></div>
+
+    <article class="tg-card harm-card harm-chart-card">
+      <h2><span>⌁</span> Evolución temporal de actividad <small>API · ANUAL</small></h2>
+      <div class="harm-chart-legend">
+        <span *ngIf="modis"><i class="harm-line modis"></i>MODIS</span>
+        <span *ngIf="viirs"><i class="harm-line viirs"></i>VIIRS</span>
+        <span><i class="harm-line unified"></i>Armonizada</span>
+      </div>
+      <div class="harm-chart-scroll" style="overflow-x:auto">
+        <svg
+          [attr.viewBox]="'0 0 ' + chartWidth() + ' 208'"
+          preserveAspectRatio="xMidYMid meet"
+          role="img"
+          aria-label="Evolución anual de actividad por fuente"
+        >
+          <g>
+            <g *ngFor="let tick of chartTicks(); let i=index">
+              <line x1="32" [attr.x2]="chartWidth()-32" [attr.y1]="150-i*32.5" [attr.y2]="150-i*32.5" stroke="#e8e6dd" stroke-width="1" />
+              <text x="26" [attr.y]="154-i*32.5" text-anchor="end" font-size="10" fill="#737064">{{ tick | number:'1.0-0' }}</text>
+            </g>
+            <path *ngIf="modis && modisSeries().length" [attr.d]="seriesPath(modisSeries())" fill="none" stroke="#477c2d" stroke-width="2.2" stroke-linejoin="round" />
+            <path *ngIf="viirs && viirsSeries().length" [attr.d]="seriesPath(viirsSeries())" fill="none" stroke="#d5a000" stroke-width="2.2" stroke-linejoin="round" />
+            <path *ngIf="harmonizedSeries().length" [attr.d]="seriesPath(harmonizedSeries())" fill="none" stroke="#f46b17" stroke-width="2.5" stroke-linejoin="round" />
+            <g *ngIf="modis"><circle *ngFor="let point of seriesPoints(modisSeries())" [attr.cx]="point.x" [attr.cy]="point.y" r="2.2" fill="#477c2d"><title>MODIS · {{ point.label }}: {{ point.value }}</title></circle></g>
+            <g *ngIf="viirs"><circle *ngFor="let point of seriesPoints(viirsSeries())" [attr.cx]="point.x" [attr.cy]="point.y" r="2.2" fill="#d5a000"><title>VIIRS · {{ point.label }}: {{ point.value }}</title></circle></g>
+            <g><circle *ngFor="let point of seriesPoints(harmonizedSeries())" [attr.cx]="point.x" [attr.cy]="point.y" r="2.5" fill="#f46b17"><title>Armonizada · {{ point.label }}: {{ point.value }}</title></circle></g>
+            <g *ngFor="let item of chartYears(); let i=index">
+              <text *ngIf="true" [attr.x]="32+(i/((chartYears().length-1)||1))*(chartWidth()-64)" y="174" text-anchor="middle" font-size="10" fill="#4e4e47">{{ item }}</text>
+            </g>
+            <text x="32" y="198" font-size="9" fill="#737064">Años del periodo seleccionado →</text>
+          </g>
+        </svg>
+      </div>
+      <p *ngIf="loading()" class="px-3 pb-3 text-xs text-[#737064]">Consultando series históricas…</p>
+      <p class="px-3 pb-3 text-xs text-[#737064]">Cada punto representa un año. El valor anual corresponde a la suma de las mediciones mensuales disponibles en ese año. Pasa el cursor sobre un punto para ver el año y el valor exacto. Los espacios indican años sin dato disponible. MODIS y VIIRS son conteos brutos; no son directamente comparables con el índice armonizado.</p>
     </article>
-    <article class="harm-card harm-table-card">
-      <h2><span>☷</span> Eventos armonizados recientes <small>DEMO</small></h2>
-      <div class="harm-table-scroll"><table><thead><tr><th>Fecha</th><th>Distrito</th><th>Sensores vinculados</th><th>Confianza</th><th>Estado</th></tr></thead><tbody>
-        <tr *ngFor="let e of filteredEvents; trackBy:trackEvent"><td>{{formatDate(e.date)}}</td><td>{{e.district}}</td><td><span *ngFor="let s of e.sensors" class="harm-sensor-tag" [class.viirs]="s==='VIIRS'">{{s}}</span></td><td>{{e.confidence.toFixed(2)}}</td><td><span class="harm-status" [class.single]="e.sensors.length===1">● &nbsp;{{e.sensors.length===2?'Armonizado':'Único ('+e.sensors[0]+')'}}</span></td></tr>
-        <tr *ngIf="filteredEvents.length===0"><td colspan="5" class="harm-empty">No hay eventos DEMO que coincidan con los filtros.</td></tr>
-      </tbody></table></div>
+
+    <article class="tg-card harm-card harm-table-card">
+      <h2><span>☷</span> Eventos candidatos recientes <small>API</small></h2>
+      <div class="harm-table-scroll"><table>
+        <thead><tr><th>Periodo</th><th>Área</th><th>Detecciones</th><th>Sensores</th><th>FRP máx. (MW)</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let event of paginatedEvents(); trackBy:trackEvent">
+            <td>{{ formatDate(event.fecha_inicio) }}<span *ngIf="event.fecha_fin !== event.fecha_inicio"> – {{ formatDate(event.fecha_fin) }}</span></td>
+            <td>{{ areas().find(a => a.area_id === event.area_id)?.nombre_visible ?? event.area_id ?? '—' }}</td>
+            <td>{{ event.detecciones }}</td>
+            <td><span *ngFor="let source of formatSources(event.fuentes)" class="harm-sensor-tag" [class.viirs]="source.includes('VIIRS')">{{ source }}</span></td>
+            <td>{{ event.frp_max_mw === null ? '—' : (event.frp_max_mw | number:'1.0-1') }}</td>
+            <td><span class="harm-status" [class.single]="!event.es_multisensor">● &nbsp;{{ event.es_multisensor ? 'Multisensor' : 'Unisensor' }}</span></td>
+          </tr>
+          <tr *ngIf="!loading() && events().length === 0"><td colspan="6" class="harm-empty">No hay eventos candidatos para el área y periodo seleccionados.</td></tr>
+        </tbody>
+      </table></div>
+      <div class="flex items-center justify-between gap-3 border-t border-[#e8e1d6] px-3 py-3">
+        <span class="text-xs text-[#737064]">Página {{ eventPage() }} de {{ eventTotalPages() }} · {{ events().length }} eventos</span>
+        <div class="flex gap-2">
+          <button type="button" class="rounded-lg border border-[#ded6ca] px-3 py-1.5 text-xs font-semibold disabled:opacity-40" (click)="previousEventPage()" [disabled]="eventPage() <= 1">Anterior</button>
+          <button type="button" class="rounded-lg border border-[#ded6ca] px-3 py-1.5 text-xs font-semibold disabled:opacity-40" (click)="nextEventPage()" [disabled]="eventPage() >= eventTotalPages()">Siguiente</button>
+        </div>
+      </div>
+      <p class="px-3 pb-3 text-xs text-[#737064]">Son eventos candidatos agrupados por proximidad temporal y espacial; no son incendios confirmados.</p>
     </article>
   </div>
-  <footer class="harm-footer"><span>🔥</span><strong>Reduce duplicados, mejora continuidad histórica y fortalece el análisis multianual.</strong><small>VISTA DEMO · sin procesamiento satelital real</small></footer>
+  <footer class="harm-footer"><span>🔥</span><strong>La armonización mejora la continuidad y comparabilidad histórica de las observaciones.</strong><small>Los datos y advertencias proceden de la API.</small></footer>
 </section>
