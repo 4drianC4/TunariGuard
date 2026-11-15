@@ -1,14 +1,14 @@
 <section class="flex flex-col gap-4">
   <div class="flex flex-wrap items-center justify-between gap-2">
-    <span class="text-[10px] font-extrabold uppercase tracking-[.14em] text-[#b84e20]">Detalle del periodo</span>
-    <span class="rounded-full bg-[#e9eee4] px-3 py-1 text-[11px] font-bold text-[#526b4c]">{{ sourceName }}</span>
+    <span class="text-[10px] font-extrabold uppercase tracking-[.14em] text-[#b84e20]">{{ t('Detalle del periodo') }}</span>
+    <span class="rounded-full bg-[#e9eee4] px-3 py-1 text-[11px] font-bold text-[#526b4c]">{{ t(sourceName) }}</span>
   </div>
   <div class="flex items-center gap-4 rounded-xl border border-[#e2dbcf] bg-[#f8f5ef] p-4">
     <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[#e4eadf] text-xl text-[#526b4c]">◉</span>
-    <div class="min-w-0"><strong class="block text-2xl font-extrabold tabular-nums text-[#303722]">{{ count() | number }}</strong><span class="text-xs text-[#737064]">Índice mensual</span></div>
+    <div class="min-w-0"><strong class="block text-2xl font-extrabold tabular-nums text-[#303722]">{{ count() | number:undefined:locale() }}</strong><span class="text-xs text-[#737064]">{{ t('Índice mensual') }}</span></div>
   </div>
   <div class="flex flex-col gap-2 text-sm leading-relaxed text-[#555448]">
-    <p>El índice mensual registrado para {{ monthName }} de {{ year() }} es {{ count() }}.</p>
-    <span class="text-xs font-semibold text-[#8a7255]">Índice relativo; no representa hectáreas ni incendios confirmados.</span>
+    <p>{{ t('El índice mensual registrado para {month} de {year} es {count}.', { month: t(monthName), year: year(), count: count() }) }}</p>
+    <span class="text-xs font-semibold text-[#8a7255]">{{ t('Índice relativo; no representa hectáreas ni incendios confirmados.') }}</span>
   </div>
 </section>

@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../../core/i18n/language.service';
 
 import { Component, HostListener, computed, effect, inject, signal } from '@angular/core';
 import { MonthDetailComponent } from '../month-detail/month-detail.component';
@@ -25,6 +26,7 @@ interface PopoverPosition {
 
 
 export class HistoryCalendarComponent {
+  readonly t = inject(LanguageService).text;
   constructor() {
     effect(() => {
       this.metrics.records();
@@ -256,6 +258,6 @@ export class HistoryCalendarComponent {
   });
 
   getMonthName(month: number): string {
-    return this.months[month - 1];
+    return this.t(this.months[month - 1]);
   }
 }

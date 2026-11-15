@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../../core/i18n/language.service';
 import { DistrictAnalysisComponent } from '../../components/district-analysis/district-analysis.component';
 import { DetectionDatesService } from '../../../../application/services/detection-dates.service';
 import { DetectionDateDirective } from '../../../../shared/directives/detection-date.directive';
@@ -29,6 +30,8 @@ function shiftDate(date: string, days: number): string {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DistrictsPageComponent {
+  readonly t = inject(LanguageService).text;
+  readonly areaText = inject(LanguageService).area;
   readonly dates = inject(DetectionDatesService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly analysis = inject(MapAnalysisService);

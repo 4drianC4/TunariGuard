@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { LanguageService } from '../../../../core/i18n/language.service';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, OnDestroy, OnInit, signal, untracked } from '@angular/core';
 import { DetectionDatesService } from '../../../../application/services/detection-dates.service';
 import { DetectionDateDirective } from '../../../../shared/directives/detection-date.directive';
 import { DecimalPipe } from '@angular/common';
@@ -51,6 +52,10 @@ interface DownloadRecord {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReportsPageComponent implements OnInit, OnDestroy {
+  readonly i18n = inject(LanguageService);
+  readonly t = this.i18n.text;
+  readonly areaText = inject(LanguageService).area;
+  readonly locale = inject(LanguageService).locale;
   readonly dates = inject(DetectionDatesService);
   private readonly api = inject(ReportsApiService);
   private request?: AbortController;
@@ -80,15 +85,24 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
   readonly pageCount = computed(() => Math.ceil((this.view()?.data.rows.length ?? 0) / this.pageSize));
   readonly visibleRows = computed(() => {
     const offset = this.page() * this.pageSize;
-    return this.view()?.data.rows.slice(offset, offset + this.pageSize) ?? [];
+    return this.view()?.data.rows.slice(offset, offset + this.pageSize).map((row) =>
+      row.map((value) => typeof value === 'string' ? this.i18n.area(value) : value)) ?? [];
   });
   readonly chart = computed(() => {
     const view = this.view();
-    return view ? buildReportChart(view.data, view.filters.kind) : null;
+    return view ? buildReportChart(this.localizedData(view.data), view.filters.kind) : null;
   });
 
   filters = { ...this.defaults };
   filtersExpanded = false;
+
+  constructor() {
+    effect(() => {
+      this.i18n.language();
+      const filters = untracked(() => this.view()?.filters);
+      if (filters) untracked(() => void this.apply(filters));
+    });
+  }
 
   get monthly(): boolean { return this.filters.kind !== 'detections'; }
   showSource(kind: ReportKind): boolean {
@@ -143,12 +157,11 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
     void this.apply();
   }
 
-  async apply(): Promise<void> {
+  async apply(filters = { ...this.filters }): Promise<void> {
     const controller = this.beginRequest();
-    const filters = { ...this.filters };
     try {
       if (!filters.from || !filters.to) throw new Error('Selecciona un período válido.');
-      const rangeError = this.dates.rangeError(filters.from, filters.to, this.monthly ? 'month' : 'day');
+      const rangeError = this.dates.rangeError(filters.from, filters.to, filters.kind === 'detections' ? 'day' : 'month');
       if (rangeError) throw new Error(rangeError);
       const data = await this.api.load(filters, controller.signal);
       if (controller.signal.aborted) return;
@@ -182,7 +195,7 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
     const context = this.exportContext(view);
     const { kind, from, to } = view.filters;
     try {
-      const { blob, extension } = await exportReport(format, view.data, context);
+      const { blob, extension } = await exportReport(format, this.localizedData(view.data), context);
       if (this.destroyed) return;
       const fileName = `TunariGuard_${kind}_${from}_${to}.${extension}`;
       const download = { title: context.title, date: context.date, format, fileName, blob };
@@ -199,7 +212,7 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
     const { filters, data } = view;
     const fields: ReportExportContext['fields'] = [
       ['Área', view.area],
-      ['Período', `${filters.from} a ${filters.to} (hora de Bolivia)`],
+      ['Período', this.t('{from} a {to} (hora de Bolivia)', { from: filters.from, to: filters.to })],
       ['Fuente', 'NASA FIRMS · paquete de análisis fuego'],
       ['Método', view.method],
     ];
@@ -208,10 +221,21 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
     if (filters.alertLevel) fields.push(['Nivel de alerta', filters.alertLevel.replaceAll('_', ' ')]);
 
     return {
-      title: this.reportTypes[filters.kind],
-      date: new Date().toLocaleString('es-BO', { timeZone: 'America/La_Paz' }),
-      fields,
-      notices: data.notice ? [data.notice] : [],
+      language: this.i18n.language(),
+      title: this.t(this.reportTypes[filters.kind]),
+      date: new Date().toLocaleString(this.i18n.locale(), { timeZone: 'America/La_Paz' }),
+      fields: fields.map(([label, value]) => [this.t(label), this.i18n.area(value)]),
+      notices: data.notice ? [this.t(data.notice)] : [],
+    };
+  }
+
+  localizedData(data: ReportData): ReportData {
+    return {
+      ...data,
+      columns: data.columns.map((column) => this.t(column)),
+      rows: data.rows.map((row) => row.map((value) => typeof value === 'string' ? this.i18n.area(value) : value)),
+      notice: this.t(data.notice),
+      headline: { ...data.headline, label: this.t(data.headline.label), unit: this.t(data.headline.unit) },
     };
   }
 

@@ -1,12 +1,12 @@
+import { LanguageService } from '../../../../core/i18n/language.service';
 import { addBoliviaBasemap, addOpenStreetMap } from '../../utils/map-basemap';
 import { MapInfoComponent } from '../map-info.component';
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild, computed, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import type { MapDataStatus } from '../../models/map-data.model';
-import { CommonModule, registerLocaleData } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import type { Geometry } from 'geojson';
-import localeEsBo from '@angular/common/locales/es-BO';
 import * as L from 'leaflet';
-import 'leaflet-draw';
+import { setDrawingLanguage } from '../../utils/map-drawing-language';
 import { MapExportService } from '../../data-access/map-export.service';
 import { MapEntitySelection } from '../../../../domain/models/map-entity-selection.model';
 import { DEFAULT_ARCHIVE_PERIOD, MapPeriod } from '../../models/map-period.model';
@@ -20,7 +20,6 @@ import { MapQueryControlsComponent } from '../map-query-controls/map-query-contr
 import { HotspotPopupComponent } from '../hotspot-popup/hotspot-popup.component';
 import { MapAnalysisService, type AnalysisArea } from '../../data-access/map-analysis.service';
 
-registerLocaleData(localeEsBo);
 
 @Component({
   selector: 'app-hotspot-map',
@@ -31,6 +30,9 @@ registerLocaleData(localeEsBo);
   host: { class: 'block min-w-0 text-[#30351f]' }
 })
 export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy {
+  readonly i18n = inject(LanguageService);
+  readonly t = this.i18n.text;
+  readonly areaText = this.i18n.area;
   private readonly mapExport = inject(MapExportService);
   private readonly analysis = inject(MapAnalysisService);
   readonly areas = signal<Omit<AnalysisArea, 'geometria'>[]>([]);
@@ -79,8 +81,14 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
   private readonly visibleMarkers = new Map<Observation, L.CircleMarker>();
   private renderFrame = 0;
   private isDrawingArea = false;
+  private drawingControl?: L.Control.Draw;
+  private drawingLanguage?: 'es' | 'en';
   private loadAbortController?: AbortController;
   private loadDebounceTimer?: ReturnType<typeof setTimeout>;
+
+  constructor() {
+    effect(() => this.updateDrawingControl(this.i18n.language()));
+  }
 
   get areaLabel(): string {
     if (!this.areaId) return 'Sin área de referencia';
@@ -132,6 +140,7 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.loadAbortController?.abort();
     this.map?.off();
     this.map?.remove();
+    this.map = undefined;
   }
 
   async loadAreaCatalog(): Promise<void> {
@@ -317,9 +326,12 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     if (pending.length) this.renderFrame = requestAnimationFrame(drawBatch);
   }
 
-  private initializeDrawing(): void {
-    if (!this.map) return;
-    this.map.addControl(new L.Control.Draw({
+  private updateDrawingControl(language: 'es' | 'en'): void {
+    if (!this.map || this.compact || this.isDrawingArea || this.drawingLanguage === language) return;
+    this.drawingLanguage = language;
+    if (this.drawingControl) this.map.removeControl(this.drawingControl);
+    setDrawingLanguage(language);
+    this.drawingControl = new L.Control.Draw({
       position: 'topright',
       draw: {
         polygon: { allowIntersection: false, showArea: true, shapeOptions: { color: '#526b24', weight: 3, fillOpacity: 0.14, className: 'map-drawn-area' } },
@@ -327,7 +339,13 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
         polyline: false, circle: false, circlemarker: false, marker: false
       },
       edit: { featureGroup: this.drawnItems, edit: {}, remove: true }
-    }));
+    });
+    this.map.addControl(this.drawingControl);
+  }
+
+  private initializeDrawing(): void {
+    if (!this.map) return;
+    this.updateDrawingControl(this.i18n.language());
     this.map.on('draw:drawstart draw:editstart draw:deletestart', () => {
       this.isDrawingArea = true;
       this.mapContainer.nativeElement.classList.add('map-drawing');
@@ -335,6 +353,7 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     this.map.on('draw:drawstop draw:editstop draw:deletestop', () => {
       this.isDrawingArea = false;
       this.mapContainer.nativeElement.classList.remove('map-drawing');
+      queueMicrotask(() => this.updateDrawingControl(this.i18n.language()));
     });
     this.map.on(L.Draw.Event.CREATED, (event: L.LeafletEvent) => {
       const drawEvent = event as L.DrawEvents.Created;

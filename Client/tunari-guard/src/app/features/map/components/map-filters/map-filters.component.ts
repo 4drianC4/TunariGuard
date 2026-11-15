@@ -1,6 +1,7 @@
+import { LanguageService } from '../../../../core/i18n/language.service';
 import { MapInfoComponent } from '../map-info.component';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { inject, ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Observation, SatellitePlatform } from '../../models/observation.model';
 import { MapObservationFilters } from '../../models/map-observation-filters.model';
 
@@ -12,6 +13,7 @@ import { MapObservationFilters } from '../../models/map-observation-filters.mode
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MapFiltersComponent {
+  readonly t = inject(LanguageService).text;
   @Input({ required: true }) observations: readonly Observation[] = [];
   @Input({ required: true }) filters: MapObservationFilters = {
     minConfidence: '',

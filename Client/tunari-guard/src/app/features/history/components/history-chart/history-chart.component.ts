@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../../core/i18n/language.service';
 
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, effect, inject, computed } from '@angular/core';
 
@@ -14,6 +15,7 @@ import { HistorySource } from '../../../../domain/models/historical-record.model
   styleUrl: './history-chart.component.scss',
 })
 export class HistoryChartComponent implements AfterViewInit, OnDestroy {
+  readonly t = inject(LanguageService).text;
   private readonly metrics = inject(MetricsService);
 
   @ViewChild('chartContainer')

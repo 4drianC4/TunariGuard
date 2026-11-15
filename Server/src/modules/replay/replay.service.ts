@@ -1,3 +1,4 @@
+import { t } from '../../shared/i18n/language.js';
 import { BadRequestException, Injectable, Logger, type OnModuleDestroy } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { REPLAY_PASS, type ReplayPassEvent } from '../../shared/domain-events.js';
@@ -44,7 +45,7 @@ export class ReplayService implements OnModuleDestroy {
   async start(body: StartReplayBody): Promise<ReplayStatusPayload> {
     const features = await this.observations.chronologicalFeatures(body, MAX_OBSERVATIONS + 1);
     if (features.length === 0) {
-      throw new BadRequestException('No hay observaciones que reproducir con esos filtros');
+      throw new BadRequestException(t('No hay observaciones que reproducir con esos filtros'));
     }
     const truncated = features.length > MAX_OBSERVATIONS;
     this.stopTimer();

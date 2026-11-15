@@ -1,4 +1,4 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { HistoryService } from './history.service';
@@ -10,6 +10,7 @@ import {
   HistorySummary,
 } from '../../domain/models/historical-record.model';
 import { DataOrigin } from '../../domain/enums/data-origin.enum';
+import { LanguageService } from '../../core/i18n/language.service';
 
 export interface YearlyHistoryTotal {
   readonly year: number;
@@ -26,6 +27,7 @@ const EMPTY_SUMMARY: HistorySummary = {
 @Injectable({ providedIn: 'root' })
 export class MetricsService {
   private readonly historyService = inject(HistoryService);
+  private readonly language = inject(LanguageService);
   private request?: Subscription;
 
   private readonly recordsState = signal<readonly HistoricalRecord[]>([]);
@@ -59,6 +61,20 @@ export class MetricsService {
       .map(([year, total]) => ({ year, total }))
       .sort((a, b) => a.year - b.year);
   });
+
+  constructor() {
+    effect(() => {
+      this.language.language();
+      if (!this.request) return;
+      untracked(() => this.applyFilters({
+        areaId: this.selectedAreaId(),
+        source: this.selectedSource(),
+        measure: this.selectedMeasure(),
+        fromYear: this.selectedFromYear(),
+        toYear: this.selectedToYear(),
+      }));
+    });
+  }
 
   applyFilters(filters: {
     areaId: string;

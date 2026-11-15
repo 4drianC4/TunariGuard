@@ -1,8 +1,8 @@
 <section class="alerts-page">
-  <app-page-header section="Alertas" title="Alertas y seguimiento"
-    description="Revisa las alertas térmicas de cada área vigilada y registra su seguimiento." />
+  <app-page-header [section]="t('Alertas')" [title]="t('Alertas y seguimiento')"
+    [description]="t('Revisa las alertas térmicas de cada área vigilada y registra su seguimiento.')" />
   @if (data(); as info) {
-    <section class="tg-kpis tg-kpis--fit" aria-label="Indicadores de alertas">
+    <section class="tg-kpis tg-kpis--fit" [attr.aria-label]="t('Indicadores de alertas')">
       @for (item of [
         { label: 'Críticas', count: info.counts.critical, icon: 'warning', tone: 'pink' },
         { label: 'Altas', count: info.counts.high, icon: 'warning', tone: 'pink' },
@@ -12,16 +12,16 @@
         <article class="tg-kpi">
           <span class="tg-kpi-symbol" [class]="item.tone"><svg aria-hidden="true"><use [attr.href]="'/assets/tunari-ui/iconos.svg#' + item.icon"></use></svg></span>
           <div class="tg-kpi-copy">
-            <span class="tg-kpi-title">{{ item.label }}</span>
-            <div class="tg-kpi-number">{{ item.count | number }}</div>
+            <span class="tg-kpi-title">{{ t(item.label) }}</span>
+            <div class="tg-kpi-number">{{ item.count | number:undefined:locale() }}</div>
             @if (info.total > 0) {
               @let share = item.count / info.total;
-              <small class="tg-kpi-note">{{ share | percent:'1.0-1' }} de {{ info.total | number }} alertas filtradas</small>
+              <small class="tg-kpi-note">{{ share | percent:'1.0-1':locale() }} {{ t('de') }} {{ info.total | number:undefined:locale() }} {{ t('alertas filtradas') }}</small>
               <div class="alert-share-track" aria-hidden="true">
                 <span class="alert-share-fill" [style.width.%]="share * 100"></span>
               </div>
             } @else {
-              <small class="tg-kpi-note">Sin alertas con estos filtros</small>
+              <small class="tg-kpi-note">{{ t('Sin alertas con estos filtros') }}</small>
             }
           </div>
         </article>
@@ -32,76 +32,76 @@
     <button type="button" class="tg-filter-toggle" (click)="mobileFiltersOpen.set(!mobileFiltersOpen())"
       [attr.aria-expanded]="mobileFiltersOpen()" aria-controls="alert-filters">
       <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10m-7 5h4" /></svg>
-      {{ mobileFiltersOpen() ? 'Ocultar filtros' : 'Mostrar filtros' }}
+      {{ mobileFiltersOpen() ? t('Ocultar filtros') :  t('Mostrar filtros') }}
     </button>
     <form id="alert-filters" class="tg-card tg-filter-panel" [class.tg-filter-panel--open]="mobileFiltersOpen()"
-      aria-label="Filtros de alertas" (ngSubmit)="applyFilters()">
+      [attr.aria-label]="t('Filtros de alertas')" (ngSubmit)="applyFilters()">
       <div class="tg-filter-fields">
-        <label class="tg-filter-field">Desde<input class="tg-filter-control" type="date" name="from" tgDetectionDate="day" [(ngModel)]="draft.desde" /></label>
-        <label class="tg-filter-field">Hasta<input class="tg-filter-control" type="date" name="to" tgDetectionDate="day" [(ngModel)]="draft.hasta" /></label>
-        <label class="tg-filter-field">Área vigilada<select class="tg-filter-control" name="area" [(ngModel)]="draft.area_id">
-          <option value="">Todas las áreas</option>
-          @for (area of areas(); track area.areaId) { <option [value]="area.areaId">{{ area.areaName }}</option> }
+        <label class="tg-filter-field">{{ t('Desde') }}<input class="tg-filter-control" type="date" name="from" tgDetectionDate="day" [(ngModel)]="draft.desde" /></label>
+        <label class="tg-filter-field">{{ t('Hasta') }}<input class="tg-filter-control" type="date" name="to" tgDetectionDate="day" [(ngModel)]="draft.hasta" /></label>
+        <label class="tg-filter-field">{{ t('Área vigilada') }}<select class="tg-filter-control" name="area" [(ngModel)]="draft.area_id">
+          <option value="">{{ t('Todas las áreas') }}</option>
+          @for (area of areas(); track area.areaId) { <option [value]="area.areaId">{{ i18n.area(area.areaName) }}</option> }
         </select></label>
-        <label class="tg-filter-field">Severidad<select class="tg-filter-control" name="severity" [(ngModel)]="draft.severidad">
-          <option value="">Todas</option>
-          @for (item of severityOptions; track item) { <option [value]="item">{{ item }}</option> }
+        <label class="tg-filter-field">{{ t('Severidad') }}<select class="tg-filter-control" name="severity" [(ngModel)]="draft.severidad">
+          <option value="">{{ t('Todas') }}</option>
+          @for (item of severityOptions; track item) { <option [value]="item">{{ t(item) }}</option> }
         </select></label>
-        <label class="tg-filter-field">Estado<select class="tg-filter-control" name="status" [(ngModel)]="draft.estado">
-          <option value="">Todos</option>
-          @for (item of statuses; track item) { <option [value]="item">{{ item }}</option> }
+        <label class="tg-filter-field">{{ t('Estado') }}<select class="tg-filter-control" name="status" [(ngModel)]="draft.estado">
+          <option value="">{{ t('Todos') }}</option>
+          @for (item of statuses; track item) { <option [value]="item">{{ t(item) }}</option> }
         </select></label>
-        <label class="tg-filter-field">Fuente<select class="tg-filter-control" name="source" [(ngModel)]="draft.fuente">
-          <option value="real">Operativas reales</option>
-          <option value="simulated">Importaciones simuladas</option><option value="">Todas</option>
+        <label class="tg-filter-field">{{ t('Fuente') }}<select class="tg-filter-control" name="source" [(ngModel)]="draft.fuente">
+          <option value="real">{{ t('Operativas reales') }}</option>
+          <option value="simulated">{{ t('Importaciones simuladas') }}</option><option value="">{{ t('Todas') }}</option>
         </select></label>
       </div>
       <div class="tg-filter-actions">
-        <button type="button" class="tg-filter-button" (click)="clearFilters()">Restablecer</button>
-        <button type="submit" class="tg-filter-button tg-filter-button--primary">Aplicar filtros</button>
+        <button type="button" class="tg-filter-button" (click)="clearFilters()">{{ t('Restablecer') }}</button>
+        <button type="submit" class="tg-filter-button tg-filter-button--primary">{{ t('Aplicar filtros') }}</button>
       </div>
-      @if (filterError()) { <p class="tg-filter-error" role="alert">{{ filterError() }}</p> }
+      @if (filterError()) { <p class="tg-filter-error" role="alert">{{ t(filterError()) }}</p> }
     </form>
   </div>
 
-  @if (result.isLoading()) { <p class="notice" role="status">Consultando alertas…</p> }
+  @if (result.isLoading()) { <p class="notice" role="status">{{ t('Consultando alertas…') }}</p> }
   @if (result.error(); as error) {
-    <p class="notice" role="alert">{{ errorMessage(error) }} <button type="button" class="button" (click)="result.reload()">Reintentar</button></p>
+    <p class="notice" role="alert">{{ errorMessage(error) }} <button type="button" class="button" (click)="result.reload()">{{ t('Reintentar') }}</button></p>
   }
   <div class="workspace">
     <section class="tg-card" id="tg-alert-map">
-      <h2><svg class="section-icon" aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#map"></use></svg> Mapa de anomalías térmicas <app-map-info topic="el mapa de alertas" text="Cada punto ubica una alerta de la página actual. Una alerta puede agrupar varias detecciones de una misma pasada satelital en un área vigilada." /></h2>
+      <h2><svg class="section-icon" aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#map"></use></svg> {{ t('Mapa de anomalías térmicas') }} <app-map-info [topic]="t('el mapa de alertas')" [text]="t('Cada punto ubica una alerta de la página actual. Una alerta puede agrupar varias detecciones de una misma pasada satelital en un área vigilada.')" /></h2>
       <app-alert-map [alerts]="data()?.items ?? []" [selected]="selectedId()" [focusRequest]="focusRequest()" (alertSelect)="select($event)" />
-      @if (data()?.total === 0) { <p class="notice">No hay ubicaciones de alertas para mostrar con estos filtros.</p> }
-      <div class="legend" aria-label="Severidad de alertas">
-        @for (item of severityOptions; track item) { <span><i [style.background]="colors[severityLevel[item]]"></i>{{ item }}</span> }
+      @if (data()?.total === 0) { <p class="notice">{{ t('No hay ubicaciones de alertas para mostrar con estos filtros.') }}</p> }
+      <div class="legend" [attr.aria-label]="t('Severidad de alertas')">
+        @for (item of severityOptions; track item) { <span><i [style.background]="colors[severityLevel[item]]"></i>{{ t(item) }}</span> }
       </div>
     </section>
     <section class="tg-card">
-      <h2><svg class="section-icon" aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#bell"></use></svg> Alertas priorizadas @if (data(); as info) { <span>({{ info.total | number }})</span> }</h2>
+      <h2><svg class="section-icon" aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#bell"></use></svg> {{ t('Alertas priorizadas') }} @if (data(); as info) { <span>({{ info.total | number:undefined:locale() }})</span> }</h2>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Alerta</th><th>Área</th><th>Severidad</th><th>Detección</th><th>Estado</th></tr></thead>
+          <thead><tr><th>{{ t('Alerta') }}</th><th>{{ t('Área') }}</th><th>{{ t('Severidad') }}</th><th>{{ t('Detección') }}</th><th>{{ t('Estado') }}</th></tr></thead>
           <tbody>
             @for (alert of data()?.items ?? []; track alert.uuid) {
               <tr [class.selected-row]="selectedId() === alert.uuid" (click)="select(alert)">
                 <td><button type="button" class="alert-link" (click)="$event.stopPropagation(); select(alert)" [attr.aria-pressed]="selectedId() === alert.uuid">{{ alert.id }}</button>
-                  @if (alert.simulated) { <small class="demo-label">Simulada</small> }</td>
-                <td>{{ alert.district }}</td>
-                <td><span class="level-pill" [style.--level-color]="colors[severityLevel[alert.severity]]">{{ alert.severity }}</span></td>
-                <td>{{ alert.detectedAtUtc | date:'dd/MM/yyyy HH:mm':'-0400' }}</td>
-                <td><span class="level-pill" [style.--level-color]="colors[statusColors[alert.status]]">{{ alert.status }}</span></td>
+                  @if (alert.simulated) { <small class="demo-label">{{ t('Simulada') }}</small> }</td>
+                <td>{{ alert.districtByLanguage?.[i18n.language()] ?? alert.district }}</td>
+                <td><span class="level-pill" [style.--level-color]="colors[severityLevel[alert.severity]]">{{ t(alert.severity) }}</span></td>
+                <td>{{ alert.detectedAtUtc | date:dateFormat():'-0400':locale() }}</td>
+                <td><span class="level-pill" [style.--level-color]="colors[statusColors[alert.status]]">{{ t(alert.status) }}</span></td>
               </tr>
             } @empty {
-              <tr><td colspan="5" class="empty">{{ result.isLoading() || result.error() ? 'Consulta no disponible todavía.' : 'No hay alertas con estos filtros.' }}</td></tr>
+              <tr><td colspan="5" class="empty">{{ result.isLoading() || result.error() ? t('Consulta no disponible todavía.') :  t('No hay alertas con estos filtros.') }}</td></tr>
             }
           </tbody>
         </table>
       </div>
       @if (data(); as info) {
-        <div class="pagination"><span>Página {{ info.page }} de {{ info.pages }} · Hora de Bolivia</span>
-          <div><button type="button" aria-label="Página anterior" [disabled]="page() <= 1" (click)="setPage(page() - 1)">‹</button>
-          <button type="button" aria-label="Página siguiente" [disabled]="page() >= info.pages" (click)="setPage(page() + 1)">›</button></div>
+        <div class="pagination"><span>{{ t('Página') }} {{ info.page }} {{ t('de') }} {{ info.pages }} {{ t('· Hora de Bolivia') }}</span>
+          <div><button type="button" [attr.aria-label]="t('Página anterior')" [disabled]="page() <= 1" (click)="setPage(page() - 1)">‹</button>
+          <button type="button" [attr.aria-label]="t('Página siguiente')" [disabled]="page() >= info.pages" (click)="setPage(page() + 1)">›</button></div>
         </div>
       }
     </section>
@@ -111,57 +111,57 @@
         <header class="alert-detail-header">
           <div>
             <span class="alert-reference">{{ alert.id }}</span>
-            <h2 id="alert-detail-title">{{ alert.district }}</h2>
+            <h2 id="alert-detail-title">{{ alert.districtByLanguage?.[i18n.language()] ?? alert.district }}</h2>
             <div class="alert-detail-labels">
-              <span>Severidad <span class="level-pill" [style.--level-color]="colors[severityLevel[alert.severity]]">{{ alert.severity }}</span></span>
-              <span>Estado actual <span class="level-pill" [style.--level-color]="colors[statusColors[alert.status]]">{{ alert.status }}</span></span>
-              @if (alert.simulated) { <span class="demo-label">Importación simulada</span> }
+              <span>{{ t('Severidad') }} <span class="level-pill" [style.--level-color]="colors[severityLevel[alert.severity]]">{{ alert.severity }}</span></span>
+              <span>{{ t('Estado actual') }} <span class="level-pill" [style.--level-color]="colors[statusColors[alert.status]]">{{ alert.status }}</span></span>
+              @if (alert.simulated) { <span class="demo-label">{{ t('Importación simulada') }}</span> }
             </div>
           </div>
           <div class="alert-detail-actions">
-            <button type="button" class="button" (click)="showOnMap()">Ver en mapa</button>
-            <button type="button" class="button" (click)="selectedId.set('')">Cerrar detalle</button>
+            <button type="button" class="button" (click)="showOnMap()">{{ t('Ver en mapa') }}</button>
+            <button type="button" class="button" (click)="selectedId.set('')">{{ t('Cerrar detalle') }}</button>
           </div>
         </header>
 
         @if (detail.error()) {
-          <p class="notice" role="status">No se pudo actualizar el detalle. <button type="button" class="button" (click)="detail.reload()">Reintentar</button></p>
+          <p class="notice" role="status">{{ t('No se pudo actualizar el detalle.') }} <button type="button" class="button" (click)="detail.reload()">{{ t('Reintentar') }}</button></p>
         }
 
         <div class="alert-detail-grid">
           <section class="alert-detection" aria-labelledby="alert-detection-title">
-            <h3 id="alert-detection-title">Datos de la detección</h3>
-            <p class="alert-message">{{ alert.message }}</p>
+            <h3 id="alert-detection-title">{{ t('Datos de la detección') }}</h3>
+            <p class="alert-message">{{ alert.messageByLanguage?.[i18n.language()] ?? alert.message }}</p>
             <dl class="facts">
-              <div><dt>Fecha y hora de Bolivia</dt><dd>{{ alert.detectedAtUtc | date:'dd/MM/yyyy HH:mm':'-0400' }}</dd></div>
-              <div><dt>Sensor y satélite</dt><dd>{{ alert.source }} · {{ alert.satellite }}</dd></div>
-              <div><dt>Coordenadas</dt><dd>{{ alert.lat | number:'1.4-4' }}, {{ alert.lng | number:'1.4-4' }}</dd></div>
-              <div><dt>Detecciones agrupadas</dt><dd>{{ alert.detectionCount | number }}</dd></div>
-              <div><dt>Confianza</dt><dd>{{ alert.confidence == null ? (alert.confidenceLevel ?? 'Sin dato') : alert.confidence + ' %' }}</dd></div>
-              <div><dt>Potencia máxima (FRP)</dt><dd>{{ alert.maxFrpMw == null ? 'Sin dato' : (alert.maxFrpMw | number:'1.0-2') + ' MW' }}</dd></div>
-              <div><dt>Ubicación en el parque</dt><dd>{{ alert.inPark ? 'Dentro del Parque Nacional Tunari' : 'Fuera del parque' }}</dd></div>
+              <div><dt>{{ t('Fecha y hora de Bolivia') }}</dt><dd>{{ alert.detectedAtUtc | date:dateFormat():'-0400':locale() }}</dd></div>
+              <div><dt>{{ t('Sensor y satélite') }}</dt><dd>{{ alert.source }} · {{ alert.satellite }}</dd></div>
+              <div><dt>{{ t('Coordenadas') }}</dt><dd>{{ alert.lat | number:'1.4-4':locale() }}, {{ alert.lng | number:'1.4-4':locale() }}</dd></div>
+              <div><dt>{{ t('Detecciones agrupadas') }}</dt><dd>{{ alert.detectionCount | number:undefined:locale() }}</dd></div>
+              <div><dt>{{ t('Confianza') }}</dt><dd>{{ alert.confidence == null ? (alert.confidenceLevel ?? t('Sin dato')) : alert.confidence + ' %' }}</dd></div>
+              <div><dt>{{ t('Potencia máxima (FRP)') }}</dt><dd>{{ alert.maxFrpMw == null ? t('Sin dato') : (alert.maxFrpMw | number:'1.0-2':locale()) + ' MW' }}</dd></div>
+              <div><dt>{{ t('Ubicación en el parque') }}</dt><dd>{{ alert.inPark ? 'Dentro del Parque Nacional Tunari' : 'Fuera del parque' }}</dd></div>
             </dl>
           </section>
 
           <form class="alert-followup" aria-labelledby="alert-followup-title" [attr.aria-busy]="saving()" (ngSubmit)="save(alert)">
             <header>
-              <h3 id="alert-followup-title">Seguimiento</h3>
+              <h3 id="alert-followup-title">{{ t('Seguimiento') }}</h3>
               @if (alert.statusChangedAtUtc) {
-                <p class="followup-meta">Última actualización: {{ alert.statusChangedAtUtc | date:'dd/MM/yyyy HH:mm':'-0400' }} (Bolivia)</p>
+                <p class="followup-meta">{{ t('Última actualización:') }} {{ alert.statusChangedAtUtc | date:dateFormat():'-0400':locale() }} (Bolivia)</p>
               }
             </header>
-            <label class="tg-filter-field">Estado del seguimiento
+            <label class="tg-filter-field">{{ t('Estado del seguimiento') }}
               <select class="tg-filter-control" name="editStatus" [(ngModel)]="editStatus" [disabled]="saving()">
-                @for (item of statuses; track item) { <option [value]="item">{{ item }}</option> }
+                @for (item of statuses; track item) { <option [value]="item">{{ t(item) }}</option> }
               </select>
             </label>
             <label class="tg-filter-field">
-              <span>Nota de seguimiento <small class="followup-meta">(opcional)</small></span>
+              <span>{{ t('Nota de seguimiento') }} <small class="followup-meta">{{ t('(opcional)') }}</small></span>
               <textarea class="tg-filter-control" name="note" [(ngModel)]="editNote" maxlength="1000" rows="3" [disabled]="saving()"
                 placeholder="Anota lo observado o la próxima acción."></textarea>
             </label>
-            @if (saved()) { <p class="followup-feedback" role="status">Seguimiento guardado.</p> }
-            @if (saveError()) { <p class="followup-feedback followup-feedback--error" role="alert">{{ saveError() }}</p> }
+            @if (saved()) { <p class="followup-feedback" role="status">{{ t('Seguimiento guardado.') }}</p> }
+            @if (saveError()) { <p class="followup-feedback followup-feedback--error" role="alert">{{ t(saveError()) }}</p> }
             <div class="tg-filter-actions">
               <button type="submit" class="tg-filter-button tg-filter-button--primary"
                 [disabled]="saving() || (editStatus === alert.status && editNote.trim() === (alert.note ?? ''))">

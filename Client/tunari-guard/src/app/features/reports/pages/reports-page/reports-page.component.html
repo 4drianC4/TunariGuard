@@ -1,49 +1,49 @@
-<section class="tr-page" aria-label="Reportes y exportación">
-  <app-page-header section="Reportes" title="Reportes"
-    description="Consulta y exporta detecciones, actividad histórica y anomalías térmicas." />
+<section class="tr-page" [attr.aria-label]="t('Reportes y exportación')">
+  <app-page-header [section]="t('Reportes')" [title]="t('Reportes')"
+    [description]="t('Consulta y exporta detecciones, actividad histórica y anomalías térmicas.')" />
 
   @if (areas().length) {
     <div class="tg-filter-group">
       <button type="button" class="tg-filter-toggle" (click)="filtersExpanded = !filtersExpanded"
         [attr.aria-expanded]="filtersExpanded" aria-controls="report-filters">
         <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10m-7 5h4" /></svg>
-        {{ filtersExpanded ? 'Ocultar filtros' : 'Mostrar filtros' }}
+        {{ filtersExpanded ? t('Ocultar filtros') :  t('Mostrar filtros') }}
       </button>
       <form id="report-filters" class="tg-card tg-filter-panel" [class.tg-filter-panel--open]="filtersExpanded"
-        aria-label="Filtros del reporte" (ngSubmit)="apply()">
+        [attr.aria-label]="t('Filtros del reporte')" (ngSubmit)="apply()">
         <div class="tg-filter-fields">
           <label class="tg-filter-field">
-            <span>Tipo de reporte</span>
+            <span>{{ t('Tipo de reporte') }}</span>
             <select class="tg-filter-control" name="kind" [ngModel]="filters.kind" (ngModelChange)="changeKind($event)">
               @for (kind of kinds; track kind) {
-                <option [value]="kind">{{ reportTypes[kind] }}</option>
+                <option [value]="kind">{{ t(reportTypes[kind]) }}</option>
               }
             </select>
           </label>
           @if (filters.kind !== 'districts') {
             <label class="tg-filter-field">
-              <span>Área</span>
+              <span>{{ t('Área') }}</span>
               <select class="tg-filter-control" name="area" [(ngModel)]="filters.area">
                 @for (area of areas(); track area.area_id) {
-                  <option [value]="area.area_id">{{ area.nombre_visible }}</option>
+                  <option [value]="area.area_id">{{ areaText(area.nombre_visible) }}</option>
                 }
               </select>
             </label>
           }
-          <label class="tg-filter-field"><span>Fecha inicial</span>
+          <label class="tg-filter-field"><span>{{ t('Fecha inicial') }}</span>
             <input class="tg-filter-control" [type]="monthly ? 'month' : 'date'" name="from" [tgDetectionDate]="monthly ? 'month' : 'day'" [(ngModel)]="filters.from" required />
           </label>
-          <label class="tg-filter-field"><span>Fecha final</span>
+          <label class="tg-filter-field"><span>{{ t('Fecha final') }}</span>
             <input class="tg-filter-control" [type]="monthly ? 'month' : 'date'" name="to" [tgDetectionDate]="monthly ? 'month' : 'day'" [(ngModel)]="filters.to" required />
           </label>
           @if (showSource(filters.kind)) {
             <label class="tg-filter-field">
-              <span>Fuente</span>
+              <span>{{ t('Fuente') }}</span>
               <select class="tg-filter-control" name="source" [(ngModel)]="filters.source">
                 @if (filters.kind === 'detections') {
-                  <option value="ALL">Todos los satélites</option>
+                  <option value="ALL">{{ t('Todos los satélites') }}</option>
                 } @else {
-                  <option value="HARMONIZED">Índice armonizado</option>
+                  <option value="HARMONIZED">{{ t('Índice armonizado') }}</option>
                 }
                 <option value="MODIS">MODIS</option>
                 <option value="VIIRS">VIIRS</option>
@@ -52,100 +52,100 @@
           }
           @if (filters.kind === 'detections') {
             <label class="tg-filter-field">
-              <span>Confianza mínima</span>
+              <span>{{ t('Confianza mínima') }}</span>
               <select class="tg-filter-control" name="confidence" [(ngModel)]="filters.confidence">
-                <option value="">Todas</option>
+                <option value="">{{ t('Todas') }}</option>
                 <option value="nominal">Nominal</option>
-                <option value="alta">Alta</option>
+                <option value="alta">{{ t('Alta') }}</option>
               </select>
             </label>
           }
           @if (filters.kind === 'alerts') {
             <label class="tg-filter-field">
-              <span>Nivel de alerta</span>
+              <span>{{ t('Nivel de alerta') }}</span>
               <select class="tg-filter-control" name="alertLevel" [(ngModel)]="filters.alertLevel">
-                <option value="">Todas las destacadas</option>
-                <option value="elevada">Elevada</option>
-                <option value="alta">Alta</option>
-                <option value="muy_alta">Muy alta</option>
+                <option value="">{{ t('Todas las destacadas') }}</option>
+                <option value="elevada">{{ t('Elevada') }}</option>
+                <option value="alta">{{ t('Alta') }}</option>
+                <option value="muy_alta">{{ t('Muy alta') }}</option>
               </select>
             </label>
           }
         </div>
         <div class="tg-filter-actions">
-          <button class="tg-filter-button" type="button" (click)="reset()">Restablecer</button>
-          <button class="tg-filter-button tg-filter-button--primary" type="submit" [disabled]="loading()">Actualizar</button>
+          <button class="tg-filter-button" type="button" (click)="reset()">{{ t('Restablecer') }}</button>
+          <button class="tg-filter-button tg-filter-button--primary" type="submit" [disabled]="loading()">{{ t('Actualizar') }}</button>
         </div>
       </form>
     </div>
   }
 
-  <nav class="report-tabs" aria-label="Tipos de reporte">
+  <nav class="report-tabs" [attr.aria-label]="t('Tipos de reporte')">
     @for (kind of kinds; track kind) {
       <button type="button" (click)="changeKind(kind)" [disabled]="!areas().length"
         [attr.aria-pressed]="filters.kind === kind">
         <svg class="report-icon" aria-hidden="true"><use [attr.href]="'/assets/tunari-ui/iconos.svg#' + icons[kind]"></use></svg>
-        {{ reportTypes[kind] }}
+        {{ t(reportTypes[kind]) }}
       </button>
     }
   </nav>
 
   @if (loading()) {
-    <p class="tr-notice" role="status">Consultando el reporte…</p>
+    <p class="tr-notice" role="status">{{ t('Consultando el reporte…') }}</p>
   }
   @if (error(); as message) {
-    <p class="tr-notice tr-error" role="alert">No se pudo cargar el reporte. {{ message }}</p>
+    <p class="tr-notice tr-error" role="alert">{{ t('No se pudo cargar el reporte.') }} {{ t(message) }}</p>
     @if (!areas().length) {
-      <button class="tr-primary" type="button" (click)="initialize()">Reintentar</button>
+      <button class="tr-primary" type="button" (click)="initialize()">{{ t('Reintentar') }}</button>
     }
   }
 
   @if (view(); as report) {
-    <section class="tg-kpis tg-kpis--fit" aria-label="Indicadores del reporte">
+    <section class="tg-kpis tg-kpis--fit" [attr.aria-label]="t('Indicadores del reporte')">
       <article class="tg-kpi">
         <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#fire"></use></svg></span>
         <div class="tg-kpi-copy">
-          <span class="tg-kpi-title">{{ report.data.headline.label }}</span>
-          <div class="tg-kpi-number">{{ report.data.headline.value === null ? '—' : (report.data.headline.value | number:'1.0-2') }}</div>
-          <small class="tg-kpi-note">{{ report.data.headline.unit }}</small>
+          <span class="tg-kpi-title">{{ t(report.data.headline.label) }}</span>
+          <div class="tg-kpi-number">{{ report.data.headline.value === null ? '—' : (report.data.headline.value | number:'1.0-2':locale()) }}</div>
+          <small class="tg-kpi-note">{{ t(report.data.headline.unit) }}</small>
         </div>
       </article>
       <article class="tg-kpi">
         <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#districts"></use></svg></span>
         <div class="tg-kpi-copy">
-          <span class="tg-kpi-title">Área del reporte</span>
-          <div class="tg-kpi-number tg-kpi-number--text">{{ report.area }}</div>
+          <span class="tg-kpi-title">{{ t('Área del reporte') }}</span>
+          <div class="tg-kpi-number tg-kpi-number--text">{{ areaText(report.area) }}</div>
           <small class="tg-kpi-note">{{ report.filters.from }} a {{ report.filters.to }}</small>
-          @if (showSource(report.filters.kind)) { <small class="tg-kpi-note">{{ sourceLabels[report.filters.source] }}</small> }
-          @if (report.filters.confidence) { <small class="tg-kpi-note">Confianza mínima {{ report.filters.confidence }}</small> }
-          @if (report.filters.alertLevel) { <small class="tg-kpi-note">Nivel {{ report.filters.alertLevel.replaceAll('_', ' ') }}</small> }
+          @if (showSource(report.filters.kind)) { <small class="tg-kpi-note">{{ t(sourceLabels[report.filters.source]) }}</small> }
+          @if (report.filters.confidence) { <small class="tg-kpi-note">{{ t('Confianza mínima') }} {{ report.filters.confidence }}</small> }
+          @if (report.filters.alertLevel) { <small class="tg-kpi-note">{{ t('Nivel') }} {{ report.filters.alertLevel.replaceAll('_', ' ') }}</small> }
         </div>
       </article>
       <article class="tg-kpi">
         <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#reports"></use></svg></span>
         <div class="tg-kpi-copy">
-          <span class="tg-kpi-title">Filas del reporte</span>
-          <div class="tg-kpi-number">{{ report.data.rows.length | number }}</div>
+          <span class="tg-kpi-title">{{ t('Filas del reporte') }}</span>
+          <div class="tg-kpi-number">{{ report.data.rows.length | number:undefined:locale() }}</div>
         </div>
       </article>
     </section>
 
     <div class="report-overview">
       <article class="tg-card report-chart" [class.report-chart-alerts]="report.filters.kind === 'alerts'">
-        <h2>{{ report.filters.kind === 'districts' ? 'Actividad por distrito' :
+        <h2>{{ t(report.filters.kind === 'districts' ? 'Actividad por distrito' :
           report.filters.kind === 'detections' ? 'Detecciones por mes' :
-          report.filters.kind === 'alerts' ? 'Actividad observada y esperada' : 'Actividad mensual' }}</h2>
+          report.filters.kind === 'alerts' ? 'Actividad observada y esperada' : 'Actividad mensual') }}</h2>
         @if (chart(); as graph) {
           @if (report.filters.kind === 'comparison' || report.filters.kind === 'alerts') {
             <ul class="chart-key chart-legend">
-              <li>{{ report.filters.kind === 'comparison' ? 'MODIS' : 'Observada' }}</li>
-              <li>{{ report.filters.kind === 'comparison' ? 'VIIRS' : 'Esperada' }}</li>
+              <li>{{ report.filters.kind === 'comparison' ? 'MODIS' : t('Observada') }}</li>
+              <li>{{ report.filters.kind === 'comparison' ? 'VIIRS' : t('Esperada') }}</li>
             </ul>
           }
-          <div class="chart-scroll" tabindex="0" aria-label="Gráfico del reporte">
+          <div class="chart-scroll" tabindex="0" [attr.aria-label]="t('Gráfico del reporte')">
             <div class="chart-frame">
               <div class="chart-axis" aria-hidden="true">
-                @for (tick of graph.ticks; track tick) { <span>{{ tick | number:'1.0-2' }}</span> }
+                @for (tick of graph.ticks; track tick) { <span>{{ tick | number:'1.0-2':locale() }}</span> }
               </div>
               <div class="chart-plot" [style.--groups]="graph.entries.length">
                 @for (entry of graph.entries; track entry.label) {
@@ -155,90 +155,90 @@
                         <span class="chart-bar" [class.secondary]="seriesIndex > 0" [class.missing]="value === null"
                           [class.latest]="report.filters.kind === 'detections' && entry === graph.entries[graph.entries.length - 1]"
                           [style.height.%]="(value ?? 0) * 100 / graph.max"
-                          [title]="entry.label + ' · ' + (value ?? 'Sin dato')"></span>
+                          [title]="entry.label + ' · ' + (value ?? t('Sin dato'))"></span>
                       }
                     </div>
-                    <span class="chart-label" [title]="entry.label">{{ entry.label }}</span>
+                    <span class="chart-label" [title]="entry.label">{{ t(entry.label) }}</span>
                   </div>
                 }
               </div>
             </div>
           </div>
-          @if (graph.shortened) { <p class="chart-key">Últimos 12 meses disponibles. La tabla incluye todo el período consultado.</p> }
-        } @else { <p class="tr-empty">Sin datos para graficar.</p> }
+          @if (graph.shortened) { <p class="chart-key">{{ t('Últimos 12 meses disponibles. La tabla incluye todo el período consultado.') }}</p> }
+        } @else { <p class="tr-empty">{{ t('Sin datos para graficar.') }}</p> }
       </article>
       <article class="tg-card report-info">
-        <h2>Información del reporte</h2>
+        <h2>{{ t('Información del reporte') }}</h2>
         <dl>
-          <div><dt>Área</dt><dd>{{ report.area }}</dd></div>
-          <div><dt>Método <app-map-info topic="el método del reporte"
-            text="Los conteos suman registros. Las celdas-día cuentan zonas con detecciones por día. El índice armonizado expresa la actividad en una escala común." /></dt><dd>{{ report.method }}</dd></div>
-          <div><dt>Unidad</dt><dd>{{ report.data.headline.unit }}</dd></div>
+          <div><dt>{{ t('Área') }}</dt><dd>{{ areaText(report.area) }}</dd></div>
+          <div><dt>{{ t('Método') }} <app-map-info [topic]="t('el método del reporte')"
+            [text]="t('Los conteos suman registros. Las celdas-día cuentan zonas con detecciones por día. El índice armonizado expresa la actividad en una escala común.')" /></dt><dd>{{ t(report.method) }}</dd></div>
+          <div><dt>{{ t('Unidad') }}</dt><dd>{{ t(report.data.headline.unit) }}</dd></div>
         </dl>
-        <p class="report-reading">Una detección térmica indica presencia de calor. Los registros NRT son provisionales.</p>
+        <p class="report-reading">{{ t('Una detección térmica indica presencia de calor. Los registros NRT son provisionales.') }}</p>
       </article>
       <article class="tg-card report-download">
-        <h2>Descargar reporte</h2>
+        <h2>{{ t('Descargar reporte') }}</h2>
         @for (option of formats; track option) {
           <button class="tr-file" type="button" (click)="generate(option)" [disabled]="!report.data.rows.length || exporting() !== null">
-            <span class="tr-file-icon">{{ option }}</span><span class="tr-file-meta">{{ exporting() === option ? 'Preparando descarga…' : exportLabels[option] }}</span>
+            <span class="tr-file-icon">{{ option }}</span><span class="tr-file-meta">{{ t(exporting() === option ? 'Preparando descarga…' : exportLabels[option]) }}</span>
             <span class="tr-download" aria-hidden="true">↓</span>
           </button>
         }
         @if (exportError(); as message) {
-          <p class="tr-notice tr-error" role="alert">{{ message }}</p>
+          <p class="tr-notice tr-error" role="alert">{{ t(message) }}</p>
         }
       </article>
     </div>
         <article class="tg-card tr-summary">
-          <h2>Detalle · {{ reportTypes[report.filters.kind] }} <small>{{ pageSize }} por página</small></h2>
+          <h2>{{ t('Detalle ·') }} {{ t(reportTypes[report.filters.kind]) }} <small>{{ pageSize }} {{ t('por página') }}</small></h2>
           @if (report.data.rows.length) {
-            <div class="tr-table-wrap" tabindex="0" aria-label="Tabla del reporte">
+            <div class="tr-table-wrap" tabindex="0" [attr.aria-label]="t('Tabla del reporte')">
               <table>
                 <thead><tr>
-                  @for (column of report.data.columns; track column) { <th scope="col">{{ column }}</th> }
+                  @for (column of report.data.columns; track column) { <th scope="col">{{ t(column) }}</th> }
                 </tr></thead>
                 <tbody>
                   @for (row of visibleRows(); track $index) {
                     <tr>
-                      @for (value of row; track $index) { <td>{{ value ?? 'Sin dato' }}</td> }
+                      @for (value of row; track $index) { <td>{{ value ?? t('Sin dato') }}</td> }
                     </tr>
                   }
                 </tbody>
               </table>
             </div>
-            <div class="report-page-count">Mostrando {{ page() * pageSize + 1 }}–{{ page() * pageSize + visibleRows().length }} de {{ report.data.rows.length | number }} filas</div>
+            <div class="report-page-count">{{ t('Mostrando') }} {{ page() * pageSize + 1 }}–{{ page() * pageSize + visibleRows().length }} {{ t('de') }} {{ report.data.rows.length | number:undefined:locale() }} {{ t('filas') }}</div>
             @if (pageCount() > 1) {
               <div class="tr-pagination">
-                <button class="tr-clear" type="button" (click)="page.set(page() - 1)" [disabled]="page() === 0">Anterior</button>
-                <span aria-live="polite">Página {{ page() + 1 }} de {{ pageCount() }}</span>
-                <button class="tr-clear" type="button" (click)="page.set(page() + 1)" [disabled]="page() + 1 >= pageCount()">Siguiente</button>
+                <button class="tr-clear" type="button" (click)="page.set(page() - 1)" [disabled]="page() === 0">{{ t('Anterior') }}</button>
+                <span aria-live="polite">{{ t('Página') }} {{ page() + 1 }} {{ t('de') }} {{ pageCount() }}</span>
+                <button class="tr-clear" type="button" (click)="page.set(page() + 1)" [disabled]="page() + 1 >= pageCount()">{{ t('Siguiente') }}</button>
               </div>
             }
           } @else {
             <p class="tr-empty" role="status">
-              Sin resultados para estos filtros.
+              {{ t('Sin resultados para estos filtros.') }}
             </p>
           }
         </article>
     <article class="tg-card report-notes">
-      <h2>Consideraciones importantes</h2>
-      <p>{{ report.data.notice }}</p>
+      <h2>{{ t('Consideraciones importantes') }}</h2>
+      <p>{{ t(report.data.notice) }}</p>
       @if (report.filters.kind !== 'detections') {
-        <p>Las celdas-día cuentan zonas con detecciones por día. Los valores sin dato indican falta de información comparable.</p>
+        <p>{{ t('Las celdas-día cuentan zonas con detecciones por día. Los valores sin dato indican falta de información comparable.') }}</p>
       }
     </article>
     @if (recent().length) {
         <article class="tg-card tr-recent">
-          <h2>Reportes de esta sesión</h2>
+          <h2>{{ t('Reportes de esta sesión') }}</h2>
           @for (record of recent(); track record) {
             <button type="button" class="tr-file" (click)="download(record)">
               <span class="tr-file-icon">{{ record.format }}</span>
-              <span class="tr-file-meta"><b>{{ record.title }}</b><small>{{ record.date }}</small></span>
+              <span class="tr-file-meta"><b>{{ t(record.title) }}</b><small>{{ record.date }}</small></span>
               <span class="tr-download" aria-hidden="true">↓</span>
             </button>
           } @empty {
-            <p class="tr-empty-recent">Todavía no generaste reportes.</p>
+            <p class="tr-empty-recent">{{ t('Todavía no generaste reportes.') }}</p>
           }
         </article>
     }

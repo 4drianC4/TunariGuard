@@ -1,3 +1,4 @@
+import type { AppLanguage } from '../../../shared/i18n/language.js';
 /**
  * Reglas de las alertas operativas. Funciones puras: sin NestJS ni base de datos.
  *
@@ -190,8 +191,16 @@ export function alertMessage(a: {
   confidenceLevel: ConfidenceLevelValue | null;
   maxFrpMw: number | null;
   simulated: boolean;
-}): string {
+}, language: AppLanguage = 'es'): string {
   const { date, time } = boliviaTime(a.detectedAt);
+  if (language === 'en') {
+    const count = a.detectionCount === 1 ? '1 heat detection' : `${a.detectionCount} heat detections`;
+    const park = a.inPark && a.areaType !== 'parque' ? ', within Tunari National Park' : '';
+    const level = a.confidenceLevel ? ` Confidence: ${a.confidenceLevel.toLowerCase()}.` : '';
+    const power = a.maxFrpMw === null ? '' : ` Maximum fire radiative power: ${a.maxFrpMw.toFixed(1)} MW.`;
+    return `${a.simulated ? '[Simulated data] ' : ''}${count} from ${a.sensor} (${platformName(a.platform)}) in ${a.areaName}${park}, ` +
+      `on ${date} at ${time} (Bolivia time).${level}${power} Verification is required: a satellite detection does not confirm a wildfire.`;
+  }
   const cuantas = a.detectionCount === 1 ? '1 detección' : `${a.detectionCount} detecciones`;
   const parque = a.inPark && a.areaType !== 'parque' ? ', dentro del Parque Nacional Tunari' : '';
   const partes = [

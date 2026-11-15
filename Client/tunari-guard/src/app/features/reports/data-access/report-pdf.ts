@@ -1,6 +1,8 @@
 import type { ReportData, ReportValue } from './reports-api.service';
+import { translate, type AppLanguage } from '../../../core/i18n/language.service';
 
 export interface ReportExportContext {
+  language: AppLanguage;
   title: string;
   date: string;
   fields: [label: string, value: string][];
@@ -23,7 +25,6 @@ const rowLimit = 20;
 const bodySize = 8;
 const lineHeight = 10;
 const cellPadding = 4;
-const numbers = new Intl.NumberFormat('es-BO', { maximumFractionDigits: 2 });
 
 const winAnsi = '€\u0000‚ƒ„…†‡ˆ‰Š‹Œ\u0000Ž\u0000\u0000‘’“”•–—˜™š›œ\u0000žŸ';
 function pdfText(text: string): string {
@@ -66,7 +67,6 @@ function color(hex: string): string {
 }
 
 const coord = (value: number): string => value.toFixed(2);
-const printable = (value: ReportValue): string => String(value ?? 'Sin dato');
 
 class ReportPage {
   readonly commands: string[] = [];
@@ -88,6 +88,9 @@ class ReportPage {
 }
 
 function composeReportPdf(data: ReportData, context: ReportExportContext, logo: PdfLogo, measure: Measure): Blob {
+  const t = (key: string, values?: Record<string, string | number>) => translate(context.language, key, values);
+  const numbers = new Intl.NumberFormat(context.language === 'es' ? 'es-BO' : 'en-US', { maximumFractionDigits: 2 });
+  const printable = (value: ReportValue): string => typeof value === 'number' ? numbers.format(value) : value ?? t('Sin dato');
   const [width, height] = data.columns.length > 4 ? [842, 595] : [595, 842];
   const contentWidth = width - margin * 2;
   const bodyEnd = height - 52;
@@ -119,15 +122,15 @@ function composeReportPdf(data: ReportData, context: ReportExportContext, logo: 
   page.rectangle(margin, y, contentWidth, 57, '#edf0e3');
   page.rectangle(margin, y, 4, 57, '#526b24');
   page.text(data.headline.label, margin + 14, y + 18, 9, olive, true);
-  const headline = data.headline.value === null ? 'Sin cobertura' : numbers.format(data.headline.value);
+  const headline = data.headline.value === null ? t('Sin cobertura') : numbers.format(data.headline.value);
   page.text(headline, margin + 14, y + 43, 19, ink, true);
   if (data.headline.value !== null) {
     page.text(data.headline.unit, margin + 22 + measure(headline, 19, true), y + 43, 9, olive);
   }
   const rowCount = numbers.format(data.rows.length);
-  const previewCount = data.rows.length > rowLimit ? `${rowLimit} de ${rowCount}` : rowCount;
+  const previewCount = data.rows.length > rowLimit ? t('{count} de {total}', { count: rowLimit, total: rowCount }) : rowCount;
   page.text(previewCount, width - margin - 14 - measure(previewCount, 19, true), y + 43, 19, ink, true);
-  const rowLabel = 'Filas incluidas';
+  const rowLabel = t('Filas incluidas');
   page.text(rowLabel, width - margin - 14 - measure(rowLabel, 9, true), y + 18, 9, olive, true);
   y += 71;
 
@@ -151,7 +154,7 @@ function composeReportPdf(data: ReportData, context: ReportExportContext, logo: 
     y += 3;
     if (y + 36 > bodyEnd) startPage();
     page.rectangle(margin, y, contentWidth, 1, line);
-    page.text('Notas de lectura', margin, y + 15, 10, ink, true);
+    page.text(t('Notas de lectura'), margin, y + 15, 10, ink, true);
     y += 19;
     for (const notice of notices) {
       paragraph(notice, margin, contentWidth, 8, muted);
@@ -160,7 +163,7 @@ function composeReportPdf(data: ReportData, context: ReportExportContext, logo: 
   }
 
   if (data.rows.length > rowLimit) {
-    paragraph('Se muestran las primeras 20 filas. El archivo CSV incluye el detalle completo.', margin, contentWidth, 8, muted);
+    paragraph(t('Se muestran las primeras 20 filas. El archivo CSV incluye el detalle completo.'), margin, contentWidth, 8, muted);
     y += 5;
   }
 
@@ -209,7 +212,7 @@ function composeReportPdf(data: ReportData, context: ReportExportContext, logo: 
   };
 
   const tableHeading = (continued = false): void => {
-    page.text(continued ? 'Detalle del reporte (continuación)' : 'Detalle del reporte', margin, y + 12, 12, ink, true);
+    page.text(t(continued ? 'Detalle del reporte (continuación)' : 'Detalle del reporte'), margin, y + 12, 12, ink, true);
     y += 21;
     band(headers, 0, headerLines, olive, '#ffffff');
   };
@@ -237,9 +240,9 @@ function composeReportPdf(data: ReportData, context: ReportExportContext, logo: 
   });
 
   pages.forEach((sheet, index) => {
-    const footer = 'Página ' + (index + 1) + ' de ' + pages.length;
+    const footer = t('Página {page} de {total}', { page: index + 1, total: pages.length });
     sheet.rectangle(margin, height - 42, contentWidth, 1, line);
-    sheet.text('Generado ' + context.date + ' (hora de Bolivia)', margin, height - 26, 8, muted);
+    sheet.text(t('Generado {date} (hora de Bolivia)', { date: context.date }), margin, height - 26, 8, muted);
     sheet.text(footer, width - margin - measure(footer, 8), height - 26, 8, muted);
   });
   return serialize(pages, logo);
@@ -283,13 +286,13 @@ function serialize(pages: ReportPage[], logo: PdfLogo): Blob {
 
 export async function createReportPdf(data: ReportData, context: ReportExportContext): Promise<Blob> {
   const image = new Image();
-  image.src = new URL('assets/logos/PNG/LOGOHORIZONTAL.png', document.baseURI).href;
+  image.src = new URL(context.language === 'en' ? 'assets/logos/PNG/LOGOHORIZONTALINGLES.png' : 'assets/logos/PNG/LOGOHORIZONTAL.png', document.baseURI).href;
   await image.decode();
   const canvas = document.createElement('canvas');
   canvas.width = 560;
   canvas.height = Math.round(canvas.width * image.naturalHeight / image.naturalWidth);
   const graphics = canvas.getContext('2d');
-  if (!graphics) throw new Error('El navegador no pudo preparar el PDF.');
+  if (!graphics) throw new Error(translate(context.language, 'El navegador no pudo preparar el PDF.'));
   graphics.fillStyle = '#ffffff';
   graphics.fillRect(0, 0, canvas.width, canvas.height);
   graphics.drawImage(image, 0, 0, canvas.width, canvas.height);

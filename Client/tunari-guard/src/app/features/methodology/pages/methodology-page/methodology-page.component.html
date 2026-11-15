@@ -1,19 +1,19 @@
 
-<section class="method-page" id="method-page-top" aria-label="Metodología TunariGuard">
+<section class="method-page" id="method-page-top" [attr.aria-label]="t('Metodología TunariGuard')">
 
   <app-page-header
-    section="Metodología"
-    title="Método y fuentes"
-    description="Cómo TunariGuard transforma observaciones MODIS y VIIRS en conteos comparables para el monitoreo forestal."
+    [section]="t('Metodología')"
+    [title]="t('Método y fuentes')"
+    [description]="t('Cómo TunariGuard transforma observaciones MODIS y VIIRS en conteos comparables para el monitoreo forestal.')"
   />
 
   <!-- NAVEGACIÓN MÓVIL -->
-  <nav class="method-mobile-accordions" aria-label="Secciones de metodología">
+  <nav class="method-mobile-accordions" [attr.aria-label]="t('Secciones de metodología')">
     <button type="button"
       [attr.aria-expanded]="sectionOpen('sources')"
       aria-controls="method-sources"
       (click)="toggleMobile('sources')">
-      <span>Fuentes de datos</span>
+      <span>{{ t('Fuentes de datos') }}</span>
       <span>{{ sectionOpen('sources') ? '−' : '+' }}</span>
     </button>
 
@@ -21,7 +21,7 @@
       [attr.aria-expanded]="sectionOpen('harmonization')"
       aria-controls="method-harmonization"
       (click)="toggleMobile('harmonization')">
-      <span>Armonización</span>
+      <span>{{ t('Armonización') }}</span>
       <span>{{ sectionOpen('harmonization') ? '−' : '+' }}</span>
     </button>
 
@@ -29,7 +29,7 @@
       [attr.aria-expanded]="sectionOpen('validation')"
       aria-controls="method-validation"
       (click)="toggleMobile('validation')">
-      <span>Validación</span>
+      <span>{{ t('Validación') }}</span>
       <span>{{ sectionOpen('validation') ? '−' : '+' }}</span>
     </button>
 
@@ -37,7 +37,7 @@
       [attr.aria-expanded]="sectionOpen('limits')"
       aria-controls="method-limits"
       (click)="toggleMobile('limits')">
-      <span>Supuestos y límites</span>
+      <span>{{ t('Supuestos y límites') }}</span>
       <span>{{ sectionOpen('limits') ? '−' : '+' }}</span>
     </button>
   </nav>
@@ -53,7 +53,7 @@
       <div class="method-card-heading">
         <h2>
           <span class="method-title-icon">✧</span>
-          Fuentes satelitales
+          {{ t('Fuentes satelitales') }}
         </h2>
         <span class="tg-method-label">NASA FIRMS</span>
       </div>
@@ -75,12 +75,12 @@
 
             <div class="method-specs">
               <div>
-                <strong>Resolución nominal</strong>
+                <strong>{{ t('Resolución nominal') }}</strong>
                 <small>{{ sensor.resolution }}</small>
               </div>
               <div>
-                <strong>Estado</strong>
-                <small>{{ sensor.status }}</small>
+                <strong>{{ t('Estado') }}</strong>
+                <small>{{ t(sensor.status) }}</small>
               </div>
             </div>
           </div>
@@ -88,9 +88,7 @@
       </div>
 
       <p class="method-footnote">
-        Según el registro del proyecto, la última detección de
-        Suomi-NPP fue el 01/11/2026. La disponibilidad varía
-        según el producto y la fecha.
+        {{ t('Según el registro del proyecto, la última detección de Suomi-NPP fue el 01/11/2026. La disponibilidad varía según el producto y la fecha.') }}
       </p>
     </article>
 
@@ -103,30 +101,27 @@
       <div class="method-card-heading">
         <h2>
           <span class="method-title-icon">⚖</span>
-          ¿Qué significa armonizar?
+          {{ t('¿Qué significa armonizar?') }}
         </h2>
       </div>
 
       <p class="method-description">
-        MODIS y VIIRS observan anomalías térmicas con diferentes
-        resoluciones. TunariGuard
-        <strong>no une detecciones una a una</strong>.
-        Agrupa las observaciones por
-        <strong>celda de 1 km y día</strong>
-        y convierte sus conteos a una escala comparable a MODIS.
+        {{ t('MODIS y VIIRS observan anomalías térmicas con diferentes resoluciones. TunariGuard') }}
+        <strong>{{ t('no une detecciones una a una') }}</strong>{{ t('. Agrupa las observaciones por') }}
+        <strong>{{ t('celda de 1 km y día') }}</strong>
+        {{ t('y convierte sus conteos a una escala comparable a MODIS.') }}
       </p>
 
       <div class="tg-method-formula">
-        <span>Normalización de conteos</span>
-        <strong>VIIRS ÷ 2,8715</strong>
-        <small>Índice MODIS-equivalente</small>
+        <span>{{ t('Normalización de conteos') }}</span>
+        <strong>{{ t('VIIRS ÷ 2,8715') }}</strong>
+        <small>{{ t('Índice MODIS-equivalente') }}</small>
       </div>
 
       <div class="method-outcome">
         <span class="method-check">✓</span>
         <span>
-          Cada observación conserva su satélite de origen
-          para garantizar la trazabilidad.
+          {{ t('Cada observación conserva su satélite de origen para garantizar la trazabilidad.') }}
         </span>
       </div>
     </article>
@@ -139,17 +134,17 @@
       <div class="method-card-heading">
         <h2>
           <span class="method-title-icon">▦</span>
-          Del satélite al análisis
+          {{ t('Del satélite al análisis') }}
         </h2>
-        <span class="tg-method-label">5 etapas</span>
+        <span class="tg-method-label">{{ t('5 etapas') }}</span>
       </div>
 
-      <div class="method-steps" aria-label="Etapas del procesamiento">
+      <div class="method-steps" [attr.aria-label]="t('Etapas del procesamiento')">
         @for (step of stages; track step.number) {
           <div [class]="'method-step method-step-' + step.className">
             <div class="method-step-mark">{{ step.icon }}</div>
-            <strong>{{ step.number }}. {{ step.title }}</strong>
-            <span>{{ step.detail }}</span>
+            <strong>{{ step.number }}. {{ t(step.title) }}</strong>
+            <span>{{ t(step.detail) }}</span>
           </div>
 
           @if (!$last) {
@@ -159,8 +154,7 @@
       </div>
 
       <p class="method-footnote">
-        Grilla UTM 20S (EPSG:32720). Se utiliza el día de Bolivia
-        (UTC−4) y la unidad celda-día.
+        {{ t('Grilla UTM 20S (EPSG:32720). Se utiliza el día de Bolivia (UTC−4) y la unidad celda-día.') }}
       </p>
     </article>
 
@@ -173,7 +167,7 @@
       <div class="method-card-heading">
         <h2>
           <span class="method-title-icon">▥</span>
-          Resultados de la prueba
+          {{ t('Resultados de la prueba') }}
         </h2>
         <span class="tg-method-label">2022–2025</span>
       </div>
@@ -182,23 +176,21 @@
         @for (metric of metrics; track metric.label) {
           <div class="method-metric">
             <strong>{{ metric.value }}</strong>
-            <span>{{ metric.label }}</span>
+            <span>{{ t(metric.label) }}</span>
           </div>
         }
       </div>
 
       <p class="method-footnote">
-        Evaluación de la armonización: WAPE trimestral 27,0 %,
-        WAPE anual 16,3 % y sesgo medio +0,7 %.
-        No representan exactitud de detección.
+        {{ t('Evaluación de la armonización: WAPE trimestral 27,0 %, WAPE anual 16,3 % y sesgo medio +0,7 %. No representan exactitud de detección.') }}
       </p>
 
       <a
         class="method-inline-link"
-        href="/assets/metodologia/03_Validacion.pdf"
+        [href]="documentUrl('03_Validacion.pdf')"
         target="_blank"
         rel="noopener noreferrer">
-        Consultar validación completa ↗
+        {{ t('Consultar validación completa ↗') }}
       </a>
     </article>
 
@@ -211,7 +203,7 @@
       <div class="method-card-heading">
         <h2>
           <span class="method-title-icon method-warning">⚠</span>
-          Qué debes tener en cuenta
+          {{ t('Qué debes tener en cuenta') }}
         </h2>
       </div>
 
@@ -223,17 +215,17 @@
               [class.is-orange]="i < 2"
               aria-hidden="true">
             </span>
-            <span>{{ item }}</span>
+            <span>{{ t(item) }}</span>
           </li>
         }
       </ul>
 
       <a
         class="method-inline-link"
-        href="/assets/metodologia/04_Supuestos_y_limites.pdf"
+        [href]="documentUrl('04_Supuestos_y_limites.pdf')"
         target="_blank"
         rel="noopener noreferrer">
-        Ver supuestos y límites ↗
+        {{ t('Ver supuestos y límites ↗') }}
       </a>
     </article>
 
@@ -245,9 +237,9 @@
       <div class="method-card-heading">
         <h2>
           <span class="method-title-icon">▤</span>
-          Fuentes y documentos
+          {{ t('Fuentes y documentos') }}
         </h2>
-        <span class="tg-method-label">5 PDF</span>
+        <span class="tg-method-label">{{ t('5 PDF') }}</span>
       </div>
 
       <div class="method-resource-grid">
@@ -260,7 +252,7 @@
           <span class="method-resource-symbol method-nasa">NASA</span>
           <span class="method-resource-copy">
             <strong>NASA FIRMS</strong>
-            <small>Portal oficial de datos satelitales</small>
+            <small>{{ t('Portal oficial de datos satelitales') }}</small>
           </span>
           <span class="method-external" aria-hidden="true">↗</span>
         </a>
@@ -273,8 +265,8 @@
             class="method-resource">
             <span class="method-resource-symbol method-document">▤</span>
             <span class="method-resource-copy">
-              <strong>{{ doc.name }}</strong>
-              <small>{{ doc.detail }} · PDF</small>
+              <strong>{{ t(doc.name) }}</strong>
+              <small>{{ t(doc.detail) }} · PDF</small>
             </span>
             <span class="method-external" aria-hidden="true">↗</span>
           </a>
@@ -287,8 +279,7 @@
 
 
   <p class="method-disclaimer">
-    Datos de análisis hasta el 31 de octubre de 2026.
-    Una anomalía térmica no equivale a un incendio confirmado.
+    {{ t('Datos de análisis hasta el 31 de octubre de 2026. Una anomalía térmica no equivale a un incendio confirmado.') }}
   </p>
 
 </section>

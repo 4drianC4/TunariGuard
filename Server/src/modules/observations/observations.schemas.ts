@@ -1,3 +1,4 @@
+import { t } from '../../shared/i18n/language.js';
 import { z } from 'zod';
 import { bbox } from '../../shared/query-schemas.js';
 
@@ -27,6 +28,6 @@ export const listObservationsQuerySchema = z
     limit: z.coerce.number().int().min(1).max(1000).default(200),
     cursor: z.uuid().optional().describe('nextCursor de la página anterior'),
   })
-  .refine((q) => !q.from || !q.to || q.from <= q.to, { message: 'from debe ser anterior a to', path: ['from'] });
+  .refine((q) => !q.from || !q.to || q.from <= q.to, { error: () => t('from debe ser anterior a to'), path: ['from'] });
 
 export type ListObservationsQuery = z.infer<typeof listObservationsQuerySchema>;

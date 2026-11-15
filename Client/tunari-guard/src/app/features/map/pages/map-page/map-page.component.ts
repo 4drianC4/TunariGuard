@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../../core/i18n/language.service';
 import { ChangeDetectionStrategy, Component, effect } from '@angular/core';
 import { DetectionDatesService } from '../../../../application/services/detection-dates.service';
 import { inject } from '@angular/core';
@@ -15,6 +16,7 @@ import { PageHeaderComponent } from '../../../../shared/components/page-header/p
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MapPageComponent {
+  readonly t = inject(LanguageService).text;
   readonly dates = inject(DetectionDatesService);
   readonly mapState = inject(MapStateService);
 

@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, ElementRef, OnChanges, OnDestroy, SimpleChanges, ViewChild, input, output } from '@angular/core';
+import { LanguageService } from '../../../../core/i18n/language.service';
+import { inject, AfterViewInit, Component, ElementRef, OnChanges, OnDestroy, SimpleChanges, ViewChild, input, output } from '@angular/core';
 import * as L from 'leaflet';
 import type { DistrictBoundaries } from '../../../map/data-access/map-analysis.service';
 import { addOpenStreetMap } from '../../../map/utils/map-basemap';
@@ -10,6 +11,7 @@ import { ACTIVITY, DistrictActivity } from '../../district-activity';
   styleUrl: './district-map.component.scss',
 })
 export class DistrictMapComponent implements AfterViewInit, OnChanges, OnDestroy {
+  readonly t = inject(LanguageService).text;
   readonly boundaries = input<DistrictBoundaries | null>(null);
   readonly districts = input.required<readonly DistrictActivity[]>();
   readonly selected = input('');

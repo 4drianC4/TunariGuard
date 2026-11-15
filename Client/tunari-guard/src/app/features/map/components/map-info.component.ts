@@ -1,9 +1,10 @@
-import { Component, input } from '@angular/core';
+import { LanguageService } from '../../../core/i18n/language.service';
+import { Component, inject, input } from '@angular/core';
 
 @Component({
   selector: 'app-map-info',
   template: `
-    <button #trigger type="button" [attr.aria-label]="'Información sobre ' + topic()"
+    <button #trigger type="button" [attr.aria-label]="t('Información sobre {topic}', { topic: topic() })"
       [attr.aria-description]="text()" (pointerenter)="show(trigger, bubble)"
       (pointerleave)="hideUnlessFocused(trigger, bubble)" (focus)="show(trigger, bubble)"
       (blur)="bubble.hidePopover()" (click)="show(trigger, bubble)" (keydown.escape)="bubble.hidePopover()">
@@ -51,6 +52,7 @@ import { Component, input } from '@angular/core';
   `,
 })
 export class MapInfoComponent {
+  readonly t = inject(LanguageService).text;
   readonly topic = input.required<string>();
   readonly text = input.required<string>();
 

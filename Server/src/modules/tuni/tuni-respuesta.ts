@@ -13,6 +13,7 @@ export interface CitaTuni {
   titulo: string;
   texto: string;
   alcance?: string;
+  language?: 'es' | 'en';
 }
 
 export interface RespuestaTuni {

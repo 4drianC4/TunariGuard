@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../../core/i18n/language.service';
 import { Component, computed, inject, input, output, resource, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { MapAnalysisService } from '../../../map/data-access/map-analysis.service';
@@ -26,6 +27,10 @@ function counts(rows: readonly Observation[], label: (row: Observation) => strin
   styleUrl: './district-analysis.component.scss',
 })
 export class DistrictAnalysisComponent {
+  readonly t = inject(LanguageService).text;
+  readonly areaText = inject(LanguageService).area;
+  readonly locale = inject(LanguageService).locale;
+  readonly dateFormat = () => this.locale() === 'es-BO' ? 'dd/MM/yyyy HH:mm' : 'short';
   private readonly api = inject(MapAnalysisService);
   readonly district = input.required<DistrictActivity>();
   readonly mapFocus = output<void>();

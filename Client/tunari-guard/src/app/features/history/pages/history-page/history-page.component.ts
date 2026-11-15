@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../../core/i18n/language.service';
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { DetectionDatesService } from '../../../../application/services/detection-dates.service';
 import { DetectionDateDirective } from '../../../../shared/directives/detection-date.directive';
@@ -20,6 +21,8 @@ import { HistoryTableComponent } from '../../components/history-table/history-ta
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HistoryPageComponent {
+  readonly t = inject(LanguageService).text;
+  readonly locale = inject(LanguageService).locale;
   readonly dates = inject(DetectionDatesService);
   readonly metrics = inject(MetricsService);
   private readonly destroyRef = inject(DestroyRef);

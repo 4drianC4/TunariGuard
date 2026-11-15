@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { LanguageService } from '../../../core/i18n/language.service';
+import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 
 export type ReportSource = 'HARMONIZED' | 'MODIS' | 'VIIRS';
@@ -98,6 +99,7 @@ function totalOf(records: HistoryMonth[]): number | null {
 
 @Injectable({ providedIn: 'root' })
 export class ReportsApiService {
+  private readonly i18n = inject(LanguageService);
   areas(signal: AbortSignal): Promise<ReportArea[]> {
     return this.json('/areas', signal);
   }
@@ -246,7 +248,7 @@ export class ReportsApiService {
   }
 
   private async request(path: string, signal: AbortSignal): Promise<Response> {
-    const response = await fetch(environment.apiBaseUrl + path, { signal });
+    const response = await this.i18n.fetch(environment.apiBaseUrl + path, { signal });
     if (!response.ok) {
       const details = await response.json().catch(() => null);
       const message = typeof details?.message === 'string' ? details.message : `HTTP ${response.status}`;

@@ -1,7 +1,15 @@
 import { isoDay } from '../../shared/query-schemas.js';
 import type { ContextoDetecciones } from './tuni.schemas.js';
+import { currentLanguage } from '../../shared/i18n/language.js';
 
 const meses = 'enero febrero marzo abril mayo junio julio agosto septiembre octubre noviembre diciembre'.split(' ');
+const englishMonths = 'january february march april may june july august september october november december'.split(' ');
+
+export function englishDateWords(text: string): string {
+  return text.replace(new RegExp(`\\b(${englishMonths.join('|')})\\b`, 'g'), (_, month: string) => meses[englishMonths.indexOf(month)]!)
+    .replace(/\b(\d{1,2})(?:st|nd|rd|th)\b/g, '$1')
+    .replace(/^(?:(?:and|in|on|for) )+/, '');
+}
 const patronAnio = '(?:19|20|21)\\d{2}';
 const mesConAnio = new RegExp(`\\b(${meses.join('|')})(?: (?:del? )?(${patronAnio}))?\\b`, 'g');
 const corteConFecha = new RegExp(`\\b(\\d{1,2}) (?:de )?(${meses.join('|')}) (?:del? )?(${patronAnio})\\b`);
@@ -23,7 +31,7 @@ export function mesesDeIncendios(texto: string): PeriodoIncendios[] {
 }
 
 export function nombreDelMes(mes: number): string {
-  return meses[mes - 1]!;
+  return (currentLanguage() === 'en' ? englishMonths : meses)[mes - 1]!;
 }
 
 export function anioDeSeguimiento(texto: string): number | undefined {

@@ -3,12 +3,13 @@ import { Controller, Get, NotFoundException, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { parse } from 'csv-parse/sync';
 import { z } from 'zod';
+import { t } from '../../shared/i18n/language.js';
 
 const ARCHIVO = new URL('../../../data/demo/serie_proyeccion_mensual.csv', import.meta.url);
 const mes = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'Formato YYYY-MM');
 const querySchema = z
   .object({ desde: mes.optional(), hasta: mes.optional() })
-  .refine((q) => !q.desde || !q.hasta || q.desde <= q.hasta, { message: 'desde debe ser anterior o igual a hasta', path: ['desde'] });
+  .refine((q) => !q.desde || !q.hasta || q.desde <= q.hasta, { error: () => t('desde debe ser anterior o igual a hasta'), path: ['desde'] });
 
 const fila = z.object({
   mes,
@@ -38,7 +39,7 @@ export class ProyeccionController {
     try {
       texto = await readFile(ARCHIVO, 'utf8');
     } catch {
-      throw new NotFoundException('No está el archivo data/demo/serie_proyeccion_mensual.csv');
+      throw new NotFoundException(t('No está el archivo data/demo/serie_proyeccion_mensual.csv'));
     }
     const items = z
       .array(fila)
@@ -46,9 +47,9 @@ export class ProyeccionController {
       .filter((r) => (!q.desde || r.mes >= q.desde) && (!q.hasta || r.mes <= q.hasta));
     return {
       simulated: true,
-      aviso:
+      aviso: t(
         'Proyección SIMULADA: un futuro posible según un modelo, no una predicción. indice_esperado_modelo está en ' +
-        'celdas-día MODIS-equivalentes; una detección satelital no confirma un incendio.',
+        'celdas-día MODIS-equivalentes; una detección satelital no confirma un incendio.'),
       items,
     };
   }

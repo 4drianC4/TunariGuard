@@ -1,3 +1,4 @@
+import { currentLanguage, msg, t } from '../../shared/i18n/language.js';
 import { readFile } from 'node:fs/promises';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { AnalisisRepository, type Fila } from './analisis.repository.js';
@@ -27,7 +28,7 @@ export interface Respuesta {
 
 @Injectable()
 export class AnalisisService {
-  private advertencias?: Promise<unknown>;
+  private advertencias?: Promise<{ codigo: string; donde: string; texto: string }[]>;
 
   constructor(private readonly repository: AnalisisRepository) {}
 
@@ -83,12 +84,14 @@ export class AnalisisService {
     const siguiente = q.offset + filas.length;
     const cabeceras: Record<string, string> = { 'X-Total-Count': String(total) };
     if (siguiente < total) cabeceras['X-Next-Offset'] = String(siguiente);
-    return { ...formatear(filas, q.formato, 'detecciones'), cabeceras };
+    const respuesta = formatear(filas, q.formato, currentLanguage() === 'en' ? 'detections' : 'detecciones');
+    return { ...respuesta, cabeceras: { ...respuesta.cabeceras, ...cabeceras } };
   }
 
   async buscarDetecciones(body: BuscarDeteccionesBody): Promise<Respuesta> {
     const filas = await this.repository.buscarDetecciones(body.poligono, body.desde, body.hasta, body.fuentes);
-    return { ...formatear(filas, body.formato, 'detecciones-poligono'), cabeceras: { 'X-Total-Count': String(filas.length) } };
+    const respuesta = formatear(filas, body.formato, currentLanguage() === 'en' ? 'polygon-detections' : 'detecciones-poligono');
+    return { ...respuesta, cabeceras: { ...respuesta.cabeceras, 'X-Total-Count': String(filas.length) } };
   }
 
   conteoMensual(body: PoligonoBody) {
@@ -123,14 +126,14 @@ export class AnalisisService {
       parametrosDetalle: parametros,
       versionEsquema: versiones[0]?.['version'] ?? null,
       ultimaIngesta: ultimaIngesta ?? null,
-      advertencias,
+      advertencias: advertencias.map(({ codigo, donde, texto }) => ({ codigo, donde: t(donde), texto: t(texto) })),
     };
   }
 
   /** Lee advertencias.json una vez; si falta, la API sigue respondiendo con una lista vacía. */
-  private leerAdvertencias(): Promise<unknown> {
+  private leerAdvertencias() {
     this.advertencias ??= readFile(ADVERTENCIAS, 'utf8')
-      .then((texto) => JSON.parse(texto) as unknown)
+      .then((texto) => JSON.parse(texto) as { codigo: string; donde: string; texto: string }[])
       .catch(() => []);
     return this.advertencias;
   }
@@ -157,5 +160,5 @@ function formatear(filas: Fila[], formato: Formato, nombreArchivo: string): Resp
 }
 
 function noExisteArea(areaId: string) {
-  return new NotFoundException(`No existe el área ${areaId}. Consulta GET /api/v1/areas`);
+  return new NotFoundException(msg`No existe el área ${areaId}. Consulta GET /api/v1/areas`);
 }

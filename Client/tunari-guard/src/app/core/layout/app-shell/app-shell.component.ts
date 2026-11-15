@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { LiveTranslationService } from '../../i18n/live-translation.service';
 import { LiveUpdatesService } from '../../../application/services/live-updates.service';
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '../sidebar/sidebar.component';
@@ -16,6 +15,5 @@ import { MascotAssistantComponent } from '../../../shared/components/mascot-assi
 export class AppShellComponent {
   constructor() {
     inject(LiveUpdatesService).start();
-    inject(LiveTranslationService);
   }
 }

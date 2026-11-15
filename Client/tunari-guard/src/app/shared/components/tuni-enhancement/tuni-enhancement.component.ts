@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../core/i18n/language.service';
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -44,15 +45,15 @@ interface RadarEvent { id: string; time: string; district: string; sensor: strin
   template: `
     @if (radar(); as evento) {
       @if (!chatAbierto) {
-        <aside class="tuni-v2-radar" role="status" aria-label="Detección térmica relevante">
+        <aside class="tuni-v2-radar" role="status" [attr.aria-label]="t('Detección térmica relevante')">
           <span class="tuni-v2-radar__sweep" aria-hidden="true"><span class="tuni-v2-radar__spot"></span></span>
           <div class="tuni-v2-radar__info">
-            <strong>Actividad térmica detectada</strong>
-            <small>{{ evento.district }} · {{ evento.sensor }}</small>
-            <p>Confianza alta · detección sin verificar en tierra.</p>
-            <a routerLink="/mapa">Consultar en el mapa</a>
+            <strong>{{ t('Actividad térmica detectada') }}</strong>
+            <small>{{ i18n.area(evento.district) }} · {{ evento.sensor }}</small>
+            <p>{{ t('Confianza alta · detección sin verificar en tierra.') }}</p>
+            <a routerLink="/mapa">{{ t('Consultar en el mapa') }}</a>
           </div>
-          <button type="button" class="tuni-v2-radar__close" (click)="ocultarRadar()" aria-label="Cerrar radar">×</button>
+          <button type="button" class="tuni-v2-radar__close" (click)="ocultarRadar()" [attr.aria-label]="t('Cerrar radar')">×</button>
         </aside>
       }
     }
@@ -61,6 +62,8 @@ interface RadarEvent { id: string; time: string; district: string; sensor: strin
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TuniEnhancementComponent implements OnInit, AfterViewInit, OnDestroy {
+  readonly i18n = inject(LanguageService);
+  readonly t = this.i18n.text;
   @Input() chatAbierto = false;
   readonly radar = signal<RadarEvent | null>(null);
   private readonly host = inject(ElementRef<HTMLElement>);
@@ -148,7 +151,7 @@ export class TuniEnhancementComponent implements OnInit, AfterViewInit, OnDestro
       const timeout = setTimeout(cancel, 7000);
       let response: Response;
       try {
-        response = await fetch(`${environment.apiBaseUrl.replace(/\/$/, '')}/observations?${options}`, { signal: controller.signal });
+        response = await this.i18n.fetch(`${environment.apiBaseUrl.replace(/\/$/, '')}/observations?${options}`, { signal: controller.signal });
       } finally {
         clearTimeout(timeout);
         this.abortion.signal.removeEventListener('abort', cancel);
@@ -248,7 +251,8 @@ export class TuniEnhancementComponent implements OnInit, AfterViewInit, OnDestro
     const alert = this.radar();
     let card = target.querySelector<HTMLElement>('.tuni-v2-inline-radar');
     if (!alert) { card?.remove(); this.inlineRadarId = ''; return; }
-    if (card && this.inlineRadarId === alert.id) return;
+    const localizedId = `${alert.id}:${this.i18n.language()}`;
+    if (card && this.inlineRadarId === localizedId) return;
     if (!card) {
       card = document.createElement('div');
       card.className = 'tuni-v2-inline-radar';
@@ -257,14 +261,14 @@ export class TuniEnhancementComponent implements OnInit, AfterViewInit, OnDestro
     }
     card.replaceChildren();
     const label = document.createElement('strong');
-    label.textContent = '📡 Tuni detecto actividad termica relevante';
+    label.textContent = this.t('📡 Tuni detecto actividad termica relevante');
     const description = document.createElement('p');
-    description.textContent = `${alert.district} · ${alert.sensor} · Alta confianza. No confirma un incendio.`;
+    description.textContent = `${this.i18n.area(alert.district)} · ${alert.sensor} · ${this.t('Alta confianza. No confirma un incendio.')}`;
     const link = document.createElement('a');
     link.href = '/mapa';
-    link.textContent = 'Revisar detecciones en el mapa';
+    link.textContent = this.t('Revisar detecciones en el mapa');
     card.append(label, description, link);
-    this.inlineRadarId = alert.id;
+    this.inlineRadarId = localizedId;
   }
 
   private readonly onMicClick = (event: MouseEvent): void => {
@@ -311,7 +315,7 @@ export class TuniEnhancementComponent implements OnInit, AfterViewInit, OnDestro
       return;
     }
     this.speech = speech;
-    speech.lang = 'es-BO';
+    speech.lang = this.i18n.locale();
     speech.continuous = false;
     speech.interimResults = true;
     speech.maxAlternatives = 1;
@@ -320,7 +324,7 @@ export class TuniEnhancementComponent implements OnInit, AfterViewInit, OnDestro
       this.voiceTimer = setInterval(() => {
         if (this.voiceMode === 'listening') {
           const seconds = Math.floor((Date.now() - this.sessionStartedAt.value) / 1000);
-          this.showStatus('listening', `Grabando · ${seconds} s · Pulsa el microfono para terminar`);
+          this.showStatus('listening', this.t('Grabando · {seconds} s · Pulsa el microfono para terminar', { seconds }));
         }
       }, 1000);
     };
@@ -336,7 +340,7 @@ export class TuniEnhancementComponent implements OnInit, AfterViewInit, OnDestro
       this.finalText = completed.trim();
       const preview = [this.originalText, this.finalText, partial.trim()].filter(Boolean).join(' ').trim();
       this.updateInput(preview);
-      this.showStatus('listening', preview ? `Escuchando · ${preview.slice(-75)}` : 'Escuchando tu voz...');
+      this.showStatus('listening', preview ? this.t('Escuchando · {preview}', { preview: preview.slice(-75) }) : 'Escuchando tu voz...');
       if (this.finalText) {
         if (this.stopTimer) clearTimeout(this.stopTimer);
         // Finalizado el reconocimiento, no esperar varios segundos extra.
@@ -349,7 +353,7 @@ export class TuniEnhancementComponent implements OnInit, AfterViewInit, OnDestro
       this.showStatus('error', error.error === 'not-allowed' || error.error === 'service-not-allowed'
         ? 'Permiso de microfono denegado. Activalo en el navegador.'
         : error.error === 'no-speech' ? 'No se detecto voz. Pulsa el microfono para reintentar.'
-          : `No se pudo reconocer la voz (${error.error}).`);
+          : this.t('No se pudo reconocer la voz ({reason}).', { reason: error.error }));
     };
     speech.onend = () => {
       this.clearSpeechTimers();
@@ -404,7 +408,7 @@ export class TuniEnhancementComponent implements OnInit, AfterViewInit, OnDestro
       this.statusNode.hidden = mode === 'idle';
       this.statusNode.dataset['state'] = mode;
       const text = this.statusNode.querySelector('.tuni-v2-voice-text');
-      if (text) text.textContent = message;
+      if (text) text.textContent = this.t(message);
     }
   }
 

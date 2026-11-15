@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../../core/i18n/language.service';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -19,6 +20,9 @@ import { HarmonizationMapComponent } from '../../components/harmonization-map/ha
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HarmonizationPageComponent {
+  readonly t = inject(LanguageService).text;
+  readonly areaText = inject(LanguageService).area;
+  readonly locale = inject(LanguageService).locale;
   private readonly historyService = inject(HistoryService);
   private readonly harmonizationService = inject(HarmonizationService);
 

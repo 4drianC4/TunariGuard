@@ -1,3 +1,4 @@
+import { msg } from '../../shared/i18n/language.js';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import type { Feature, Point } from 'geojson';
 import type { DataOrigin, NormalizedObservation } from '../ingestion/domain/normalized-observation.js';
@@ -66,7 +67,7 @@ export class ObservationsService {
 
   async findOne(id: string) {
     const row = await this.repository.findById(id);
-    if (!row) throw new NotFoundException(`Observación ${id} no encontrada`);
+    if (!row) throw new NotFoundException(msg`Observación ${id} no encontrada`);
     return { ...toDto(row), raw: row.raw };
   }
 

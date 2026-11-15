@@ -21,6 +21,8 @@ export interface AlertEvent {
   detectionCount: number;
   maxFrpMw: number | null;
   message: string;
+  messageByLanguage?: { es: string; en: string };
+  districtByLanguage?: { es: string; en: string };
   note: string | null;
   simulated: boolean;
   mode: 'live' | 'replay';

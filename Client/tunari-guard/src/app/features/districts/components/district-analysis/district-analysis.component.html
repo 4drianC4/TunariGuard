@@ -1,23 +1,23 @@
-<section class="tg-card analysis" aria-label="Análisis del distrito seleccionado">
+<section class="tg-card analysis" [attr.aria-label]="t('Análisis del distrito seleccionado')">
   <header class="analysis-heading">
     <div class="district-heading">
       <div>
-        <h2>{{ district().name }}</h2>
+        <h2>{{ areaText(district().name) }}</h2>
         <div class="district-summary">
-          <span class="activity" [style.--activity-color]="district().color">{{ district().risk }}</span>
-          <strong>{{ district().count | number }} detecciones en el período</strong>
+          <span class="activity" [style.--activity-color]="district().color">{{ t(district().risk) }}</span>
+          <strong>{{ district().count | number:undefined:locale() }} {{ t('detecciones en el período') }}</strong>
         </div>
       </div>
-      <button type="button" (click)="mapFocus.emit()">Ver en mapa</button>
+      <button type="button" (click)="mapFocus.emit()">{{ t('Ver en mapa') }}</button>
     </div>
     <dl class="district-facts">
-      <div><dt>Última detección</dt><dd>{{ (district().last | date:'dd/MM/yyyy HH:mm':'-0400') ?? 'Sin detecciones' }}</dd></div>
-      <div><dt>Sensores</dt><dd>{{ district().sources || 'Sin detecciones' }}</dd></div>
-      @if (district().areaKm2 != null) { <div><dt>Superficie</dt><dd>{{ district().areaKm2 | number:'1.0-2' }} km²</dd></div> }
-      <div><dt>Límite</dt><dd>{{ district().provisional ? 'Provisional' : 'Registrado' }}</dd></div>
-      @if (district().boundarySource) { <div><dt>Fuente del límite</dt><dd>{{ district().boundarySource }}</dd></div> }
+      <div><dt>{{ t('Última detección') }}</dt><dd>{{ (district().last | date:dateFormat():'-0400':locale()) ?? t('Sin detecciones') }}</dd></div>
+      <div><dt>{{ t('Sensores') }}</dt><dd>{{ district().sources || 'Sin detecciones' }}</dd></div>
+      @if (district().areaKm2 != null) { <div><dt>{{ t('Superficie') }}</dt><dd>{{ district().areaKm2 | number:'1.0-2':locale() }} km²</dd></div> }
+      <div><dt>{{ t('Límite') }}</dt><dd>{{ district().provisional ? 'Provisional' : 'Registrado' }}</dd></div>
+      @if (district().boundarySource) { <div><dt>{{ t('Fuente del límite') }}</dt><dd>{{ district().boundarySource }}</dd></div> }
     </dl>
-    <div class="sections" role="group" aria-label="Sección del análisis">
+    <div class="sections" role="group" [attr.aria-label]="t('Sección del análisis')">
       @for (item of sections; track item) {
         <button type="button" [attr.aria-pressed]="section() === item" (click)="section.set(item)">{{ item }}</button>
       }
@@ -25,21 +25,21 @@
   </header>
   @if (section() === 'Detecciones') {
     <article>
-      <h2>Distribución de las detecciones</h2>
+      <h2>{{ t('Distribución de las detecciones') }}</h2>
       <article class="tg-kpi tg-kpi--compact">
         <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#target"></use></svg></span>
         <div class="tg-kpi-copy">
-          <span class="tg-kpi-title">Detecciones por km² <app-map-info topic="la densidad" text="Conteo del período dividido entre la superficie del distrito. Sirve para comparar áreas de distinto tamaño." /></span>
-          <div class="tg-kpi-number tg-kpi-number--text">{{ density() == null ? 'Sin superficie' : (density() | number:'1.0-3') }}</div>
+          <span class="tg-kpi-title">{{ t('Detecciones por km²') }} <app-map-info [topic]="t('la densidad')" [text]="t('Conteo del período dividido entre la superficie del distrito. Sirve para comparar áreas de distinto tamaño.')" /></span>
+          <div class="tg-kpi-number tg-kpi-number--text">{{ density() == null ? 'Sin superficie' : (density() | number:'1.0-3':locale()) }}</div>
         </div>
       </article>
       @if (district().count) {
         <div class="breakdown">
           @for (group of breakdown(); track group.title) {
             <section>
-              <h3>{{ group.title }}</h3>
+              <h3>{{ t(group.title) }}</h3>
               <dl>@for (entry of group.entries; track entry.name) {
-                <div><dt>{{ entry.name }}</dt><dd>{{ entry.count | number }}</dd></div>
+                <div><dt>{{ t(entry.name) }}</dt><dd>{{ entry.count | number:undefined:locale() }}</dd></div>
               }</dl>
             </section>
           }
@@ -48,95 +48,95 @@
     </article>
   } @else if (section() === 'Potencia y confianza') {
     <article>
-      <h2>Potencia y confianza</h2>
-      <h3>Potencia radiativa (FRP) <app-map-info topic="la potencia radiativa" text="Potencia estimada del foco térmico en megavatios. El promedio y el máximo usan las detecciones con un valor registrado." /></h3>
-      <p>{{ quality().reportedFrp }} de {{ district().count }} con FRP</p>
+      <h2>{{ t('Potencia y confianza') }}</h2>
+      <h3>{{ t('Potencia radiativa (FRP)') }} <app-map-info [topic]="t('la potencia radiativa')" [text]="t('Potencia estimada del foco térmico en megavatios. El promedio y el máximo usan las detecciones con un valor registrado.')" /></h3>
+      <p>{{ quality().reportedFrp }} {{ t('de') }} {{ district().count }} {{ t('con FRP') }}</p>
       @if (quality().reportedFrp) {
-        <dl><div><dt>Promedio</dt><dd>{{ quality().mean | number:'1.0-2' }} MW</dd></div>
-          <div><dt>Máximo</dt><dd>{{ quality().max | number:'1.0-2' }} MW</dd></div></dl>
+        <dl><div><dt>{{ t('Promedio') }}</dt><dd>{{ quality().mean | number:'1.0-2':locale() }} MW</dd></div>
+          <div><dt>{{ t('Máximo') }}</dt><dd>{{ quality().max | number:'1.0-2':locale() }} MW</dd></div></dl>
       }
-      <h3>Confianza del producto</h3>
-      <p>{{ quality().reportedConfidence }} de {{ district().count }} clasificadas</p>
+      <h3>{{ t('Confianza del producto') }}</h3>
+      <p>{{ quality().reportedConfidence }} {{ t('de') }} {{ district().count }} {{ t('clasificadas') }}</p>
       <dl>@for (entry of quality().confidence; track entry.name) {
-        <div><dt>{{ entry.name }}</dt><dd>{{ entry.count | number }}</dd></div>
+        <div><dt>{{ t(entry.name) }}</dt><dd>{{ entry.count | number:undefined:locale() }}</dd></div>
       }</dl>
     </article>
   } @else {
     <article>
-      <h2>Actividad mensual histórica</h2>
-      @if (monthly.isLoading()) { <p role="status">Cargando serie mensual…</p> }
-      @else if (monthly.error()) { <p>La serie mensual no está disponible para este distrito.</p> <button type="button" (click)="monthly.reload()">Reintentar</button> }
+      <h2>{{ t('Actividad mensual histórica') }}</h2>
+      @if (monthly.isLoading()) { <p role="status">{{ t('Cargando serie mensual…') }}</p> }
+      @else if (monthly.error()) { <p>{{ t('La serie mensual no está disponible para este distrito.') }}</p> <button type="button" (click)="monthly.reload()">{{ t('Reintentar') }}</button> }
       @else if (monthly.hasValue() && activeYear(); as selectedYear) {
-        <label class="year">Año <select class="tg-filter-control tg-filter-control--compact" #selection [value]="selectedYear" (change)="year.set(+selection.value); inspectedMonth.set(null)">
+        <label class="year">{{ t('Año') }} <select class="tg-filter-control tg-filter-control--compact" #selection [value]="selectedYear" (change)="year.set(+selection.value); inspectedMonth.set(null)">
           @for (item of years(); track item) { <option [value]="item" [selected]="item === selectedYear">{{ item }}</option> }
         </select></label>
-        <p class="caption">Índice armonizado · {{ monthly.value()?.unit }} <app-map-info topic="el índice mensual" text="Compara la actividad térmica entre meses en una escala común. Un valor más alto indica detecciones en más zonas, durante más días o ambas cosas." /></p>
-        <div class="month-chart" role="group" aria-label="Índice por mes">
+        <p class="caption">{{ t('Índice armonizado ·') }} {{ monthly.value()?.unit }} <app-map-info [topic]="t('el índice mensual')" [text]="t('Compara la actividad térmica entre meses en una escala común. Un valor más alto indica detecciones en más zonas, durante más días o ambas cosas.')" /></p>
+        <div class="month-chart" role="group" [attr.aria-label]="t('Índice por mes')">
           @for (month of months(); track $index; let index = $index) {
-            @let value = month.value == null ? 'Sin dato' : (month.value | number:'1.0-2');
+            @let value = month.value == null ? t('Sin dato') : (month.value | number:'1.0-2':locale());
             <button type="button" [class.unavailable]="month.value == null" [class.active]="month === activeMonth()"
               [attr.aria-label]="month.label + ': ' + value" [attr.aria-pressed]="month === activeMonth()"
               (pointerenter)="inspectedMonth.set(index)" (focus)="inspectedMonth.set(index)" (click)="inspectedMonth.set(index)">
               <span class="bar-area" aria-hidden="true"><span class="bar" [style.height.%]="month.percent"></span></span>
-              <span>{{ month.label }}</span>
+              <span>{{ t(month.label) }}</span>
             </button>
           }
         </div>
         @if (activeMonth(); as month) {
-          <p class="month-value">{{ month.label }} · {{ month.value == null ? 'Sin dato' : (month.value | number:'1.0-2') }}</p>
+          <p class="month-value">{{ t(month.label) }} · {{ month.value == null ? t('Sin dato') : (month.value | number:'1.0-2':locale()) }}</p>
         }
-      } @else { <p>Sin meses con un índice comparable.</p> }
+      } @else { <p>{{ t('Sin meses con un índice comparable.') }}</p> }
     </article>
 
     <article class="historical-trends">
-      <h2>Tendencias históricas <app-map-info topic="las tendencias históricas" text="El backend estima la pendiente de Sen por año y su intervalo de confianza del 90 %. El valor p corresponde a la prueba de tendencia de Kendall." /></h2>
-      @if (trends.isLoading()) { <p role="status">Cargando tendencias…</p> }
-      @else if (trends.error()) { <p>Las tendencias no están disponibles para este distrito.</p> <button type="button" (click)="trends.reload()">Reintentar</button> }
+      <h2>{{ t('Tendencias históricas') }} <app-map-info [topic]="t('las tendencias históricas')" [text]="t('El backend estima la pendiente de Sen por año y su intervalo de confianza del 90 %. El valor p corresponde a la prueba de tendencia de Kendall.')" /></h2>
+      @if (trends.isLoading()) { <p role="status">{{ t('Cargando tendencias…') }}</p> }
+      @else if (trends.error()) { <p>{{ t('Las tendencias no están disponibles para este distrito.') }}</p> <button type="button" (click)="trends.reload()">{{ t('Reintentar') }}</button> }
       @else if (trends.hasValue()) {
         @for (trend of trends.value(); track trend.serie) {
           <section class="trend">
             <h3>{{ trendLabel(trend.serie) }}</h3>
-            <p class="caption">{{ trend.anios }} · {{ trend.n }} observaciones de la serie</p>
+            <p class="caption">{{ trend.anios }} · {{ trend.n }} {{ t('observaciones de la serie') }}</p>
             <dl>
-              <div><dt>Pendiente por año</dt><dd>{{ (trend.pendiente_sen_por_anio | number:'1.0-3') ?? 'Sin dato' }}</dd></div>
+              <div><dt>{{ t('Pendiente por año') }}</dt><dd>{{ (trend.pendiente_sen_por_anio | number:'1.0-3':locale()) ?? t('Sin dato') }}</dd></div>
               @if (trend.ic90_inferior != null && trend.ic90_superior != null) {
-                <div><dt>Intervalo del 90 %</dt><dd>{{ trend.ic90_inferior | number:'1.0-3' }} a {{ trend.ic90_superior | number:'1.0-3' }}</dd></div>
+                <div><dt>{{ t('Intervalo del 90 %') }}</dt><dd>{{ trend.ic90_inferior | number:'1.0-3':locale() }} a {{ trend.ic90_superior | number:'1.0-3':locale() }}</dd></div>
               }
-              <div><dt>Tau de Kendall</dt><dd>{{ (trend.tau_kendall | number:'1.0-3') ?? 'Sin dato' }}</dd></div>
-              <div><dt>Valor p</dt><dd>{{ (trend.p_valor | number:'1.0-4') ?? 'Sin dato' }}</dd></div>
+              <div><dt>{{ t('Tau de Kendall') }}</dt><dd>{{ (trend.tau_kendall | number:'1.0-3':locale()) ?? t('Sin dato') }}</dd></div>
+              <div><dt>{{ t('Valor p') }}</dt><dd>{{ (trend.p_valor | number:'1.0-4':locale()) ?? t('Sin dato') }}</dd></div>
             </dl>
           </section>
         } @empty {
           @if (annualComparison(); as comparison) {
-            <h3>Variación interanual del índice</h3>
-            <p class="caption">Compara dos años consecutivos con 12 meses disponibles.</p>
-            <section class="tg-kpis tg-kpis--fit" aria-label="Indicadores de variación interanual">
+            <h3>{{ t('Variación interanual del índice') }}</h3>
+            <p class="caption">{{ t('Compara dos años consecutivos con 12 meses disponibles.') }}</p>
+            <section class="tg-kpis tg-kpis--fit" [attr.aria-label]="t('Indicadores de variación interanual')">
               <article class="tg-kpi">
                 <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#history"></use></svg></span>
                 <div class="tg-kpi-copy">
                   <span class="tg-kpi-title">{{ comparison.previous.year }}</span>
-                  <div class="tg-kpi-number">{{ comparison.previous.total | number:'1.0-2' }}</div>
+                  <div class="tg-kpi-number">{{ comparison.previous.total | number:'1.0-2':locale() }}</div>
                 </div>
               </article>
               <article class="tg-kpi">
                 <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#history"></use></svg></span>
                 <div class="tg-kpi-copy">
                   <span class="tg-kpi-title">{{ comparison.latest.year }}</span>
-                  <div class="tg-kpi-number">{{ comparison.latest.total | number:'1.0-2' }}</div>
+                  <div class="tg-kpi-number">{{ comparison.latest.total | number:'1.0-2':locale() }}</div>
                 </div>
               </article>
               <article class="tg-kpi">
                 <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#trend"></use></svg></span>
                 <div class="tg-kpi-copy">
-                  <span class="tg-kpi-title">Diferencia</span>
-                  <div class="tg-kpi-number">{{ comparison.change > 0 ? '+' : '' }}{{ comparison.change | number:'1.0-2' }}</div>
+                  <span class="tg-kpi-title">{{ t('Diferencia') }}</span>
+                  <div class="tg-kpi-number">{{ comparison.change > 0 ? '+' : '' }}{{ comparison.change | number:'1.0-2':locale() }}</div>
                 </div>
               </article>
             </section>
           } @else if (monthly.isLoading()) {
-            <p role="status">Cargando datos para la comparación anual…</p>
+            <p role="status">{{ t('Cargando datos para la comparación anual…') }}</p>
           } @else {
-            <p>Sin tendencias precalculadas ni dos años consecutivos con datos mensuales completos.</p>
+            <p>{{ t('Sin tendencias precalculadas ni dos años consecutivos con datos mensuales completos.') }}</p>
           }
         }
       }

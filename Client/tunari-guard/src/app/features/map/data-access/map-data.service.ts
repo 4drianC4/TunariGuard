@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { LanguageService } from '../../../core/i18n/language.service';
+import { inject, Injectable } from '@angular/core';
 import { MapPeriod } from '../../../domain/models/map-period.model';
 import { MapDataSet } from '../models/map-data.model';
 import { ConfidenceLevel, Observation, ObservationFeatureProperties, SatellitePlatform } from '../models/observation.model';
@@ -22,6 +23,7 @@ export interface MapObservationQuery {
 
 @Injectable({ providedIn: 'root' })
 export class MapDataService {
+  private readonly i18n = inject(LanguageService);
   async loadObservations(period: MapPeriod, query: MapObservationQuery, signal: AbortSignal): Promise<MapDataSet> {
     const platforms = query.platforms.length ? query.platforms : [undefined];
     const results = await Promise.all(platforms.map((platform) =>
@@ -55,7 +57,7 @@ export class MapDataService {
       if (platform) params.set('platform', platform);
       if (cursor) params.set('cursor', cursor);
 
-      const response = await fetch(`${MAP_API_BASE}/observations?${params.toString()}`, { signal });
+      const response = await this.i18n.fetch(`${MAP_API_BASE}/observations?${params.toString()}`, { signal });
       if (!response.ok) throw new Error(`La API de observaciones respondió HTTP ${response.status}.`);
 
       const collection = await response.json() as ObservationFeatureCollection;

@@ -1,4 +1,5 @@
-import { boliviaTime, platformName, type Severity } from './alert-rules.js';
+import { alertMessage, boliviaTime, platformName, type Severity } from './alert-rules.js';
+import { areaLabel, currentLanguage, translate } from '../../../shared/i18n/language.js';
 
 export type AlertStatusValue = 'PENDING' | 'IN_REVIEW' | 'IN_ANALYSIS' | 'VERIFIED';
 
@@ -59,17 +60,25 @@ export interface AlertRecord {
  * date, time, source, confidence, lat, lng) más campos de contexto.
  */
 export function toAlertDto(a: AlertRecord) {
+  const language = currentLanguage();
   const local = boliviaTime(a.detectedAt);
   const confidence = a.sensor === 'MODIS' && a.confidenceRaw !== null && /^\d+$/.test(a.confidenceRaw) ? Number(a.confidenceRaw) : null;
+  const simulated = a.mode === 'REPLAY' || a.origin === 'SIMULATED';
+  const english = alertMessage({ ...a, areaName: areaLabel(a.areaName, 'en'), areaType: a.areaId === 'parque-tunari' ? 'parque' : '', simulated }, 'en');
   return {
     id: `AL-${String(a.number).padStart(4, '0')}`,
     uuid: a.id,
-    district: a.areaName,
+    district: areaLabel(a.areaName, language),
+    districtByLanguage: { es: a.areaName, en: areaLabel(a.areaName, 'en') },
     areaId: a.areaId,
     inPark: a.inPark,
     severity: SEVERITY_LABELS[a.severity],
     status: STATUS_LABELS[a.status],
-    detected: local.label,
+    severityCode: a.severity,
+    statusCode: a.status,
+    severityLabel: translate(language, SEVERITY_LABELS[a.severity]),
+    statusLabel: translate(language, STATUS_LABELS[a.status]),
+    detected: language === 'es' ? local.label : `${local.date}, ${local.time}`,
     date: local.date,
     time: local.time,
     detectedAtUtc: a.detectedAt.toISOString(),
@@ -77,17 +86,18 @@ export function toAlertDto(a: AlertRecord) {
     satellite: platformName(a.platform),
     /** Porcentaje solo en MODIS (0–100). VIIRS no da porcentaje: ver confidenceLevel. */
     confidence,
-    confidenceLevel: a.confidenceLevel ? CONFIDENCE_LABELS[a.confidenceLevel] : null,
+    confidenceLevel: a.confidenceLevel ? translate(language, CONFIDENCE_LABELS[a.confidenceLevel]) : null,
     lat: a.latitude,
     lng: a.longitude,
     detectionCount: a.detectionCount,
     maxFrpMw: a.maxFrpMw,
-    message: a.message,
+    message: language === 'en' ? english : a.message,
+    messageByLanguage: { es: a.message, en: english },
     note: a.note,
     mode: a.mode === 'REPLAY' ? ('replay' as const) : ('live' as const),
     origin: a.origin,
     /** Mostrar la etiqueta "simulado": replay o datos de demostración. */
-    simulated: a.mode === 'REPLAY' || a.origin === 'SIMULATED',
+    simulated,
     observationIds: a.observationIds,
     batchId: a.batchId,
     statusChangedAtUtc: a.statusChangedAt?.toISOString() ?? null,

@@ -1,5 +1,6 @@
 import { createReportPdf, type ReportExportContext } from './report-pdf';
 import type { ReportData, ReportValue } from './reports-api.service';
+import { translate } from '../../../core/i18n/language.service';
 
 export type ExportFormat = 'PDF' | 'CSV' | 'Excel' | 'GeoJSON';
 
@@ -22,11 +23,12 @@ export async function exportReport(
       return { blob: new Blob(['\ufeff', csv], { type: 'text/csv;charset=utf-8' }), extension: 'csv' };
     }
     case 'Excel': {
+      const t = (key: string) => translate(context.language, key);
       const metadata = [
         'Tunari Guard · ' + context.title,
-        'Generado: ' + context.date,
+        t('Generado:') + ' ' + context.date,
         ...context.fields.map(([label, value]) => label + ': ' + value),
-        data.headline.label + ': ' + (data.headline.value ?? 'Sin cobertura') + ' ' + data.headline.unit,
+        data.headline.label + ': ' + (data.headline.value ?? t('Sin cobertura')) + ' ' + data.headline.unit,
         ...context.notices,
       ];
       const xmlEscape = (value: string): string => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
@@ -39,7 +41,7 @@ export async function exportReport(
       };
       const xml = '<?xml version="1.0" encoding="UTF-8"?><?mso-application progid="Excel.Sheet"?>'
         + '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">'
-        + worksheet('Reporte', rows) + worksheet('Contexto', metadata.map((line) => [line])) + '</Workbook>';
+        + worksheet(t('Reporte'), rows) + worksheet(t('Contexto'), metadata.map((line) => [line])) + '</Workbook>';
       return { blob: new Blob([xml], { type: 'application/xml' }), extension: 'xml' };
     }
     case 'GeoJSON': {

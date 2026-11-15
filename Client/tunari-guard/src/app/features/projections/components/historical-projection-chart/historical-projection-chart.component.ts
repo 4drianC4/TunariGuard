@@ -1,5 +1,6 @@
+import { LanguageService } from '../../../../core/i18n/language.service';
 import { DecimalPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { inject, ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import type { MonthlyProjectionItem } from '../../../../application/services/projections.service';
 import type { HistoryApiRecord } from '../../../../domain/models/historical-record.model';
 
@@ -11,6 +12,8 @@ import type { HistoryApiRecord } from '../../../../domain/models/historical-reco
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HistoricalProjectionChartComponent {
+  readonly t = inject(LanguageService).text;
+  readonly locale = inject(LanguageService).locale;
   readonly history = input.required<readonly HistoryApiRecord[]>();
   readonly projection = input.required<readonly MonthlyProjectionItem[]>();
   readonly compact = input(false);

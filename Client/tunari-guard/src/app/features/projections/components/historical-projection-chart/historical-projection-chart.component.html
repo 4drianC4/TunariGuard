@@ -1,8 +1,8 @@
 @let graph = chart();
 <div class="tg-forecast-card-title">
   <div>
-    <h2>Evolución histórica y proyección</h2>
-    <p class="projection-chart-subtitle">Índice armonizado observado y continuidad con el índice esperado por el modelo.</p>
+    <h2>{{ t('Evolución histórica y proyección') }}</h2>
+    <p class="projection-chart-subtitle">{{ t('Índice armonizado observado y continuidad con el índice esperado por el modelo.') }}</p>
   </div>
   @if (graph) { <span>{{ graph.range }}</span> }
 </div>
@@ -10,10 +10,10 @@
 @if (graph) {
   <div class="projection-timeline-wrap" [class.compact]="compact()">
     <svg [attr.viewBox]="'0 0 ' + graph.width + ' 300'" preserveAspectRatio="none"
-      role="img" aria-label="Serie histórica del índice armonizado y continuación proyectada">
+      role="img" [attr.aria-label]="t('Serie histórica del índice armonizado y continuación proyectada')">
       @for (tick of graph.valueTicks; track tick.y) {
         <line x1="62" [attr.y1]="tick.y" [attr.x2]="graph.right" [attr.y2]="tick.y" stroke="#e8e7df" />
-        <text x="51" [attr.y]="tick.y + 4" text-anchor="end" font-size="11" fill="#73786e">{{ tick.value | number:'1.0-1' }}</text>
+        <text x="51" [attr.y]="tick.y + 4" text-anchor="end" font-size="11" fill="#73786e">{{ tick.value | number:'1.0-1':locale() }}</text>
       }
       @if (graph.boundary !== null) {
         <line [attr.x1]="graph.boundary" y1="35" [attr.x2]="graph.boundary" y2="250" stroke="#d9a16f" stroke-dasharray="5 5" />
@@ -26,7 +26,7 @@
       }
       @for (point of graph.points; track point.month) {
         <circle [attr.cx]="point.x" [attr.cy]="point.y" r="2.5" [attr.fill]="point.projected ? '#e8752b' : '#526b4c'">
-          <title>{{ point.month }} · {{ point.projected ? 'Índice esperado' : 'Índice armonizado' }}: {{ point.value | number:'1.0-2' }}</title>
+          <title>{{ point.month }} · {{ point.projected ? t('Índice esperado') :  t('Índice armonizado') }}: {{ point.value | number:'1.0-2':locale() }}</title>
         </circle>
       }
       @for (tick of graph.yearTicks; track tick.month) {
@@ -36,23 +36,23 @@
   </div>
   <div class="projection-timeline-legend">
     @if (graph.historyRange) {
-      <span><i class="projection-history-dot"></i> Historial armonizado <small>{{ graph.historyRange }}</small></span>
+      <span><i class="projection-history-dot"></i> {{ t('Historial armonizado') }} <small>{{ graph.historyRange }}</small></span>
     }
     @if (graph.projectionRange) {
-      <span><i class="projection-forecast-dot"></i> Proyección simulada del modelo <small>{{ graph.projectionRange }}</small></span>
+      <span><i class="projection-forecast-dot"></i> {{ t('Proyección simulada del modelo') }} <small>{{ graph.projectionRange }}</small></span>
     }
   </div>
 }
 @if (loading()) {
-  <p class="projection-inline-note" role="status">Cargando series mensuales…</p>
+  <p class="projection-inline-note" role="status">{{ t('Cargando series mensuales…') }}</p>
 } @else {
   @if (historyUnavailable()) {
-    <p class="projection-inline-warning" role="status">No fue posible cargar el historial armonizado.</p>
+    <p class="projection-inline-warning" role="status">{{ t('No fue posible cargar el historial armonizado.') }}</p>
   }
   @if (projectionUnavailable()) {
-    <p class="projection-inline-warning" role="status">No fue posible cargar la proyección mensual.</p>
+    <p class="projection-inline-warning" role="status">{{ t('No fue posible cargar la proyección mensual.') }}</p>
   }
   @if (!graph && !historyUnavailable() && !projectionUnavailable()) {
-    <p class="projection-inline-note" role="status">Sin datos para graficar.</p>
+    <p class="projection-inline-note" role="status">{{ t('Sin datos para graficar.') }}</p>
   }
 }

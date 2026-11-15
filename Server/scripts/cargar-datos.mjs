@@ -13,6 +13,7 @@
  * Variables: API_URL (por defecto http://localhost:3000).
  */
 import { openAsBlob } from 'node:fs';
+import { msg, t, request } from './messages.mjs';
 import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -57,7 +58,7 @@ if (cual === 'reemplazar' || cual === 'limpiar') {
 
 const soloDefensa = cual === 'demo' && resto.includes('--solo-defensa');
 const archivos = soloDefensa ? [DEFENSA] : CONJUNTOS[cual];
-if (!archivos) fallar(`Comando desconocido: ${cual}. Usa historico, demo, reemplazar o limpiar.`);
+if (!archivos) fallar(msg`Comando desconocido: ${cual}. Usa historico, demo, reemplazar o limpiar.`);
 
 await avisarSiNoHayDistritos();
 if (cual === 'demo' && !soloDefensa) await avisarDemoAnterior();
@@ -69,9 +70,9 @@ for (const { file, dataset, origin } of archivos) {
   form.append('origin', origin);
 
   process.stdout.write(`▶ ${basename(file)} (${origin}) … `);
-  const res = await fetch(`${API}/ingestion/csv`, { method: 'POST', body: form });
+  const res = await request(`${API}/ingestion/csv`, { method: 'POST', body: form });
   const body = await res.json().catch(() => ({}));
-  if (!res.ok) fallar(`\n  La API respondió ${res.status}: ${JSON.stringify(body.message ?? body)}`);
+  if (!res.ok) fallar(msg`\n  La API respondió ${res.status}: ${JSON.stringify(body.message ?? body)}`);
 
   const a = body.districtAssignment ?? {};
   console.log(
@@ -81,22 +82,22 @@ for (const { file, dataset, origin } of archivos) {
 }
 
 if (soloDefensa) {
-  console.log('\nCalendario de la defensa: 14-nov-2026 22:00 a 15-nov-2026 20:00 (hora de Bolivia).');
-  console.log('Mientras esté vigente, el servidor revisa cada minuto las detecciones que ya llegaron.');
-  console.log('En Alertas selecciona «Importaciones simuladas» y aplica el filtro.');
+  console.log(t('\nCalendario de la defensa: 14-nov-2026 22:00 a 15-nov-2026 20:00 (hora de Bolivia).'));
+  console.log(t('Mientras esté vigente, el servidor revisa cada minuto las detecciones que ya llegaron.'));
+  console.log(t('En Alertas selecciona «Importaciones simuladas» y aplica el filtro.'));
 } else if (cual === 'demo') {
   console.log(
     '\nLa proyección empieza el 17-nov-2026: cada detección simulada "llega" cuando se cumple su fecha y hora,\n' +
       'y en ese momento aparece en el mapa (hotspots:new) y genera su alerta (alert:new), marcada como simulada.',
   );
-  console.log('\nPara verla ahora mismo, reprodúcela (con npm run realtime:watch abierto en otra terminal):');
+  console.log(t('\nPara verla ahora mismo, reprodúcela (con npm run realtime:watch abierto en otra terminal):'));
   console.log(
     `  curl -X POST ${API}/replay/start -H "content-type: application/json" ` +
       `-d '{"from":"2027-07-06","to":"2027-07-10","intervalMs":2000}'`,
   );
-  console.log('  (o en Swagger: POST /replay/start con ese cuerpo). Otros tramos intensos: 8–12 jul 2028, 16–20 ago 2029.');
+  console.log(t('  (o en Swagger: POST /replay/start con ese cuerpo). Otros tramos intensos: 8–12 jul 2028, 16–20 ago 2029.'));
 } else {
-  console.log('\nListo. Repetirlo no duplica nada.');
+  console.log(t('\nListo. Repetirlo no duplica nada.'));
 }
 
 /** Reemplazo de simulados por reales (hasta un día) o limpieza completa, vía la API. */
@@ -104,38 +105,38 @@ async function borrarSimulados(modo) {
   const aplicar = resto.includes('--aplicar');
   const hasta = modo === 'reemplazar' ? resto.find((a) => /^\d{4}-\d{2}-\d{2}$/.test(a)) : undefined;
   if (modo === 'reemplazar' && !hasta) {
-    fallar('Indica el último día con datos reales completos (hora de Bolivia), p. ej.: npm run datos:reemplazar-simulados -- 2026-11-13');
+    fallar(t('Indica el último día con datos reales completos (hora de Bolivia), p. ej.: npm run datos:reemplazar-simulados -- 2026-11-13'));
   }
-  const res = await fetch(`${API}/ingestion/simulados/borrar`, {
+  const res = await request(`${API}/ingestion/simulados/borrar`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ ...(hasta ? { hasta } : {}), aplicar }),
   });
   const body = await res.json().catch(() => ({}));
-  if (!res.ok) fallar(`La API respondió ${res.status}: ${JSON.stringify(body.message ?? body)}`);
+  if (!res.ok) fallar(msg`La API respondió ${res.status}: ${JSON.stringify(body.message ?? body)}`);
 
-  const alcance = hasta ? `hasta el ${hasta} (hora de Bolivia)` : 'todas';
+  const alcance = hasta ? msg`hasta el ${hasta} (hora de Bolivia)` : t('todas');
   if (aplicar) {
-    console.log(`✔ Borradas ${body.borrados} detecciones simuladas (${alcance}). Reales intactas: ${body.realesIntactas}.`);
-    console.log('  Sus alertas también se borraron y las pantallas abiertas recibieron hotspots:removed y alert:removed.');
+    console.log(msg`✔ Borradas ${body.borrados} detecciones simuladas (${alcance}). Reales intactas: ${body.realesIntactas}.`);
+    console.log(t('  Sus alertas también se borraron y las pantallas abiertas recibieron hotspots:removed y alert:removed.'));
   } else {
-    console.log(`Ensayo: se borrarían ${body.aBorrar} de ${body.simulados} detecciones simuladas (${alcance}).`);
-    console.log(`Reales intactas: ${body.realesIntactas}. Para aplicar, repite el comando con --aplicar.`);
+    console.log(msg`Ensayo: se borrarían ${body.aBorrar} de ${body.simulados} detecciones simuladas (${alcance}).`);
+    console.log(msg`Reales intactas: ${body.realesIntactas}. Para aplicar, repite el comando con --aplicar.`);
   }
 }
 
 async function comprobarServidor() {
   try {
-    const res = await fetch(`${API}/health`);
-    if (!res.ok) fallar(`El servidor responde pero /health da ${res.status}. Revisa la base con npm run db:doctor.`);
+    const res = await request(`${API}/health`);
+    if (!res.ok) fallar(msg`El servidor responde pero /health da ${res.status}. Revisa la base con npm run db:doctor.`);
   } catch {
-    fallar(`No hay servidor en ${API}. Arráncalo en otra terminal con npm run start:dev y vuelve a intentar.`);
+    fallar(msg`No hay servidor en ${API}. Arráncalo en otra terminal con npm run start:dev y vuelve a intentar.`);
   }
 }
 
 /** Sin distritos, las detecciones quedan PENDING (sin distrito asignado). */
 async function avisarSiNoHayDistritos() {
-  const distritos = await fetch(`${API}/districts`).then((r) => (r.ok ? r.json() : [])).catch(() => []);
+  const distritos = await request(`${API}/districts`).then((r) => (r.ok ? r.json() : [])).catch(() => []);
   if (Array.isArray(distritos) && distritos.length === 0) {
     console.log(
       '⚠ No hay distritos cargados: las detecciones quedarán sin distrito (PENDING).\n' +
@@ -147,7 +148,7 @@ async function avisarSiNoHayDistritos() {
 
 /** El SIMULADO 2027 de la demo anterior también cubre 2027: juntos se sumarían. */
 async function avisarDemoAnterior() {
-  const lotes = await fetch(`${API}/ingestion/batches?limit=200`).then((r) => (r.ok ? r.json() : [])).catch(() => []);
+  const lotes = await request(`${API}/ingestion/batches?limit=200`).then((r) => (r.ok ? r.json() : [])).catch(() => []);
   const anterior = Array.isArray(lotes) && lotes.some((l) => l.dataset === 'SIMULADO 2027' && l.inserted > 0);
   if (anterior) {
     fallar(

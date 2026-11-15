@@ -1,4 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { LanguageService } from '../../../core/i18n/language.service';
 import { MapAnalysisService } from './map-analysis.service';
 
 const period = { from: '2024-01-01', to: '2024-12-31' };
@@ -8,7 +10,10 @@ const row = {
   confianza_clase: 'alta', dia_noche: 'D', origen_dato: 'estandar', evento_id_tunari: 'TUNARI-1',
 };
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.unstubAllGlobals();
+  localStorage.removeItem('tunari-guard.language');
+});
 
 describe('MapAnalysisService', () => {
   it('follows the archive offset header and maps FIRMS fields without mixing sources', async () => {
@@ -17,10 +22,12 @@ describe('MapAnalysisService', () => {
       .mockResolvedValueOnce(Response.json([{ ...row, id_deteccion: 'archive-2' }]));
     vi.stubGlobal('fetch', fetch);
     const signal = new AbortController().signal;
-    const result = await new MapAnalysisService().detections(
+    TestBed.inject(LanguageService).setLanguage('en');
+    const result = await TestBed.inject(MapAnalysisService).detections(
       'parque-tunari', period, '-67,-18,-65,-16', undefined, ['NOAA20'], 'HIGH', false, signal,
     );
     expect(fetch.mock.calls[0][0]).toContain('fuente=VIIRS-NOAA-20');
+    expect(new Headers(fetch.mock.calls[0][1].headers).get('Accept-Language')).toBe('en');
     expect(fetch.mock.calls[1][0]).toContain('offset=1');
     expect(result).toHaveLength(2);
     expect(result[0]).toMatchObject({
@@ -39,7 +46,7 @@ describe('MapAnalysisService', () => {
       });
     vi.stubGlobal('fetch', fetch);
 
-    const result = await new MapAnalysisService().detections(
+    const result = await TestBed.inject(MapAnalysisService).detections(
       'parque-tunari', period, undefined, undefined, [], '', false,
       new AbortController().signal, firstPage,
     );
@@ -53,7 +60,7 @@ describe('MapAnalysisService', () => {
     const fetch = vi.fn().mockResolvedValue(Response.json([row, { ...row, fuente_persistente_probable: true }]));
     vi.stubGlobal('fetch', fetch);
     const polygon = { type: 'Polygon' as const, coordinates: [[[-67, -18], [-65, -18], [-65, -16], [-67, -18]]] };
-    const result = await new MapAnalysisService().detections(
+    const result = await TestBed.inject(MapAnalysisService).detections(
       'parque-tunari', period, '', polygon, ['NOAA20'], '', true, new AbortController().signal,
     );
     expect(fetch.mock.calls[0][0]).toMatch(/\/detecciones\/buscar$/);

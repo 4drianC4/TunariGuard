@@ -1,3 +1,4 @@
+import { t } from '../../shared/i18n/language.js';
 import { z } from 'zod';
 import { bbox, isoDay, queryBoolean } from '../../shared/query-schemas.js';
 import { problemaDePoligono } from './domain/poligono.js';
@@ -5,7 +6,7 @@ import { problemaDePoligono } from './domain/poligono.js';
 const desde = isoDay.optional().describe('Desde, inclusive (YYYY-MM-DD, día en hora de Bolivia)');
 const hasta = isoDay.optional().describe('Hasta, inclusive (YYYY-MM-DD)');
 const rangoValido = (q: { desde?: string; hasta?: string }) => !q.desde || !q.hasta || q.desde <= q.hasta;
-const errorRango = { message: 'desde debe ser anterior o igual a hasta', path: ['desde'] };
+const errorRango = { error: () => t('desde debe ser anterior o igual a hasta'), path: ['desde'] };
 
 export const areaIdParamSchema = z.object({
   area_id: z
@@ -32,7 +33,7 @@ export const calendarioSchema = z
     hasta_anio: z.coerce.number().int().min(2000).max(2100).optional(),
   })
   .refine((q) => !q.desde_anio || !q.hasta_anio || q.desde_anio <= q.hasta_anio, {
-    message: 'desde_anio debe ser menor o igual a hasta_anio',
+    error: () => t('desde_anio debe ser menor o igual a hasta_anio'),
     path: ['desde_anio'],
   });
 export type CalendarioQuery = z.infer<typeof calendarioSchema>;
@@ -151,7 +152,7 @@ const historialBase = {
 };
 const aniosValidos = (q: { desde_anio?: number; hasta_anio?: number }) =>
   !q.desde_anio || !q.hasta_anio || q.desde_anio <= q.hasta_anio;
-const errorAnios = { message: 'desde_anio debe ser menor o igual a hasta_anio', path: ['desde_anio'] };
+const errorAnios = { error: () => t('desde_anio debe ser menor o igual a hasta_anio'), path: ['desde_anio'] };
 
 export const historialSchema = z
   .object({

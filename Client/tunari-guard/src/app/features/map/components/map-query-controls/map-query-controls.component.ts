@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../../core/i18n/language.service';
 import { MapInfoComponent } from '../map-info.component';
 import { DetectionDatesService } from '../../../../application/services/detection-dates.service';
 import { DetectionDateDirective } from '../../../../shared/directives/detection-date.directive';
@@ -13,6 +14,8 @@ import type { MapPeriod } from '../../models/map-period.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MapQueryControlsComponent {
+  readonly t = inject(LanguageService).text;
+  readonly areaText = inject(LanguageService).area;
   readonly dates = inject(DetectionDatesService);
   readonly areaId = input.required<string>();
   readonly areas = input.required<readonly Omit<AnalysisArea, 'geometria'>[]>();

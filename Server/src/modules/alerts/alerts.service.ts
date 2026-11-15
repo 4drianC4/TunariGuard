@@ -25,7 +25,8 @@ import {
 } from '../../shared/domain-events.js';
 import { AlertsRepository } from './alerts.repository.js';
 import type { BackfillAlertsBody, ListAlertsQuery, MonthlyContextQuery, UpdateAlertBody } from './alerts.schemas.js';
-import { SEVERITY_LABELS, STATUS_LABELS, severityFromLabel, statusFromLabel, toAlertDto } from './domain/alert-dto.js';
+import { SEVERITY_LABELS, STATUS_LABELS, toAlertDto } from './domain/alert-dto.js';
+import { areaLabel, msg, t } from '../../shared/i18n/language.js';
 import { chunkAtGaps } from './domain/backfill-chunks.js';
 import { buildAlerts, PASS_WINDOW_MINUTES, shouldNotify, type AlertModeValue } from './domain/alert-rules.js';
 import { monthlyContext } from './domain/monthly-context.js';
@@ -208,8 +209,8 @@ export class AlertsService implements OnApplicationBootstrap, OnModuleDestroy {
         areaId: parque || municipio ? undefined : q.area_id,
         areaIds,
         inPark: parque ? true : q.en_parque,
-        severity: q.severidad ? severityFromLabel(q.severidad) : undefined,
-        status: q.estado ? statusFromLabel(q.estado) : undefined,
+        severity: q.severidad,
+        status: q.estado,
         mode: q.modo === 'replay' ? 'REPLAY' : q.modo === 'live' ? 'LIVE' : undefined,
         origin: q.origen,
       },
@@ -228,7 +229,7 @@ export class AlertsService implements OnApplicationBootstrap, OnModuleDestroy {
         medium: bySeverity.MEDIUM ?? 0,
         byStatus: Object.fromEntries(Object.entries(STATUS_LABELS).map(([k, label]) => [label, byStatus[k as keyof typeof byStatus] ?? 0])),
       },
-      areas,
+      areas: areas.map((area) => ({ ...area, areaName: areaLabel(area.areaName) })),
       severities: Object.values(SEVERITY_LABELS),
       statuses: Object.values(STATUS_LABELS),
     };
@@ -236,14 +237,14 @@ export class AlertsService implements OnApplicationBootstrap, OnModuleDestroy {
 
   async findOne(id: string) {
     const alert = await this.repository.find(id);
-    if (!alert) throw new NotFoundException(`No existe la alerta ${id}`);
+    if (!alert) throw new NotFoundException(msg`No existe la alerta ${id}`);
     return toAlertDto(alert);
   }
 
   async updateStatus(id: string, body: UpdateAlertBody) {
     const current = await this.repository.find(id);
-    if (!current) throw new NotFoundException(`No existe la alerta ${id}`);
-    const updated = toAlertDto(await this.repository.updateStatus(current.id, statusFromLabel(body.status), body.note));
+    if (!current) throw new NotFoundException(msg`No existe la alerta ${id}`);
+    const updated = toAlertDto(await this.repository.updateStatus(current.id, body.status, body.note));
     this.events.emit(ALERT_UPDATED, { alert: updated } satisfies AlertUpdatedEvent);
     return updated;
   }
@@ -254,10 +255,10 @@ export class AlertsService implements OnApplicationBootstrap, OnModuleDestroy {
 
   async monthlyContext(q: MonthlyContextQuery) {
     if (!(await this.repository.fuegoAvailable())) {
-      throw new ServiceUnavailableException('El esquema fuego no está cargado. Ejecuta en Server/: npm run fuego:setup');
+      throw new ServiceUnavailableException(t('El esquema fuego no está cargado. Ejecuta en Server/: npm run fuego:setup'));
     }
     const items = (await this.repository.monthly(q.area_id)).map(monthlyContext);
-    if (q.area_id && items.length === 0) throw new NotFoundException(`No hay alerta del mes en curso para ${q.area_id}`);
+    if (q.area_id && items.length === 0) throw new NotFoundException(msg`No hay alerta del mes en curso para ${q.area_id}`);
     return {
       fecha_corte: items[0]?.fecha_corte ?? null,
       items: q.solo_alertas ? items.filter((i) => i.isAlert) : items,

@@ -21,6 +21,7 @@ interface CitaTuni {
   titulo: string;
   texto: string;
   alcance?: string;
+  language?: 'es' | 'en';
 }
 interface ContextoDetecciones {
   area: string;
@@ -55,6 +56,7 @@ export class MascotAssistantComponent implements OnInit, OnDestroy {
   // TUNI_VOZ_V3_START: audio exclusivo y conversacion por turnos
   private readonly http = inject(HttpClient);
   readonly i18n = inject(LanguageService);
+  readonly t = this.i18n.text;
   readonly pregunta = signal('');
   readonly respuestas = signal<MensajeTuni[]>([]);
   readonly consultasRapidas: { id: ConsultaRapida; label: string; pregunta: string }[] = [
@@ -84,7 +86,7 @@ export class MascotAssistantComponent implements OnInit, OnDestroy {
   private readonly api = `${environment.apiBaseUrl}/tuni`;
 
   enviarPregunta(rapida?: { id: ConsultaRapida; pregunta: string }): void {
-    const message = rapida?.pregunta ?? this.pregunta().trim();
+    const message = rapida ? this.t(rapida.pregunta) : this.pregunta().trim();
     if (!message || this.procesando()) return;
     const history = this.respuestas().slice(-8).map(({ role, text, contextoDetecciones, periodosIncendios }) =>
       ({ role, text: text.slice(0, 1500), contextoDetecciones, periodosIncendios }),
@@ -92,14 +94,13 @@ export class MascotAssistantComponent implements OnInit, OnDestroy {
     if (!rapida) this.pregunta.set('');
     this.errorIA.set('');
     this.procesando.set(true);
-    this.estadoVoz.set(this.i18n.language() === 'en' ? 'Tuni is thinking...' : 'Tuni está pensando...');
+    this.estadoVoz.set('Tuni está pensando...');
     this.respuestas.update(items => [...items, { role: 'user', text: message }]);
     const sesion = this.sesionVoz;
     this.solicitudChat = this.http.post<RespuestaTuni>(`${this.api}/chat`, { message, history, consulta: rapida?.id }).subscribe({
       next: r => {
         const { answer, ...detalle } = r;
         this.respuestas.update(items => [...items, { role: 'assistant', text: answer, ...detalle }]);
-        if (this.i18n.language() === 'en' && r.language !== 'en') this.errorIA.set('English translation is temporarily unavailable. Tuni answered in Spanish.');
         this.procesando.set(false);
         if (this.conversacionContinua() && sesion === this.sesionVoz) this.reproducirVoz(r.answer, true);
         else this.estadoVoz.set('');

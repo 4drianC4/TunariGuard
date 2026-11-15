@@ -1,3 +1,4 @@
+import { areaLabel, currentLanguage, t } from '../../../shared/i18n/language.js';
 /**
  * Mensaje según `nivel_alerta` de la alerta del mes en curso (fuego.alerta_mes_en_curso).
  * El nivel lo calcula el modelo estadístico del equipo de datos: aquí solo se traduce a texto.
@@ -62,18 +63,31 @@ export function monthlyContext(row: MonthlyAlertRow) {
     detalle = 'Dentro de lo esperable para este tramo del mes.';
   }
 
+  const english = currentLanguage() === 'en';
+  const name = areaLabel(row.nombre_visible);
+  const title = t(info.title);
+  const englishMessage = () => {
+    const month = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' })
+      .format(new Date(Date.UTC(anio!, (mes ?? 1) - 1, 1)));
+    const quantity = `${row.celdas_dia_observadas} heat ${row.celdas_dia_observadas === 1 ? 'cell-day' : 'cell-days'}`;
+    const expected = row.esperado_modelo === null ? '' : `, versus about ${formatear(row.esperado_modelo)} expected by the model`;
+    const conclusion = info.maxProbabilityPct === null
+      ? level === 'sin_baseline' ? 'There is insufficient history for this part of the month.' : 'Within the expected range for this part of the month.'
+      : `The model estimates a ${info.maxProbabilityPct}% or lower chance of activity this high. Verification is required.`;
+    return `${title} in ${name}: ${quantity} in the first ${row.dias_transcurridos} days of ${month} (${row.satelite_base})${expected}. ${conclusion}`;
+  };
   return {
     area_id: row.area_id,
-    nombre_visible: row.nombre_visible,
+    nombre_visible: name,
     nivel_alerta: level,
-    title: info.title,
+    title,
     severity: info.severity,
     /** true si conviene destacarla (elevada, alta o muy alta). */
     isAlert: info.severity !== null,
-    message:
+    message: english ? englishMessage() :
       `${info.title} en ${row.nombre_visible}: en ${periodo} se registraron ${celdas} de calor ` +
       `(${row.satelite_base})${esperado}. ${detalle}`,
-    lectura: row.lectura,
+    lectura: t(row.lectura),
     fecha_corte: row.fecha_corte,
     mes: row.mes,
     dias_transcurridos: row.dias_transcurridos,

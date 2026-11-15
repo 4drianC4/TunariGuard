@@ -6,12 +6,12 @@ import { LanguageService, type AppLanguage } from './language.service';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="language-switcher" role="group" aria-label="Language / Idioma">
+    <div class="language-switcher" role="group" [attr.aria-label]="i18n.text('Idioma')">
       <button type="button" [class.active]="i18n.language() === 'es'"
-        [attr.aria-pressed]="i18n.language() === 'es'" (click)="set('es')">ES</button>
+        [attr.aria-pressed]="i18n.language() === 'es'" [attr.aria-label]="i18n.text('Español')" lang="es" (click)="set('es')">ES</button>
       <span aria-hidden="true">|</span>
       <button type="button" [class.active]="i18n.language() === 'en'"
-        [attr.aria-pressed]="i18n.language() === 'en'" (click)="set('en')">EN</button>
+        [attr.aria-pressed]="i18n.language() === 'en'" [attr.aria-label]="i18n.text('Inglés')" lang="en" (click)="set('en')">EN</button>
     </div>
   `,
   styles: [`

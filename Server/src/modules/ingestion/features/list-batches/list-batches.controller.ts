@@ -1,3 +1,4 @@
+import { msg } from '../../../../shared/i18n/language.js';
 import { Controller, Get, NotFoundException, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { z } from 'zod';
@@ -23,7 +24,7 @@ export class ListBatchesController {
   @ApiOperation({ summary: 'Un lote con sus errores de fila' })
   async findOne(@Param('id', { schema: z.uuid() }) id: string) {
     const batch = await this.batches.findById(id);
-    if (!batch) throw new NotFoundException(`Lote ${id} no encontrado`);
+    if (!batch) throw new NotFoundException(msg`Lote ${id} no encontrado`);
     return batch;
   }
 }

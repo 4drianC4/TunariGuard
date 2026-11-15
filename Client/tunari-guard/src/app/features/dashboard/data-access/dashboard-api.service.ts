@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { LanguageService } from '../../../core/i18n/language.service';
+import { inject, Injectable } from '@angular/core';
 import { MAP_API_BASE } from '../../map/data-access/map-data.config';
 
 const park = 'parque-tunari';
@@ -20,6 +21,7 @@ interface IndexMonth {
 
 @Injectable({ providedIn: 'root' })
 export class DashboardApi {
+  private readonly i18n = inject(LanguageService);
   async detections(signal: AbortSignal) {
     const params = new URLSearchParams({ area_id: park, limite: '4', orden: 'fecha_desc' });
     const response = await this.request('/detecciones?' + params, signal);
@@ -56,7 +58,7 @@ export class DashboardApi {
   }
 
   private async request(path: string, signal: AbortSignal): Promise<Response> {
-    const response = await fetch(MAP_API_BASE + path, { signal });
+    const response = await this.i18n.fetch(MAP_API_BASE + path, { signal });
     if (!response.ok) throw new Error(`La API respondió HTTP ${response.status}.`);
     return response;
   }

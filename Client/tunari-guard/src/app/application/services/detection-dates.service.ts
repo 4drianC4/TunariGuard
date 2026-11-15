@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { LanguageService } from '../../core/i18n/language.service';
+import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environment';
 
 const boliviaDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/La_Paz' });
@@ -14,6 +15,7 @@ function isDate(value: string): boolean {
 
 @Injectable({ providedIn: 'root' })
 export class DetectionDatesService {
+  private readonly i18n = inject(LanguageService);
   private readonly first = signal(FIRST_SUPPORTED_DATE);
   private request?: Promise<string>;
 
@@ -52,9 +54,9 @@ export class DetectionDatesService {
     const max = this.max(unit);
     const suffix = unit === 'year' ? '-01-01' : unit === 'month' ? '-01' : '';
     if ([from, to].some((value) => value && (!isDate(value + suffix) || value < min || value > max))) {
-      return `Selecciona un período entre ${min} y ${max}.`;
+      return this.i18n.text('Selecciona un período entre {1} y {2}.', { 1: min, 2: max });
     }
-    return from && to && from > to ? 'El inicio debe ser anterior o igual al fin.' : '';
+    return from && to && from > to ? this.i18n.text('El inicio debe ser anterior o igual al fin.') : '';
   }
 
   private async fetchFirstDate(): Promise<string> {
@@ -63,7 +65,7 @@ export class DetectionDatesService {
       const params = new URLSearchParams({
         desde: FIRST_SUPPORTED_DATE, hasta: this.today, limite: '1', orden: 'fecha_asc',
       });
-      const response = await fetch(base + '/detecciones?' + params, { signal: AbortSignal.timeout(5000) });
+      const response = await this.i18n.fetch(base + '/detecciones?' + params, { signal: AbortSignal.timeout(5000) });
       if (response.ok) {
         const [first] = await response.json() as { fecha_bo: string }[];
         const date = first?.fecha_bo;

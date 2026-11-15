@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../../core/i18n/language.service';
 import { ChangeDetectionStrategy, Component, computed, inject, resource } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
@@ -19,6 +20,9 @@ import { DashboardApi } from '../../data-access/dashboard-api.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardPageComponent {
+  readonly t = inject(LanguageService).text;
+  readonly locale = inject(LanguageService).locale;
+  readonly dateFormat = () => this.locale() === 'es-BO' ? 'dd/MM/yyyy HH:mm' : 'short';
   private readonly api = inject(DashboardApi);
   private readonly alertsApi = inject(AlertsApi);
   private readonly factorFormat = new Intl.NumberFormat('es-BO', { maximumFractionDigits: 2 });

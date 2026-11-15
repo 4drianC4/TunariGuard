@@ -1,6 +1,7 @@
+import { LanguageService } from '../../../../core/i18n/language.service';
 import { MapInfoComponent } from '../map-info.component';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { inject, ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { DistrictAssignment, Observation, ObservationSource } from '../../models/observation.model';
 
 @Component({
@@ -11,6 +12,10 @@ import { DistrictAssignment, Observation, ObservationSource } from '../../models
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HotspotPopupComponent {
+  readonly t = inject(LanguageService).text;
+  readonly areaText = inject(LanguageService).area;
+  readonly locale = inject(LanguageService).locale;
+  readonly dateFormat = () => this.locale() === 'es-BO' ? 'dd/MM/yyyy HH:mm' : 'short';
   readonly confidenceLabels: Record<string, string> = { LOW: 'Baja', NOMINAL: 'Nominal', HIGH: 'Alta' };
   readonly districtLabels: Record<DistrictAssignment, string> = {
     PENDING: 'Pendiente', ASSIGNED: 'Asignado', OUTSIDE: 'Fuera de los distritos', AMBIGUOUS: 'Sin un distrito único',

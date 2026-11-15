@@ -5,10 +5,15 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module.js';
 import type { Env } from './infrastructure/config/env.schema.js';
 import { ConfiguredIoAdapter } from './infrastructure/websocket/configured-io.adapter.js';
+import type { NextFunction, Request, Response } from 'express';
+import { currentLanguage, resolveLanguage, withLanguage } from './shared/i18n/language.js';
+import { z } from 'zod';
 
 const API_PREFIX = 'api/v1';
 
 async function bootstrap() {
+  const schemas = { es: z.locales.es().localeError, en: z.locales.en().localeError };
+  z.config({ customError: (issue) => schemas[currentLanguage()](issue) });
   const app = await NestFactory.create(AppModule);
   const config = app.get<ConfigService<Env, true>>(ConfigService);
 
@@ -16,6 +21,12 @@ async function bootstrap() {
   app.useGlobalPipes(new StandardSchemaValidationPipe());
   const corsOrigins = config.get('CORS_ORIGINS', { infer: true });
   app.enableCors({ origin: corsOrigins });
+  app.use(`/${API_PREFIX}`, (req: Request, res: Response, next: NextFunction) => {
+    const language = resolveLanguage(req.headers['accept-language']);
+    res.vary('Accept-Language');
+    res.setHeader('Content-Language', language);
+    withLanguage(language, next);
+  });
   app.useWebSocketAdapter(new ConfiguredIoAdapter(app, corsOrigins));
   app.enableShutdownHooks();
 

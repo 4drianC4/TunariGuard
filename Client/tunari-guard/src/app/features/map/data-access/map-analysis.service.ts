@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { LanguageService } from '../../../core/i18n/language.service';
+import { inject, Injectable } from '@angular/core';
 import type { FeatureCollection, Geometry, MultiPolygon, Polygon } from 'geojson';
 import { SensorType } from '../../../domain/enums/sensor-type.enum';
 import type { MapPeriod } from '../models/map-period.model';
@@ -55,6 +56,7 @@ interface ArchiveDetection {
 
 @Injectable({ providedIn: 'root' })
 export class MapAnalysisService {
+  private readonly i18n = inject(LanguageService);
   areas(signal: AbortSignal) {
     return this.json<Omit<AnalysisArea, 'geometria'>[]>('/areas', signal);
   }
@@ -138,7 +140,7 @@ export class MapAnalysisService {
   }
 
   private async request(path: string, signal: AbortSignal, body?: object): Promise<Response> {
-    const response = await fetch(MAP_API_BASE + path, {
+    const response = await this.i18n.fetch(MAP_API_BASE + path, {
       signal,
       ...(body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {}),
     });

@@ -1,10 +1,10 @@
 <section class="tg-card flex min-w-0 flex-col gap-4">
   <header class="tg-card-heading">
-    <div class="tg-card-titleline"><div><h2>Registros históricos</h2><p>Detalle mensual del índice consultado.</p></div></div>
+    <div class="tg-card-titleline"><div><h2>{{ t('Registros históricos') }}</h2><p>{{ t('Detalle mensual del índice consultado.') }}</p></div></div>
     <div class="flex items-center gap-2 text-xs font-semibold text-[#555b43]">
-      <label for="history-year">Año</label>
+      <label for="history-year">{{ t('Año') }}</label>
       <select id="history-year" class="tg-filter-control tg-filter-control--compact" [value]="selectedYear()" (change)="selectYear($any($event.target).value)">
-        <option value="ALL">Todos los años</option>
+        <option value="ALL">{{ t('Todos los años') }}</option>
         @for (year of years(); track year) { <option [value]="year">{{ year }}</option> }
       </select>
     </div>
@@ -13,29 +13,29 @@
   <div class="w-full overflow-x-auto rounded-xl border border-[#e2dbcf]">
     <table class="w-full min-w-[620px] border-collapse text-left text-sm">
       <thead class="bg-[#eae0cd] text-[11px] font-extrabold uppercase tracking-wide text-[#555b43]"><tr>
-        <th class="px-4 py-3">Año</th><th class="px-4 py-3">Mes</th><th class="px-4 py-3">Calidad</th><th class="px-4 py-3 text-right">Actividad</th>
+        <th class="px-4 py-3">{{ t('Año') }}</th><th class="px-4 py-3">{{ t('Mes') }}</th><th class="px-4 py-3">{{ t('Calidad') }}</th><th class="px-4 py-3 text-right">{{ t('Actividad') }}</th>
       </tr></thead>
       <tbody class="divide-y divide-[#eee8de] bg-[#fffcf7]">
         @for (record of paginatedRecords(); track record.year + '-' + record.month) {
           <tr class="transition-colors hover:bg-[#f7f3eb]">
             <td class="px-4 py-3 font-bold tabular-nums text-[#424637]">{{ record.year }}</td>
             <td class="px-4 py-3 text-[#555448]">{{ getMonthName(record.month) }}</td>
-            <td class="px-4 py-3"><span class="inline-flex rounded-full bg-[#e4eadf] px-2.5 py-1 text-[11px] font-bold text-[#405c38]">{{ formatQuality(record.quality) }}</span></td>
-            <td class="px-4 py-3 text-right font-semibold tabular-nums text-[#303722]">{{ record.activityCount | number:'1.0-2' }}</td>
+            <td class="px-4 py-3"><span class="inline-flex rounded-full bg-[#e4eadf] px-2.5 py-1 text-[11px] font-bold text-[#405c38]">{{ t(formatQuality(record.quality)) }}</span></td>
+            <td class="px-4 py-3 text-right font-semibold tabular-nums text-[#303722]">{{ record.activityCount | number:'1.0-2':locale() }}</td>
           </tr>
         } @empty {
-          <tr><td colspan="4" class="px-4 py-10 text-center text-sm text-[#737064]">No existen registros para el año seleccionado.</td></tr>
+          <tr><td colspan="4" class="px-4 py-10 text-center text-sm text-[#737064]">{{ t('No existen registros para el año seleccionado.') }}</td></tr>
         }
       </tbody>
     </table>
   </div>
 
   <footer class="flex flex-wrap items-center justify-between gap-3 text-xs text-[#737064]">
-    <span>Mostrando {{ firstVisibleRecord() }}–{{ lastVisibleRecord() }} de {{ totalRecords() }} registros</span>
+    <span>{{ t('Mostrando') }} {{ firstVisibleRecord() }}–{{ lastVisibleRecord() }} {{ t('de') }} {{ totalRecords() }} {{ t('registros') }}</span>
     <div class="flex items-center gap-2">
-      <button type="button" class="rounded-lg border border-[#ded6ca] bg-[#fffcf7] px-3 py-2 font-semibold text-[#526b4c] transition hover:bg-[#f1ecdf] disabled:cursor-not-allowed disabled:opacity-40" (click)="previousPage()" [disabled]="currentPage() === 1" aria-label="Página anterior">Anterior</button>
+      <button type="button" class="rounded-lg border border-[#ded6ca] bg-[#fffcf7] px-3 py-2 font-semibold text-[#526b4c] transition hover:bg-[#f1ecdf] disabled:cursor-not-allowed disabled:opacity-40" (click)="previousPage()" [disabled]="currentPage() === 1" [attr.aria-label]="t('Página anterior')">{{ t('Anterior') }}</button>
       <span class="min-w-12 text-center font-semibold tabular-nums">{{ currentPage() }} / {{ totalPages() }}</span>
-      <button type="button" class="rounded-lg border border-[#ded6ca] bg-[#fffcf7] px-3 py-2 font-semibold text-[#526b4c] transition hover:bg-[#f1ecdf] disabled:cursor-not-allowed disabled:opacity-40" (click)="nextPage()" [disabled]="currentPage() === totalPages()" aria-label="Página siguiente">Siguiente</button>
+      <button type="button" class="rounded-lg border border-[#ded6ca] bg-[#fffcf7] px-3 py-2 font-semibold text-[#526b4c] transition hover:bg-[#f1ecdf] disabled:cursor-not-allowed disabled:opacity-40" (click)="nextPage()" [disabled]="currentPage() === totalPages()" [attr.aria-label]="t('Página siguiente')">{{ t('Siguiente') }}</button>
     </div>
   </footer>
 </section>

@@ -1,53 +1,53 @@
 <section class="tg-dashboard page">
    <app-page-header
-    section="inicio"
-    title="Panel de monitoreo"
-    description="Resumen ejecutivo del estado de anomalías térmicas, alertas y actividad reciente."
+    [section]="t('inicio')"
+    [title]="t('Panel de monitoreo')"
+    [description]="t('Resumen ejecutivo del estado de anomalías térmicas, alertas y actividad reciente.')"
   />
 
-  <section class="tg-kpis" aria-label="Indicadores principales">
+  <section class="tg-kpis" [attr.aria-label]="t('Indicadores principales')">
     <article class="tg-kpi">
       <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#fire"></use></svg></span>
-      <div class="tg-kpi-copy"><span class="tg-kpi-title">Focos detectados</span>
+      <div class="tg-kpi-copy"><span class="tg-kpi-title">{{ t('Focos detectados') }}</span>
         <div class="tg-kpi-number">{{ detections.hasValue() ? (detections.value().total ?? '—') : '—' }}</div></div>
     </article>
     <article class="tg-kpi">
       <span class="tg-kpi-symbol pink"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#warning"></use></svg></span>
-      <div class="tg-kpi-copy"><span class="tg-kpi-title">Alertas de prioridad alta</span>
+      <div class="tg-kpi-copy"><span class="tg-kpi-title">{{ t('Alertas de prioridad alta') }}</span>
         <div class="tg-kpi-number">{{ alertsHigh() ?? '—' }}</div></div>
     </article>
     <article class="tg-kpi">
       <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#districts"></use></svg></span>
-      <div class="tg-kpi-copy"><span class="tg-kpi-title">Distritos monitoreados</span>
+      <div class="tg-kpi-copy"><span class="tg-kpi-title">{{ t('Distritos monitoreados') }}</span>
         <div class="tg-kpi-number">{{ districts.hasValue() ? districts.value() : '—' }}</div></div>
     </article>
     <article class="tg-kpi">
       <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#target"></use></svg></span>
-      <div class="tg-kpi-copy"><span class="tg-kpi-title">Índice armonizado</span>
+      <div class="tg-kpi-copy"><span class="tg-kpi-title">{{ t('Índice armonizado') }}</span>
         <div class="tg-kpi-number tg-kpi-number--text">MODIS + VIIRS</div>
-        @if (factor(); as value) { <small class="tg-kpi-note">VIIRS reescalado ÷ {{ value }}</small> }</div>
+        @if (factor(); as value) { <small class="tg-kpi-note">{{ t('VIIRS reescalado ÷') }} {{ value }}</small> }</div>
     </article>
   </section>
 
   @if (detections.error() || alerts.error() || districts.error() || coverage.error()) {
-    <p role="status">Algunos datos del panel no están disponibles.</p>
+    <p role="status">{{ t('Algunos datos del panel no están disponibles.') }}</p>
   }
 
   <div class="tg-main-grid">
     <article class="tg-card tg-map-card">
       <div class="tg-card-heading">
         <div class="tg-card-titleline"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#map"></use></svg>
-          <div><h2>Mapa rápido de focos</h2><p>Detecciones satelitales del Parque Nacional Tunari.</p></div>
+          <div><h2>{{ t('Mapa rápido de focos') }}</h2><p>{{ t('Detecciones satelitales del Parque Nacional Tunari.') }}</p></div>
         </div>
-        <a class="tg-map-button" routerLink="/mapa">Ver mapa completo <svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#external"></use></svg></a>
+        <a class="tg-map-button" routerLink="/mapa">{{ t('Ver mapa completo') }} <svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#external"></use></svg></a>
       </div>
       <app-hotspot-map areaId="parque-tunari" [compact]="true" />
     </article>
     <div class="tg-right-grid">
       <article class="tg-card tg-alert-card">
         <div class="tg-card-heading tg-tight">
-          <div class="tg-card-titleline"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#bell"></use></svg><h2>Alertas recientes</h2></div>
-          <a class="tg-simple-link" routerLink="/alertas">Ver todas <span aria-hidden="true">→</span></a>
+          <div class="tg-card-titleline"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#bell"></use></svg><h2>{{ t('Alertas recientes') }}</h2></div>
+          <a class="tg-simple-link" routerLink="/alertas">{{ t('Ver todas') }} <span aria-hidden="true">→</span></a>
         </div>
         <div class="tg-alert-list">
           @if (alerts.hasValue()) {
@@ -55,18 +55,18 @@
               <div class="tg-alert-row">
                 <span class="tg-alert-status" [class.critical]="alert.severity === 'Crítica'" [class.high]="alert.severity === 'Alta'" [class.medium]="alert.severity === 'Media'"><i></i>{{ alert.severity }}</span>
                 <span class="tg-alert-district">— &nbsp; Distrito: {{ alert.district || 'Sin asignar' }}</span>
-                <small>{{ alert.detectedAtUtc | date:'dd/MM/y, HH:mm':'-0400' }}</small>
+                <small>{{ alert.detectedAtUtc | date:dateFormat():'-0400':locale() }}</small>
               </div>
-            } @empty { <p>No hay alertas recientes.</p> }
+            } @empty { <p>{{ t('No hay alertas recientes.') }}</p> }
           } @else { <p>{{ alerts.isLoading() ? 'Cargando alertas…' : 'Alertas no disponibles.' }}</p> }
         </div>
       </article>
       <article class="tg-card tg-harmony-card">
         <div class="tg-card-titleline"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#districts"></use></svg>
           <div>
-            <h2>Cobertura histórica</h2>
+            <h2>{{ t('Cobertura histórica') }}</h2>
             @if (historicalCoverage(); as history) {
-              @if (history.months) { <p>{{ history.months }} meses analizados con datos MODIS y VIIRS del Parque Tunari.</p> }
+              @if (history.months) { <p>{{ history.months }} {{ t('meses analizados con datos MODIS y VIIRS del Parque Tunari.') }}</p> }
             }
           </div>
           @if (historicalCoverage(); as history) {
@@ -80,10 +80,10 @@
             }
             @if (history.percentage !== null) {
               <div class="flex items-center justify-between gap-2 font-bold">
-                <p>Estado de armonización</p>
+                <p>{{ t('Estado de armonización') }}</p>
                 <p class="whitespace-nowrap">99 %</p>
               </div>
-              <div class="tg-progress" role="progressbar" aria-label="Meses con índice armonizado"
+              <div class="tg-progress" role="progressbar" [attr.aria-label]="t('Meses con índice armonizado')"
                 [attr.aria-valuenow]="99"><span [style.width.%]="history.percentage * 100"></span></div>
             }
           </div>
@@ -102,20 +102,20 @@
     </article>
     <article class="tg-card tg-detections-card">
       <div class="tg-card-heading tg-tight">
-        <div class="tg-card-titleline"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#reports"></use></svg><h2>Últimas detecciones</h2></div>
-        <a class="tg-simple-link" routerLink="/historial">Ver historial <span aria-hidden="true">→</span></a>
+        <div class="tg-card-titleline"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#reports"></use></svg><h2>{{ t('Últimas detecciones') }}</h2></div>
+        <a class="tg-simple-link" routerLink="/historial">{{ t('Ver historial') }} <span aria-hidden="true">→</span></a>
       </div>
       <div class="tg-table-scroll"><table>
-        <thead><tr><th>Fecha</th><th>Sensor</th><th>Área</th><th>Estado</th></tr></thead>
+        <thead><tr><th>{{ t('Fecha') }}</th><th>Sensor</th><th>{{ t('Área') }}</th><th>{{ t('Estado') }}</th></tr></thead>
         <tbody>
           @if (detections.hasValue()) {
             @for (item of detections.value().recent; track item.id_deteccion) {
-              <tr><td>{{ item.fecha_hora_utc | date:'dd/MM/y, HH:mm':'-0400' }}</td>
-                <td>{{ item.sensor }} ({{ item.plataforma }})</td><td>Parque Tunari</td>
+              <tr><td>{{ item.fecha_hora_utc | date:dateFormat():'-0400':locale() }}</td>
+                <td>{{ item.sensor }} ({{ item.plataforma }})</td><td>{{ t('Parque Tunari') }}</td>
                 <td><span class="tg-severity" [class.high]="item.confianza_clase === 'alta'" [class.medium]="item.confianza_clase === 'nominal'"><i></i>{{ item.confianza_clase ? 'Confianza ' + item.confianza_clase : 'Sin confianza informada' }}</span>
                   @if (item.origen_dato === 'NRT') { <small> · Provisional</small> }
                 </td></tr>
-            } @empty { <tr><td colspan="4">Sin detecciones en el archivo.</td></tr> }
+            } @empty { <tr><td colspan="4">{{ t('Sin detecciones en el archivo.') }}</td></tr> }
           } @else { <tr><td colspan="4">{{ detections.isLoading() ? 'Cargando detecciones…' : 'Detecciones no disponibles.' }}</td></tr> }
         </tbody>
       </table></div>

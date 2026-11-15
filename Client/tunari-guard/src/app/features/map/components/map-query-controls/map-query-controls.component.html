@@ -1,23 +1,23 @@
-<div class="query-controls" role="group" aria-label="Área y período del archivo histórico">
+<div class="query-controls" role="group" [attr.aria-label]="t('Área y período del archivo histórico')">
   <div>
-    <label for="map-area">Área de referencia</label>
-    <app-map-info topic="el área de referencia" text="Define el ámbito territorial de la consulta. Sin área de referencia, la consulta abarca la zona que muestra el mapa." />
+    <label for="map-area">{{ t('Área de referencia') }}</label>
+    <app-map-info [topic]="t('el área de referencia')" [text]="t('Define el ámbito territorial de la consulta. Sin área de referencia, la consulta abarca la zona que muestra el mapa.')" />
     <select id="map-area" #area (change)="contextChange.emit({ areaId: area.value, period: period() })">
-      <option value="" [selected]="!areaId()">Sin área de referencia</option>
+      <option value="" [selected]="!areaId()">{{ t('Sin área de referencia') }}</option>
       @if (areaId() && !areas().length) { <option [value]="areaId()" selected>{{ areaId() }}</option> }
       @for (item of areas(); track item.area_id) {
-        <option [value]="item.area_id" [selected]="item.area_id === areaId()">{{ item.nombre_visible }}</option>
+        <option [value]="item.area_id" [selected]="item.area_id === areaId()">{{ areaText(item.nombre_visible) }}</option>
       }
     </select>
   </div>
   <div class="flex flex-col gap-1">
-    <h3>Fechas de detección <app-map-info topic="las fechas" text="Filtra por fecha de detección en el archivo histórico. Se incluyen ambos días en hora de Bolivia. Pulsa Aplicar fechas para actualizar el mapa." /></h3>
-    <label>Desde <input #from type="date" tgDetectionDate="day" [value]="period().from" /></label>
-    <label>Hasta <input #to type="date" tgDetectionDate="day" [value]="period().to" /></label>
-    <button type="button" class="apply-period" (click)="applyPeriod(from.value, to.value)">Aplicar fechas</button>
+    <h3>{{ t('Fechas de detección') }} <app-map-info [topic]="t('las fechas')" [text]="t('Filtra por fecha de detección en el archivo histórico. Se incluyen ambos días en hora de Bolivia. Pulsa Aplicar fechas para actualizar el mapa.')" /></h3>
+    <label>{{ t('Desde') }} <input #from type="date" tgDetectionDate="day" [value]="period().from" /></label>
+    <label>{{ t('Hasta') }} <input #to type="date" tgDetectionDate="day" [value]="period().to" /></label>
+    <button type="button" class="apply-period" (click)="applyPeriod(from.value, to.value)">{{ t('Aplicar fechas') }}</button>
   </div>
   @if (areaId()) {
-    <button type="button" (click)="centerArea.emit()">Centrar en el área</button>
+    <button type="button" (click)="centerArea.emit()">{{ t('Centrar en el área') }}</button>
   }
 </div>
 @if (periodError()) { <p class="period-error" role="alert">{{ periodError() }}</p> }

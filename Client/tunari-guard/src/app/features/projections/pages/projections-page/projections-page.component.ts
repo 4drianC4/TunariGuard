@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../../core/i18n/language.service';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -28,6 +29,8 @@ interface ModelComparison {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectionsPageComponent {
+  readonly t = inject(LanguageService).text;
+  readonly locale = inject(LanguageService).locale;
   private readonly projectionsService = inject(ProjectionsService);
 
   readonly mobileFiltersOpen = signal(false);
@@ -129,7 +132,7 @@ export class ProjectionsPageComponent {
       this.response.set(result);
       this.items.set(Array.isArray(result.items) ? result.items : []);
       this.notice.set(result.aviso || this.notice());
-      this.message = `${this.items().length} meses cargados correctamente.`;
+      this.message = this.t('{1} meses cargados correctamente.', { 1: this.items().length });
     } catch (err: unknown) {
       const status = (err as { status?: number })?.status;
       const backendMessage = (err as { error?: { message?: string } })?.error?.message;
@@ -164,7 +167,7 @@ export class ProjectionsPageComponent {
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = 'TunariGuard_Proyeccion_Mensual.csv';
+    anchor.download = this.t('TunariGuard_Proyeccion_Mensual.csv');
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();

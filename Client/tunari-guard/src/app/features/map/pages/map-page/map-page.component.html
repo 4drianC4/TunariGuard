@@ -1,8 +1,8 @@
-<section class="min-w-0 space-y-4" aria-label="Mapa de focos">
+<section class="min-w-0 space-y-4" [attr.aria-label]="t('Mapa de focos')">
   <app-page-header
-    section="observación territorial"
-    title="Observación territorial"
-    description="Consulta el archivo histórico de detecciones satelitales MODIS y VIIRS en el Parque Nacional Tunari y su entorno."
+    [section]="t('observación territorial')"
+    [title]="t('Observación territorial')"
+    [description]="t('Consulta el archivo histórico de detecciones satelitales MODIS y VIIRS en el Parque Nacional Tunari y su entorno.')"
   />
 
   <app-hotspot-map

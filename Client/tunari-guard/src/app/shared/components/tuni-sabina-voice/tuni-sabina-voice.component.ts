@@ -237,17 +237,17 @@ export class TuniSabinaVoiceComponent implements AfterViewInit, OnDestroy {
     // No iniciar voz sin un error explicito: evitamos duplicar audios de la API.
     const errorCandidates = Array.from(panel.querySelectorAll<HTMLElement>('p,span,small,div'));
     const errorNode = errorCandidates.find(el => el.children.length === 0 &&
-      /no se pudo generar la voz de tuni/i.test(el.textContent ?? ''));
+      /no se pudo generar la voz de tuni|could not generate tuni.s voice/i.test(el.textContent ?? ''));
     if (!errorNode) return;
     const continuous = Array.from(panel.querySelectorAll<HTMLButtonElement>('button')).some(button =>
-      /desactivar\s*(voz|conversaci[oó]n)?|detener\s*conversaci[oó]n/i.test(
+      /desactivar\s*(voz|conversaci[oó]n)?|detener\s*conversaci[oó]n|stop voice conversation/i.test(
         [button.innerText, button.getAttribute('aria-label'), button.title].join(' '),
       ));
     const lastText = this.latestTuniText();
     if (continuous && lastText && lastText !== this.fallbackText && !this.utterance && 'speechSynthesis' in window) {
       this.fallbackText = lastText;
       this.startSpeech(lastText, null);
-      errorNode.textContent = 'Audio remoto no disponible. Tuni está usando la voz local de Sabina.';
+      errorNode.textContent = this.i18n.text('Audio remoto no disponible. Tuni está usando la voz local de Sabina.');
     }
   }
 }

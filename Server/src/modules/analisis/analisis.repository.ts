@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { Prisma } from '../../generated/prisma/client.js';
 import { PrismaService } from '../../infrastructure/database/prisma.service.js';
+import { areaLabel, currentLanguage, t } from '../../shared/i18n/language.js';
 import type {
   AlertasQuery,
   CalendarioQuery,
@@ -335,7 +336,8 @@ export class AnalisisRepository {
   // ── Infraestructura ──────────────────────────────────────────────────────
 
   private async filas(sql: Prisma.Sql): Promise<Fila[]> {
-    return (await this.query<{ fila: Fila }>(sql)).map((row) => row.fila);
+    const rows = await this.query<{ fila: Fila }>(sql);
+    return currentLanguage() === 'es' ? rows.map(({ fila }) => fila) : rows.map(({ fila }) => localizeRow(fila));
   }
 
   private async query<T>(sql: Prisma.Sql): Promise<T[]> {
@@ -345,6 +347,26 @@ export class AnalisisRepository {
       throw traducirError(error);
     }
   }
+}
+
+function localizeRow(row: Fila): Fila {
+  const localized = { ...row };
+  if (typeof row['nombre_visible'] === 'string') localized['nombre_visible'] = areaLabel(row['nombre_visible']);
+  for (const key of ['advertencia', 'descripcion', 'limitacion', 'lectura', 'lectura_modelo', 'base_alertas', 'nota', 'serie']) {
+    if (typeof row[key] === 'string') localized[key] = t(row[key]);
+  }
+  if (typeof row['aviso'] === 'string' && typeof row['pct_area_con_datos'] === 'number') {
+    const coverage = row['pct_area_con_datos'];
+    localized['aviso'] = (row['sin_cobertura']
+      ? 'No coverage: the polygon lies outside the loaded park and Cochabamba municipality data. The number of wildfires is unknown.'
+      : coverage < 99.9
+        ? `Partial coverage: ${coverage}% of the polygon has loaded data. The index reflects only this part. The relative index uses factors calibrated in Tunari and does not measure burned hectares or wildfire counts.`
+        : 'The relative index uses satellite catalog factors calibrated in Tunari. Values in other areas or small polygons are approximate and do not measure burned hectares or wildfire counts.')
+      + (row['metodo_indice'] === 'viirs_reescalado'
+        ? ' VIIRS is rescaled with the Tunari factor, transferred without local validation. Comparable values are unavailable before February 2012.'
+        : '');
+  }
+  return localized;
 }
 
 function filtroDetecciones(q: DeteccionesQuery): Prisma.Sql {

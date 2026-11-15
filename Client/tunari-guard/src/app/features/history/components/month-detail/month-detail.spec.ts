@@ -12,6 +12,10 @@ describe('MonthDetail', () => {
 
     fixture = TestBed.createComponent(MonthDetailComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('source', 'HARMONIZED');
+    fixture.componentRef.setInput('year', 2026);
+    fixture.componentRef.setInput('month', 10);
+    fixture.componentRef.setInput('count', 42);
     await fixture.whenStable();
   });
 

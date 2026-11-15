@@ -52,7 +52,7 @@ export const consultas = {
   }),
   consultar_metodologia: z.strictObject({
     temas: z.array(z.string().trim().min(1).max(180)).min(1).max(3)
-      .describe('Un tema por aspecto de la pregunta. Conserva nombres de satélites y términos como celda-día, agrupación o referencia histórica.'),
+      .describe('Un tema por aspecto de la pregunta. Conserva el nombre del proyecto, módulo, fuente, satélite o concepto solicitado.'),
   }),
   orientar: z.strictObject({
     motivo: z.enum(['saludo', 'area', 'periodo', 'fuera_de_alcance']),
@@ -83,6 +83,6 @@ export const instruccionesPorConsulta: Record<Consulta, string> = {
   comparar_meses: 'Compara el índice armonizado de dos meses calendario completos. Si se pide el mes en curso frente a un año específico, conserva ese mes en periodo. Solo usa null para pedir explícitamente el último mes completo.',
   alertas_operativas: 'Lista las alertas operativas más recientes de TunariGuard (detecciones de una pasada satelital dentro de un área vigilada) con su severidad (Crítica, Alta, Media) y estado de revisión, más el total por severidad. Úsala para «¿hay alertas?», «alertas críticas», «alertas pendientes», «últimas alertas» o alertas de un área. No es el nivel estadístico del mes (eso es estado_mes) ni confirma incendios.',
   incendios_documentados: 'Consulta el catálogo de incendios reportados en prensa para los meses solicitados. Es una selección de casos del Tunari, no un registro exhaustivo de incendios confirmados. No sustituyas los casos reportados por detecciones satelitales.',
-  consultar_metodologia: 'Recupera explicaciones del proyecto sobre celda-día, agrupación de satélites, armonización, referencia histórica, alertas, NRT y limitaciones. Si también se pide un dato de un corte o periodo, llama además a la herramienta de datos correspondiente.',
+  consultar_metodologia: 'Consulta la guía de TunariGuard (qué es, fuentes de datos, módulos web, uso, reportes, arquitectura, simulación y funciones de Tuni) y su metodología (celda-día, agrupación, armonización, referencia histórica, alertas, NRT y limitaciones). Si también se pide un dato de un corte o periodo, llama además a la herramienta de datos correspondiente.',
   orientar: 'Saluda o pide aclaración si falta un dato imprescindible. Usa fuera_de_alcance para pronósticos, confirmación de incendios, conteos y otros análisis que las funciones disponibles no pueden responder.',
 };

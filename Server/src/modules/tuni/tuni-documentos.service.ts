@@ -3,9 +3,28 @@ import { Injectable } from '@nestjs/common';
 import { z } from 'zod';
 import { normalizar } from './tuni-datos.service.js';
 import type { CitaTuni } from './tuni-respuesta.js';
+import { currentLanguage, t, type AppLanguage } from '../../shared/i18n/language.js';
+import { temaDelSistema, temasSistema, type TemaSistema } from './tuni-sistema.js';
+
+const englishEvidence: Readonly<Record<string, { title: string; text: string; scope?: string }>> = {
+  'celda-dia': { title: 'Data package · Detection counts', text: 'Count one cell-day for each grid cell that has one or more detections on the same Bolivia calendar day. Multiple passes or satellites can detect a hotspot in the same cell.' },
+  celdas_1km: { title: 'Data dictionary · 1 km cells', text: 'The common grid uses 1 km cells in UTM 20S (EPSG:32720), with a fixed origin. A cell identifier refers to the same grid cell across areas.' },
+  fuentes_satelitales: { title: 'Data dictionary · Satellite sources', text: 'The catalog records each satellite, its index coverage and conversion factor, and whether it contributes to the index. The Terra and Aqua products are combined in the MODIS group.' },
+  serie_mensual: { title: 'Data dictionary · Monthly series', text: 'The monthly series reports cell-days by sensor and a MODIS-equivalent activity index. The mixed method is locally calibrated in Tunari. Other areas use rescaled VIIRS without local validation.' },
+  factores_satelites: { title: 'Data dictionary · Satellite factors', text: 'The catalog documents conversion factors between satellites. Calibrated in Tunari, these factors express VIIRS counts on the MODIS scale. A transferred factor is approximate outside the calibration area.' },
+  alerta_mes_en_curso: { title: 'Data dictionary · Current-month alert', text: 'The alert compares observed activity up to the cutoff with the same part of past months. The satellite and linking factor are stored for each cutoff. The package reports NOAA-20 values on the historical Suomi-NPP scale.', scope: 'Methodology. Query the published snapshot to identify the satellite and factor for a specific cutoff.' },
+  alertas_mensuales: { title: 'Data dictionary · Monthly alerts', text: 'The seasonal negative binomial model estimates the probability of a month reaching the observed activity or higher. Monthly alerts require verification and do not confirm a wildfire.', scope: 'Historical monthly alert series.' },
+};
 
 const carpeta = new URL('../../../data/fuego/docs/', import.meta.url);
 const advertencias = z.array(z.object({ codigo: z.string(), donde: z.string(), texto: z.string() }));
+const contenidoSistema = z.object({
+  titulo: z.string().min(1),
+  resumen: z.string().min(1).max(1200),
+  detalle: z.array(z.string().min(1)).min(1),
+});
+const guiaSistema = z.record(z.enum(temasSistema), z.object({ temas: z.string(), es: contenidoSistema, en: contenidoSistema }));
+type GuiaSistema = z.infer<typeof guiaSistema>;
 const maximoPasajes = 6;
 
 const metadatos: Record<string, { temas?: string; alcance?: string }> = {
@@ -47,10 +66,16 @@ const aliasDeCampo: Record<string, string> = {
 };
 
 const comunes = new Set(
-  'a al algo ante como con cual cuales cuando cuantas cuantos de del dime donde el en entre es esa ese explica fue hay la las le lo los mas me misma mismo o para pero por que se si significa sobre son su sus un una uno y'.split(' '),
+  ('a al algo ante como con cual cuales cuando cuantas cuantos de del dime donde el en entre es esa ese explica fue hay la las le lo los mas me misma mismo o para pero por que se si significa sobre son su sus un una uno y ' +
+    'about an and are can could do does for from how in is it of or please tell the their these they this to us use was were what where which who why with you your').split(' '),
 );
 const genericas = new Set('actividad caso calcular dato detectar hacer hoy nivel solo termico usar valor ver'.split(' '));
 const variantes: Record<string, string> = {
+  cell: 'celda', cells: 'celda', day: 'dia', days: 'dia', grid: 'grilla',
+  celsius: 'termico', thermal: 'termico', heat: 'termico', detections: 'deteccion',
+  satellite: 'satelite', satellites: 'satelite', harmonization: 'armonizar', harmonized: 'armonizar',
+  baseline: 'historico', monthly: 'mes', alerts: 'alerta', alert: 'alerta', coverage: 'cobertura',
+  uncertainty: 'incertidumbre', provisional: 'provisional', wildfire: 'incendio', wildfires: 'incendio',
   agrupan: 'agrupar', agrupacion: 'agrupar', agrupa: 'agrupar', unir: 'agrupar', union: 'agrupar',
   alertas: 'alerta', armonizan: 'armonizar', armonizacion: 'armonizar', armonizado: 'armonizar',
   celdas: 'celda', dias: 'dia', detecciones: 'deteccion', detectan: 'detectar', describe: 'explica',
@@ -75,7 +100,14 @@ interface Seccion {
   alcance?: string;
   temas: Set<string>;
   bloques: Bloque[];
+  idioma?: AppLanguage;
 }
+
+interface FichaSistema extends Seccion {
+  resumen: string;
+}
+
+type IndiceSistema = Map<TemaSistema, FichaSistema>;
 
 export interface EvidenciaDocumental {
   citas: CitaTuni[];
@@ -85,6 +117,19 @@ export interface EvidenciaDocumental {
 @Injectable()
 export class TuniDocumentosService {
   private secciones?: Promise<Seccion[]>;
+  private sistema?: Promise<Record<AppLanguage, IndiceSistema>>;
+
+  async explicarSistema(tema: TemaSistema): Promise<{ answer: string; citas: CitaTuni[] }> {
+    const indice = await this.obtenerSistema();
+    const ficha = indice.get(tema)!;
+    const relacionadas: TemaSistema[] = tema === 'sistema-panorama'
+      ? ['sistema-datos', 'sistema-uso', 'sistema-metodo']
+      : [];
+    return {
+      answer: ficha.resumen,
+      citas: [citar(ficha, ficha.bloques.slice(1).map(({ texto }) => texto)), ...relacionadas.map((id) => citarFicha(indice.get(id)!))],
+    };
+  }
 
   async definicionCeldaDia(): Promise<CitaTuni[]> {
     const secciones = await this.obtenerSecciones();
@@ -107,8 +152,13 @@ export class TuniDocumentosService {
   }
 
   async buscar(temas: readonly string[]): Promise<EvidenciaDocumental> {
-    const secciones = await this.obtenerSecciones();
-    const porTema = temas.map((tema) => ({ tema, pasajes: recuperar(secciones, palabras(tema)) }));
+    const [metodologia, sistema] = await Promise.all([this.obtenerSecciones(), this.obtenerSistema()]);
+    const secciones = [...metodologia, ...sistema.values()];
+    const porTema = temas.map((tema) => {
+      const id = temaDelSistema(normalizar(tema));
+      const ficha = id && sistema.get(id);
+      return { tema, pasajes: ficha ? [citarFicha(ficha)] : recuperar(secciones, palabras(tema)) };
+    });
     const citas = new Map<string, CitaTuni>();
     // Primero cubre cada tema y después agrega sus pasajes complementarios.
     for (let posicion = 0; posicion < 3; posicion++) {
@@ -128,6 +178,18 @@ export class TuniDocumentosService {
       citas: [...citas.values()],
       temasSinEvidencia: porTema.filter(({ pasajes }) => !pasajes.length).map(({ tema }) => tema),
     };
+  }
+
+  private async obtenerSistema(): Promise<IndiceSistema> {
+    const idioma = currentLanguage();
+    this.sistema ??= readFile(new URL('tunariguard.json', carpeta), 'utf8').then((texto) => {
+      const guia = guiaSistema.parse(JSON.parse(texto));
+      return { es: indexarSistema(guia, 'es'), en: indexarSistema(guia, 'en') };
+    }).catch((error: unknown) => {
+      this.sistema = undefined;
+      throw error;
+    });
+    return (await this.sistema)[idioma];
   }
 
   private obtenerSecciones(): Promise<Seccion[]> {
@@ -162,6 +224,21 @@ export class TuniDocumentosService {
     }
     return fichas;
   }
+}
+
+function indexarSistema(guia: GuiaSistema, idioma: AppLanguage): IndiceSistema {
+  return new Map(temasSistema.map((id) => {
+    const { temas, es, en } = guia[id];
+    const { titulo, resumen, detalle } = guia[id][idioma];
+    const seccion = crearSeccion(id, titulo, [resumen, ...detalle]);
+    seccion.temas = palabras(`${temas} ${es.titulo} ${en.titulo}`);
+    seccion.bloques[0]!.terminos = new Set([...seccion.bloques[0]!.terminos, ...seccion.temas]);
+    return [id, { ...seccion, idioma, resumen }];
+  }));
+}
+
+function citarFicha(ficha: FichaSistema): CitaTuni {
+  return citar(ficha, ficha.bloques.map(({ texto }) => texto));
 }
 
 function crearSeccion(id: string, titulo: string, textos: string[]): Seccion {
@@ -206,6 +283,7 @@ function limpiarMarkdown(texto: string): string {
 
 function palabras(texto: string): Set<string> {
   const normalizado = normalizar(texto)
+    .replace(/\bcell days?\b/g, 'celdadia')
     .replace(/\bceldas? dias?\b/g, 'celdadia')
     .replace(/\bnoaa (20|21)\b/g, 'noaa$1')
     .replace(/\bsuomi npp\b/g, 'suominpp');
@@ -238,6 +316,15 @@ function recuperar(secciones: Seccion[], consulta: Set<string>): CitaTuni[] {
     .slice(0, 3).map(({ seccion, textos }) => citar(seccion, textos));
 }
 
-function citar({ id, titulo, alcance }: Seccion, textos: string[]): CitaTuni {
+function citar({ id, titulo, alcance, idioma }: Seccion, textos: string[]): CitaTuni {
+  if (idioma) return { id, titulo, alcance, texto: textos.join('\n\n'), language: idioma };
+  if (currentLanguage() === 'en') {
+    const translated = englishEvidence[id];
+    if (translated) return { id, titulo: translated.title, alcance: translated.scope, texto: translated.text, language: 'en' };
+    if (titulo.startsWith('Advertencias · ')) {
+      return { id, titulo: 'Scientific notices · ' + t(titulo.slice('Advertencias · '.length)), texto: textos.map(t).join('\n\n'), language: 'en' };
+    }
+    return { id, titulo: 'Original source (Spanish) · ' + id, texto: textos.join('\n\n'), language: 'es' };
+  }
   return { id, titulo, alcance, texto: textos.join('\n\n') };
 }

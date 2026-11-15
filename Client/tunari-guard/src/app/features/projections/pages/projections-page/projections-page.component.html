@@ -1,51 +1,51 @@
-<section class="tg-forecast-page tg-projections-page" aria-label="Proyecciones mensuales de actividad">
+<section class="tg-forecast-page tg-projections-page" [attr.aria-label]="t('Proyecciones mensuales de actividad')">
   <app-page-header
-    section="Proyecciones"
-    title="Proyecciones de actividad"
-    description="Explora la actividad mensual simulada y la evaluación del modelo utilizado."
+    [section]="t('Proyecciones')"
+    [title]="t('Proyecciones de actividad')"
+    [description]="t('Explora la actividad mensual simulada y la evaluación del modelo utilizado.')"
   />
 
   <div class="projection-model-banner">
     <div class="projection-model-icon" aria-hidden="true">∿</div>
     <div>
-      <span class="projection-eyebrow">MODELO UTILIZADO</span>
-      <strong>Binomial negativa</strong>
-      <p>Modelo empleado para generar la proyección mensual.</p>
+      <span class="projection-eyebrow">{{ t('MODELO UTILIZADO') }}</span>
+      <strong>{{ t('Binomial negativa') }}</strong>
+      <p>{{ t('Modelo empleado para generar la proyección mensual.') }}</p>
     </div>
-    <span class="projection-simulated-badge">SIMULADA</span>
+    <span class="projection-simulated-badge">{{ t('SIMULADA') }}</span>
   </div>
 
-  <section class="tg-kpis tg-kpis--fit projection-kpis" aria-label="Indicadores del período consultado">
+  <section class="tg-kpis tg-kpis--fit projection-kpis" [attr.aria-label]="t('Indicadores del período consultado')">
     <article class="tg-kpi">
       <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#fire"></use></svg></span>
       <div class="tg-kpi-copy">
-        <span class="tg-kpi-title">Detecciones esperadas</span>
-        <div class="tg-kpi-number">{{ totalEsperado | number:'1.0-2' }}</div>
-        <small class="tg-kpi-note">Suma del período consultado</small>
+        <span class="tg-kpi-title">{{ t('Detecciones esperadas') }}</span>
+        <div class="tg-kpi-number">{{ totalEsperado | number:'1.0-2':locale() }}</div>
+        <small class="tg-kpi-note">{{ t('Suma del período consultado') }}</small>
       </div>
     </article>
     <article class="tg-kpi">
       <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#target"></use></svg></span>
       <div class="tg-kpi-copy">
-        <span class="tg-kpi-title">Detecciones generadas</span>
-        <div class="tg-kpi-number">{{ totalGenerado | number:'1.0-0' }}</div>
-        <small class="tg-kpi-note">Datos simulados generados</small>
+        <span class="tg-kpi-title">{{ t('Detecciones generadas') }}</span>
+        <div class="tg-kpi-number">{{ totalGenerado | number:'1.0-0':locale() }}</div>
+        <small class="tg-kpi-note">{{ t('Datos simulados generados') }}</small>
       </div>
     </article>
     <article class="tg-kpi">
       <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#trend"></use></svg></span>
       <div class="tg-kpi-copy">
-        <span class="tg-kpi-title">Índice promedio esperado</span>
-        <div class="tg-kpi-number">{{ indicePromedio | number:'1.0-2' }}</div>
-        <small class="tg-kpi-note">Celdas-día MODIS-equivalentes</small>
+        <span class="tg-kpi-title">{{ t('Índice promedio esperado') }}</span>
+        <div class="tg-kpi-number">{{ indicePromedio | number:'1.0-2':locale() }}</div>
+        <small class="tg-kpi-note">{{ t('Celdas-día MODIS-equivalentes') }}</small>
       </div>
     </article>
     <article class="tg-kpi">
       <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#history"></use></svg></span>
       <div class="tg-kpi-copy">
-        <span class="tg-kpi-title">Meses consultados</span>
+        <span class="tg-kpi-title">{{ t('Meses consultados') }}</span>
         <div class="tg-kpi-number">{{ items().length }}</div>
-        <small class="tg-kpi-note">Registros devueltos por la API</small>
+        <small class="tg-kpi-note">{{ t('Registros devueltos por la API') }}</small>
       </div>
     </article>
   </section>
@@ -54,33 +54,33 @@
     <button type="button" class="tg-filter-toggle" (click)="mobileFiltersOpen.set(!mobileFiltersOpen())"
       [attr.aria-expanded]="mobileFiltersOpen()" aria-controls="projection-filters">
       <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10m-7 5h4" /></svg>
-      {{ mobileFiltersOpen() ? 'Ocultar filtros' : 'Mostrar filtros' }}
+      {{ mobileFiltersOpen() ? t('Ocultar filtros') :  t('Mostrar filtros') }}
     </button>
     <form id="projection-filters" class="tg-card tg-filter-panel" [class.tg-filter-panel--open]="mobileFiltersOpen()"
-      aria-label="Filtros de proyección mensual" (ngSubmit)="applyFilters()">
+      [attr.aria-label]="t('Filtros de proyección mensual')" (ngSubmit)="applyFilters()">
       <div class="tg-filter-fields projection-filter-fields">
         <label class="tg-filter-field">
-          <span>Desde</span>
+          <span>{{ t('Desde') }}</span>
           <input class="tg-filter-control" type="month" name="desde" [(ngModel)]="draftDesde" />
         </label>
         <label class="tg-filter-field">
-          <span>Hasta</span>
+          <span>{{ t('Hasta') }}</span>
           <input class="tg-filter-control" type="month" name="hasta" [(ngModel)]="draftHasta" />
         </label>
       </div>
       <div class="tg-filter-actions projection-filter-actions">
-        <button class="tg-filter-button tg-filter-button--primary" type="submit" [disabled]="loading()">Consultar</button>
-        <button class="tg-filter-button" type="button" (click)="clearFilters()" [disabled]="loading()">Ver todo el período</button>
+        <button class="tg-filter-button tg-filter-button--primary" type="submit" [disabled]="loading()">{{ t('Consultar') }}</button>
+        <button class="tg-filter-button" type="button" (click)="clearFilters()" [disabled]="loading()">{{ t('Ver todo el período') }}</button>
       </div>
     </form>
   </div>
 
-  <p *ngIf="error()" class="projection-feedback projection-error" role="alert">{{ error() }}</p>
-  <p *ngIf="message && !error()" class="projection-feedback" role="status">{{ message }}</p>
+  <p *ngIf="error()" class="projection-feedback projection-error" role="alert">{{ t(error()) }}</p>
+  <p *ngIf="message && !error()" class="projection-feedback" role="status">{{ t(message) }}</p>
 
   <div *ngIf="loading()" class="projection-state" role="status">
     <span class="projection-spinner"></span>
-    <strong>Cargando proyección mensual…</strong>
+    <strong>{{ t('Cargando proyección mensual…') }}</strong>
   </div>
 
   <ng-container *ngIf="!loading() && !error()">
@@ -93,43 +93,43 @@
       <div class="projection-support-grid">
         <article class="tg-forecast-card projection-evaluation-card">
           <div class="tg-forecast-card-title">
-            <h2>◎ &nbsp; Evaluación del modelo</h2>
-            <span>Binomial negativa</span>
+            <h2>{{ t('◎ Evaluación del modelo') }}</h2>
+            <span>{{ t('Binomial negativa') }}</span>
           </div>
           <div class="projection-evaluation-grid">
             <div class="projection-metric">
-              <span>WAPE anual</span>
-              <strong>{{ evaluation.wapeAnual | number:'1.1-1' }}<small>%</small></strong>
-              <p>Error porcentual absoluto ponderado. Cuanto menor, menor diferencia agregada entre valores observados y estimados.</p>
+              <span>{{ t('WAPE anual') }}</span>
+              <strong>{{ evaluation.wapeAnual | number:'1.1-1':locale() }}<small>%</small></strong>
+              <p>{{ t('Error porcentual absoluto ponderado. Cuanto menor, menor diferencia agregada entre valores observados y estimados.') }}</p>
             </div>
             <div class="projection-metric">
-              <span>Cobertura del intervalo del 90 %</span>
-              <strong>{{ evaluation.cobertura | number:'1.1-1' }}<small>%</small></strong>
-              <p>Porcentaje observado de valores que quedaron dentro del intervalo. El objetivo nominal es 90 %.</p>
+              <span>{{ t('Cobertura del intervalo del 90 %') }}</span>
+              <strong>{{ evaluation.cobertura | number:'1.1-1':locale() }}<small>%</small></strong>
+              <p>{{ t('Porcentaje observado de valores que quedaron dentro del intervalo. El objetivo nominal es 90 %.') }}</p>
             </div>
             <div class="projection-metric">
-              <span>Sesgo</span>
-              <strong>{{ evaluation.sesgo > 0 ? '+' : '' }}{{ evaluation.sesgo | number:'1.1-1' }}<small>%</small></strong>
-              <p>Desviación sistemática reportada por el equipo de datos. La interpretación del signo depende de su fórmula.</p>
+              <span>{{ t('Sesgo') }}</span>
+              <strong>{{ evaluation.sesgo > 0 ? '+' : '' }}{{ evaluation.sesgo | number:'1.1-1':locale() }}<small>%</small></strong>
+              <p>{{ t('Desviación sistemática reportada por el equipo de datos. La interpretación del signo depende de su fórmula.') }}</p>
             </div>
           </div>
-          <p class="projection-method-note">Son métricas de evaluación del modelo y no cambian al modificar el rango mensual consultado.</p>
+          <p class="projection-method-note">{{ t('Son métricas de evaluación del modelo y no cambian al modificar el rango mensual consultado.') }}</p>
         </article>
 
         <article class="tg-forecast-card projection-comparison-card">
           <div class="tg-forecast-card-title">
-            <h2>▤ &nbsp; Comparación de modelos</h2>
-            <span>Menor WAPE = menor error</span>
+            <h2>{{ t('▤ Comparación de modelos') }}</h2>
+            <span>{{ t('Menor WAPE = menor error') }}</span>
           </div>
           <div class="tg-forecast-table-scroll">
             <table>
-              <thead><tr><th>Modelo</th><th>WAPE mensual</th><th>WAPE anual</th><th>Sesgo</th></tr></thead>
+              <thead><tr><th>{{ t('Modelo') }}</th><th>{{ t('WAPE mensual') }}</th><th>{{ t('WAPE anual') }}</th><th>{{ t('Sesgo') }}</th></tr></thead>
               <tbody>
                 <tr *ngFor="let model of models" [class.projection-model-selected]="model.name === selectedModel">
-                  <td><strong>{{ model.name }}</strong><span *ngIf="model.name === selectedModel" class="projection-selected-label">Seleccionado</span></td>
-                  <td>{{ model.wapeMensual | number:'1.1-1' }} %</td>
-                  <td><strong>{{ model.wapeAnual | number:'1.1-1' }} %</strong></td>
-                  <td>{{ model.sesgo > 0 ? '+' : '' }}{{ model.sesgo | number:'1.1-1' }} %</td>
+                  <td><strong>{{ t(model.name) }}</strong><span *ngIf="model.name === selectedModel" class="projection-selected-label">{{ t('Seleccionado') }}</span></td>
+                  <td>{{ model.wapeMensual | number:'1.1-1':locale() }} %</td>
+                  <td><strong>{{ model.wapeAnual | number:'1.1-1':locale() }} %</strong></td>
+                  <td>{{ model.sesgo > 0 ? '+' : '' }}{{ model.sesgo | number:'1.1-1':locale() }} %</td>
                 </tr>
               </tbody>
             </table>
@@ -138,7 +138,7 @@
             <div *ngFor="let model of models" class="projection-wape-row">
               <span>{{ model.name }}</span>
               <div class="projection-wape-track"><div [class.projection-wape-best]="model.name === selectedModel" [style.width.%]="model.wapeAnual"></div></div>
-              <strong>{{ model.wapeAnual | number:'1.1-1' }} %</strong>
+              <strong>{{ model.wapeAnual | number:'1.1-1':locale() }} %</strong>
             </div>
           </div>
         </article>
@@ -146,29 +146,29 @@
 
     <article class="tg-forecast-card projection-detail-card">
       <div class="tg-forecast-card-title">
-        <h2>▦ &nbsp; Detalle mensual</h2>
-        <span>{{ items().length }} registros</span>
+        <h2>{{ t('▦ Detalle mensual') }}</h2>
+        <span>{{ items().length }} {{ t('registros') }}</span>
       </div>
       <div class="tg-forecast-table-scroll">
         <table>
           <thead>
             <tr>
-              <th>Mes</th>
-              <th>Días simulados</th>
-              <th>Índice esperado</th>
+              <th>{{ t('Mes') }}</th>
+              <th>{{ t('Días simulados') }}</th>
+              <th>{{ t('Índice esperado') }}</th>
               <th>Factor k</th>
-              <th>Detecciones esperadas</th>
-              <th>Detecciones generadas</th>
+              <th>{{ t('Detecciones esperadas') }}</th>
+              <th>{{ t('Detecciones generadas') }}</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let item of items()">
               <td><strong>{{ item.mes }}</strong></td>
               <td>{{ item.dias_simulados }}</td>
-              <td>{{ item.indice_esperado_modelo | number:'1.0-2' }}</td>
-              <td>{{ item.k_detecciones_por_celda_dia | number:'1.0-2' }}</td>
-              <td>{{ item.esperado_detecciones | number:'1.0-2' }}</td>
-              <td>{{ item.detecciones_generadas | number:'1.0-0' }}</td>
+              <td>{{ item.indice_esperado_modelo | number:'1.0-2':locale() }}</td>
+              <td>{{ item.k_detecciones_por_celda_dia | number:'1.0-2':locale() }}</td>
+              <td>{{ item.esperado_detecciones | number:'1.0-2':locale() }}</td>
+              <td>{{ item.detecciones_generadas | number:'1.0-0':locale() }}</td>
             </tr>
           </tbody>
         </table>
@@ -179,18 +179,18 @@
 
   <ng-template #emptyProjection>
     <article class="tg-forecast-card projection-empty">
-      <strong>No hay datos para el período seleccionado.</strong>
-      <p>Prueba con otro rango de meses o consulta todo el período disponible.</p>
+      <strong>{{ t('No hay datos para el período seleccionado.') }}</strong>
+      <p>{{ t('Prueba con otro rango de meses o consulta todo el período disponible.') }}</p>
     </article>
   </ng-template>
 
   <div class="projection-disclaimer">
-    <strong>ⓘ Advertencia sobre los resultados simulados</strong>
+    <strong>{{ t('ⓘ Advertencia sobre los resultados simulados') }}</strong>
     <p>{{ notice() }}</p>
   </div>
 
   <div class="tg-forecast-footer projection-footer">
-    <span>Datos mensuales proporcionados por el servicio de proyecciones.</span>
-    <button type="button" (click)="exportCsv()" [disabled]="!items().length">↓ &nbsp; Exportar datos (CSV)</button>
+    <span>{{ t('Datos mensuales proporcionados por el servicio de proyecciones.') }}</span>
+    <button type="button" (click)="exportCsv()" [disabled]="!items().length">{{ t('↓ Exportar datos (CSV)') }}</button>
   </div>
 </section>

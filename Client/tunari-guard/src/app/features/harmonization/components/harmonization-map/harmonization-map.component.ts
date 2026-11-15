@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../../core/i18n/language.service';
 import { DecimalPipe } from '@angular/common';
 import {
   AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy,
@@ -34,6 +35,10 @@ const fills = { covered: '#70833a', missing: '#b6aea0', unavailable: '#c59661' }
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HarmonizationMapComponent implements AfterViewInit, OnDestroy {
+  private readonly i18n = inject(LanguageService);
+  readonly t = this.i18n.text;
+  readonly areaText = inject(LanguageService).area;
+  readonly locale = inject(LanguageService).locale;
   readonly period = input.required<HarmonizationPeriod>();
   readonly fills = fills;
   readonly selectedId = signal('');
@@ -58,7 +63,7 @@ export class HarmonizationMapComponent implements AfterViewInit, OnDestroy {
   readonly areas = computed(() => this.boundaries.hasValue() ? this.boundaries.value() : []);
   readonly coverage = rxResource({
     params: () => this.boundaries.hasValue() && this.areas().length
-      ? { areas: this.areas(), period: this.period() }
+      ? { areas: this.areas(), period: this.period(), language: this.i18n.language() }
       : undefined,
     stream: ({ params }) => this.loadCoverage(params.areas, params.period),
   });

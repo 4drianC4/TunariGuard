@@ -1,9 +1,9 @@
 <div class="district-map">
-  <div #mapContainer class="map-canvas" aria-label="Mapa geográfico de actividad por distrito"></div>
-  <button class="reset-map" type="button" (click)="resetZoom()">Ver todos los límites</button>
+  <div #mapContainer class="map-canvas" [attr.aria-label]="t('Mapa geográfico de actividad por distrito')"></div>
+  <button class="reset-map" type="button" (click)="resetZoom()">{{ t('Ver todos los límites') }}</button>
 </div>
-<ul class="legend" aria-label="Nivel de actividad por detecciones">
+<ul class="legend" [attr.aria-label]="t('Nivel de actividad por detecciones')">
   @for (activity of levels; track activity.level) {
-    <li><span [style.background-color]="activity.color" aria-hidden="true"></span>{{ activity.level }} ({{ activity.range }})</li>
+    <li><span [style.background-color]="activity.color" aria-hidden="true"></span>{{ t(activity.level) }} ({{ t(activity.range) }})</li>
   }
 </ul>

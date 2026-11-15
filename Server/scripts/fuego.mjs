@@ -13,6 +13,7 @@
  * no hace falta instalar psql. Si el contenedor no existe, usa el psql local con DATABASE_URL.
  */
 import { spawnSync } from 'node:child_process';
+import { t, msg } from './messages.mjs';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -28,18 +29,18 @@ const runner = pickRunner();
 switch (command) {
   case 'setup': {
     if (flags.includes('--reset')) {
-      step('Borrando el esquema fuego');
+      step(t('Borrando el esquema fuego'));
       sql('DROP SCHEMA IF EXISTS fuego CASCADE');
     }
     if (schemaInstalled()) {
-      console.log('· El esquema fuego ya existe: se omite 01_esquema.sql (usa --reset para recrearlo).');
+      console.log(t('· El esquema fuego ya existe: se omite 01_esquema.sql (usa --reset para recrearlo).'));
     } else {
-      step('01_esquema.sql — estructura');
+      step(t('01_esquema.sql — estructura'));
       file('sql/01_esquema.sql');
     }
-    step('02_vistas_y_funciones.sql — vistas y funciones');
+    step(t('02_vistas_y_funciones.sql — vistas y funciones'));
     file('sql/02_vistas_y_funciones.sql');
-    step('03_cargar_datos.sql — 17 CSV en una transacción + 04 validación (tarda ~1 min)');
+    step(t('03_cargar_datos.sql — 17 CSV en una transacción + 04 validación (tarda ~1 min)'));
     file('sql/03_cargar_datos.sql');
     status();
     break;
@@ -59,7 +60,7 @@ switch (command) {
     status();
     break;
   default:
-    console.error(`Comando desconocido: ${command}. Usa setup | novedades | alerta-mes | status`);
+    console.error(msg`Comando desconocido: ${command}. Usa setup | novedades | alerta-mes | status`);
     process.exit(1);
 }
 
@@ -69,22 +70,22 @@ function pickRunner() {
     const mounted = spawnSync('docker', ['exec', CONTAINER, 'test', '-f', '/fuego/sql/01_esquema.sql']);
     if (mounted.status !== 0) {
       fail(
-        'El contenedor no ve el paquete en /fuego. Recréalo para montar data/fuego:',
+        t('El contenedor no ve el paquete en /fuego. Recréalo para montar data/fuego:'),
         '  docker compose up -d --force-recreate db',
       );
     }
     const user = process.env.POSTGRES_USER ?? 'tunari';
     const db = process.env.POSTGRES_DB ?? 'tunari_guard';
     return {
-      label: `contenedor ${CONTAINER}`,
+      label: msg`contenedor ${CONTAINER}`,
       psql: (args) => ['docker', ['exec', '-i', '-w', '/fuego', CONTAINER, 'psql', '-U', user, '-d', db, ...args]],
     };
   }
-  if (!process.env.DATABASE_URL) fail('No hay contenedor ni DATABASE_URL. Ejecuta npm run db:up');
+  if (!process.env.DATABASE_URL) fail(t('No hay contenedor ni DATABASE_URL. Ejecuta npm run db:up'));
   // psql no entiende el parámetro ?schema= que usa Prisma.
   const url = new URL(process.env.DATABASE_URL);
   url.searchParams.delete('schema');
-  return { label: 'psql local', psql: (args) => ['psql', [url.toString(), ...args]], cwd: PACKAGE_DIR };
+  return { label: t('psql local'), psql: (args) => ['psql', [url.toString(), ...args]], cwd: PACKAGE_DIR };
 }
 
 function psql(args, { capture = false } = {}) {
@@ -94,10 +95,10 @@ function psql(args, { capture = false } = {}) {
     encoding: 'utf8',
     stdio: capture ? ['ignore', 'pipe', 'pipe'] : 'inherit',
   });
-  if (result.error) fail(`No se pudo ejecutar ${bin}: ${result.error.message}`);
+  if (result.error) fail(msg`No se pudo ejecutar ${bin}: ${result.error.message}`);
   if (result.status !== 0) {
     if (capture) process.stderr.write(result.stderr);
-    fail('El SQL falló; la transacción se revirtió y la base quedó como estaba.');
+    fail(t('El SQL falló; la transacción se revirtió y la base quedó como estaba.'));
   }
   return result.stdout ?? '';
 }
@@ -119,11 +120,11 @@ function schemaInstalled() {
 }
 
 function requireSchema() {
-  if (!schemaInstalled()) fail('El esquema fuego no está instalado. Ejecuta primero: npm run fuego:setup');
+  if (!schemaInstalled()) fail(t('El esquema fuego no está instalado. Ejecuta primero: npm run fuego:setup'));
 }
 
 function status() {
-  step('Estado del esquema fuego');
+  step(t('Estado del esquema fuego'));
   psql([
     '-c',
     `SELECT (SELECT count(*) FROM fuego.detecciones) AS detecciones,

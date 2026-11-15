@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../../core/i18n/language.service';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -19,6 +20,8 @@ import { MetricsService } from '../../../../application/services/metrics.service
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HistoryTableComponent {
+  readonly t = inject(LanguageService).text;
+  readonly locale = inject(LanguageService).locale;
   private readonly metrics = inject(MetricsService);
 
   readonly selectedYear = signal<number | 'ALL'>('ALL');
@@ -102,7 +105,7 @@ export class HistoryTableComponent {
   }
 
   getMonthName(month: number): string {
-    return this.monthNames[month - 1] ?? 'Desconocido';
+    return this.t(this.monthNames[month - 1] ?? 'Desconocido');
   }
 
   getSourceLabel(source: string): string {

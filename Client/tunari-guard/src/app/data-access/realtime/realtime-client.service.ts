@@ -19,7 +19,7 @@ interface ReplayFrame {
 
 interface AlertNotificationsPayload {
   emittedAtUtc: string;
-  alerts: Array<Pick<AlertEvent, 'id' | 'district' | 'severity' | 'message' | 'simulated'>>;
+  alerts: Array<Pick<AlertEvent, 'id' | 'district' | 'severity' | 'message' | 'simulated' | 'messageByLanguage' | 'districtByLanguage'>>;
 }
 
 interface ServerEvents {

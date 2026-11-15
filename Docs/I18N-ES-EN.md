@@ -1,59 +1,40 @@
-# TunariGuard — internacionalización ES/EN
+# TunariGuard ES/EN
 
-## Contrato de idioma
+## Español
 
-- Idiomas admitidos: `es` y `en`.
-- Angular conserva la preferencia en `localStorage` bajo `tunari-guard.language`.
-- Cada petición HTTP envía `Accept-Language: es|en`.
-- El backend usa español como fallback cuando no llega un idioma válido.
-- WebSocket debe recibir el idioma elegido al conectar (query/auth handshake) y generar los textos operativos en ese idioma; los eventos deben conservar también códigos estables.
+El selector de la barra superior aplica el idioma en la misma página y guarda la preferencia en `tunari-guard.language`. Las fechas operativas conservan la zona `America/La_Paz`.
 
-## Base de datos: qué se traduce
+- Los catálogos de Angular están en `Client/tunari-guard/src/app/core/i18n/es.json` y `en.json`. Conserva los parámetros entre llaves al añadir una frase.
+- Las peticiones de la aplicación envían `Accept-Language`. La API negocia español e inglés y devuelve `Content-Language` y `Vary: Accept-Language`. El valor predeterminado de la API es español. El catálogo del servidor está en `Server/src/shared/i18n/en.json`, con las frases originales en español como claves.
+- Las alertas exponen códigos estables. Los filtros y las actualizaciones también aceptan las etiquetas españolas históricas. Socket.IO incluye el nombre de área y el mensaje en ambos idiomas para que las notificaciones ya recibidas se adapten al selector.
+- Tuni atiende consultas directas en los dos idiomas con el mismo acceso a los datos. Las transcripciones usan el idioma elegido. Cada turno ya guardado y los extractos literales conservan su idioma de origen.
+- Metodología enlaza el PDF en el idioma activo. Los reportes generados traducen contexto, columnas y títulos. Las claves de la API y las propiedades de intercambio de GeoJSON mantienen el contrato técnico.
+- Los scripts de operación admiten `TUNARI_LANGUAGE=en` o `TUNARI_LANGUAGE=es`. Los nombres de comandos, flags, rutas y encabezados CSV conservan su significado técnico.
 
-La migración `Server/prisma/migrations/20261115093000_add_localized_content/migration.sql`
-crea `localized_contents` para textos descriptivos. Clave lógica:
-`entity_type + entity_id + field_key + language`.
+PostGIS conserva mediciones, coordenadas, fechas, identificadores y registros originales. La API localiza los avisos y las descripciones conocidas al leerlos. La rama incluye la tabla `localized_contents` para contenido editorial adicional.
 
-Ejemplos:
-- `alert / UUID / message / es`
-- `alert / UUID / message / en`
-- `district / 3 / description / es`
+## English
 
-`source_language` identifica el idioma que envió el proveedor. `translation_status` distingue texto original, traducción humana, automática o pendiente.
+The language control in the top bar applies the selection in place and stores it as `tunari-guard.language`. Operational timestamps retain the `America/La_Paz` time zone.
 
-No traducir ni alterar:
-- latitud/longitud, fechas UTC, FRP, brillo Kelvin, confianza numérica;
-- sensor/plataforma, códigos FIRMS, IDs, claves de deduplicación;
-- CSV/JSON originales ni la columna `raw` de observaciones.
+- Angular catalogs are `Client/tunari-guard/src/app/core/i18n/es.json` and `en.json`. Preserve the parameters in braces when adding copy.
+- Application requests send `Accept-Language`. The API negotiates Spanish and English and returns `Content-Language` and `Vary: Accept-Language`. Its default is Spanish. The server catalog is `Server/src/shared/i18n/en.json`, keyed by the Spanish source phrases.
+- Alerts expose stable codes. Filters and updates also accept the legacy Spanish labels. Socket.IO includes the area label and message in both languages so existing notifications follow the language selector.
+- Tuni handles direct questions in both languages with the same access to data. Transcription uses the selected language. Existing chat turns and verbatim excerpts retain their original language.
+- Methodology links to PDFs in the selected language. Generated reports localize metadata, columns, and headings. API keys and exchanged GeoJSON properties keep their wire contracts.
+- Operational scripts support `TUNARI_LANGUAGE=en` and `TUNARI_LANGUAGE=es`. Commands, flags, routes, and CSV headers keep their technical meanings.
 
-Los nombres oficiales de lugares pueden conservarse como nombre propio y disponer de un campo de etiqueta traducida separado.
+PostGIS retains the measurements, coordinates, dates, identifiers, and original records. The API localizes known descriptions and scientific notices when reading them. The branch includes the `localized_contents` table for additional editorial content.
 
-## Cómo comprobar el idioma que llega a la API
+## Verificación / Verification
 
-En DevTools → Network → seleccionar una petición → Request Headers:
-- `Accept-Language: es` significa que el navegador solicita español.
-- `Accept-Language: en` significa que solicita inglés.
-
-Eso solo informa el idioma solicitado por el cliente. Para conocer el idioma del dato entrante, guardar `source_language` en cada registro de texto importado. No inferirlo de `Accept-Language`: el idioma de interfaz y el idioma del proveedor son independientes.
-
-## Aplicar la migración
-
-Desde PowerShell:
+Con la API local en ejecución / With the local API running:
 
 ```powershell
-cd "C:\SPACE APP\TunariGuard\Server"
-npx prisma migrate deploy
+curl.exe -H "Accept-Language: en" http://localhost:3000/api/v1/areas/parque-tunari
+curl.exe -H "Accept-Language: es" http://localhost:3000/api/v1/areas/parque-tunari
 ```
 
-La migración usa PostgreSQL y no requiere regenerar Prisma Client porque esta tabla se puede consultar inicialmente mediante SQL parametrizado. Si se incorpora el modelo al schema Prisma, ejecutar después `npx prisma generate`.
+Ejecuta `npm test` en `Server` y `npm test -- --watch=false` en `Client/tunari-guard`.
 
-## Alcance de este parche
-
-Este parche incorpora persistencia de preferencia, selector ES/EN, encabezado HTTP, resolvedor backend y tabla para textos localizados. No traduce automáticamente cada plantilla Angular ni cada registro existente. Cada vista debe reemplazar sus textos literales por claves del catálogo; cada endpoint debe seleccionar `localized_contents` usando el idioma resuelto. No ejecutar traducción automática en cada GET: traducir al ingresar/importar, almacenar ambas versiones y servir la ya existente.
-
-## Prueba rápida del encabezado
-
-```powershell
-curl.exe -H "Accept-Language: en" http://localhost:3000/api/v1/health
-curl.exe -H "Accept-Language: es" http://localhost:3000/api/v1/health
-```
+Run `npm test` in `Server` and `npm test -- --watch=false` in `Client/tunari-guard`.

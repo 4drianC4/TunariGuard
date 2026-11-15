@@ -1,8 +1,16 @@
+import { t } from '../../shared/i18n/language.js';
 import { z } from 'zod';
 import { formBoolean, isoDay, queryBoolean } from '../../shared/query-schemas.js';
+import { severityFromLabel, statusFromLabel } from './domain/alert-dto.js';
 
-const severidad = z.enum(['Crítica', 'Alta', 'Media']);
-const estado = z.enum(['Pendiente', 'En revisión', 'En análisis', 'Verificada']);
+const severidad = z.union([
+  z.enum(['CRITICAL', 'HIGH', 'MEDIUM']),
+  z.enum(['Crítica', 'Alta', 'Media']).transform(severityFromLabel),
+]);
+const estado = z.union([
+  z.enum(['PENDING', 'IN_REVIEW', 'IN_ANALYSIS', 'VERIFIED']),
+  z.enum(['Pendiente', 'En revisión', 'En análisis', 'Verificada']).transform(statusFromLabel),
+]);
 
 export const listAlertsSchema = z
   .object({
@@ -23,14 +31,14 @@ export const listAlertsSchema = z
     page: z.coerce.number().int().min(1).default(1),
     limit: z.coerce.number().int().min(1).max(200).default(50),
   })
-  .refine((q) => !q.desde || !q.hasta || q.desde <= q.hasta, { message: 'desde debe ser anterior o igual a hasta', path: ['desde'] });
+  .refine((q) => !q.desde || !q.hasta || q.desde <= q.hasta, { error: () => t('desde debe ser anterior o igual a hasta'), path: ['desde'] });
 export type ListAlertsQuery = z.infer<typeof listAlertsSchema>;
 
 export const alertIdSchema = z.object({
   id: z
     .string()
     .trim()
-    .refine((v) => z.uuid().safeParse(v).success || /^AL-\d+$/i.test(v), 'Use el uuid o el código AL-0001')
+    .refine((v) => z.uuid().safeParse(v).success || /^AL-\d+$/i.test(v), { error: () => t('Use el uuid o el código AL-0001') })
     .describe('uuid o código AL-0001'),
 });
 export type AlertIdParam = z.infer<typeof alertIdSchema>;
@@ -54,7 +62,7 @@ export const backfillAlertsSchema = z
       .describe('Comentario que se guarda en cada alerta creada'),
     aplicar: formBoolean.default(false).describe('false (por defecto): ensayo, solo cuenta. true: crea las alertas'),
   })
-  .refine((q) => q.desde <= q.hasta, { message: 'desde debe ser anterior o igual a hasta', path: ['desde'] });
+  .refine((q) => q.desde <= q.hasta, { error: () => t('desde debe ser anterior o igual a hasta'), path: ['desde'] });
 export type BackfillAlertsBody = z.infer<typeof backfillAlertsSchema>;
 
 export const monthlyContextSchema = z.object({

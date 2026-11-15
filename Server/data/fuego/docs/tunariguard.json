@@ -1,0 +1,177 @@
+{
+  "sistema-panorama": {
+    "temas": "tunariguard tunari guard plataforma web aplicación app sistema system platform presentación overview propósito purpose monitoreo forestal forest monitoring NASA Space Apps",
+    "es": {
+      "titulo": "TunariGuard · Qué es y para qué sirve",
+      "resumen": "TunariGuard es una plataforma web bilingüe de monitoreo forestal para el Parque Nacional Tunari y los 15 distritos del municipio de Cochabamba, Bolivia. Usa detecciones térmicas satelitales de NASA FIRMS (MODIS y VIIRS). Puedes explorar focos en el mapa, comparar actividad histórica, revisar alertas candidatas y exportar reportes. Tuni te ayuda a consultar e interpretar esos datos. Cada foco es una señal de calor que requiere verificación para determinar si hubo un incendio.",
+      "detalle": [
+        "El proyecto surgió del desafío de NASA Space Apps sobre armonización de focos MODIS y VIIRS. Reúne mapas y análisis geoespacial de actividad térmica para orientar la revisión de zonas prioritarias y entender cómo cambia la actividad entre periodos.",
+        "Inicio reúne indicadores y accesos a los módulos. Mapa muestra detecciones individuales. Historial y Armonización ayudan a comparar periodos y sensores. Distritos permite explorar el territorio. Alertas organiza señales para revisión. Reportes permite descargar datos, Proyecciones muestra una simulación y Metodología explica las fuentes y los límites del análisis. El selector de idioma cambia la interfaz y el idioma de respuesta de Tuni entre español e inglés."
+      ]
+    },
+    "en": {
+      "titulo": "TunariGuard · What it is and what it does",
+      "resumen": "TunariGuard is a bilingual web platform for forest monitoring in Tunari National Park and the 15 districts of the municipality of Cochabamba, Bolivia. It uses satellite heat detections from NASA FIRMS (MODIS and VIIRS). You can explore hotspots on a map, compare historical activity, review candidate alerts, and export reports. Tuni helps you query and interpret the data. Each hotspot is a heat signal that requires verification to determine whether a wildfire occurred.",
+      "detalle": [
+        "The project grew out of the NASA Space Apps challenge on MODIS and VIIRS hotspot harmonization. It brings together maps and geospatial analysis of thermal activity to help prioritize areas for review and understand how activity changes between periods.",
+        "Home summarizes indicators and links to the modules. Map shows individual detections. History and Harmonization help compare periods and sensors. Districts lets you explore the area. Alerts organizes signals for review. Reports lets you download data, Projections shows a simulation, and Methodology explains the sources and analytical limits. The language selector switches the interface and Tuni's reply language between Spanish and English."
+      ]
+    }
+  },
+  "sistema-datos": {
+    "temas": "origen procedencia cobertura datos data source sources FIRMS NASA sensor resolución resolution satelital MODIS VIIRS Terra Aqua Suomi NPP NOAA-20 NOAA-21 actualización refresh NRT histórico provenance",
+    "es": {
+      "titulo": "TunariGuard · Fuentes, cobertura y actualización",
+      "resumen": "La fuente principal es NASA FIRMS. El catálogo incluye MODIS de Terra y Aqua (resolución nominal de 1 km) y VIIRS de Suomi-NPP, NOAA-20 y NOAA-21 (375 m). La plataforma separa el paquete histórico analizado, las observaciones casi en tiempo real (NRT, provisionales) y la simulación de demostración. Para saber hasta qué día hay datos en un área, consulta la cobertura de la serie o las detecciones cargadas en el mapa.",
+      "detalle": [
+        "Una detección incluye fecha y hora, coordenadas, satélite y, cuando están disponibles, confianza, potencia radiativa del fuego (FRP) y observación diurna o nocturna. El análisis agrupa los días por la hora local de Bolivia. El punto representa un píxel en el que el sensor detectó calor. Para conocer la causa, el perímetro o la superficie afectada hacen falta otras fuentes.",
+        "El paquete analítico distribuido documenta cobertura de las series mensuales hasta el 31 de octubre de 2026. En esa versión, el filtro principal es tipo 0 y confianza distinta de baja. El sistema admite incorporar detecciones NRT más recientes. Los productos NRT son provisionales y la ingesta puede reemplazar sus registros cuando llega el producto estándar del mismo intervalo. La última observación disponible depende de lo cargado y de la consulta.",
+        "El análisis combina observaciones con polígonos de referencia del parque, el municipio y sus distritos. Los límites del paquete indican su procedencia y sirven para el análisis espacial. El catálogo separado de incendios reportados reúne una selección de casos de prensa y sirve como referencia parcial."
+      ]
+    },
+    "en": {
+      "titulo": "TunariGuard · Sources, coverage, and updates",
+      "resumen": "The main source is NASA FIRMS. The catalog includes MODIS on Terra and Aqua (nominal 1 km resolution) and VIIRS on Suomi-NPP, NOAA-20, and NOAA-21 (375 m). The platform tracks the analyzed historical package, near-real-time observations (provisional NRT data), and the demo simulation separately. To find the latest date for a specific area, check the series coverage or the detections loaded on the map.",
+      "detalle": [
+        "A detection includes a timestamp, coordinates, and satellite, plus confidence, fire radiative power (FRP), and day or night classification when available. The analysis groups days in Bolivia's local time. A point represents a pixel where the sensor detected heat. Identifying the cause, perimeter, or affected area requires other sources.",
+        "The distributed analytical package documents monthly series coverage through October 31, 2026. In that version, the main filter keeps type 0 detections and excludes low confidence. The system can add more recent NRT detections. NRT products are provisional and ingestion can replace their records when standard data for the same period arrives. The latest observation varies with the loaded data and filters.",
+        "The analysis combines observations with reference polygons for the park, municipality, and districts. The package documents the provenance of those boundaries and uses them for spatial analysis. The separate catalog of reported wildfires contains selected cases from the press and serves as a partial reference."
+      ]
+    }
+  },
+  "sistema-uso": {
+    "temas": "mapa map filtros filters polígono polygon dibujar draw historial history calendario dashboard panel distritos districts navegación navigation mapa de calor hotspot map laboratorio lab",
+    "es": {
+      "titulo": "TunariGuard · Cómo explorar el mapa y el historial",
+      "resumen": "Abre Mapa y elige un área, un intervalo de fechas y, si quieres, un satélite. Pulsa un punto para ver su fecha, coordenadas y procedencia. Puedes dibujar un polígono para consultar una zona propia. En Historial puedes comparar meses y años, y en Armonización puedes comparar conteos de sensores con el índice armonizado. Usa Distritos para enfocar el análisis en un distrito.",
+      "detalle": [
+        "El mapa interactivo permite explorar detecciones sobre límites y capas geográficas. Una consulta con área o polígono y fechas concretas hace que la búsqueda sea reproducible. En las consultas por polígono, el porcentaje de superficie con datos ayuda a interpretar el resultado cuando la zona se extiende fuera de la cobertura.",
+        "Historial reúne calendario, series y detalle mensual. Armonización muestra conteos MODIS y VIIRS y su comparación con la serie equivalente a MODIS. Revisa la unidad y la calidad del índice antes de comparar áreas, y consulta Metodología para ver definiciones, fuentes y advertencias."
+      ]
+    },
+    "en": {
+      "titulo": "TunariGuard · How to explore the map and history",
+      "resumen": "Open Map and choose an area, a date range, and optionally a satellite. Select a point to see its date, coordinates, and provenance. Draw a polygon to query your own area. In History you can compare months and years, and in Harmonization you can compare sensor counts with the harmonized index. Use Districts to focus the analysis on a district.",
+      "detalle": [
+        "The interactive map displays detections over boundaries and geographic layers. Specifying an area or polygon and a date range makes the search reproducible. For a polygon query, the percentage of the area with data helps interpret results when the polygon extends beyond the coverage.",
+        "History includes a calendar, time series, and monthly detail. Harmonization shows MODIS and VIIRS counts alongside the MODIS-equivalent series. Check the unit and index quality before comparing areas, and use Methodology for definitions, sources, and scientific notices."
+      ]
+    }
+  },
+  "sistema-metodo": {
+    "temas": "interpretación interpretation metodología methodology celda-día cell-day índice index armonización harmonization MODIS-equivalente MODIS equivalent calibración calibration incertidumbre uncertainty límites limitations",
+    "es": {
+      "titulo": "TunariGuard · Cómo se interpreta la actividad térmica",
+      "resumen": "Una celda-día cuenta una celda de 1 km con una o más detecciones durante el mismo día en Bolivia. El índice armonizado lleva la actividad VIIRS a una escala equivalente a MODIS para comparar periodos. El ajuste se calibró en el parque y se aplica como aproximación en otras áreas. Revisa siempre la cobertura, la calidad del índice y el origen antes de interpretar una diferencia.",
+      "detalle": [
+        "El catálogo agrupa Terra y Aqua en MODIS. Varias detecciones del mismo grupo en la misma celda y día cuentan una sola vez en la serie del grupo. Las escenas y las condiciones de observación pueden variar. El índice mide actividad térmica relativa en celdas-día equivalentes a MODIS. Las hectáreas quemadas y el número de incendios requieren otras fuentes.",
+        "El factor operativo del paquete es aproximadamente 2,87 celdas-día de VIIRS Suomi-NPP por cada celda-día equivalente a MODIS y se ajustó en Tunari con 2013–2025. En las demás áreas es un factor transferido, sin calibración local y sin índice comparable antes de febrero de 2012. La incertidumbre es mayor a escala mensual que en agregados trimestrales o anuales.",
+        "Una celda con calor puede corresponder a fuego, a otra fuente térmica o a una fuente persistente. Nubosidad, resolución y horarios de pasada limitan lo que detectan los sensores. Un dato faltante por cobertura se interpreta como desconocido."
+      ]
+    },
+    "en": {
+      "titulo": "TunariGuard · How to interpret thermal activity",
+      "resumen": "A cell-day counts one 1 km cell with one or more detections on the same calendar day in Bolivia. The harmonized index converts VIIRS activity to a MODIS-equivalent scale for comparisons across periods. The conversion was calibrated in the park and is approximate in other areas. Always check coverage, index quality, and provenance before interpreting a difference.",
+      "detalle": [
+        "The catalog groups Terra and Aqua under MODIS. Multiple detections in the same group, cell, and day count once in the group's series. Scenes and observing conditions can vary. The index measures relative thermal activity in MODIS-equivalent cell-days. Burned hectares and wildfire counts require other sources.",
+        "The package uses about 2.87 Suomi-NPP VIIRS cell-days per MODIS-equivalent cell-day, fitted in Tunari using 2013–2025 data. Other areas use the transferred factor without local calibration and lack a comparable index before February 2012. Uncertainty is greater at monthly scale than in quarterly or annual aggregates.",
+        "A heat detection can come from a fire, another thermal source, or a persistent heat source. Clouds, resolution, and overpass times limit what sensors can detect. Missing coverage means the value is unknown."
+      ]
+    }
+  },
+  "sistema-alertas": {
+    "temas": "alertas operativas operational alerts pasada overpass severidad severity revisión review señal estadística statistical alert mes en curso current month histórico baseline",
+    "es": {
+      "titulo": "TunariGuard · Alertas operativas y estadísticas",
+      "resumen": "Una alerta operativa agrupa detecciones de una misma pasada satelital en un área vigilada y les asigna una severidad para ordenar su revisión. Las alertas estadísticas comparan la actividad mensual con su referencia histórica. El corte del mes en curso compara lo acumulado con el mismo tramo de años anteriores. Las dos clases de alertas ayudan a decidir qué verificar en campo.",
+      "detalle": [
+        "En Alertas puedes inspeccionar el área, las detecciones, la severidad, el estado de revisión y las notas. El sistema agrupa por área y satélite. La repetición histórica (replay) y las observaciones simuladas se identifican según su procedencia. El canal en tiempo real entrega avisos cuando el servidor registra nuevas alertas.",
+        "El análisis mensual histórico mide cuán inusual es la actividad para esa época del año con un modelo binomial negativo estacional. El corte en curso usa un tramo comparable del mes. Para saber la fecha, el satélite y las cifras de un corte concreto hay que consultarlo en la base. Una señal alta indica prioridad de verificación y una confirmación requiere evidencia independiente."
+      ]
+    },
+    "en": {
+      "titulo": "TunariGuard · Operational and statistical alerts",
+      "resumen": "An operational alert groups detections from the same satellite overpass in a monitored area and assigns a severity to prioritize review. Statistical alerts compare monthly activity against a historical baseline. A current-month cutoff compares activity so far with the same part of the month in previous years. Both kinds of alert help identify what to verify in the field.",
+      "detalle": [
+        "In Alerts you can inspect the area, detections, severity, review status, and notes. The system groups by area and satellite. Historical replay and simulated observations are identified by their provenance. The real-time channel delivers notifications when the server registers new alerts.",
+        "The historical monthly analysis uses a seasonal negative binomial model to measure how unusual activity is for the time of year. The current cutoff uses a comparable part of the month. Query the database for the date, satellite, and values of a specific cutoff. A high signal prioritizes verification. Confirmation requires independent evidence."
+      ]
+    }
+  },
+  "sistema-reportes": {
+    "temas": "reportes reports informes exportar export descargar download CSV Excel PDF GeoJSON compartir share",
+    "es": {
+      "titulo": "TunariGuard · Reportes y exportaciones",
+      "resumen": "En Reportes, elige el tipo de informe, el área y el periodo para obtener una vista previa. Puedes descargar un resumen PDF, los datos tabulares en CSV o un archivo para Excel con su contexto. Los reportes de detecciones también se pueden exportar como puntos GeoJSON para abrirlos en un SIG.",
+      "detalle": [
+        "El PDF presenta un resumen con hasta 20 filas. Para revisar todas las filas del reporte usa CSV o Excel. GeoJSON conserva la geometría de los puntos con sus atributos. Al compartir un reporte, conserva el alcance temporal y territorial, la unidad y las advertencias de origen o calidad."
+      ]
+    },
+    "en": {
+      "titulo": "TunariGuard · Reports and exports",
+      "resumen": "In Reports, choose a report type, an area, and a period to get a preview. Download a PDF summary, tabular data as CSV, or an Excel-compatible file with context. Detection reports can also be exported as GeoJSON points for use in a GIS.",
+      "detalle": [
+        "The PDF summarizes up to 20 rows. Use CSV or Excel to review the full report. GeoJSON keeps point geometries and their attributes. When sharing a report, keep its time range, area, unit, and any provenance or quality notices."
+      ]
+    }
+  },
+  "sistema-proyecciones": {
+    "temas": "proyecciones projections simulación simulation pronóstico forecast escenario scenario demo replay esperado expected",
+    "es": {
+      "titulo": "TunariGuard · Proyecciones, simulación y repetición",
+      "resumen": "Proyecciones muestra un escenario sintético mensual para el Tunari. Compara la actividad esperada por el modelo con las detecciones generadas para la demostración. El escenario sirve para explorar cómo se vería el sistema con datos futuros simulados. Úsalo como demostración y usa las observaciones reales para investigar actividad ocurrida.",
+      "detalle": [
+        "La serie de demostración cubre de noviembre de 2026 a diciembre de 2031. Distingue el índice esperado en escala equivalente a MODIS de las detecciones generadas. Los valores del escenario son ilustrativos y carecen de validez como pronóstico operativo o como confirmación de un incendio.",
+        "La repetición histórica (replay) reproduce el ritmo de pasadas ya archivadas para demostrar el flujo de alertas. Es una función distinta de la simulación de observaciones futuras y de la ingesta NRT de NASA FIRMS."
+      ]
+    },
+    "en": {
+      "titulo": "TunariGuard · Projections, simulation, and replay",
+      "resumen": "Projections shows a synthetic monthly scenario for Tunari. It compares the activity expected by the model with detections generated for the demo. The scenario shows how the system would look with simulated future data. Use it as a demonstration and check real observations to investigate actual activity.",
+      "detalle": [
+        "The demo series runs from November 2026 to December 2031. It distinguishes the expected index on a MODIS-equivalent scale from generated detections. Its values are illustrative and have no validity as an operational forecast or wildfire confirmation.",
+        "Historical replay reproduces the timing of archived overpasses to demonstrate the alerts workflow. It is separate from the simulation of future observations and from NASA FIRMS NRT ingestion."
+      ]
+    }
+  },
+  "sistema-arquitectura": {
+    "temas": "arquitectura architecture stack tecnología tech technologies implementación implementation frontend backend Angular TypeScript Leaflet ECharts NestJS API REST Socket.IO datos database PostgreSQL PostGIS Prisma public fuego CSV MinIO S3 esquema schema ingesta ingestion infraestructura deployment",
+    "es": {
+      "titulo": "TunariGuard · Arquitectura web y flujo de datos",
+      "resumen": "TunariGuard usa Angular y TypeScript en el navegador, Leaflet para mapas y ECharts para gráficos. El backend NestJS ofrece una API REST y publica eventos mediante Socket.IO. PostgreSQL con PostGIS resuelve las consultas espaciales. Prisma gestiona el esquema operativo public y el esquema analítico fuego se consulta con SQL parametrizado. Los CSV grandes se pueden importar desde almacenamiento compatible con S3, usando MinIO en desarrollo.",
+      "detalle": [
+        "La ingesta valida y normaliza registros de CSV, comprueba duplicados y guarda las observaciones con su procedencia. PostGIS cruza coordenadas con áreas geográficas. El módulo operativo puede sincronizar productos NRT desde FIRMS y utiliza observaciones para agrupar pasadas y producir alertas. Socket.IO publica eventos de la plataforma y su rapidez depende de cuándo llega el dato satelital.",
+        "El esquema operativo public guarda observaciones, distritos, lotes de importación y alertas operativas. El esquema fuego contiene detecciones del paquete territorial, áreas, cuadrícula, series y alertas estadísticas precalculadas. Como las dos capas contienen observaciones solapadas de FIRMS, sumar sus conteos duplicaría parte de la actividad.",
+        "La API se sirve bajo /api/v1. Las consultas relevantes incluyen /detecciones, /areas, /historial, /alertas y /tuni/chat. El frontend usa esa API para pedir datos y aplica catálogos de idioma para presentar la interfaz en español o inglés."
+      ]
+    },
+    "en": {
+      "titulo": "TunariGuard · Web architecture and data flow",
+      "resumen": "TunariGuard uses Angular and TypeScript in the browser, Leaflet for maps, and ECharts for charts. A NestJS backend serves a REST API and publishes events through Socket.IO. PostgreSQL with PostGIS handles spatial queries. Prisma manages the operational schema (public), and the analytical schema (fuego) is queried with parameterized SQL. Large CSV files can be imported from S3-compatible storage, with MinIO used in development.",
+      "detalle": [
+        "Ingestion validates and normalizes CSV records, checks for duplicates, and stores observations with their provenance. PostGIS intersects coordinates with geographic areas. The operations module can synchronize NRT products from FIRMS and uses observations to group overpasses and generate alerts. Socket.IO publishes platform events. Data freshness depends on when satellite data arrives.",
+        "The operational schema (public) stores observations, districts, import batches, and operational alerts. The fuego schema holds the package's territorial detections, areas, grid, time series, and precomputed statistical alerts. The two layers contain overlapping FIRMS observations, so combining their counts would double-count some activity.",
+        "The API is served under /api/v1. Relevant endpoints include /detecciones, /areas, /historial, /alertas, and /tuni/chat. The frontend queries this API and uses language catalogs to present the interface in Spanish or English."
+      ]
+    }
+  },
+  "sistema-tuni": {
+    "temas": "tuni asistente assistant chat voz voice IA AI consultas queries documentación documentation RAG citas citations ayuda help",
+    "es": {
+      "titulo": "TunariGuard · Qué puede consultar Tuni",
+      "resumen": "Tuni es el asistente de TunariGuard. Puedes preguntarle por el último corte mensual, las detecciones recientes, comparaciones de meses, alertas operativas y casos reportados en el catálogo. También explica el funcionamiento del sistema y su metodología con pasajes de la documentación. Escribe el área, las fechas y el satélite cuando quieras limitar una consulta. El chat ofrece opciones de voz.",
+      "detalle": [
+        "Para una cifra, Tuni consulta las funciones de lectura de la plataforma. Para una explicación, recupera fragmentos del diccionario, las advertencias científicas y la guía del sistema y muestra citas cuando están disponibles. Algunas consultas se resuelven directamente y el modelo puede ayudar a interpretar preguntas y sintetizar las fuentes.",
+        "La respuesta usa el idioma elegido en la interfaz. Las alertas y detecciones ayudan a orientar una revisión. Confirmar si hubo un incendio requiere evidencia independiente. Los casos reportados en el catálogo son una selección y su uso requiere indicar el periodo."
+      ]
+    },
+    "en": {
+      "titulo": "TunariGuard · What Tuni can answer",
+      "resumen": "Tuni is the TunariGuard assistant. You can ask about the latest monthly cutoff, recent detections, month comparisons, operational alerts, and reported cases in the catalog. Tuni can also explain the system and its methodology using passages from the documentation. Include an area, dates, and satellite to narrow a query. The chat offers voice options.",
+      "detalle": [
+        "For figures, Tuni calls the platform's read functions. For explanations, it retrieves passages from the data dictionary, scientific notices, and system guide, and shows citations when available. Some questions are answered directly. The model can help interpret questions and synthesize the sources.",
+        "Replies use the language selected in the interface. Alerts and detections help prioritize a review. Confirming a wildfire requires independent evidence. The catalog contains selected reported cases, and a query needs a time period."
+      ]
+    }
+  }
+}

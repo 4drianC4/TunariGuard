@@ -2,11 +2,11 @@
   <div class="topbar__identity">
     <span class="topbar__eyebrow">
       <span class="topbar__live-dot"></span>
-      TUNARIGUARD / MONITOREO FORESTAL
+      {{ t('TUNARIGUARD / MONITOREO FORESTAL') }}
     </span>
     <div class="topbar__title-row">
-      <h1>Centro de monitoreo</h1>
-      <span class="topbar__subtitle">Anomalías térmicas satelitales</span>
+      <h1>{{ t('Centro de monitoreo') }}</h1>
+      <span class="topbar__subtitle">{{ t('Anomalías térmicas satelitales') }}</span>
     </div>
   </div>
 
@@ -31,7 +31,7 @@
     <div class="notifications" #notificationContainer>
       <button type="button" class="notifications__trigger"
         [class.notifications__trigger--active]="notificationsOpen"
-        [attr.aria-expanded]="notificationsOpen" aria-label="Abrir notificaciones"
+        [attr.aria-expanded]="notificationsOpen" [attr.aria-label]="t('Abrir notificaciones')"
         aria-haspopup="true" (click)="toggleNotifications()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -43,16 +43,16 @@
         </span>
       </button>
 
-      <section *ngIf="notificationsOpen" class="notifications__panel" aria-label="Panel de notificaciones">
+      <section *ngIf="notificationsOpen" class="notifications__panel" [attr.aria-label]="t('Panel de notificaciones')">
         <div class="notifications__header">
-          <div><h2>Notificaciones</h2><p>{{ unreadCount }} sin leer</p></div>
-          <button type="button" class="notifications__close" aria-label="Cerrar notificaciones"
+          <div><h2>{{ t('Notificaciones') }}</h2><p>{{ unreadCount }} {{ t('sin leer') }}</p></div>
+          <button type="button" class="notifications__close" [attr.aria-label]="t('Cerrar notificaciones')"
             (click)="closeNotifications()">&times;</button>
         </div>
         <div class="notifications__toolbar">
-          <span>Actividad reciente</span>
+          <span>{{ t('Actividad reciente') }}</span>
           <button type="button" [disabled]="unreadCount === 0" (click)="markAllAsRead()">
-            Marcar todas como leídas
+            {{ t('Marcar todas como leídas') }}
           </button>
         </div>
         <div class="notifications__list">
@@ -65,18 +65,18 @@
               </svg>
             </span>
             <span class="notification-item__content">
-              <span class="notification-item__title">{{ item.title }}</span>
-              <span class="notification-item__message">{{ item.message }}</span>
-              <span class="notification-item__time">{{ item.time }}</span>
+              <span class="notification-item__title">{{ t(item.title) }}</span>
+              <span class="notification-item__message">{{ notificationMessage(item) }}</span>
+              <span class="notification-item__time">{{ notificationTime(item) }}</span>
             </span>
             <span *ngIf="!item.read" class="notification-item__unread-dot"></span>
           </button>
           <div *ngIf="notifications().length === 0" class="notifications__empty">
-            No hay notificaciones disponibles.
+            {{ t('No hay notificaciones disponibles.') }}
           </div>
         </div>
         <div class="notifications__footer">
-          <button type="button" (click)="goToAlerts()">Ver alertas <span aria-hidden="true">→</span></button>
+          <button type="button" (click)="goToAlerts()">{{ t('Ver alertas') }} <span aria-hidden="true">→</span></button>
         </div>
       </section>
     </div>
@@ -90,11 +90,11 @@
         <img src="/assets/tuni-piezas/tuni-cabeza.webp" alt="" width="44" height="44" draggable="false">
       </span>
       <div class="alert-toast__content">
-        <strong>{{ notice.alert.title }}</strong><p>{{ notice.alert.message }}</p>
-        @if (notice.others === 1) { <small>1 alerta más en la campanita</small> }
-        @else if (notice.others > 1) { <small>{{ notice.others }} alertas más en la campanita</small> }
+        <strong>{{ notificationTitle(notice.alert) }}</strong><p>{{ notificationMessage(notice.alert) }}</p>
+        @if (notice.others === 1) { <small>{{ t('1 alerta más en la campanita') }}</small> }
+        @else if (notice.others > 1) { <small>{{ notice.others }} {{ t('alertas más en la campanita') }}</small> }
       </div>
-      <button type="button" class="alert-toast__close" aria-label="Cerrar aviso" (click)="dismissToast()">
+      <button type="button" class="alert-toast__close" [attr.aria-label]="t('Cerrar aviso')" (click)="dismissToast()">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>

@@ -1,3 +1,4 @@
+import { currentLanguage, msg, t } from '../../shared/i18n/language.js';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { AnalisisRepository } from './analisis.repository.js';
 import type { HistorialDistritosQuery, HistorialQuery } from './analisis.schemas.js';
@@ -30,7 +31,7 @@ export class HistorialService {
 
   async deArea(q: HistorialQuery) {
     const [area] = await this.repository.areasResumen({ ids: [q.area_id] });
-    if (!area) throw new NotFoundException(`No existe el área ${q.area_id}. Consulta GET /api/v1/areas`);
+    if (!area) throw new NotFoundException(msg`No existe el área ${q.area_id}. Consulta GET /api/v1/areas`);
 
     const records = (await this.registros([q.area_id], q)).get(q.area_id) ?? [];
     return {
@@ -82,7 +83,21 @@ export class HistorialService {
 
   /** Unidad y aviso que el frontend debe mostrar junto a las cifras. */
   private async contexto(o: Opciones, viirsReescalado: boolean): Promise<{ source: FuenteHistorial; unit: string; notice: string }> {
-    const base = 'Una detección satelital de calor no es un incendio confirmado.';
+    const base = t('Una detección satelital de calor no es un incendio confirmado.');
+    if (currentLanguage() === 'en') {
+      if (o.fuente === 'HARMONIZED') {
+        return {
+          source: o.fuente, unit: 'MODIS-equivalent cell-days',
+          notice: base + ' The harmonized index is relative and does not measure burned hectares or wildfire counts.' +
+            (viirsReescalado ? ' Outside Tunari National Park, VIIRS uses the Tunari factor without local validation. Comparable values are unavailable before February 2012.' : ''),
+        };
+      }
+      const factor = await this.repository.factorViirsPorModis();
+      return {
+        source: o.fuente, unit: `${o.fuente} ${o.medida === 'detecciones' ? 'detections' : 'cell-days'}`,
+        notice: `${base} Raw ${o.fuente} counts include all satellites in that sensor family. VIIRS (375 m) detects about ${factor?.toFixed(2) ?? '2.87'} times as many cell-days as MODIS (1 km). Use HARMONIZED for comparisons. Months marked provisional include NRT detections that NASA may revise.`,
+      };
+    }
     if (o.fuente === 'HARMONIZED') {
       return {
         source: o.fuente,

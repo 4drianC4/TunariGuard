@@ -1,15 +1,15 @@
-<section class="min-w-0 space-y-3" aria-label="Explorador geoespacial de Tunari Guard">
+<section class="min-w-0 space-y-3" [attr.aria-label]="t('Explorador geoespacial de Tunari Guard')">
   @let detectionCount = filteredObservations().length;
   @if (!compact) {
     <header class="tg-card map-toolbar">
       <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
         <button type="button" class="tg-map-button"
           (click)="toggleFilters()" [attr.aria-expanded]="filtersOpen()" aria-controls="map-left-panel">
-          <svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#map"></use></svg>{{ filtersOpen() ? 'Ocultar filtros' : 'Mostrar filtros' }}
+          <svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#map"></use></svg>{{ filtersOpen() ? t('Ocultar filtros') :  t('Mostrar filtros') }}
         </button>
         <div class="grid gap-1 border-l border-[#526b24]/30 pl-4 max-[720px]:pl-2">
-          <span class="text-[9px] font-extrabold tracking-widest text-[#b84e20]">ÁREA DE CONSULTA</span>
-          <strong class="text-xs font-semibold text-[#30351f]">{{ selectedArea() ? 'Área dibujada' : areaLabel }}</strong>
+          <span class="text-[9px] font-extrabold tracking-widest text-[#b84e20]">{{ t('ÁREA DE CONSULTA') }}</span>
+          <strong class="text-xs font-semibold text-[#30351f]">{{ selectedArea() ? t('Área dibujada') : areaLabel }}</strong>
         </div>
         <app-map-timeline [period]="period" />
       </div>
@@ -19,15 +19,15 @@
             <strong class="text-lg text-[#30351f]">{{ detectionCount }}</strong>
             <span>{{ dataStatus() === 'loading' ? 'detecciones cargadas hasta ahora' : 'detecciones encontradas' }}</span>
           } @else {
-            <span>{{ dataStatus() === 'loading' ? 'Consultando detecciones…' : 'Consulta no disponible' }}</span>
+            <span>{{ dataStatus() === 'loading' ? t('Consultando detecciones…') :  t('Consulta no disponible') }}</span>
           }
-          <app-map-info topic="el conteo y las exportaciones" text="El conteo y los archivos incluyen las detecciones que coinciden con los filtros en la zona consultada." />
+          <app-map-info [topic]="t('el conteo y las exportaciones')" [text]="t('El conteo y los archivos incluyen las detecciones que coinciden con los filtros en la zona consultada.')" />
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <button type="button" class="map-action disabled:cursor-not-allowed disabled:opacity-50"
-            [disabled]="dataStatus() !== 'ready' || !detectionCount" (click)="exportObservations('csv')">Exportar CSV</button>
+            [disabled]="dataStatus() !== 'ready' || !detectionCount" (click)="exportObservations('csv')">{{ t('Exportar CSV') }}</button>
           <button type="button" class="map-action disabled:cursor-not-allowed disabled:opacity-50"
-            [disabled]="dataStatus() !== 'ready' || !detectionCount" (click)="exportObservations('geojson')">Exportar GeoJSON</button>
+            [disabled]="dataStatus() !== 'ready' || !detectionCount" (click)="exportObservations('geojson')">{{ t('Exportar GeoJSON') }}</button>
         </div>
       </div>
     </header>
@@ -35,25 +35,25 @@
 
   <div class="map-layout" [class.is-compact]="compact" [class.has-filters]="!compact && filtersOpen()" [class.has-detail]="!compact && !!selectedObservation()">
     @if (!compact) {
-    <aside id="map-left-panel" class="tg-card map-filters space-y-4" [hidden]="!filtersOpen()" aria-label="Consulta y filtros">
+    <aside id="map-left-panel" class="tg-card map-filters space-y-4" [hidden]="!filtersOpen()" [attr.aria-label]="t('Consulta y filtros')">
       <div class="tg-card-titleline">
         <svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#target"></use></svg>
-        <h2>Consulta y filtros</h2>
+        <h2>{{ t('Consulta y filtros') }}</h2>
       </div>
       <app-map-query-controls [areaId]="areaId" [areas]="areas()" [period]="period"
         (contextChange)="contextChange.emit($event)" (centerArea)="zoomToArea()" />
       @if (areaError() || boundaryError()) {
-        <p role="status">{{ areaError() || boundaryError() }} <button type="button" class="underline" (click)="loadAreaCatalog(); loadArea()">Reintentar</button></p>
+        <p role="status">{{ areaError() || boundaryError() }} <button type="button" class="underline" (click)="loadAreaCatalog(); loadArea()">{{ t('Reintentar') }}</button></p>
       }
 
       <section class="space-y-2 border-y border-[#dfd8cd] py-3 text-sm">
-        <div class="space-x-1"><h3 class="inline font-semibold">Área dibujada</h3>
-          <app-map-info topic="el área dibujada" text="Usa los controles de dibujo del mapa para trazar un rectángulo o polígono. Puedes editarlo, quitarlo o exportar su geometría como GeoJSON." />
+        <div class="space-x-1"><h3 class="inline font-semibold">{{ t('Área dibujada') }}</h3>
+          <app-map-info [topic]="t('el área dibujada')" [text]="t('Usa los controles de dibujo del mapa para trazar un rectángulo o polígono. Puedes editarlo, quitarlo o exportar su geometría como GeoJSON.')" />
         </div>
         @if (selectedArea()) {
-          <span class="rounded-full border border-[#526b24]/45 bg-[#526b24]/15 px-2 py-1 text-xs text-[#424037]">Área dibujada activa</span>
-          <button type="button" class="map-action" (click)="exportSelectedArea()">Exportar área</button>
-          <button type="button" class="map-action" (click)="clearSelection()">Quitar área</button>
+          <span class="rounded-full border border-[#526b24]/45 bg-[#526b24]/15 px-2 py-1 text-xs text-[#424037]">{{ t('Área dibujada activa') }}</span>
+          <button type="button" class="map-action" (click)="exportSelectedArea()">{{ t('Exportar área') }}</button>
+          <button type="button" class="map-action" (click)="clearSelection()">{{ t('Quitar área') }}</button>
         }
       </section>
       <app-map-filters [observations]="observations()" [filters]="observationFilters()"
@@ -64,9 +64,9 @@
     <div class="map-content" [class.tg-card]="!compact">
       <div class="map-viewport relative h-[min(76vh,760px)] min-h-[460px] overflow-hidden rounded-xl border border-[#ded6ca] bg-[#e6e9df] max-[720px]:h-[62vh] max-[720px]:min-h-[380px]">
         <div #mapContainer class="map-canvas absolute inset-0 h-full w-full [&_img]:!max-w-none [&_img]:!max-h-none [&_.leaflet-bar]:!border-[#526b24]/50 [&_.leaflet-bar_a]:!bg-white [&_.leaflet-bar_a]:!text-[#30351f] [&_.leaflet-control-attribution]:!bg-white/90 [&_.leaflet-control-attribution]:!text-[#30351f]"
-          role="application" aria-label="Mapa interactivo de observaciones satelitales"></div>
+          role="application" [attr.aria-label]="t('Mapa interactivo de observaciones satelitales')"></div>
         <div class="pointer-events-none absolute bottom-3 left-3 right-3 z-[600] flex items-center justify-between gap-2 text-[10px] text-[#30351f] max-[720px]:text-[8px]">
-          <span class="rounded-md border border-[#ded6ca] bg-[#fffcf7]/95 px-2 py-1.5 text-left text-[#424037] shadow-md">Una detección no confirma un incendio</span>
+          <span class="rounded-md border border-[#ded6ca] bg-[#fffcf7]/95 px-2 py-1.5 text-left text-[#424037] shadow-md">{{ t('Una detección no confirma un incendio') }}</span>
           <span class="ml-auto inline-flex items-center gap-3 rounded-lg border border-[#ded6ca] bg-[#fffcf7]/95 px-3 py-2 text-[#30351f] shadow-md">
             @if (!observationFilters().platforms.length || observationFilters().platforms.some(isViirsPlatform)) { <span class="inline-flex items-center gap-1.5"><span class="size-2.5 rounded-full bg-[#DC2626]"></span>VIIRS</span> }
             @if (!observationFilters().platforms.length || observationFilters().platforms.some(isModisPlatform)) { <span class="inline-flex items-center gap-1.5"><span class="size-2.5 rounded-full bg-[#2563EB]"></span>MODIS</span> }
@@ -76,23 +76,23 @@
 
       @if (selectedObservation()) {
         <button type="button" class="map-detail-link map-action mx-3 justify-self-start"
-          (click)="focusDetectionDetail()">Ver información seleccionada</button>
+          (click)="focusDetectionDetail()">{{ t('Ver información seleccionada') }}</button>
       }
       @if (compact) {
-        <span class="map-preview-caption">Archivo histórico del Parque Nacional Tunari</span>
-        @if (boundaryError()) { <span role="status" class="px-2 text-xs">No se pudo cargar el límite del parque.</span> }
+        <span class="map-preview-caption">{{ t('Archivo histórico del Parque Nacional Tunari') }}</span>
+        @if (boundaryError()) { <span role="status" class="px-2 text-xs">{{ t('No se pudo cargar el límite del parque.') }}</span> }
       }
-      @if (dataStatus() === 'loading') { <div class="mx-3 rounded-lg bg-[#526b24]/10 px-3 py-2 text-xs text-[#424037]" role="status">Cargando datos del mapa…</div> }
-      @if (dataStatus() === 'error') { <div class="mx-3 flex flex-col gap-1 rounded-lg bg-[#b84e20]/10 px-3 py-2 text-xs text-[#424037]" role="alert"><strong>No se pudieron cargar los datos.</strong><span>{{ dataError() }}</span><button type="button" class="map-action self-start" (click)="loadDetections()">Reintentar</button></div> }
+      @if (dataStatus() === 'loading') { <div class="mx-3 rounded-lg bg-[#526b24]/10 px-3 py-2 text-xs text-[#424037]" role="status">{{ t('Cargando datos del mapa…') }}</div> }
+      @if (dataStatus() === 'error') { <div class="mx-3 flex flex-col gap-1 rounded-lg bg-[#b84e20]/10 px-3 py-2 text-xs text-[#424037]" role="alert"><strong>{{ t('No se pudieron cargar los datos.') }}</strong><span>{{ dataError() }}</span><button type="button" class="map-action self-start" (click)="loadDetections()">{{ t('Reintentar') }}</button></div> }
       @if (dataStatus() === 'ready' && !detectionCount) {
         <div class="mx-3 flex flex-wrap items-center gap-2 rounded-lg bg-[#526b24]/10 px-3 py-2 text-xs text-[#424037]" role="status">
-          <span>No hay detecciones para esta zona, período y filtros.</span>
+          <span>{{ t('No hay detecciones para esta zona, período y filtros.') }}</span>
         </div>
       }
     </div>
 
     @if (selectedObservation()) {
-      <aside #detailPanel tabindex="-1" class="map-detail grid content-start gap-3 bg-white p-3" aria-label="Detalle de detección">
+      <aside #detailPanel tabindex="-1" class="map-detail grid content-start gap-3 bg-white p-3" [attr.aria-label]="t('Detalle de detección')">
         <app-hotspot-popup [observation]="selectedObservation()" (close)="selectObservation(null)" />
       </aside>
     }

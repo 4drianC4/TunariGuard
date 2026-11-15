@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../../core/i18n/language.service';
 import { DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
 import { DetectionDatesService } from '../../../../application/services/detection-dates.service';
 import { DetectionDateDirective } from '../../../../shared/directives/detection-date.directive';
@@ -22,6 +23,10 @@ const initialFilters = { desde: '', hasta: '', area_id: '', severidad: '', estad
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AlertsPageComponent {
+  readonly i18n = inject(LanguageService);
+  readonly t = this.i18n.text;
+  readonly locale = inject(LanguageService).locale;
+  readonly dateFormat = () => this.locale() === 'es-BO' ? 'dd/MM/yyyy HH:mm' : 'short';
   readonly dates = inject(DetectionDatesService);
   private readonly api = inject(AlertsApi);
   readonly colors = ALERT_COLORS;

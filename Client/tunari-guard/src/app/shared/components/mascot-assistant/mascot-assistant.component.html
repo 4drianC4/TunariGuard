@@ -10,26 +10,26 @@
   <!-- TUNARIGUARD_TUNI_VOICE_RADAR_V2 -->
   <app-tuni-enhancement [chatAbierto]="abierto()" />
   @if (abierto()) {
-    <section id="tuni-chat-panel" class="chat-panel" role="dialog" aria-label="Chat de ayuda de Tuni">
+    <section id="tuni-chat-panel" class="chat-panel" role="dialog" [attr.aria-label]="t('Chat de ayuda de Tuni')">
       <header class="chat-header">
         <span class="chat-avatar" aria-hidden="true">
           <img src="/assets/tuni-piezas/tuni-cabeza.webp" alt="" draggable="false">
         </span>
         <div class="chat-identity">
-          <strong>Tuni · Guardián forestal</strong>
-          <small>ASISTENTE IA · MONITOREO FORESTAL</small>
+          <strong>{{ t('Tuni · Guardián forestal') }}</strong>
+          <small>{{ t('ASISTENTE IA · MONITOREO FORESTAL') }}</small>
         </div>
-        <button class="chat-close" type="button" (click)="cerrar()" aria-label="Cerrar chat de Tuni">×</button>
+        <button class="chat-close" type="button" (click)="cerrar()" [attr.aria-label]="t('Cerrar chat de Tuni')">×</button>
       </header>
 
       <!-- TUNI_UNIFICADO_V2: un unico historial y una unica barra de desplazamiento -->
       <div class="chat-content tuni-unified-content" aria-live="polite" aria-relevant="additions text">
         @if (respuestas().length === 0) {
-          <p class="chat-subheading">{{ titulo() }}</p>
+          <p class="chat-subheading">{{ t(titulo()) }}</p>
           <div class="chat-messages">
             @for (item of chat(); track $index) {
               <div class="chat-message" [class.from-tuni]="item.role === 'tuni'" [class.from-user]="item.role === 'user'">
-                <span class="message-author">{{ item.role === 'tuni' ? 'Tuni' : 'Tú' }}</span>
+                <span class="message-author">{{ item.role === 'tuni' ? 'Tuni' :  t('Tú') }}</span>
                 <p>{{ item.text }}</p>
               </div>
             }
@@ -38,35 +38,35 @@
         <div class="chat-messages">
           @for (item of respuestas(); track $index) {
             <div class="chat-message" [class.from-tuni]="item.role === 'assistant'" [class.from-user]="item.role === 'user'">
-              <span class="message-author">{{ item.role === 'assistant' ? 'Tuni' : 'Tú' }}</span>
-              <p class="tuni-answer">{{ item.text }}</p>
+              <span class="message-author">{{ item.role === 'assistant' ? 'Tuni' :  t('Tú') }}</span>
+              <p class="tuni-answer" [attr.lang]="item.language ?? null">{{ item.text }}</p>
               @if (item.role === 'assistant') {
                 @if (item.facts?.length) {
                   <dl class="tuni-facts">
                     @for (fact of item.facts; track $index) {
-                      <div><dt>{{ fact.label }}</dt><dd>{{ fact.value }}</dd></div>
+                      <div><dt>{{ t(fact.label) }}</dt><dd>{{ fact.value }}</dd></div>
                     }
                   </dl>
                 }
                 @if (item.source; as source) {
                   <div class="tuni-source">
-                    <a [routerLink]="source.route" [queryParams]="source.query" (click)="cerrar()">{{ source.label }} ↗</a>
+                    <a [routerLink]="source.route" [queryParams]="source.query" (click)="cerrar()">{{ t(source.label) }} ↗</a>
                   </div>
                 }
                 @if (item.citas?.length) {
-                  <div class="tuni-citations" aria-label="Fuentes de la explicación">
+                  <div class="tuni-citations" [attr.aria-label]="t('Fuentes de la explicación')">
                     @for (cita of item.citas; track cita.id) {
                       <details>
                         <summary>{{ cita.titulo }}</summary>
                         @if (cita.alcance) { <p class="tuni-citation-scope">{{ cita.alcance }}</p> }
-                        <p class="tuni-excerpt">{{ cita.texto }}</p>
+                        <p class="tuni-excerpt" [attr.lang]="cita.language ?? 'es'">{{ cita.texto }}</p>
                       </details>
                     }
                   </div>
                 }
-                <button type="button" class="tuni-speak-btn" (click)="escuchar(item.text)" [disabled]="conversacionContinua() || ((reproduciendo() || cargandoVoz()) && !reproduciendo())" [attr.aria-label]="reproduciendo() || cargandoVoz() ? 'Detener voz' : 'Escuchar respuesta'">
+                <button type="button" class="tuni-speak-btn" (click)="escuchar(item.text)" [disabled]="conversacionContinua() || ((reproduciendo() || cargandoVoz()) && !reproduciendo())" [attr.aria-label]="reproduciendo() || cargandoVoz() ? t('Detener voz') : t('Escuchar respuesta')">
                   <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a5 5 0 0 1 0 6"/><path d="M18 6a9 9 0 0 1 0 12"/></svg>
-                  {{ reproduciendo() || cargandoVoz() ? 'Detener audio' : 'Escuchar' }}
+                  {{ reproduciendo() || cargandoVoz() ? t('Detener audio') :  t('Escuchar') }}
                 </button>
               }
             </div>
@@ -74,39 +74,39 @@
         </div>
         @if (estado() === 'ayuda') {
           <div class="tuni-guide-v1__chat-context">
-            <strong>Ayuda de esta sección: {{ consejoActual().titulo }}</strong>
-            <p>{{ consejoActual().texto }}</p>
+            <strong>{{ t('Ayuda de esta sección:') }} {{ t(consejoActual().titulo) }}</strong>
+            <p>{{ t(consejoActual().texto) }}</p>
           </div>
         }
       </div>
       <div class="tuni-voice-mode">
-        <div class="tuni-voice-mode__label"><strong>Conversación por voz</strong><small>Escucha y responde automáticamente</small></div>
-        <button type="button" class="tuni-voice-toggle" [class.active]="conversacionContinua()" [attr.aria-pressed]="conversacionContinua()" (click)="alternarConversacion()">{{ conversacionContinua() ? 'Detener' : 'Activar' }}</button>
+        <div class="tuni-voice-mode__label"><strong>{{ t('Conversación por voz') }}</strong><small>{{ t('Escucha y responde automáticamente') }}</small></div>
+        <button type="button" class="tuni-voice-toggle" [class.active]="conversacionContinua()" [attr.aria-pressed]="conversacionContinua()" (click)="alternarConversacion()">{{ conversacionContinua() ? t('Detener') :  t('Activar') }}</button>
       </div>
       <div class="tuni-ai-compose">
-        <div class="tuni-quick-actions" aria-label="Consultas rápidas del Parque Nacional Tunari">
+        <div class="tuni-quick-actions" [attr.aria-label]="t('Consultas rápidas del Parque Nacional Tunari')">
           @for (consulta of consultasRapidas; track consulta.id) {
-            <button type="button" (click)="enviarPregunta(consulta)" [disabled]="procesando() || grabando()">{{ consulta.label }}</button>
+            <button type="button" (click)="enviarPregunta(consulta)" [disabled]="procesando() || grabando()">{{ t(consulta.label) }}</button>
           }
         </div>
-        @if (estadoVoz()) { <p class="tuni-ai-status" role="status">{{ estadoVoz() }}</p> }
-        @if (procesando() && !estadoVoz()) { <p role="status" class="tuni-ai-status">Tuni está procesando tu solicitud…</p> }
-        @if (errorIA()) { <p class="tuni-ai-error" role="alert">{{ errorIA() }}</p> }
+        @if (estadoVoz()) { <p class="tuni-ai-status" role="status">{{ t(estadoVoz()) }}</p> }
+        @if (procesando() && !estadoVoz()) { <p role="status" class="tuni-ai-status">{{ t('Tuni está procesando tu solicitud…') }}</p> }
+        @if (errorIA()) { <p class="tuni-ai-error" role="alert">{{ t(errorIA()) }}</p> }
         <form class="tuni-ai-input" (submit)="$event.preventDefault(); enviarPregunta()">
-          <input type="text" aria-label="Pregunta para Tuni" placeholder="Pregunta a Tuni..." [value]="pregunta()" (input)="pregunta.set($any($event.target).value)" maxlength="1500">
-          <button type="button" class="tuni-icon-button" (click)="alternarGrabacion()" [disabled]="conversacionContinua() || procesando() || reproduciendo() || cargandoVoz()" [attr.aria-label]="grabando() ? 'Detener grabación' : 'Grabar pregunta'" [title]="grabando() ? 'Detener grabación' : 'Grabar pregunta'">
+          <input type="text" [attr.aria-label]="t('Pregunta para Tuni')" [placeholder]="t('Pregunta a Tuni...')" [value]="pregunta()" (input)="pregunta.set($any($event.target).value)" maxlength="1500">
+          <button type="button" class="tuni-icon-button" (click)="alternarGrabacion()" [disabled]="conversacionContinua() || procesando() || reproduciendo() || cargandoVoz()" [attr.aria-label]="grabando() ? t('Detener grabación') : t('Grabar pregunta')" [title]="grabando() ? t('Detener grabación') : t('Grabar pregunta')">
             @if (grabando()) { <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg> }
             @else { <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5m-4 0h8"/></svg> }
           </button>
-          <button type="submit" class="tuni-icon-button" [disabled]="procesando() || grabando() || !pregunta().trim()" aria-label="Enviar pregunta" title="Enviar pregunta"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button>
+          <button type="submit" class="tuni-icon-button" [disabled]="procesando() || grabando() || !pregunta().trim()" [attr.aria-label]="t('Enviar pregunta')" [title]="t('Enviar pregunta')"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button>
         </form>
       </div>
 
       <footer class="chat-footer">
         <button type="button" (click)="alternarMovimiento()" [attr.aria-pressed]="!movimiento()">
-          {{ movimiento() ? '⏸ Pausar animación' : '▶ Animar a Tuni' }}
+          {{ movimiento() ? t('⏸ Pausar animación') :  t('▶ Animar a Tuni') }}
         </button>
-        <a routerLink="/mapa" (click)="cerrar()">Ver mapa ↗</a>
+        <a routerLink="/mapa" (click)="cerrar()">{{ t('Ver mapa ↗') }}</a>
       </footer>
     </section>
 
@@ -139,14 +139,14 @@
 
   <!-- TUNARIGUARD_TUNI_GUIDE_V1_START -->
   @if (consejoVisible() && !abierto()) {
-    <aside class="tuni-guide-v1" role="status" aria-label="Consejo contextual de Tuni">
+    <aside class="tuni-guide-v1" role="status" [attr.aria-label]="t('Consejo contextual de Tuni')">
       <div class="tuni-guide-v1__top">
-        <span class="tuni-guide-v1__eyebrow"><span aria-hidden="true">✦</span> TUNI TE AYUDA</span>
-        <button type="button" class="tuni-guide-v1__close" (click)="cerrarConsejo()" aria-label="Cerrar consejo de Tuni" title="Cerrar consejo">×</button>
+        <span class="tuni-guide-v1__eyebrow"><span aria-hidden="true">✦</span> {{ t('TUNI TE AYUDA') }}</span>
+        <button type="button" class="tuni-guide-v1__close" (click)="cerrarConsejo()" [attr.aria-label]="t('Cerrar consejo de Tuni')" [title]="t('Cerrar consejo')">×</button>
       </div>
-      <strong class="tuni-guide-v1__title">{{ consejoActual().titulo }}</strong>
-      <p class="tuni-guide-v1__text">{{ consejoActual().texto }}</p>
-      <button type="button" class="tuni-guide-v1__action" (click)="abrirAyudaDeEstaVista()">Ver ayuda en el chat <span aria-hidden="true">→</span></button>
+      <strong class="tuni-guide-v1__title">{{ t(consejoActual().titulo) }}</strong>
+      <p class="tuni-guide-v1__text">{{ t(consejoActual().texto) }}</p>
+      <button type="button" class="tuni-guide-v1__action" (click)="abrirAyudaDeEstaVista()">{{ t('Ver ayuda en el chat') }} <span aria-hidden="true">→</span></button>
       <div class="tuni-guide-v1__timer" [class.tuni-guide-v1__timer--alterno]="secuenciaConsejo() % 2 === 1" aria-hidden="true"></div>
     </aside>
   }
@@ -159,7 +159,7 @@
           (click)="alternar()"
           [attr.aria-expanded]="abierto()"
           aria-controls="tuni-chat-panel"
-          [attr.aria-label]="abierto() ? 'Cerrar chat de Tuni' : 'Abrir chat de Tuni'">
+          [attr.aria-label]="abierto() ? t('Cerrar chat de Tuni') : t('Abrir chat de Tuni')">
     <img src="/assets/tuni-piezas/tuni-cabeza.webp" alt="" aria-hidden="true" draggable="false">
     @if (!abierto()) { <span class="bubble-dot" aria-hidden="true"></span> }
   </button>

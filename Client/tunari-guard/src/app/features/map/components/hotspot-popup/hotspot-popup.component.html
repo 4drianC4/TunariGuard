@@ -1,42 +1,42 @@
 @if (observation; as selected) {
-  <section class="space-y-3 rounded-xl border border-[#526b24]/30 bg-white p-4 text-[#30351f] shadow-sm" aria-live="polite" aria-label="Detalle de detección seleccionada">
+  <section class="space-y-3 rounded-xl border border-[#526b24]/30 bg-white p-4 text-[#30351f] shadow-sm" aria-live="polite" [attr.aria-label]="t('Detalle de detección seleccionada')">
     <header class="flex items-start justify-between gap-2">
       <div>
         <span class="block text-[9px] font-extrabold uppercase tracking-widest text-[#b84e20]">
-          DETALLE DE OBSERVACIÓN
+          {{ t('DETALLE DE OBSERVACIÓN') }}
         </span>
         <h2 class="mt-1 text-base font-semibold text-[#30351f]">{{ selected.sensor }} · {{ selected.platform }}</h2>
       </div>
       <button type="button" class="grid size-8 place-items-center rounded-md text-xl text-[#424037] hover:bg-[#526b24]/10"
-        (click)="close.emit()" aria-label="Cerrar detalle">×</button>
+        (click)="close.emit()" [attr.aria-label]="t('Cerrar detalle')">×</button>
     </header>
 
     <dl class="grid grid-cols-2 gap-3">
-      <div><dt class="text-[10px] font-medium text-[#526b24]">Identificador</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.id }}</dd></div>
-      <div><dt class="text-[10px] font-medium text-[#526b24]">Fuente y producto</dt><dd class="m-0 break-words text-xs font-semibold">{{ sourceLabels[selected.source] }} · {{ selected.dataset }}</dd></div>
-      <div><dt class="text-[10px] font-medium text-[#526b24]">Fecha y hora de Bolivia</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.acquiredAtUtc | date:'dd/MM/yyyy HH:mm':'-0400':'es-BO' }}</dd></div>
-      <div><dt class="text-[10px] font-medium text-[#526b24]">Coordenadas</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.position.lat }}, {{ selected.position.lng }}</dd></div>
+      <div><dt class="text-[10px] font-medium text-[#526b24]">{{ t('Identificador') }}</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.id }}</dd></div>
+      <div><dt class="text-[10px] font-medium text-[#526b24]">{{ t('Fuente y producto') }}</dt><dd class="m-0 break-words text-xs font-semibold">{{ t(sourceLabels[selected.source]) }} · {{ selected.dataset }}</dd></div>
+      <div><dt class="text-[10px] font-medium text-[#526b24]">{{ t('Fecha y hora de Bolivia') }}</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.acquiredAtUtc | date:dateFormat():'-0400':locale() }}</dd></div>
+      <div><dt class="text-[10px] font-medium text-[#526b24]">{{ t('Coordenadas') }}</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.position.lat }}, {{ selected.position.lng }}</dd></div>
       @if (selected.confidenceRaw != null || selected.confidenceLevel) {
-        <div><dt class="text-[10px] font-medium text-[#526b24]">Confianza <app-map-info topic="la confianza" text="Valor original del producto satelital y su nivel agrupado. Una confianza alta no confirma un incendio." /></dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.confidenceRaw ?? '—' }} · {{ confidenceLabels[selected.confidenceLevel ?? ''] || 'Sin clasificación' }}</dd></div>
+        <div><dt class="text-[10px] font-medium text-[#526b24]">{{ t('Confianza') }} <app-map-info [topic]="t('la confianza')" [text]="t('Valor original del producto satelital y su nivel agrupado. Una confianza alta no confirma un incendio.')" /></dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.confidenceRaw ?? '—' }} · {{ confidenceLabels[selected.confidenceLevel ?? ''] || 'Sin clasificación' }}</dd></div>
       }
       @if (selected.frpMw != null) {
-        <div><dt class="text-[10px] font-medium text-[#526b24]">FRP <app-map-info topic="FRP" text="Potencia radiativa estimada del foco térmico, en megavatios (MW)." /></dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.frpMw }} MW</dd></div>
+        <div><dt class="text-[10px] font-medium text-[#526b24]">FRP <app-map-info topic="FRP" [text]="t('Potencia radiativa estimada del foco térmico, en megavatios (MW).')" /></dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.frpMw }} MW</dd></div>
       }
-      @if (selected.brightnessKelvin != null) { <div><dt class="text-[10px] font-medium text-[#526b24]">Temperatura de brillo <app-map-info topic="la temperatura de brillo" text="Temperatura estimada a partir de la radiación medida por el sensor, en kelvin." /></dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.brightnessKelvin }} K</dd></div> }
-      @if (selected.dayNight) { <div><dt class="text-[10px] font-medium text-[#526b24]">Día / noche</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.dayNight === 'DAY' ? 'Día' : 'Noche' }}</dd></div> }
-      @if (selected.districtAssignment) { <div><dt class="text-[10px] font-medium text-[#526b24]">Asignación territorial</dt><dd class="m-0 break-words text-xs font-semibold">{{ districtLabels[selected.districtAssignment] }}</dd></div> }
+      @if (selected.brightnessKelvin != null) { <div><dt class="text-[10px] font-medium text-[#526b24]">{{ t('Temperatura de brillo') }} <app-map-info [topic]="t('la temperatura de brillo')" [text]="t('Temperatura estimada a partir de la radiación medida por el sensor, en kelvin.')" /></dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.brightnessKelvin }} K</dd></div> }
+      @if (selected.dayNight) { <div><dt class="text-[10px] font-medium text-[#526b24]">{{ t('Día / noche') }}</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.dayNight === 'DAY' ? t('Día') :  t('Noche') }}</dd></div> }
+      @if (selected.districtAssignment) { <div><dt class="text-[10px] font-medium text-[#526b24]">{{ t('Asignación territorial') }}</dt><dd class="m-0 break-words text-xs font-semibold">{{ t(districtLabels[selected.districtAssignment]) }}</dd></div> }
       @if (selected.archive; as archive) {
-        <div><dt class="text-[10px] font-medium text-[#526b24]">Origen en el archivo</dt><dd class="m-0 text-xs">{{ archive.origin }}</dd></div>
-        @if (archive.persistent) { <div class="text-xs">Posible fuente fija de calor</div> }
-        @if (archive.events.length) { <div><dt class="text-[10px] font-medium text-[#526b24]">Eventos candidatos</dt><dd class="m-0 text-xs">{{ archive.events.join(', ') }}</dd></div> }
+        <div><dt class="text-[10px] font-medium text-[#526b24]">{{ t('Origen en el archivo') }}</dt><dd class="m-0 text-xs">{{ archive.origin }}</dd></div>
+        @if (archive.persistent) { <div class="text-xs">{{ t('Posible fuente fija de calor') }}</div> }
+        @if (archive.events.length) { <div><dt class="text-[10px] font-medium text-[#526b24]">{{ t('Eventos candidatos') }}</dt><dd class="m-0 text-xs">{{ archive.events.join(', ') }}</dd></div> }
       }
-      @if (selected.district) { <div><dt class="text-[10px] font-medium text-[#526b24]">Distrito</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.district.name }} ({{ selected.district.code }})</dd></div> }
-      @if (selected.batchId) { <div><dt class="text-[10px] font-medium text-[#526b24]">Lote de ingesta</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.batchId }}</dd></div> }
-      @if (selected.detectionType != null) { <div><dt class="text-[10px] font-medium text-[#526b24]">Tipo FIRMS</dt><dd class="m-0 text-xs">{{ detectionTypeLabels[selected.detectionType] ?? selected.detectionType }}</dd></div> }
+      @if (selected.district) { <div><dt class="text-[10px] font-medium text-[#526b24]">{{ t('Distrito') }}</dt><dd class="m-0 break-words text-xs font-semibold">{{ areaText(selected.district.name) }} ({{ selected.district.code }})</dd></div> }
+      @if (selected.batchId) { <div><dt class="text-[10px] font-medium text-[#526b24]">{{ t('Lote de ingesta') }}</dt><dd class="m-0 break-words text-xs font-semibold">{{ selected.batchId }}</dd></div> }
+      @if (selected.detectionType != null) { <div><dt class="text-[10px] font-medium text-[#526b24]">{{ t('Tipo FIRMS') }}</dt><dd class="m-0 text-xs">{{ t(detectionTypeLabels[selected.detectionType] ?? selected.detectionType ) }}</dd></div> }
     </dl>
     @if (selected.raw) {
       <details class="text-xs">
-        <summary class="cursor-pointer font-medium">Registro original (JSON)</summary>
+        <summary class="cursor-pointer font-medium">{{ t('Registro original (JSON)') }}</summary>
         <pre class="mt-2 overflow-auto whitespace-pre-wrap break-all">{{ selected.raw | json }}</pre>
       </details>
     }

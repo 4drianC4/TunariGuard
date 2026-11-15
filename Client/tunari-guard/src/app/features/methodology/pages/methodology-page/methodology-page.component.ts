@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../../core/i18n/language.service';
 
 import {
   ChangeDetectionStrategy,
@@ -65,6 +66,8 @@ interface MethodDocument {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MethodologyPageComponent {
+  readonly i18n = inject(LanguageService);
+  readonly t = this.i18n.text;
 
   private readonly document = inject(DOCUMENT);
   private readonly platformId = inject(PLATFORM_ID);
@@ -216,7 +219,8 @@ export class MethodologyPageComponent {
   // ========================================
 
   documentUrl(file: string): string {
-    return `/assets/metodologia/${file}`;
+    const folder = this.i18n.language() === 'en' ? 'en/' : '';
+    return `/assets/metodologia/${folder}${file}`;
   }
 
   // Documento principal para descargar

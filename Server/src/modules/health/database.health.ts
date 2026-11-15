@@ -1,3 +1,4 @@
+import { t } from '../../shared/i18n/language.js';
 import { Injectable, Logger } from '@nestjs/common';
 import { HealthIndicatorService } from '@nestjs/terminus';
 import { describeDbError } from '../../infrastructure/database/describe-db-error.js';
@@ -21,7 +22,7 @@ export class DatabaseHealthIndicator {
       const postgis = rows[0]?.postgis ?? null;
       return postgis
         ? indicator.up({ postgis })
-        : indicator.down('PostGIS no está instalado; ejecuta las migraciones');
+        : indicator.down(t('PostGIS no está instalado; ejecuta las migraciones'));
     } catch (error) {
       const message = describeDbError(error, this.prisma.connectionString);
       this.logger.warn(message);

@@ -1,3 +1,4 @@
+import { LanguageService } from '../../i18n/language.service';
 import {
   Component,
   computed,
@@ -28,6 +29,9 @@ interface TunariNotification {
   id: string;
   title: string;
   message: string;
+  messageEn?: string;
+  titleEn?: string;
+  emittedAtUtc?: string;
   severity: AlertSeverity;
   time: string;
   read: boolean;
@@ -41,6 +45,8 @@ interface TunariNotification {
   styleUrls: ['./topbar.component.scss']
 })
 export class TopbarComponent {
+  readonly i18n = inject(LanguageService);
+  readonly t = this.i18n.text;
   readonly liveUpdates = inject(LiveUpdatesService);
 
   @ViewChild('notificationContainer')
@@ -76,6 +82,7 @@ export class TopbarComponent {
         this.toastPreview.set({
           id: 'preview',
           title: `Parque Nacional Tunari · ${severity} · Prueba`,
+          titleEn: `Tunari National Park · ${{ Media: 'Medium', Alta: 'High', 'Crítica': 'Critical' }[severity]} · Test`,
           message: 'Detección de calor satelital en el sector del Tunari. Requiere verificación.',
           severity,
           time: '',
@@ -93,8 +100,11 @@ export class TopbarComponent {
         seen.add(alert.id);
         incoming.push({
           id: alert.id,
-          title: `${alert.district} · ${alert.severity}${alert.simulated ? ' · Simulada' : ''}`,
-          message: alert.message,
+          title: `${alert.districtByLanguage?.es ?? alert.district} · ${alert.severity}${alert.simulated ? ' · Simulada' : ''}`,
+          titleEn: `${alert.districtByLanguage?.en ?? alert.district} · ${{ Media: 'Medium', Alta: 'High', 'Crítica': 'Critical' }[alert.severity]}${alert.simulated ? ' · Simulated' : ''}`,
+          message: alert.messageByLanguage?.es ?? alert.message,
+          messageEn: alert.messageByLanguage?.en,
+          emittedAtUtc,
           severity: alert.severity,
           time: this.timeFormat.format(new Date(emittedAtUtc)),
           read: false,
@@ -123,6 +133,21 @@ export class TopbarComponent {
 
   get unreadCount(): number {
     return this.notifications().filter(item => !item.read).length;
+  }
+
+  notificationTitle(item: TunariNotification): string {
+    return this.i18n.language() === 'en' ? item.titleEn ?? item.title : item.title;
+  }
+
+  notificationMessage(item: TunariNotification): string {
+    return this.i18n.language() === 'en' ? item.messageEn ?? this.t(item.message) : item.message;
+  }
+
+  notificationTime(item: TunariNotification): string {
+    if (!item.emittedAtUtc || this.i18n.language() === 'es') return item.time;
+    return new Intl.DateTimeFormat(this.i18n.locale(), {
+      dateStyle: 'short', timeStyle: 'short', timeZone: 'America/La_Paz',
+    }).format(new Date(item.emittedAtUtc));
   }
 
   dismissToast(): void {

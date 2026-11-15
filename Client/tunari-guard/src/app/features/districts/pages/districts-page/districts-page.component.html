@@ -1,49 +1,49 @@
 <section class="tg-districts">
   <app-page-header
-    section="Distritos"
-    title="Análisis por distritos"
-    description="Conoce qué distritos presentan mayor actividad térmica."
+    [section]="t('Distritos')"
+    [title]="t('Análisis por distritos')"
+    [description]="t('Conoce qué distritos presentan mayor actividad térmica.')"
   />
   @if (!loading() && !error()) {
-  <section class="tg-kpis tg-kpis--fit" aria-label="Indicadores del período">
+  <section class="tg-kpis tg-kpis--fit" [attr.aria-label]="t('Indicadores del período')">
     <article class="tg-kpi">
       <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#fire"></use></svg></span>
       <div class="tg-kpi-copy">
-        <span class="tg-kpi-title">Detecciones térmicas</span>
+        <span class="tg-kpi-title">{{ t('Detecciones térmicas') }}</span>
         <div class="tg-kpi-number">{{ total() }}</div>
-        <small class="tg-kpi-note">Período consultado</small>
+        <small class="tg-kpi-note">{{ t('Período consultado') }}</small>
       </div>
     </article>
     <article class="tg-kpi">
       <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#districts"></use></svg></span>
       <div class="tg-kpi-copy">
-        <span class="tg-kpi-title">Distritos con actividad</span>
+        <span class="tg-kpi-title">{{ t('Distritos con actividad') }}</span>
         <div class="tg-kpi-number">{{ activeCount() }}</div>
-        <small class="tg-kpi-note">Período consultado</small>
+        <small class="tg-kpi-note">{{ t('Período consultado') }}</small>
       </div>
     </article>
     <article class="tg-kpi">
       <span class="tg-kpi-symbol pink"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#warning"></use></svg></span>
       <div class="tg-kpi-copy">
-        <span class="tg-kpi-title">Distritos con actividad alta</span>
+        <span class="tg-kpi-title">{{ t('Distritos con actividad alta') }}</span>
         <div class="tg-kpi-number">{{ highCount() }}</div>
-        <small class="tg-kpi-note">7 o más detecciones</small>
+        <small class="tg-kpi-note">{{ t('7 o más detecciones') }}</small>
       </div>
     </article>
     @if (mostActive(); as best) {
       <article class="tg-kpi">
         <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#districts"></use></svg></span>
         <div class="tg-kpi-copy">
-          <span class="tg-kpi-title">Distrito con más detecciones</span>
-          <div class="tg-kpi-number tg-kpi-number--text">{{ best.name }}</div>
-          <small class="tg-kpi-note">({{ best.count }} detecciones)</small>
+          <span class="tg-kpi-title">{{ t('Distrito con más detecciones') }}</span>
+          <div class="tg-kpi-number tg-kpi-number--text">{{ areaText(best.name) }}</div>
+          <small class="tg-kpi-note">({{ best.count }} {{ t('detecciones)') }}</small>
         </div>
       </article>
     } @else {
       <article class="tg-kpi">
         <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#districts"></use></svg></span>
         <div class="tg-kpi-copy">
-          <span class="tg-kpi-title">Sin resultados</span>
+          <span class="tg-kpi-title">{{ t('Sin resultados') }}</span>
           <div class="tg-kpi-number">—</div>
         </div>
       </article>
@@ -54,41 +54,41 @@
     <button type="button" class="tg-filter-toggle" (click)="toggleFilters()"
       [attr.aria-expanded]="mobileFiltersOpen()" aria-controls="district-filters">
       <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10m-7 5h4" /></svg>
-      {{ mobileFiltersOpen() ? 'Ocultar filtros' : 'Mostrar filtros' }}
+      {{ mobileFiltersOpen() ? t('Ocultar filtros') :  t('Mostrar filtros') }}
     </button>
     <form id="district-filters" class="tg-card tg-filter-panel" [class.tg-filter-panel--open]="mobileFiltersOpen()"
-      aria-label="Filtros de distritos" (ngSubmit)="applyFilters()">
+      [attr.aria-label]="t('Filtros de distritos')" (ngSubmit)="applyFilters()">
       <div class="tg-filter-fields">
-        <label class="tg-filter-field">Desde<input class="tg-filter-control" type="date" name="from" tgDetectionDate="day" [(ngModel)]="dateFrom" /></label>
-        <label class="tg-filter-field">Hasta<input class="tg-filter-control" type="date" name="to" tgDetectionDate="day" [(ngModel)]="dateTo" /></label>
-        <label class="tg-filter-field">Distrito<select class="tg-filter-control" name="district" [(ngModel)]="district"><option value="">Todos los distritos</option>@for (d of districts(); track d.id) {<option [value]="d.id">{{ d.name }}</option>}</select></label>
-        <label class="tg-filter-field">Fuente<select class="tg-filter-control" name="source" [(ngModel)]="source"><option value="archive">Archivo histórico</option><option value="live">Monitoreo FIRMS</option></select></label>
-        <label class="tg-filter-field">Nivel de actividad<select class="tg-filter-control" name="activity" [(ngModel)]="level"><option value="">Todos</option>@for (item of levels; track item.level) {<option [value]="item.level">{{ item.level }}</option>}</select></label>
+        <label class="tg-filter-field">{{ t('Desde') }}<input class="tg-filter-control" type="date" name="from" tgDetectionDate="day" [(ngModel)]="dateFrom" /></label>
+        <label class="tg-filter-field">{{ t('Hasta') }}<input class="tg-filter-control" type="date" name="to" tgDetectionDate="day" [(ngModel)]="dateTo" /></label>
+        <label class="tg-filter-field">{{ t('Distrito') }}<select class="tg-filter-control" name="district" [(ngModel)]="district"><option value="">{{ t('Todos los distritos') }}</option>@for (d of districts(); track d.id) {<option [value]="d.id">{{ areaText(d.name) }}</option>}</select></label>
+        <label class="tg-filter-field">{{ t('Fuente') }}<select class="tg-filter-control" name="source" [(ngModel)]="source"><option value="archive">{{ t('Archivo histórico') }}</option><option value="live">{{ t('Monitoreo FIRMS') }}</option></select></label>
+        <label class="tg-filter-field">{{ t('Nivel de actividad') }}<select class="tg-filter-control" name="activity" [(ngModel)]="level"><option value="">{{ t('Todos') }}</option>@for (item of levels; track item.level) {<option [value]="item.level">{{ item.level }}</option>}</select></label>
       </div>
       <div class="tg-filter-actions">
-        <button type="button" class="tg-filter-button" (click)="resetFilters()">Restablecer</button>
-        <button type="submit" class="tg-filter-button tg-filter-button--primary">Aplicar filtros</button>
+        <button type="button" class="tg-filter-button" (click)="resetFilters()">{{ t('Restablecer') }}</button>
+        <button type="submit" class="tg-filter-button tg-filter-button--primary">{{ t('Aplicar filtros') }}</button>
       </div>
     </form>
   </div>
   @if (validation()) { <p role="alert" class="tg-districts__disclaimer">{{ validation() }}</p> }
-  @if (loading()) { <p role="status" class="tg-districts__disclaimer">Cargando datos distritales…</p> }
+  @if (loading()) { <p role="status" class="tg-districts__disclaimer">{{ t('Cargando datos distritales…') }}</p> }
   @if (error()) {
-    <p role="alert" class="tg-districts__disclaimer">{{ error() }} <button class="tg-districts__btn-outline" type="button" (click)="load()">Reintentar</button></p>
+    <p role="alert" class="tg-districts__disclaimer">{{ t(error()) }} <button class="tg-districts__btn-outline" type="button" (click)="load()">{{ t('Reintentar') }}</button></p>
   }
   <div class="tg-districts__workspace">
     <section class="tg-card tg-districts__map-panel" id="tg-districts-map">
-      <h2>Mapa por distritos <app-map-info topic="el mapa distrital" text="El color representa el número de detecciones del período. Pulsa un distrito para ver su conteo y los detalles." /></h2>
+      <h2>{{ t('Mapa por distritos') }} <app-map-info [topic]="t('el mapa distrital')" [text]="t('El color representa el número de detecciones del período. Pulsa un distrito para ver su conteo y los detalles.')" /></h2>
       <app-district-map [boundaries]="boundaries()" [districts]="loading() || error() ? [] : visibleDistricts()"
         [selected]="current()?.id ?? ''" [focusRequest]="focusRequest()" (districtSelect)="select($event)" />
     </section>
     @if (!loading() && !error()) {
-      <section class="tg-card tg-districts__chart-panel"><div class="tg-districts__panel-heading"><h2>Detecciones diarias por distrito <app-map-info topic="el gráfico diario" text="Cada punto indica cuántas detecciones registró ese distrito en esa fecha de Bolivia. La línea une los conteos diarios, sin acumularlos." /></h2><label class="tg-districts__period">Periodo<select class="tg-filter-control tg-filter-control--compact" [ngModel]="period()" (ngModelChange)="period.set(+$event)" name="period"><option value="7">7 días hasta la fecha final</option><option value="8">8 días hasta la fecha final</option></select></label></div>
+      <section class="tg-card tg-districts__chart-panel"><div class="tg-districts__panel-heading"><h2>{{ t('Detecciones diarias por distrito') }} <app-map-info [topic]="t('el gráfico diario')" [text]="t('Cada punto indica cuántas detecciones registró ese distrito en esa fecha de Bolivia. La línea une los conteos diarios, sin acumularlos.')" /></h2><label class="tg-districts__period">{{ t('Periodo') }}<select class="tg-filter-control tg-filter-control--compact" [ngModel]="period()" (ngModelChange)="period.set(+$event)" name="period"><option value="7">{{ t('7 días hasta la fecha final') }}</option><option value="8">{{ t('8 días hasta la fecha final') }}</option></select></label></div>
         <p class="tg-districts__chart-note">@if (current(); as district) {
           <span class="tg-districts__dot" [style.background]="district.color"></span>
-          <strong>{{ district.name }}</strong> · {{ district.risk }} · Conteo diario en hora de Bolivia
+          <strong>{{ district.name }}</strong> · {{ district.risk }} {{ t('· Conteo diario en hora de Bolivia') }}
         }</p>
-        <div class="tg-districts__chart"><svg viewBox="0 0 590 255" role="img" [attr.aria-label]="'Detecciones diarias de '+ (current()?.name ?? 'los distritos') + ': ' + (current()?.history?.join(', ') ?? 'sin resultados')">
+        <div class="tg-districts__chart"><svg viewBox="0 0 590 255" role="img" [attr.aria-label]="t('Detecciones diarias de') + ' '+ (current()?.name ?? t('los distritos')) + ': ' + (current()?.history?.join(', ') ?? t('sin resultados'))">
           @for (tick of chartTicks(); track tick) {<line x1="44" [attr.y1]="yAt(tick)" x2="563" [attr.y2]="yAt(tick)" class="tg-districts__gridline"/><text x="28" [attr.y]="yAt(tick) + 4" class="tg-districts__axis" text-anchor="end">{{ tick }}</text>}
           @for (day of chartDays(); track day; let i=$index) {<text [attr.x]="xAt(i,chartDays().length)" y="237" class="tg-districts__axis" text-anchor="middle">{{ day }}</text>}
           @if (current(); as line) {
@@ -96,22 +96,22 @@
               fill="none" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />
             @for (v of line.history; track $index; let i=$index) {
               <circle [attr.cx]="xAt(i,line.history.length)" [attr.cy]="yAt(v)" r="5" [attr.fill]="line.color">
-                <title>{{ line.name }} · {{ chartDays()[i] }} · {{ v }} {{ v === 1 ? 'detección' : 'detecciones' }}</title>
+                <title>{{ line.name }} · {{ chartDays()[i] }} · {{ v }} {{ v === 1 ? t('detección') :  t('detecciones') }}</title>
               </circle>
               <text [attr.x]="xAt(i,line.history.length)" [attr.y]="yAt(v) - 9" class="tg-districts__axis" text-anchor="middle">{{ v }}</text>
             }
           }
         </svg></div>
-        <div class="tg-districts__chart-legend">@for (d of visibleDistricts(); track d.id) {<button type="button" (click)="select(d.id)" [class.active]="current()?.id === d.id" [attr.aria-pressed]="current()?.id === d.id" [style.--district-color]="d.color"><i [style.background]="d.color"></i>{{ d.name }}</button>}</div>
+        <div class="tg-districts__chart-legend">@for (d of visibleDistricts(); track d.id) {<button type="button" (click)="select(d.id)" [class.active]="current()?.id === d.id" [attr.aria-pressed]="current()?.id === d.id" [style.--district-color]="d.color"><i [style.background]="d.color"></i>{{ areaText(d.name) }}</button>}</div>
       </section>
-      <section class="tg-card tg-districts__table-panel"><h2>Resumen por distrito ({{ visibleDistricts().length }})</h2><div class="tg-districts__tablewrap"><table><thead><tr><th>Distrito</th><th>Detecciones</th><th>Nivel de actividad</th><th>Variación semanal</th></tr></thead><tbody>
-          @for (d of visibleDistricts(); track d.id) {<tr tabindex="0" (click)="select(d.id)" (keydown.enter)="select(d.id)" [class.active]="current()?.id === d.id"><td><span class="tg-districts__dot" [style.background]="d.color"></span><strong>{{ d.name }}</strong></td><td>{{ d.count }}</td><td><span class="tg-districts__risk" [style.--district-color]="d.color">{{ d.risk }}</span></td><td [class.tg-districts__trend-down]="d.delta < 0">{{ d.delta > 0 ? '↑ +' : d.delta < 0 ? '↓ ' : '= ' }}{{ d.delta }}</td></tr>}
-          @empty {<tr><td colspan="4" class="tg-districts__empty">No hay distritos con estos filtros.</td></tr>}
+      <section class="tg-card tg-districts__table-panel"><h2>{{ t('Resumen por distrito (') }}{{ visibleDistricts().length }})</h2><div class="tg-districts__tablewrap"><table><thead><tr><th>{{ t('Distrito') }}</th><th>{{ t('Detecciones') }}</th><th>{{ t('Nivel de actividad') }}</th><th>{{ t('Variación semanal') }}</th></tr></thead><tbody>
+          @for (d of visibleDistricts(); track d.id) {<tr tabindex="0" (click)="select(d.id)" (keydown.enter)="select(d.id)" [class.active]="current()?.id === d.id"><td><span class="tg-districts__dot" [style.background]="d.color"></span><strong>{{ areaText(d.name) }}</strong></td><td>{{ d.count }}</td><td><span class="tg-districts__risk" [style.--district-color]="d.color">{{ d.risk }}</span></td><td [class.tg-districts__trend-down]="d.delta < 0">{{ d.delta > 0 ? '↑ +' : d.delta < 0 ? '↓ ' : '= ' }}{{ d.delta }}</td></tr>}
+          @empty {<tr><td colspan="4" class="tg-districts__empty">{{ t('No hay distritos con estos filtros.') }}</td></tr>}
         </tbody></table></div></section>
       @if (current(); as district) {
         <app-district-analysis [district]="district" (mapFocus)="viewOnMap()" />
       }
     }
   </div>
-  <p class="tg-districts__disclaimer">Se cuentan detecciones con distrito asignado. La variación semanal compara los últimos 7 días hasta la fecha final con los 7 anteriores. El nivel indica actividad térmica según el conteo.</p>
+  <p class="tg-districts__disclaimer">{{ t('Se cuentan detecciones con distrito asignado. La variación semanal compara los últimos 7 días hasta la fecha final con los 7 anteriores. El nivel indica actividad térmica según el conteo.') }}</p>
 </section>

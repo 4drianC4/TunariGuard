@@ -1,9 +1,9 @@
 <main class="tg-dashboard page flex w-full flex-col gap-6">
   <header class="tg-dash-intro">
     <div class="tg-dash-mountain"></div>
-    <div class="tg-breadcrumb">TUNARI GUARD / HISTORIAL</div>
-    <h1>Historial de actividad térmica</h1>
-    <p>Explora el comportamiento histórico de la actividad térmica según el área, la fuente y el periodo seleccionado.</p>
+    <div class="tg-breadcrumb">{{ t('TUNARI GUARD / HISTORIAL') }}</div>
+    <h1>{{ t('Historial de actividad térmica') }}</h1>
+    <p>{{ t('Explora el comportamiento histórico de la actividad térmica según el área, la fuente y el periodo seleccionado.') }}</p>
   </header>
 
   <!-- <div class="flex flex-wrap items-start gap-3 rounded-xl border border-[#e4c99e] bg-[#fff5df] px-4 py-3 text-sm text-[#704b20]">
@@ -18,51 +18,51 @@
     <button type="button" class="tg-filter-toggle" (click)="mobileFiltersOpen.set(!mobileFiltersOpen())"
       [attr.aria-expanded]="mobileFiltersOpen()" aria-controls="history-filters">
       <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10m-7 5h4" /></svg>
-      {{ mobileFiltersOpen() ? 'Ocultar filtros' : 'Mostrar filtros' }}
+      {{ mobileFiltersOpen() ? t('Ocultar filtros') :  t('Mostrar filtros') }}
     </button>
     <section id="history-filters" class="tg-card tg-filter-panel" [class.tg-filter-panel--open]="mobileFiltersOpen()"
-      aria-label="Filtros del historial">
+      [attr.aria-label]="t('Filtros del historial')">
       <div class="tg-filter-fields">
         <label class="tg-filter-field">
-          Área
+          {{ t('Área') }}
           <select class="tg-filter-control" [value]="areaId()" (change)="onAreaChange($any($event.target).value)" [disabled]="areasLoading() || areas().length === 0">
-            @if (areasLoading()) { <option value="">Cargando áreas...</option> }
+            @if (areasLoading()) { <option value="">{{ t('Cargando áreas...') }}</option> }
             @for (area of areas(); track area.area_id) {
               <option [value]="area.area_id">{{ area.nombre_visible || area.nombre }}</option>
             }
           </select>
           @if (!areasLoading() && !areasLoadFailed() && !areas().length) {
-            <span class="tg-filter-error">No hay áreas disponibles.</span>
+            <span class="tg-filter-error">{{ t('No hay áreas disponibles.') }}</span>
           }
         </label>
         <label class="tg-filter-field">
-          Fuente
+          {{ t('Fuente') }}
           <select class="tg-filter-control" [value]="source()" (change)="onSourceChange($any($event.target).value)">
-            @for (option of sourceOptions; track option.value) { <option [value]="option.value">{{ option.label }}</option> }
+            @for (option of sourceOptions; track option.value) { <option [value]="option.value">{{ t(option.label) }}</option> }
           </select>
         </label>
         <label class="tg-filter-field">
-          Medida
+          {{ t('Medida') }}
           <select class="tg-filter-control" [value]="measure()" (change)="onMeasureChange($any($event.target).value)">
-            @for (option of measureOptions; track option.value) { <option [value]="option.value">{{ option.label }}</option> }
+            @for (option of measureOptions; track option.value) { <option [value]="option.value">{{ t(option.label) }}</option> }
           </select>
         </label>
         <label class="tg-filter-field">
-          Desde año
+          {{ t('Desde año') }}
           <input class="tg-filter-control" type="number" tgDetectionDate="year" [value]="fromYear() ?? ''" (input)="onFromYearChange($any($event.target).value)" placeholder="2001" />
         </label>
         <label class="tg-filter-field">
-          Hasta año
+          {{ t('Hasta año') }}
           <input class="tg-filter-control" type="number" tgDetectionDate="year" [value]="toYear() ?? ''" (input)="onToYearChange($any($event.target).value)" placeholder="2026" />
         </label>
       </div>
       <div class="tg-filter-actions">
-        <button type="button" class="tg-filter-button" (click)="clearFilters()">Restablecer</button>
+        <button type="button" class="tg-filter-button" (click)="clearFilters()">{{ t('Restablecer') }}</button>
         <button type="button" class="tg-filter-button tg-filter-button--primary" (click)="applyFilters()" [disabled]="metrics.loading()">
-          {{ metrics.loading() ? 'Consultando...' : 'Aplicar filtros' }}
+          {{ metrics.loading() ? 'Consultando...' :  t('Aplicar filtros') }}
         </button>
       </div>
-      @if (filterError()) { <p class="tg-filter-error" role="alert">{{ filterError() }}</p> }
+      @if (filterError()) { <p class="tg-filter-error" role="alert">{{ t(filterError()) }}</p> }
     </section>
   </div>
 
@@ -74,40 +74,40 @@
           ? 'Vuelve a consultar las áreas para seleccionar una y ver su historial.'
           : 'Puedes volver a consultar el historial con los mismos filtros.' }}</p>
       </div>
-      <button type="button" class="history-load-retry" (click)="retryLoad()">Reintentar</button>
+      <button type="button" class="history-load-retry" (click)="retryLoad()">{{ t('Reintentar') }}</button>
     </section>
   } @else {
-    <section class="tg-kpis tg-kpis--fit" aria-label="Indicadores históricos">
+    <section class="tg-kpis tg-kpis--fit" [attr.aria-label]="t('Indicadores históricos')">
       <article class="tg-kpi">
         <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#fire"></use></svg></span>
         <div class="tg-kpi-copy">
-          <span class="tg-kpi-title">Actividad total</span>
-          <div class="tg-kpi-number">{{ metrics.summary().total | number:'1.0-2' }}</div>
-          <small class="tg-kpi-note">Total del periodo consultado</small>
+          <span class="tg-kpi-title">{{ t('Actividad total') }}</span>
+          <div class="tg-kpi-number">{{ metrics.summary().total | number:'1.0-2':locale() }}</div>
+          <small class="tg-kpi-note">{{ t('Total del periodo consultado') }}</small>
         </div>
       </article>
       <article class="tg-kpi">
         <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#history"></use></svg></span>
         <div class="tg-kpi-copy">
-          <span class="tg-kpi-title">Meses con datos</span>
+          <span class="tg-kpi-title">{{ t('Meses con datos') }}</span>
           <div class="tg-kpi-number">{{ metrics.summary().monthsWithData }}</div>
-          <small class="tg-kpi-note">Meses reportados por la API</small>
+          <small class="tg-kpi-note">{{ t('Meses reportados por la API') }}</small>
         </div>
       </article>
       <article class="tg-kpi">
         <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#target"></use></svg></span>
         <div class="tg-kpi-copy">
-          <span class="tg-kpi-title">Mes de mayor actividad</span>
+          <span class="tg-kpi-title">{{ t('Mes de mayor actividad') }}</span>
           <div class="tg-kpi-number tg-kpi-number--text">{{ peakMonthLabel() }}</div>
-          <small class="tg-kpi-note">{{ metrics.summary().peak?.activityCount ?? 0 | number:'1.0-2' }} {{ metrics.unit() }}</small>
+          <small class="tg-kpi-note">{{ metrics.summary().peak?.activityCount ?? 0 | number:'1.0-2':locale() }} {{ metrics.unit() }}</small>
         </div>
       </article>
       <article class="tg-kpi">
         <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#trend"></use></svg></span>
         <div class="tg-kpi-copy">
-          <span class="tg-kpi-title">Promedio mensual</span>
-          <div class="tg-kpi-number">{{ metrics.summary().monthlyAverage | number:'1.0-2' }}</div>
-          <small class="tg-kpi-note">Promedio informado por la API</small>
+          <span class="tg-kpi-title">{{ t('Promedio mensual') }}</span>
+          <div class="tg-kpi-number">{{ metrics.summary().monthlyAverage | number:'1.0-2':locale() }}</div>
+          <small class="tg-kpi-note">{{ t('Promedio informado por la API') }}</small>
         </div>
       </article>
     </section>
@@ -115,7 +115,7 @@
     <section class="grid w-full min-w-0 grid-cols-1 items-stretch gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
       <article class="tg-card flex h-full w-full min-w-0 flex-col gap-3">
         <div class="tg-card-heading tg-tight">
-          <div class="tg-card-titleline"><div><h2>Calendario histórico</h2><p>Actividad mensual para el área seleccionada.</p></div></div>
+          <div class="tg-card-titleline"><div><h2>{{ t('Calendario histórico') }}</h2><p>{{ t('Actividad mensual para el área seleccionada.') }}</p></div></div>
           <span class="shrink-0 rounded-full bg-[#eee7d9] px-3 py-1 text-xs font-bold text-[#526b4c]">{{ metrics.selectedFromYear() ?? '—' }} – {{ metrics.selectedToYear() ?? '—' }}</span>
         </div>
         <app-history-calendar class="block w-full min-w-0" />

@@ -1,3 +1,4 @@
+import { t } from '../../shared/i18n/language.js';
 import { z } from 'zod';
 
 const isoDate = z
@@ -21,6 +22,6 @@ export const startReplaySchema = z
       .describe('Detecciones a menos de estos minutos forman una misma pasada'),
     loop: z.boolean().default(false).describe('Volver a empezar al terminar (modo kiosco)'),
   })
-  .refine((q) => !q.from || !q.to || q.from <= q.to, { message: 'from debe ser anterior a to', path: ['from'] });
+  .refine((q) => !q.from || !q.to || q.from <= q.to, { error: () => t('from debe ser anterior a to'), path: ['from'] });
 
 export type StartReplayBody = z.infer<typeof startReplaySchema>;

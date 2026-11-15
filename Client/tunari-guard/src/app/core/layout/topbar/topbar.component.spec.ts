@@ -1,11 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { NEVER, Subject, type ObservedValueOf } from 'rxjs';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { LiveUpdatesService } from '../../../application/services/live-updates.service';
 import { TopbarComponent } from './topbar.component';
+import { LanguageService } from '../../i18n/language.service';
 
 describe('TopbarComponent', () => {
+  afterEach(() => localStorage.removeItem('tunari-guard.language'));
+
   it('muestra el toast de prueba sin agregar una alerta a la campanita', () => {
     const previousUrl = window.location.href;
     window.history.replaceState(null, '', '?toast=critica');
@@ -19,6 +22,7 @@ describe('TopbarComponent', () => {
           } },
         ],
       });
+      TestBed.inject(LanguageService).setLanguage('es');
       const fixture = TestBed.createComponent(TopbarComponent);
       fixture.detectChanges();
       const element: HTMLElement = fixture.nativeElement;
@@ -61,6 +65,7 @@ describe('TopbarComponent', () => {
           } },
         ],
       });
+      TestBed.inject(LanguageService).setLanguage('es');
       const fixture = TestBed.createComponent(TopbarComponent);
       fixture.detectChanges();
       const element: HTMLElement = fixture.nativeElement;
@@ -71,6 +76,8 @@ describe('TopbarComponent', () => {
         alerts: [{
           id: 'AL-0012', district: 'Parque Nacional Tunari', severity: 'Alta' as const,
           simulated: true, message: 'Se detectó un foco de calor.',
+          districtByLanguage: { en: 'Tunari National Park', es: 'Parque Nacional Tunari' },
+          messageByLanguage: { en: 'A hotspot was detected.', es: 'Se detectó un foco de calor.' },
         }],
       };
       alertNotifications.next(payload);
@@ -95,6 +102,16 @@ describe('TopbarComponent', () => {
       expect(element.querySelector<HTMLElement>('.alert-toast')?.style.getPropertyValue('--alert-accent'))
         .toBe('#e94119');
       expect(element.querySelector('.alert-toast')?.textContent).toContain('1 alerta más en la campanita');
+      element.querySelector<HTMLButtonElement>('app-language-switcher button[lang=en]')!.click();
+      fixture.detectChanges();
+      expect(document.documentElement.lang).toBe('en');
+      expect(localStorage.getItem('tunari-guard.language')).toBe('en');
+      expect(element.querySelector('.alert-toast')?.textContent).toContain('Tunari National Park · Critical · Simulated');
+      expect(element.querySelector('.alert-toast')?.textContent).toContain('A hotspot was detected.');
+      expect(element.querySelector('.notifications__count')?.textContent?.trim()).toBe('2');
+      element.querySelector<HTMLButtonElement>('app-language-switcher button[lang=es]')!.click();
+      fixture.detectChanges();
+      expect(element.querySelector('.alert-toast')?.textContent).toContain('Crítica · Simulada');
       element.querySelector<HTMLButtonElement>('.alert-toast__close')!.click();
       fixture.detectChanges();
       expect(element.querySelector('.alert-toast')).toBeNull();

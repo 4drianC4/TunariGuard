@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, HostListener, signal } from '@angular/core';
+import { LanguageService } from '../../i18n/language.service';
+import { inject, ChangeDetectionStrategy, Component, HostListener, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
@@ -15,6 +16,9 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
+  readonly i18n = inject(LanguageService);
+  readonly t = this.i18n.text;
+  readonly brandLogo = () => '/assets/logos/SVG/' + (this.i18n.language() === 'en' ? 'LOGOHORIZONTALINGLES.svg' : 'LOGOHORIZONTALWHITE.svg');
   readonly collapsed = signal(false);
   readonly mobileOpen = signal(false);
 
