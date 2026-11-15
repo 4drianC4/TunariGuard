@@ -40,6 +40,48 @@
 
 app-district-map { display: block; }
 
+.tg-districts__satellites {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.tg-districts__satellites legend { margin-bottom: .25rem; }
+.tg-districts__satellite-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .25rem .875rem;
+}
+.tg-districts__satellite-options label {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  cursor: pointer;
+}
+.tg-districts__satellite-options input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #40552c;
+}
+.tg-districts__select-all {
+  margin-inline-start: auto;
+  padding: .125rem .375rem;
+  border: 0;
+  border-radius: .375rem;
+  background: none;
+  color: #40552c;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+.tg-districts__select-all:hover:not(:disabled) { background: #eee9de; }
+.tg-districts__select-all:disabled { opacity: .6; cursor: default; }
+.tg-districts__satellite-options :is(input, button):focus-visible {
+  outline: 2px solid #526b4c;
+  outline-offset: 2px;
+}
+
 @container (max-width: 780px) {
   .tg-districts__workspace { grid-template-columns: minmax(0, 1fr); }
 }

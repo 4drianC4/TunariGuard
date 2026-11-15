@@ -243,9 +243,9 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
     try {
       const observations = await this.analysis.detections(
         this.areaId, this.period, bbox, this.polygon(), [], '', false, request.signal,
-        (firstPage) => {
+        (loaded) => {
           if (request.signal.aborted) return;
-          this.observations.set(firstPage);
+          this.observations.set(loaded);
           this.renderDetections();
         },
       );
@@ -255,10 +255,8 @@ export class HotspotMapComponent implements AfterViewInit, OnChanges, OnDestroy 
       this.renderDetections();
     } catch (error) {
       if (request.signal.aborted) return;
-      this.observations.set([]);
       this.dataStatus.set('error');
       this.dataError.set(this.errorMessage(error));
-      this.renderDetections();
     } finally {
       if (this.loadAbortController === request) this.loadAbortController = undefined;
     }

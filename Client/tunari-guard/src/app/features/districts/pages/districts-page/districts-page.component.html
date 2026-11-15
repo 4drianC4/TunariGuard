@@ -62,9 +62,22 @@
         <label class="tg-filter-field">Desde<input class="tg-filter-control" type="date" name="from" tgDetectionDate="day" [(ngModel)]="dateFrom" /></label>
         <label class="tg-filter-field">Hasta<input class="tg-filter-control" type="date" name="to" tgDetectionDate="day" [(ngModel)]="dateTo" /></label>
         <label class="tg-filter-field">Distrito<select class="tg-filter-control" name="district" [(ngModel)]="district"><option value="">Todos los distritos</option>@for (d of districts(); track d.id) {<option [value]="d.id">{{ d.name }}</option>}</select></label>
-        <label class="tg-filter-field">Fuente<select class="tg-filter-control" name="source" [(ngModel)]="source"><option value="archive">Archivo histórico</option><option value="live">Monitoreo FIRMS</option></select></label>
         <label class="tg-filter-field">Nivel de actividad<select class="tg-filter-control" name="activity" [(ngModel)]="level"><option value="">Todos</option>@for (item of levels; track item.level) {<option [value]="item.level">{{ item.level }}</option>}</select></label>
       </div>
+      <fieldset class="tg-filter-field tg-districts__satellites">
+        <legend>Satélites del archivo histórico</legend>
+        <div class="tg-filter-control tg-districts__satellite-options">
+          @for (satellite of satellites; track satellite.id) {
+            <label>
+              <input type="checkbox" [name]="satellite.id" [ngModel]="platforms.includes(satellite.id)"
+                (ngModelChange)="setSatellite(satellite.id, $event)" />
+              {{ satellite.label }}
+            </label>
+          }
+          <button type="button" class="tg-districts__select-all" (click)="selectAllSatellites()"
+            [disabled]="platforms.length === satellites.length">Seleccionar todos</button>
+        </div>
+      </fieldset>
       <div class="tg-filter-actions">
         <button type="button" class="tg-filter-button" (click)="resetFilters()">Restablecer</button>
         <button type="submit" class="tg-filter-button tg-filter-button--primary">Aplicar filtros</button>

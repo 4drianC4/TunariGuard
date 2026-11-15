@@ -21,6 +21,7 @@
   .app-layout {
     --tg-mobile-bar-height: 66px;
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: var(--tg-mobile-bar-height) 1fr;
     max-width: 100%;
   }
   .app-layout > app-sidebar { width: 100%; }

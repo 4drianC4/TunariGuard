@@ -17,7 +17,7 @@
         <div class="flex items-center gap-2 text-sm text-[#424037]">
           @if (dataStatus() === 'ready' || detectionCount) {
             <strong class="text-lg text-[#30351f]">{{ detectionCount }}</strong>
-            <span>{{ dataStatus() === 'loading' ? 'detecciones cargadas hasta ahora' : 'detecciones encontradas' }}</span>
+            <span>{{ dataStatus() === 'ready' ? 'detecciones encontradas' : 'detecciones cargadas hasta ahora' }}</span>
           } @else {
             <span>{{ dataStatus() === 'loading' ? 'Consultando detecciones…' : 'Consulta no disponible' }}</span>
           }
@@ -83,7 +83,7 @@
         @if (boundaryError()) { <span role="status" class="px-2 text-xs">No se pudo cargar el límite del parque.</span> }
       }
       @if (dataStatus() === 'loading') { <div class="mx-3 rounded-lg bg-[#526b24]/10 px-3 py-2 text-xs text-[#424037]" role="status">Cargando datos del mapa…</div> }
-      @if (dataStatus() === 'error') { <div class="mx-3 flex flex-col gap-1 rounded-lg bg-[#b84e20]/10 px-3 py-2 text-xs text-[#424037]" role="alert"><strong>No se pudieron cargar los datos.</strong><span>{{ dataError() }}</span><button type="button" class="map-action self-start" (click)="loadDetections()">Reintentar</button></div> }
+      @if (dataStatus() === 'error') { <div class="mx-3 flex flex-col gap-1 rounded-lg bg-[#b84e20]/10 px-3 py-2 text-xs text-[#424037]" role="alert"><strong>{{ observations().length ? 'Carga incompleta. Se muestran los datos recibidos.' : 'No se pudieron cargar los datos.' }}</strong><span>{{ dataError() }}</span><button type="button" class="map-action self-start" (click)="loadDetections()">Reintentar</button></div> }
       @if (dataStatus() === 'ready' && !detectionCount) {
         <div class="mx-3 flex flex-wrap items-center gap-2 rounded-lg bg-[#526b24]/10 px-3 py-2 text-xs text-[#424037]" role="status">
           <span>No hay detecciones para esta zona, período y filtros.</span>

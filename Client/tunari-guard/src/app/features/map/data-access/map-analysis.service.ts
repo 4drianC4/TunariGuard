@@ -86,7 +86,7 @@ export class MapAnalysisService {
   async detections(
     id: string, period: MapPeriod, bbox: string | undefined, polygon: Geometry | undefined,
     platforms: SatellitePlatform[], confidence: string, exclude: boolean, signal: AbortSignal,
-    onFirstPage?: (observations: Observation[]) => void,
+    onProgress?: (observations: Observation[]) => void,
   ): Promise<Observation[]> {
     const selectedSources = platforms.map((platform) => sources[platform]);
     const periodQuery = this.range(period);
@@ -105,7 +105,7 @@ export class MapAnalysisService {
       append(matches);
     } else {
       const params = new URLSearchParams({
-        ...periodQuery, ...(id ? { area_id: id } : {}), ...(bbox ? { bbox } : {}), limite: onFirstPage ? '1000' : '10000',
+        ...periodQuery, ...(id ? { area_id: id } : {}), ...(bbox ? { bbox } : {}), limite: onProgress ? '1000' : '10000',
         excluir_fuentes_persistentes: String(exclude),
       });
       if (confidence === 'HIGH') params.set('confianza_minima', 'alta');
@@ -118,10 +118,10 @@ export class MapAnalysisService {
         append(await response.json() as ArchiveDetection[]);
         const next = response.headers.get('X-Next-Offset');
         if (next === null) break;
+        onProgress?.(observations.slice());
         const nextOffset = Number(next);
         if (!Number.isSafeInteger(nextOffset) || nextOffset <= offset) throw new Error('Paginación de detecciones inválida.');
-        if (offset === 0 && onFirstPage) {
-          onFirstPage(observations.slice());
+        if (offset === 0 && onProgress) {
           params.set('limite', '10000');
         }
         offset = nextOffset;

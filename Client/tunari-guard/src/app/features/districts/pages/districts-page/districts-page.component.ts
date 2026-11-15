@@ -6,14 +6,20 @@ import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 import { MapInfoComponent } from '../../../map/components/map-info.component';
 import { MapAnalysisService, type DistrictBoundaries } from '../../../map/data-access/map-analysis.service';
-import { MapDataService } from '../../../map/data-access/map-data.service';
-import { Observation } from '../../../map/models/observation.model';
+import type { Observation, SatellitePlatform } from '../../../map/models/observation.model';
 import { DistrictMapComponent } from '../../components/district-map/district-map.component';
 import { ACTIVITY, DistrictActivity } from '../../district-activity';
 
 const boliviaDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/La_Paz' });
 const shortDate = new Intl.DateTimeFormat('es-BO', { day: 'numeric', month: 'short', timeZone: 'UTC' });
 const DEFAULT_ARCHIVE_FROM = '2016-01-01';
+const SATELLITES: Record<SatellitePlatform, string> = {
+  TERRA: 'MODIS-Terra',
+  AQUA: 'MODIS-Aqua',
+  SNPP: 'VIIRS-Suomi-NPP',
+  NOAA20: 'VIIRS-NOAA-20',
+  NOAA21: 'VIIRS-NOAA-21',
+};
 
 function shiftDate(date: string, days: number): string {
   const value = new Date(date + 'T00:00:00Z');
@@ -32,15 +38,20 @@ export class DistrictsPageComponent {
   readonly dates = inject(DetectionDatesService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly analysis = inject(MapAnalysisService);
-  private readonly mapData = inject(MapDataService);
   private request?: AbortController;
   private latestArchiveDate?: string;
 
   readonly levels = ACTIVITY;
+  readonly satellites = (Object.keys(SATELLITES) as SatellitePlatform[])
+    .map((id) => ({ id, label: SATELLITES[id] }));
+  private readonly allPlatforms = this.satellites.map(({ id }) => id);
   readonly boundaries = signal<DistrictBoundaries | null>(null);
   readonly observations = signal<Observation[]>([]);
   readonly selectedId = signal('');
-  readonly applied = signal({ from: DEFAULT_ARCHIVE_FROM, to: boliviaDate.format(new Date()), source: 'archive', district: '', level: '' });
+  readonly applied = signal({
+    from: DEFAULT_ARCHIVE_FROM, to: boliviaDate.format(new Date()),
+    platforms: [] as SatellitePlatform[], district: '', level: '',
+  });
   readonly period = signal(7);
   readonly mobileFiltersOpen = signal(false);
   readonly loading = signal(false);
@@ -50,7 +61,7 @@ export class DistrictsPageComponent {
 
   dateFrom = this.applied().from;
   dateTo = this.applied().to;
-  source = this.applied().source;
+  platforms = [...this.allPlatforms];
   district = '';
   level = '';
 
@@ -127,16 +138,29 @@ export class DistrictsPageComponent {
     });
   }
 
+  setSatellite(id: SatellitePlatform, checked: boolean): void {
+    this.platforms = checked ? [...this.platforms, id] : this.platforms.filter((platform) => platform !== id);
+  }
+
+  selectAllSatellites(): void {
+    this.platforms = [...this.allPlatforms];
+  }
+
   applyFilters(): void {
     const error = !this.dateFrom || !this.dateTo
       ? 'Selecciona un rango de fechas válido.'
-      : this.dates.rangeError(this.dateFrom, this.dateTo);
+      : this.dates.rangeError(this.dateFrom, this.dateTo) ||
+        (this.platforms.length ? '' : 'Selecciona al menos un satélite.');
     this.validation.set(error);
     if (error) return;
     const previous = this.applied();
-    this.applied.set({ from: this.dateFrom, to: this.dateTo, source: this.source, district: this.district, level: this.level });
+    const platforms = this.platforms.length === this.allPlatforms.length
+      ? []
+      : this.allPlatforms.filter((id) => this.platforms.includes(id));
+    const platformsChanged = previous.platforms.join(',') !== platforms.join(',');
+    this.applied.set({ from: this.dateFrom, to: this.dateTo, platforms, district: this.district, level: this.level });
     this.mobileFiltersOpen.set(false);
-    if (previous.from !== this.dateFrom || previous.to !== this.dateTo || previous.source !== this.source || this.error()) {
+    if (previous.from !== this.dateFrom || previous.to !== this.dateTo || platformsChanged || this.error()) {
       void this.load();
     }
   }
@@ -144,7 +168,7 @@ export class DistrictsPageComponent {
   resetFilters(): void {
     this.dateFrom = this.dates.clamp(DEFAULT_ARCHIVE_FROM);
     this.dateTo = this.dates.clamp(this.latestArchiveDate ?? this.dates.today);
-    this.source = 'archive';
+    this.selectAllSatellites();
     this.district = '';
     this.level = '';
     this.applyFilters();
@@ -158,7 +182,7 @@ export class DistrictsPageComponent {
     this.loading.set(true);
     this.observations.set([]);
     try {
-      if (useLatestArchiveDate && this.applied().source === 'archive') {
+      if (useLatestArchiveDate) {
         const latest = await this.analysis.latestDetectionDate('municipio-cochabamba', request.signal);
         if (request.signal.aborted) return;
         if (latest && latest >= this.applied().from) {
@@ -168,16 +192,13 @@ export class DistrictsPageComponent {
           this.applied.update((filters) => ({ ...filters, to: end }));
         }
       }
-      const { from, to, source } = this.applied();
+      const { from, to, platforms } = this.applied();
       const compareFrom = shiftDate(to, -13);
       const range = { from: from < compareFrom ? from : compareFrom, to };
       const boundaries = this.boundaries() ?? this.analysis.districts(request.signal);
       const [geometry, rows] = await Promise.all([
         boundaries,
-        source === 'archive'
-          ? this.analysis.detections('municipio-cochabamba', range, undefined, undefined, [], '', false, request.signal)
-          : this.mapData.loadObservations(range, { minConfidence: '', platforms: [] }, request.signal)
-            .then(({ observations }) => observations),
+        this.analysis.detections('municipio-cochabamba', range, undefined, undefined, platforms, '', false, request.signal),
       ]);
       if (request.signal.aborted) return;
       this.boundaries.set(geometry);
