@@ -21,14 +21,9 @@
 .tg-districts__map-panel h2,
 .tg-districts__table-panel h2 { padding: 0 0 .625rem; }
 
-.tg-districts__kpis { grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); }
-.tg-districts__filters { grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr)); }
-.tg-districts__date-group { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.tg-districts__filter-actions { grid-column: 1 / -1; justify-content: flex-end; flex-wrap: wrap; }
 
 .tg-districts__panel-heading { flex-wrap: wrap; padding: 0; }
 .tg-districts__period { font-size: .75rem; }
-.tg-districts__period select { max-width: 100%; }
 
 .tg-districts__chart-panel .tg-districts__chart-note {
   display: flex;
@@ -47,11 +42,4 @@ app-district-map { display: block; }
 
 @container (max-width: 780px) {
   .tg-districts__workspace { grid-template-columns: minmax(0, 1fr); }
-  .tg-districts__filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .tg-districts__date-group { grid-column: 1 / -1; }
-}
-
-@container (max-width: 400px) {
-  .tg-districts__kpis,
-  .tg-districts__filters { grid-template-columns: minmax(0, 1fr); }
 }

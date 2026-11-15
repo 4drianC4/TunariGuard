@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from
   '../../../../shared/components/page-header/page-header.component';
@@ -21,6 +21,7 @@ interface Sample { year: number; value: number; }
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectionsPageComponent {
+  readonly mobileFiltersOpen = signal(false);
   readonly seriesOptions: {value: SeriesKey; label: string}[] = [
     {value:'harmonizadas', label:'Anomalías térmicas (MODIS + VIIRS)'},
     {value:'modis', label:'Detecciones MODIS'},

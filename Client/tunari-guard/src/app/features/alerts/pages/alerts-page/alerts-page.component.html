@@ -2,42 +2,67 @@
   <app-page-header section="Alertas" title="Alertas y seguimiento"
     description="Revisa alertas de detecciones térmicas y el contexto mensual de cada área vigilada." />
   @if (data(); as info) {
-    <div class="summary">
+    <section class="tg-kpis tg-kpis--fit" aria-label="Indicadores de alertas">
       @for (item of [
-        { label: 'Críticas', count: info.counts.critical, level: 4 },
-        { label: 'Altas', count: info.counts.high, level: 3 },
-        { label: 'Medias', count: info.counts.medium, level: 2 },
-        { label: 'En revisión', count: info.counts.byStatus['En revisión'], level: 3 }
+        { label: 'Críticas', count: info.counts.critical, icon: 'warning', tone: 'pink' },
+        { label: 'Altas', count: info.counts.high, icon: 'warning', tone: 'pink' },
+        { label: 'Medias', count: info.counts.medium, icon: 'bell', tone: 'warm' },
+        { label: 'En revisión', count: info.counts.byStatus['En revisión'], icon: 'target', tone: 'green' }
       ]; track item.label) {
-        <article class="tg-card summary-item" [style.--level-color]="colors[item.level]"><strong>{{ item.count | number }}</strong>{{ item.label }}</article>
+        <article class="tg-kpi">
+          <span class="tg-kpi-symbol" [class]="item.tone"><svg aria-hidden="true"><use [attr.href]="'/assets/tunari-ui/iconos.svg#' + item.icon"></use></svg></span>
+          <div class="tg-kpi-copy">
+            <span class="tg-kpi-title">{{ item.label }}</span>
+            <div class="tg-kpi-number">{{ item.count | number }}</div>
+            @if (info.total > 0) {
+              @let share = item.count / info.total;
+              <small class="tg-kpi-note">{{ share | percent:'1.0-1' }} de {{ info.total | number }} alertas filtradas</small>
+              <div class="alert-share-track" aria-hidden="true">
+                <span class="alert-share-fill" [style.width.%]="share * 100"></span>
+              </div>
+            } @else {
+              <small class="tg-kpi-note">Sin alertas con estos filtros</small>
+            }
+          </div>
+        </article>
       }
-    </div>
+    </section>
   }
-  <button type="button" class="mobile-filter button" (click)="mobileFiltersOpen.set(!mobileFiltersOpen())"
-    [attr.aria-expanded]="mobileFiltersOpen()" aria-controls="alert-filters">{{ mobileFiltersOpen() ? 'Ocultar filtros' : 'Mostrar filtros' }}</button>
-  <form id="alert-filters" class="tg-card filters"
-    [class.filters-open]="mobileFiltersOpen()" (ngSubmit)="applyFilters()">
-    <label>Desde<input type="date" name="from" [(ngModel)]="draft.desde" /></label>
-    <label>Hasta<input type="date" name="to" [(ngModel)]="draft.hasta" /></label>
-    <label>Área vigilada<select name="area" [(ngModel)]="draft.area_id">
-      <option value="">Todas las áreas</option>
-      @for (area of areas(); track area.areaId) { <option [value]="area.areaId">{{ area.areaName }}</option> }
-    </select></label>
-    <label>Severidad<select name="severity" [(ngModel)]="draft.severidad">
-      <option value="">Todas</option>
-      @for (item of severityOptions; track item) { <option [value]="item">{{ item }}</option> }
-    </select></label>
-    <label>Estado<select name="status" [(ngModel)]="draft.estado">
-      <option value="">Todos</option>
-      @for (item of statuses; track item) { <option [value]="item">{{ item }}</option> }
-    </select></label>
-    <label>Fuente<select name="source" [(ngModel)]="draft.fuente">
-      <option value="real">Operativas reales</option><option value="replay">Simulación histórica</option>
-      <option value="simulated">Importaciones simuladas</option><option value="">Todas</option>
-    </select></label>
-    <div class="actions"><button type="button" class="button" (click)="clearFilters()">Restablecer</button><button type="submit" class="tg-map-button">Aplicar filtros</button></div>
-    @if (filterError()) { <p role="alert">{{ filterError() }}</p> }
-  </form>
+  <div class="tg-filter-group">
+    <button type="button" class="tg-filter-toggle" (click)="mobileFiltersOpen.set(!mobileFiltersOpen())"
+      [attr.aria-expanded]="mobileFiltersOpen()" aria-controls="alert-filters">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10m-7 5h4" /></svg>
+      {{ mobileFiltersOpen() ? 'Ocultar filtros' : 'Mostrar filtros' }}
+    </button>
+    <form id="alert-filters" class="tg-card tg-filter-panel" [class.tg-filter-panel--open]="mobileFiltersOpen()"
+      aria-label="Filtros de alertas" (ngSubmit)="applyFilters()">
+      <div class="tg-filter-fields">
+        <label class="tg-filter-field">Desde<input class="tg-filter-control" type="date" name="from" [(ngModel)]="draft.desde" /></label>
+        <label class="tg-filter-field">Hasta<input class="tg-filter-control" type="date" name="to" [(ngModel)]="draft.hasta" /></label>
+        <label class="tg-filter-field">Área vigilada<select class="tg-filter-control" name="area" [(ngModel)]="draft.area_id">
+          <option value="">Todas las áreas</option>
+          @for (area of areas(); track area.areaId) { <option [value]="area.areaId">{{ area.areaName }}</option> }
+        </select></label>
+        <label class="tg-filter-field">Severidad<select class="tg-filter-control" name="severity" [(ngModel)]="draft.severidad">
+          <option value="">Todas</option>
+          @for (item of severityOptions; track item) { <option [value]="item">{{ item }}</option> }
+        </select></label>
+        <label class="tg-filter-field">Estado<select class="tg-filter-control" name="status" [(ngModel)]="draft.estado">
+          <option value="">Todos</option>
+          @for (item of statuses; track item) { <option [value]="item">{{ item }}</option> }
+        </select></label>
+        <label class="tg-filter-field">Fuente<select class="tg-filter-control" name="source" [(ngModel)]="draft.fuente">
+          <option value="real">Operativas reales</option><option value="replay">Simulación histórica</option>
+          <option value="simulated">Importaciones simuladas</option><option value="">Todas</option>
+        </select></label>
+      </div>
+      <div class="tg-filter-actions">
+        <button type="button" class="tg-filter-button" (click)="clearFilters()">Restablecer</button>
+        <button type="submit" class="tg-filter-button tg-filter-button--primary">Aplicar filtros</button>
+      </div>
+      @if (filterError()) { <p class="tg-filter-error" role="alert">{{ filterError() }}</p> }
+    </form>
+  </div>
 
   @if (result.isLoading()) { <p class="notice" role="status">Consultando alertas…</p> }
   @if (result.error(); as error) {
@@ -123,7 +148,7 @@
     <section class="tg-card full-row">
       <header class="heading"><h2>Contexto mensual <app-map-info topic="el contexto mensual" text="Compara la actividad térmica hasta la fecha de corte con lo habitual para la misma zona y época." /></h2>
         @if (monthly.hasValue() && context(); as item) {
-          <label>Área <select #areaSelect [value]="item.area_id" (change)="monthlyArea.set(areaSelect.value)">
+          <label>Área <select class="tg-filter-control tg-filter-control--compact" #areaSelect [value]="item.area_id" (change)="monthlyArea.set(areaSelect.value)">
             @for (area of monthly.value()?.items ?? []; track area.area_id) {
               <option [value]="area.area_id" [selected]="area.area_id === item.area_id">{{ area.nombre_visible }}</option>
             }

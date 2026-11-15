@@ -26,10 +26,13 @@
   @if (section() === 'Detecciones') {
     <article>
       <h2>Distribución de las detecciones</h2>
-      <div class="density">
-        <strong>{{ density() == null ? 'Sin superficie' : (density() | number:'1.0-3') }}</strong>
-        <span>Detecciones por km² <app-map-info topic="la densidad" text="Conteo del período dividido entre la superficie del distrito. Sirve para comparar áreas de distinto tamaño." /></span>
-      </div>
+      <article class="tg-kpi tg-kpi--compact">
+        <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#target"></use></svg></span>
+        <div class="tg-kpi-copy">
+          <span class="tg-kpi-title">Detecciones por km² <app-map-info topic="la densidad" text="Conteo del período dividido entre la superficie del distrito. Sirve para comparar áreas de distinto tamaño." /></span>
+          <div class="tg-kpi-number tg-kpi-number--text">{{ density() == null ? 'Sin superficie' : (density() | number:'1.0-3') }}</div>
+        </div>
+      </article>
       @if (district().count) {
         <div class="breakdown">
           @for (group of breakdown(); track group.title) {
@@ -64,7 +67,7 @@
       @if (monthly.isLoading()) { <p role="status">Cargando serie mensual…</p> }
       @else if (monthly.error()) { <p>La serie mensual no está disponible para este distrito.</p> <button type="button" (click)="monthly.reload()">Reintentar</button> }
       @else if (monthly.hasValue() && activeYear(); as selectedYear) {
-        <label class="year">Año <select #selection [value]="selectedYear" (change)="year.set(+selection.value); inspectedMonth.set(null)">
+        <label class="year">Año <select class="tg-filter-control tg-filter-control--compact" #selection [value]="selectedYear" (change)="year.set(+selection.value); inspectedMonth.set(null)">
           @for (item of years(); track item) { <option [value]="item" [selected]="item === selectedYear">{{ item }}</option> }
         </select></label>
         <p class="caption">Índice armonizado · {{ monthly.value()?.unit }} <app-map-info topic="el índice mensual" text="Compara la actividad térmica entre meses en una escala común. Un valor más alto indica detecciones en más zonas, durante más días o ambas cosas." /></p>
@@ -107,11 +110,29 @@
           @if (annualComparison(); as comparison) {
             <h3>Variación interanual del índice</h3>
             <p class="caption">Compara dos años consecutivos con 12 meses disponibles.</p>
-            <dl class="annual-summary">
-              <div><dt>{{ comparison.previous.year }}</dt><dd>{{ comparison.previous.total | number:'1.0-2' }}</dd></div>
-              <div><dt>{{ comparison.latest.year }}</dt><dd>{{ comparison.latest.total | number:'1.0-2' }}</dd></div>
-              <div><dt>Diferencia</dt><dd>{{ comparison.change > 0 ? '+' : '' }}{{ comparison.change | number:'1.0-2' }}</dd></div>
-            </dl>
+            <section class="tg-kpis tg-kpis--fit" aria-label="Indicadores de variación interanual">
+              <article class="tg-kpi">
+                <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#history"></use></svg></span>
+                <div class="tg-kpi-copy">
+                  <span class="tg-kpi-title">{{ comparison.previous.year }}</span>
+                  <div class="tg-kpi-number">{{ comparison.previous.total | number:'1.0-2' }}</div>
+                </div>
+              </article>
+              <article class="tg-kpi">
+                <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#history"></use></svg></span>
+                <div class="tg-kpi-copy">
+                  <span class="tg-kpi-title">{{ comparison.latest.year }}</span>
+                  <div class="tg-kpi-number">{{ comparison.latest.total | number:'1.0-2' }}</div>
+                </div>
+              </article>
+              <article class="tg-kpi">
+                <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#trend"></use></svg></span>
+                <div class="tg-kpi-copy">
+                  <span class="tg-kpi-title">Diferencia</span>
+                  <div class="tg-kpi-number">{{ comparison.change > 0 ? '+' : '' }}{{ comparison.change | number:'1.0-2' }}</div>
+                </div>
+              </article>
+            </section>
           } @else if (monthly.isLoading()) {
             <p role="status">Cargando datos para la comparación anual…</p>
           } @else {

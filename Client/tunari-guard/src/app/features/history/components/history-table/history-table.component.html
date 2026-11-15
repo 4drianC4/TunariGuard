@@ -3,7 +3,7 @@
     <div class="tg-card-titleline"><div><h2>Registros históricos</h2><p>Detalle mensual del índice consultado.</p></div></div>
     <div class="flex items-center gap-2 text-xs font-semibold text-[#555b43]">
       <label for="history-year">Año</label>
-      <select id="history-year" class="max-w-[145px] rounded-lg border border-[#ded6ca] bg-[#fffcf7] px-3 py-2 text-sm text-[#303722] outline-none focus:border-[#526b4c] focus:ring-2 focus:ring-[#526b4c]/20" [value]="selectedYear()" (change)="selectYear($any($event.target).value)">
+      <select id="history-year" class="tg-filter-control tg-filter-control--compact" [value]="selectedYear()" (change)="selectYear($any($event.target).value)">
         <option value="ALL">Todos los años</option>
         @for (year of years(); track year) { <option [value]="year">{{ year }}</option> }
       </select>

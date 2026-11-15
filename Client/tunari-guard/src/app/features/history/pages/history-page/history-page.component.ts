@@ -29,6 +29,7 @@ export class HistoryPageComponent {
   readonly measure = signal<HistoryMeasure>(this.metrics.selectedMeasure());
   readonly fromYear = signal<number | null>(this.metrics.selectedFromYear());
   readonly toYear = signal<number | null>(this.metrics.selectedToYear());
+  readonly mobileFiltersOpen = signal(false);
   readonly filterError = signal<string | null>(null);
 
   readonly sourceOptions: { value: HistorySource; label: string }[] = [

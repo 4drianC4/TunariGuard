@@ -6,21 +6,13 @@
 }
 .breakdown { grid-template-columns: repeat(auto-fit, minmax(min(100%, 110px), 1fr)); }
 .caption { margin: .375rem 0 .75rem; }
-.density {
-  display: grid;
-  margin: .75rem 0;
-  padding: .625rem;
-  border-radius: .625rem;
-  background: #e9eee4;
-  font-size: .8125rem;
-}
-.density strong { font-size: 1.25rem; }
+.analysis .tg-kpi--compact { margin-block: .75rem; }
 h3 { margin: .75rem 0 .25rem; font-size: .875rem; font-weight: 750; }
 dl { margin: .375rem 0 0; font-size: .8125rem; }
 dl > div { display: flex; justify-content: space-between; gap: .5rem; padding: .25rem 0; }
 dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
 .year { display: inline-flex; align-items: center; gap: .5rem; margin: .5rem 0; font-size: .8125rem; }
-select, button { border: 1px solid #ded6ca; border-radius: .5rem; padding: .25rem .5rem; background: white; }
+button { border: 1px solid #ded6ca; border-radius: .5rem; padding: .25rem .5rem; background: white; }
 button { margin-top: .5rem; font-size: .8125rem; }
 .trend + .trend { border-top: 1px solid #ded6ca; margin-top: .75rem; }
 
@@ -66,17 +58,17 @@ button { margin-top: .5rem; font-size: .8125rem; }
   font-weight: 700;
 }
 
-.district-facts, .annual-summary {
+.district-facts {
   display: flex;
   flex-wrap: wrap;
   gap: .375rem 1.25rem;
 }
 
-.district-facts > div, .annual-summary > div {
+.district-facts > div {
   display: grid;
   gap: .125rem;
 }
-.district-facts dd, .annual-summary dd { text-align: start; font-weight: 700; }
+.district-facts dd { text-align: start; font-weight: 700; }
 
 .month-chart {
   display: grid;

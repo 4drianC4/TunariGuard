@@ -6,21 +6,61 @@
     description="Análisis y pronóstico ilustrativo para los próximos años, con configuración de serie de tiempo."
   />
 
-  <div class="tg-forecast-kpis" aria-label="Indicadores de proyección DEMO">
-    <article class="tg-forecast-kpi red"><div class="tg-forecast-kpi-icon">🔥</div><div><strong>{{projectedChange > 0 ? '+' : ''}}{{projectedChange}} %</strong><span>{{projectedChange >= 0 ? 'Aumento' : 'Reducción'}} proyectado</span><small>(2027 – {{2026 + active.horizon}})</small></div></article>
-    <article class="tg-forecast-kpi amber"><div class="tg-forecast-kpi-icon">▣</div><div><strong>{{annualAverage}}</strong><span>Promedio anual proyectado</span><small>Datos sintéticos</small></div></article>
-    <article class="tg-forecast-kpi lime"><div class="tg-forecast-kpi-icon">↗</div><div><strong>{{growthIndex}}</strong><span>Tendencia de crecimiento</span><small>(índice anual acumulado)</small></div></article>
-    <article class="tg-forecast-kpi green"><div class="tg-forecast-kpi-icon">◎</div><div><strong>{{(stat.r2 * 100) | number:'1.0-0'}} %</strong><span>Desempeño ilustrativo</span><small>(R² = {{stat.r2 | number:'1.2-2'}} · DEMO)</small></div></article>
-  </div>
+  <section class="tg-kpis tg-kpis--fit" aria-label="Indicadores de proyección DEMO">
+    <article class="tg-kpi">
+      <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#fire"></use></svg></span>
+      <div class="tg-kpi-copy">
+        <span class="tg-kpi-title">{{ projectedChange >= 0 ? 'Aumento' : 'Reducción' }} proyectado</span>
+        <div class="tg-kpi-number">{{ projectedChange > 0 ? '+' : '' }}{{ projectedChange }} <small>%</small></div>
+        <small class="tg-kpi-note">(2027 – {{ 2026 + active.horizon }})</small>
+      </div>
+    </article>
+    <article class="tg-kpi">
+      <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#history"></use></svg></span>
+      <div class="tg-kpi-copy">
+        <span class="tg-kpi-title">Promedio anual proyectado</span>
+        <div class="tg-kpi-number">{{ annualAverage }}</div>
+        <small class="tg-kpi-note">Datos sintéticos</small>
+      </div>
+    </article>
+    <article class="tg-kpi">
+      <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#trend"></use></svg></span>
+      <div class="tg-kpi-copy">
+        <span class="tg-kpi-title">Tendencia de crecimiento</span>
+        <div class="tg-kpi-number">{{ growthIndex }}</div>
+        <small class="tg-kpi-note">(índice anual acumulado)</small>
+      </div>
+    </article>
+    <article class="tg-kpi">
+      <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#target"></use></svg></span>
+      <div class="tg-kpi-copy">
+        <span class="tg-kpi-title">Desempeño ilustrativo</span>
+        <div class="tg-kpi-number">{{ (stat.r2 * 100) | number:'1.0-0' }} <small>%</small></div>
+        <small class="tg-kpi-note">(R² = {{ stat.r2 | number:'1.2-2' }} · DEMO)</small>
+      </div>
+    </article>
+  </section>
 
-  <form class="tg-forecast-filters" (ngSubmit)="apply()">
-    <label><span>↗ &nbsp; Serie de tiempo</span><select name="serie" [(ngModel)]="draftSeries"><option *ngFor="let option of seriesOptions" [ngValue]="option.value">{{option.label}}</option></select></label>
-    <label><span>▣ &nbsp; Rango histórico</span><select name="historico" [(ngModel)]="draftStart"><option *ngFor="let year of historicalStarts" [ngValue]="year">{{year}} – 2026</option></select></label>
-    <label><span>▣ &nbsp; Horizonte de proyección</span><select name="horizonte" [(ngModel)]="draftHorizon"><option *ngFor="let h of horizons" [ngValue]="h">{{h}} años (2027 – {{2026 + h}})</option></select></label>
-    <label><span>◈ &nbsp; Distrito</span><select name="distrito" [(ngModel)]="draftDistrict"><option *ngFor="let d of districts">{{d}}</option></select></label>
-    <label><span>⚙ &nbsp; Modelo</span><select name="modelo" [(ngModel)]="draftModel"><option *ngFor="let m of models" [ngValue]="m.name">{{m.name}}</option></select></label>
-    <button class="tg-forecast-update" type="submit">▷ &nbsp; Actualizar</button>
-  </form>
+  <div class="tg-filter-group">
+    <button type="button" class="tg-filter-toggle" (click)="mobileFiltersOpen.set(!mobileFiltersOpen())"
+      [attr.aria-expanded]="mobileFiltersOpen()" aria-controls="projection-filters">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10m-7 5h4" /></svg>
+      {{ mobileFiltersOpen() ? 'Ocultar filtros' : 'Mostrar filtros' }}
+    </button>
+    <form id="projection-filters" class="tg-card tg-filter-panel" [class.tg-filter-panel--open]="mobileFiltersOpen()"
+      aria-label="Filtros de proyección" (ngSubmit)="apply()">
+      <div class="tg-filter-fields">
+        <label class="tg-filter-field"><span>Serie de tiempo</span><select class="tg-filter-control" name="serie" [(ngModel)]="draftSeries"><option *ngFor="let option of seriesOptions" [ngValue]="option.value">{{option.label}}</option></select></label>
+        <label class="tg-filter-field"><span>Rango histórico</span><select class="tg-filter-control" name="historico" [(ngModel)]="draftStart"><option *ngFor="let year of historicalStarts" [ngValue]="year">{{year}} – 2026</option></select></label>
+        <label class="tg-filter-field"><span>Horizonte de proyección</span><select class="tg-filter-control" name="horizonte" [(ngModel)]="draftHorizon"><option *ngFor="let h of horizons" [ngValue]="h">{{h}} años (2027 – {{2026 + h}})</option></select></label>
+        <label class="tg-filter-field"><span>Distrito</span><select class="tg-filter-control" name="distrito" [(ngModel)]="draftDistrict"><option *ngFor="let d of districts">{{d}}</option></select></label>
+        <label class="tg-filter-field"><span>Modelo</span><select class="tg-filter-control" name="modelo" [(ngModel)]="draftModel"><option *ngFor="let m of models" [ngValue]="m.name">{{m.name}}</option></select></label>
+      </div>
+      <div class="tg-filter-actions">
+        <button class="tg-filter-button tg-filter-button--primary" type="submit">Actualizar</button>
+      </div>
+    </form>
+  </div>
 
   <div class="tg-forecast-main-grid">
     <article class="tg-forecast-card tg-forecast-chart-card">

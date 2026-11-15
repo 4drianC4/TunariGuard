@@ -1,4 +1,4 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, resource, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -14,7 +14,7 @@ const initialFilters = { desde: '', hasta: '', area_id: '', severidad: '', estad
 
 @Component({
   selector: 'app-alerts-page',
-  imports: [DatePipe, DecimalPipe, FormsModule, PageHeaderComponent, AlertMapComponent, MapInfoComponent],
+  imports: [DatePipe, DecimalPipe, PercentPipe, FormsModule, PageHeaderComponent, AlertMapComponent, MapInfoComponent],
   templateUrl: './alerts-page.component.html',
   styleUrl: './alerts-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

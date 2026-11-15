@@ -5,21 +5,72 @@
     description="Conoce qué distritos presentan mayor actividad térmica."
   />
   @if (!loading() && !error()) {
-  <div class="tg-districts__kpis" aria-label="Indicadores del período">
-    <div class="tg-districts__kpi red"><span class="tg-districts__kpi-icon">🔥</span><div><strong>{{ total() }}</strong><span>Detecciones térmicas</span><small>Período consultado</small></div></div>
-    <div class="tg-districts__kpi orange"><span class="tg-districts__kpi-icon">▱</span><div><strong>{{ activeCount() }}</strong><span>Distritos con actividad</span><small>Período consultado</small></div></div>
-    <div class="tg-districts__kpi red"><span class="tg-districts__kpi-icon">⚠</span><div><strong>{{ highCount() }}</strong><span>Distritos con actividad alta</span><small>7 o más detecciones</small></div></div>
-    <div class="tg-districts__kpi green"><span class="tg-districts__kpi-icon">▥</span><div>@if (mostActive(); as best) {<strong class="tg-districts__best">{{ best.name }}</strong><span>Distrito con más detecciones</span><small>({{ best.count }} detecciones)</small>} @else {<strong>—</strong><span>Sin resultados</span>}</div></div>
-  </div>
+  <section class="tg-kpis tg-kpis--fit" aria-label="Indicadores del período">
+    <article class="tg-kpi">
+      <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#fire"></use></svg></span>
+      <div class="tg-kpi-copy">
+        <span class="tg-kpi-title">Detecciones térmicas</span>
+        <div class="tg-kpi-number">{{ total() }}</div>
+        <small class="tg-kpi-note">Período consultado</small>
+      </div>
+    </article>
+    <article class="tg-kpi">
+      <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#districts"></use></svg></span>
+      <div class="tg-kpi-copy">
+        <span class="tg-kpi-title">Distritos con actividad</span>
+        <div class="tg-kpi-number">{{ activeCount() }}</div>
+        <small class="tg-kpi-note">Período consultado</small>
+      </div>
+    </article>
+    <article class="tg-kpi">
+      <span class="tg-kpi-symbol pink"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#warning"></use></svg></span>
+      <div class="tg-kpi-copy">
+        <span class="tg-kpi-title">Distritos con actividad alta</span>
+        <div class="tg-kpi-number">{{ highCount() }}</div>
+        <small class="tg-kpi-note">7 o más detecciones</small>
+      </div>
+    </article>
+    @if (mostActive(); as best) {
+      <article class="tg-kpi">
+        <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#districts"></use></svg></span>
+        <div class="tg-kpi-copy">
+          <span class="tg-kpi-title">Distrito con más detecciones</span>
+          <div class="tg-kpi-number tg-kpi-number--text">{{ best.name }}</div>
+          <small class="tg-kpi-note">({{ best.count }} detecciones)</small>
+        </div>
+      </article>
+    } @else {
+      <article class="tg-kpi">
+        <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#districts"></use></svg></span>
+        <div class="tg-kpi-copy">
+          <span class="tg-kpi-title">Sin resultados</span>
+          <div class="tg-kpi-number">—</div>
+        </div>
+      </article>
+    }
+  </section>
   }
-  <button class="tg-districts__mobile-filter" type="button" (click)="toggleFilters()" [attr.aria-expanded]="mobileFiltersOpen()">☷ {{ mobileFiltersOpen() ? 'Ocultar filtros' : 'Mostrar filtros' }}</button>
-  <form class="tg-districts__filters" [class.tg-districts__filters-open]="mobileFiltersOpen()" (ngSubmit)="applyFilters()">
-    <div class="tg-districts__date-group"><label>Desde<input type="date" name="from" [(ngModel)]="dateFrom" /></label><label>Hasta<input type="date" name="to" [(ngModel)]="dateTo" /></label></div>
-    <label>Distrito<select name="district" [(ngModel)]="district"><option value="">Todos los distritos</option>@for (d of districts(); track d.id) {<option [value]="d.id">{{ d.name }}</option>}</select></label>
-    <label>Fuente<select name="source" [(ngModel)]="source"><option value="archive">Archivo histórico</option><option value="live">Monitoreo FIRMS</option></select></label>
-    <label>Nivel de actividad<select name="activity" [(ngModel)]="level"><option value="">Todos</option>@for (item of levels; track item.level) {<option [value]="item.level">{{ item.level }}</option>}</select></label>
-    <div class="tg-districts__filter-actions"><button type="button" class="tg-districts__btn-outline" (click)="resetFilters()">✕ Limpiar</button><button type="submit" class="tg-districts__btn-primary">⌕ Aplicar filtros</button></div>
-  </form>
+  <div class="tg-filter-group">
+    <button type="button" class="tg-filter-toggle" (click)="toggleFilters()"
+      [attr.aria-expanded]="mobileFiltersOpen()" aria-controls="district-filters">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10m-7 5h4" /></svg>
+      {{ mobileFiltersOpen() ? 'Ocultar filtros' : 'Mostrar filtros' }}
+    </button>
+    <form id="district-filters" class="tg-card tg-filter-panel" [class.tg-filter-panel--open]="mobileFiltersOpen()"
+      aria-label="Filtros de distritos" (ngSubmit)="applyFilters()">
+      <div class="tg-filter-fields">
+        <label class="tg-filter-field">Desde<input class="tg-filter-control" type="date" name="from" [(ngModel)]="dateFrom" /></label>
+        <label class="tg-filter-field">Hasta<input class="tg-filter-control" type="date" name="to" [(ngModel)]="dateTo" /></label>
+        <label class="tg-filter-field">Distrito<select class="tg-filter-control" name="district" [(ngModel)]="district"><option value="">Todos los distritos</option>@for (d of districts(); track d.id) {<option [value]="d.id">{{ d.name }}</option>}</select></label>
+        <label class="tg-filter-field">Fuente<select class="tg-filter-control" name="source" [(ngModel)]="source"><option value="archive">Archivo histórico</option><option value="live">Monitoreo FIRMS</option></select></label>
+        <label class="tg-filter-field">Nivel de actividad<select class="tg-filter-control" name="activity" [(ngModel)]="level"><option value="">Todos</option>@for (item of levels; track item.level) {<option [value]="item.level">{{ item.level }}</option>}</select></label>
+      </div>
+      <div class="tg-filter-actions">
+        <button type="button" class="tg-filter-button" (click)="resetFilters()">Restablecer</button>
+        <button type="submit" class="tg-filter-button tg-filter-button--primary">Aplicar filtros</button>
+      </div>
+    </form>
+  </div>
   @if (validation()) { <p role="alert" class="tg-districts__disclaimer">{{ validation() }}</p> }
   @if (loading()) { <p role="status" class="tg-districts__disclaimer">Cargando datos distritales…</p> }
   @if (error()) {
@@ -32,7 +83,7 @@
         [selected]="current()?.id ?? ''" [focusRequest]="focusRequest()" (districtSelect)="select($event)" />
     </section>
     @if (!loading() && !error()) {
-      <section class="tg-card tg-districts__chart-panel"><div class="tg-districts__panel-heading"><h2>Detecciones diarias por distrito <app-map-info topic="el gráfico diario" text="Cada punto indica cuántas detecciones registró ese distrito en esa fecha de Bolivia. La línea une los conteos diarios, sin acumularlos." /></h2><label class="tg-districts__period">Periodo<select [ngModel]="period()" (ngModelChange)="period.set(+$event)" name="period"><option value="7">7 días hasta la fecha final</option><option value="8">8 días hasta la fecha final</option></select></label></div>
+      <section class="tg-card tg-districts__chart-panel"><div class="tg-districts__panel-heading"><h2>Detecciones diarias por distrito <app-map-info topic="el gráfico diario" text="Cada punto indica cuántas detecciones registró ese distrito en esa fecha de Bolivia. La línea une los conteos diarios, sin acumularlos." /></h2><label class="tg-districts__period">Periodo<select class="tg-filter-control tg-filter-control--compact" [ngModel]="period()" (ngModelChange)="period.set(+$event)" name="period"><option value="7">7 días hasta la fecha final</option><option value="8">8 días hasta la fecha final</option></select></label></div>
         <p class="tg-districts__chart-note">@if (current(); as district) {
           <span class="tg-districts__dot" [style.background]="district.color"></span>
           <strong>{{ district.name }}</strong> · {{ district.risk }} · Conteo diario en hora de Bolivia

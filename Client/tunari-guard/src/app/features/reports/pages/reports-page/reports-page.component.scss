@@ -4,9 +4,6 @@
 .report-coverage { display: flex; align-items: center; gap: .625rem; justify-self: end; color: #40552c; }
 .report-coverage span, .report-coverage strong { display: block; }
 .report-coverage span { font-size: .75rem; }
-.report-filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 135px), 1fr)); gap: .625rem; }
-.report-filters header, .report-filters .tr-filter-actions { grid-column: 1 / -1; }
-.report-filters .tr-filter-actions { flex-wrap: wrap; }
 .report-tabs { display: flex; flex-wrap: wrap; gap: .375rem; }
 .report-tabs button {
   display: flex; flex: 1 1 auto; justify-content: center; align-items: center; gap: .375rem;
@@ -46,8 +43,6 @@ button:disabled { cursor: default; opacity: .55; }
   .report-chart { grid-column: 1 / -1; }
 }
 @media (max-width: 760px) {
-  .report-filters { display: none; }
-  .report-filters.filters-open { display: grid; }
   .report-overview { grid-template-columns: minmax(0, 1fr); }
   .report-coverage { justify-self: stretch; }
 }

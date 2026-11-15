@@ -10,77 +10,81 @@
   }
 
   @if (areas().length) {
-    <button class="tr-mobile-filters" type="button" (click)="filtersExpanded = !filtersExpanded"
-      [attr.aria-expanded]="filtersExpanded" aria-controls="report-filters">
-      Filtros <span>{{ filtersExpanded ? 'Cerrar' : 'Mostrar' }}</span>
-    </button>
-
-    <form id="report-filters" class="tg-card report-filters" [class.filters-open]="filtersExpanded" (ngSubmit)="apply()">
-      <header><h2>Filtros del reporte</h2></header>
-      <label class="tr-field">
-        <span>Tipo de reporte</span>
-        <select name="kind" [ngModel]="filters.kind" (ngModelChange)="changeKind($event)">
-          @for (kind of kinds; track kind) {
-            <option [value]="kind">{{ reportTypes[kind] }}</option>
+    <div class="tg-filter-group">
+      <button type="button" class="tg-filter-toggle" (click)="filtersExpanded = !filtersExpanded"
+        [attr.aria-expanded]="filtersExpanded" aria-controls="report-filters">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10m-7 5h4" /></svg>
+        {{ filtersExpanded ? 'Ocultar filtros' : 'Mostrar filtros' }}
+      </button>
+      <form id="report-filters" class="tg-card tg-filter-panel" [class.tg-filter-panel--open]="filtersExpanded"
+        aria-label="Filtros del reporte" (ngSubmit)="apply()">
+        <div class="tg-filter-fields">
+          <label class="tg-filter-field">
+            <span>Tipo de reporte</span>
+            <select class="tg-filter-control" name="kind" [ngModel]="filters.kind" (ngModelChange)="changeKind($event)">
+              @for (kind of kinds; track kind) {
+                <option [value]="kind">{{ reportTypes[kind] }}</option>
+              }
+            </select>
+          </label>
+          @if (filters.kind !== 'districts') {
+            <label class="tg-filter-field">
+              <span>Área</span>
+              <select class="tg-filter-control" name="area" [(ngModel)]="filters.area">
+                @for (area of areas(); track area.area_id) {
+                  <option [value]="area.area_id">{{ area.nombre_visible }}</option>
+                }
+              </select>
+            </label>
           }
-        </select>
-      </label>
-      @if (filters.kind !== 'districts') {
-        <label class="tr-field">
-          <span>Área</span>
-          <select name="area" [(ngModel)]="filters.area">
-            @for (area of areas(); track area.area_id) {
-              <option [value]="area.area_id">{{ area.nombre_visible }}</option>
-            }
-          </select>
-        </label>
-      }
-      <label class="tr-field"><span>Fecha inicial</span>
-        <input [type]="monthly ? 'month' : 'date'" name="from" [(ngModel)]="filters.from" required />
-      </label>
-      <label class="tr-field"><span>Fecha final</span>
-        <input [type]="monthly ? 'month' : 'date'" name="to" [(ngModel)]="filters.to" required />
-      </label>
-      @if (showSource(filters.kind)) {
-        <label class="tr-field">
-          <span>Fuente</span>
-          <select name="source" [(ngModel)]="filters.source">
-            @if (filters.kind === 'detections') {
-              <option value="ALL">Todos los satélites</option>
-            } @else {
-              <option value="HARMONIZED">Índice armonizado</option>
-            }
-            <option value="MODIS">MODIS</option>
-            <option value="VIIRS">VIIRS</option>
-          </select>
-        </label>
-      }
-      @if (filters.kind === 'detections') {
-        <label class="tr-field">
-          <span>Confianza mínima</span>
-          <select name="confidence" [(ngModel)]="filters.confidence">
-            <option value="">Todas</option>
-            <option value="nominal">Nominal</option>
-            <option value="alta">Alta</option>
-          </select>
-        </label>
-      }
-      @if (filters.kind === 'alerts') {
-        <label class="tr-field">
-          <span>Nivel de alerta</span>
-          <select name="alertLevel" [(ngModel)]="filters.alertLevel">
-            <option value="">Todas las destacadas</option>
-            <option value="elevada">Elevada</option>
-            <option value="alta">Alta</option>
-            <option value="muy_alta">Muy alta</option>
-          </select>
-        </label>
-      }
-      <div class="tr-filter-actions">
-        <button class="tr-clear" type="button" (click)="reset()">Limpiar filtros</button>
-        <button class="tr-primary" type="submit" [disabled]="loading()">Actualizar</button>
-      </div>
-    </form>
+          <label class="tg-filter-field"><span>Fecha inicial</span>
+            <input class="tg-filter-control" [type]="monthly ? 'month' : 'date'" name="from" [(ngModel)]="filters.from" required />
+          </label>
+          <label class="tg-filter-field"><span>Fecha final</span>
+            <input class="tg-filter-control" [type]="monthly ? 'month' : 'date'" name="to" [(ngModel)]="filters.to" required />
+          </label>
+          @if (showSource(filters.kind)) {
+            <label class="tg-filter-field">
+              <span>Fuente</span>
+              <select class="tg-filter-control" name="source" [(ngModel)]="filters.source">
+                @if (filters.kind === 'detections') {
+                  <option value="ALL">Todos los satélites</option>
+                } @else {
+                  <option value="HARMONIZED">Índice armonizado</option>
+                }
+                <option value="MODIS">MODIS</option>
+                <option value="VIIRS">VIIRS</option>
+              </select>
+            </label>
+          }
+          @if (filters.kind === 'detections') {
+            <label class="tg-filter-field">
+              <span>Confianza mínima</span>
+              <select class="tg-filter-control" name="confidence" [(ngModel)]="filters.confidence">
+                <option value="">Todas</option>
+                <option value="nominal">Nominal</option>
+                <option value="alta">Alta</option>
+              </select>
+            </label>
+          }
+          @if (filters.kind === 'alerts') {
+            <label class="tg-filter-field">
+              <span>Nivel de alerta</span>
+              <select class="tg-filter-control" name="alertLevel" [(ngModel)]="filters.alertLevel">
+                <option value="">Todas las destacadas</option>
+                <option value="elevada">Elevada</option>
+                <option value="alta">Alta</option>
+                <option value="muy_alta">Muy alta</option>
+              </select>
+            </label>
+          }
+        </div>
+        <div class="tg-filter-actions">
+          <button class="tg-filter-button" type="button" (click)="reset()">Restablecer</button>
+          <button class="tg-filter-button tg-filter-button--primary" type="submit" [disabled]="loading()">Actualizar</button>
+        </div>
+      </form>
+    </div>
   }
 
   <nav class="report-tabs" aria-label="Tipos de reporte">
@@ -107,28 +111,34 @@
     @if (coverageNotice(); as notice) {
       <p class="tr-notice tr-report-context" role="status">{{ notice }}</p>
     }
-    <div class="tr-kpis" aria-label="Indicadores del reporte">
-      <article class="tr-kpi critical">
-        <div class="tr-kpi-icon" aria-hidden="true">♨</div>
-        <div>
-          <strong>{{ report.data.headline.value === null ? '—' : (report.data.headline.value | number:'1.0-2') }}</strong>
-          <span>{{ report.data.headline.label }}</span><small>{{ report.data.headline.unit }}</small>
+    <section class="tg-kpis tg-kpis--fit" aria-label="Indicadores del reporte">
+      <article class="tg-kpi">
+        <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#fire"></use></svg></span>
+        <div class="tg-kpi-copy">
+          <span class="tg-kpi-title">{{ report.data.headline.label }}</span>
+          <div class="tg-kpi-number">{{ report.data.headline.value === null ? '—' : (report.data.headline.value | number:'1.0-2') }}</div>
+          <small class="tg-kpi-note">{{ report.data.headline.unit }}</small>
         </div>
       </article>
-      <article class="tr-kpi amber">
-        <div class="tr-kpi-icon" aria-hidden="true">▱</div>
-        <div>
-          <span>{{ report.area }}</span><small>{{ report.filters.from }} a {{ report.filters.to }}</small>
-          @if (showSource(report.filters.kind)) { <small>{{ sourceLabels[report.filters.source] }}</small> }
-          @if (report.filters.confidence) { <small>Confianza mínima {{ report.filters.confidence }}</small> }
-          @if (report.filters.alertLevel) { <small>Nivel {{ report.filters.alertLevel.replaceAll('_', ' ') }}</small> }
+      <article class="tg-kpi">
+        <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#districts"></use></svg></span>
+        <div class="tg-kpi-copy">
+          <span class="tg-kpi-title">Área del reporte</span>
+          <div class="tg-kpi-number tg-kpi-number--text">{{ report.area }}</div>
+          <small class="tg-kpi-note">{{ report.filters.from }} a {{ report.filters.to }}</small>
+          @if (showSource(report.filters.kind)) { <small class="tg-kpi-note">{{ sourceLabels[report.filters.source] }}</small> }
+          @if (report.filters.confidence) { <small class="tg-kpi-note">Confianza mínima {{ report.filters.confidence }}</small> }
+          @if (report.filters.alertLevel) { <small class="tg-kpi-note">Nivel {{ report.filters.alertLevel.replaceAll('_', ' ') }}</small> }
         </div>
       </article>
-      <article class="tr-kpi green">
-        <div class="tr-kpi-icon" aria-hidden="true">✓</div>
-        <div><strong>{{ report.data.rows.length | number }}</strong><span>Filas del reporte</span></div>
+      <article class="tg-kpi">
+        <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#reports"></use></svg></span>
+        <div class="tg-kpi-copy">
+          <span class="tg-kpi-title">Filas del reporte</span>
+          <div class="tg-kpi-number">{{ report.data.rows.length | number }}</div>
+        </div>
       </article>
-    </div>
+    </section>
 
     @if (report.areaNotice) {
       <p class="tr-notice area-notice"><strong>Advertencia del área.</strong> {{ report.areaNotice }}</p>
