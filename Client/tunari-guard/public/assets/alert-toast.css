@@ -1,0 +1,117 @@
+.alert-toast-region {
+  position: absolute;
+  inset-block-start: calc(100% + 12px);
+  inset-inline-end: 0;
+  width: min(360px, calc(100vw - 48px));
+  pointer-events: none;
+}
+
+.alert-toast {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 11px;
+  padding: 12px 9px 12px 12px;
+  border: 1px solid #e4dbc9;
+  border-inline-start: 5px solid var(--alert-accent, #6d9362);
+  border-radius: 16px;
+  background: #fffcf7;
+  color: #304033;
+  box-shadow: 0 12px 32px rgba(28, 43, 30, .16);
+  animation: alertToastEnter .18s ease-out;
+  pointer-events: auto;
+}
+
+.alert-toast::before {
+  content: '';
+  position: absolute;
+  inset-block-start: -7px;
+  inset-inline-end: calc(var(--bell-size, 42px) / 2 - 7px);
+  width: 12px;
+  height: 12px;
+  border-block-start: 1px solid #e4dbc9;
+  border-inline-start: 1px solid #e4dbc9;
+  background: inherit;
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+.alert-toast__avatar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #ebd5af;
+  border-radius: 50%;
+  background: #f2dfbf;
+}
+
+.alert-toast__avatar img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.alert-toast__content {
+  overflow-wrap: anywhere;
+}
+
+.alert-toast__content strong {
+  display: block;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.alert-toast__content p {
+  display: -webkit-box;
+  margin: 4px 0 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: #52614f;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.alert-toast__content small {
+  display: block;
+  margin-top: 6px;
+  color: #52614f;
+  font-weight: 650;
+}
+
+.alert-toast__close {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #52614f;
+  font-size: 23px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.alert-toast__close:hover {
+  background: #f1eadc;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .alert-toast {
+    animation: none;
+  }
+}
+
+@keyframes alertToastEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,36 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { NEVER, Subject, type ObservedValueOf } from 'rxjs';
+import { Subject, type ObservedValueOf } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { LiveUpdatesService } from '../../../application/services/live-updates.service';
 import { TopbarComponent } from './topbar.component';
 
 describe('TopbarComponent', () => {
-  it('muestra el toast de prueba sin agregar una alerta a la campanita', () => {
-    const previousUrl = window.location.href;
-    window.history.replaceState(null, '', '?toast=critica');
-    try {
-      TestBed.configureTestingModule({
-        imports: [TopbarComponent],
-        providers: [
-          provideRouter([]),
-          { provide: LiveUpdatesService, useValue: {
-            enabled: false, alertNotifications$: NEVER, removedAlerts$: NEVER,
-          } },
-        ],
-      });
-      const fixture = TestBed.createComponent(TopbarComponent);
-      fixture.detectChanges();
-      const element: HTMLElement = fixture.nativeElement;
-      expect(element.querySelector('.alert-toast')?.textContent).toContain('Crítica · Prueba');
-      expect(element.querySelector<HTMLElement>('.alert-toast')?.style.getPropertyValue('--alert-accent'))
-        .toBe('#e94119');
-      expect(element.querySelector('.notifications__count')).toBeNull();
-    } finally {
-      window.history.replaceState(null, '', previousUrl);
-    }
-  });
-
   it('muestra una alerta del parque y reproduce un tono una sola vez', () => {
     const alertNotifications = new Subject<ObservedValueOf<LiveUpdatesService['alertNotifications$']>>();
     const removedAlerts = new Subject<string[]>();

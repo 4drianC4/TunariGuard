@@ -5,23 +5,17 @@ import {
   ElementRef,
   HostListener,
   inject,
-  isDevMode,
   signal,
   ViewChild
 } from '@angular/core';
 
-import { CommonModule, DOCUMENT } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { LiveUpdatesService } from '../../../application/services/live-updates.service';
 import { ALERT_COLORS, SEVERITY_LEVEL, type AlertSeverity } from '../../../features/alerts/alert-event';
 
 const TOAST_DURATION_MS = 10_000;
-const PREVIEW_SEVERITIES = new Map<string, AlertSeverity>([
-  ['media', 'Media'],
-  ['alta', 'Alta'],
-  ['critica', 'Crítica'],
-]);
 
 interface TunariNotification {
   id: string;
@@ -37,7 +31,7 @@ interface TunariNotification {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './topbar.component.html',
-  styleUrls: ['./topbar.component.scss']
+  styleUrls: ['./topbar.component.scss', '../../../../../public/assets/alert-toast.css']
 })
 export class TopbarComponent {
   readonly liveUpdates = inject(LiveUpdatesService);
@@ -48,14 +42,11 @@ export class TopbarComponent {
   notificationsOpen = false;
   readonly notifications = signal<TunariNotification[]>([]);
   private readonly toastAlerts = signal<TunariNotification[]>([]);
-  private readonly toastPreview = signal<TunariNotification | null>(null);
   protected readonly toast = computed(() => {
     const [first, ...others] = this.toastAlerts();
-    const alert = first
-      ? others.reduce((highest, item) =>
-        SEVERITY_LEVEL[item.severity] > SEVERITY_LEVEL[highest.severity] ? item : highest, first)
-      : this.toastPreview();
-    if (!alert) return null;
+    if (!first) return null;
+    const alert = others.reduce((highest, item) =>
+      SEVERITY_LEVEL[item.severity] > SEVERITY_LEVEL[highest.severity] ? item : highest, first);
     return { alert, color: ALERT_COLORS[SEVERITY_LEVEL[alert.severity]], others: others.length };
   });
   private toastTimer?: ReturnType<typeof setTimeout>;
@@ -68,21 +59,6 @@ export class TopbarComponent {
   private soundEndsAt = 0;
 
   constructor(private readonly router: Router) {
-    if (isDevMode()) {
-      const search = inject(DOCUMENT).location?.search;
-      const severity = PREVIEW_SEVERITIES.get(new URLSearchParams(search).get('toast') ?? '');
-      if (severity) {
-        this.toastPreview.set({
-          id: 'preview',
-          title: `Parque Nacional Tunari · ${severity} · Prueba`,
-          message: 'Detección de calor satelital en el sector del Tunari. Requiere verificación.',
-          severity,
-          time: '',
-          read: true,
-        });
-      }
-    }
-
     this.liveUpdates.alertNotifications$.pipe(takeUntilDestroyed()).subscribe(({ alerts, emittedAtUtc }) => {
       const current = this.notifications();
       const seen = new Set(current.map((item) => item.id));
@@ -101,7 +77,6 @@ export class TopbarComponent {
       }
       if (!incoming.length) return;
       this.notifications.set([...incoming, ...current]);
-      this.toastPreview.set(null);
       this.toastAlerts.update((items) => [...incoming, ...items]);
       clearTimeout(this.toastTimer);
       this.toastTimer = setTimeout(() => this.dismissToast(), TOAST_DURATION_MS);
@@ -127,7 +102,6 @@ export class TopbarComponent {
   dismissToast(): void {
     clearTimeout(this.toastTimer);
     this.toastAlerts.set([]);
-    this.toastPreview.set(null);
   }
 
   toggleNotifications(): void {
