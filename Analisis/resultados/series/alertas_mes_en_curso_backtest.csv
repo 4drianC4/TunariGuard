@@ -1,0 +1,7 @@
+﻿area_id,dias_transcurridos,meses_evaluados,meses_con_alerta_al_final,meses_con_alerta_parcial,alertas_finales_ya_avisadas,alertas_parciales_que_no_se_confirman,recall_%,precision_%
+parque-tunari,7,96,11,8,6,2,54.5,75.0
+parque-tunari,14,96,11,9,7,2,63.6,77.8
+parque-tunari,21,96,11,10,9,1,81.8,90.0
+municipio-cochabamba,7,96,3,0,0,0,0.0,0.0
+municipio-cochabamba,14,96,3,0,0,0,0.0,0.0
+municipio-cochabamba,21,96,3,1,1,0,33.3,100.0

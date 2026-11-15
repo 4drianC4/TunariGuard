@@ -1,0 +1,3 @@
+﻿conglomerado,celdas_1km,celdas_dia_viirs,z_maximo,distrito_principal,lon_centro,lat_centro,advertencia
+1,25,43.0,6.127,Distrito 13,-66.15634292596668,-17.318112831878928,Estadístico espacial sobre detecciones satelitales (no son incendios confirmados). Límites de referencia abierta (no oficiales). Se excluyeron las celdas de posible fuente persistente.
+0,18,35.0,5.907,Distrito 9,-66.24123390162055,-17.445645384458846,Estadístico espacial sobre detecciones satelitales (no son incendios confirmados). Límites de referencia abierta (no oficiales). Se excluyeron las celdas de posible fuente persistente.

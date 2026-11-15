@@ -1,0 +1,6 @@
+﻿modelo,CRPS,p<=0.10_pct,p<=0.05_pct,p<=0.01_pct,mejora_crps_vs_actual_pct,años_en_que_mejora
+Sin clima (actual),5.68,9.4,7.3,1.0,0.0,0 de 8
++ lluvia de 3 meses,5.15,11.5,1.0,1.0,9.3,5 de 8
++ balance hídrico de 3 meses,4.86,8.3,2.1,0.0,14.4,5 de 8
++ lluvia de 6 meses,5.52,8.3,6.2,1.0,2.7,4 de 8
++ lluvia de 3 meses y temperatura máxima,4.92,16.7,11.5,6.2,13.2,5 de 8

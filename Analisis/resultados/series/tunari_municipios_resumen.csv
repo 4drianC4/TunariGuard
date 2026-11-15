@@ -1,0 +1,13 @@
+﻿municipio,detecciones,celdas_1km_distintas,eventos_candidatos,complejos_candidatos,pct_detecciones_parque,area_en_parque_km2,detecciones_por_100km2,mes_pico,indice_medio_anual_2012_2025,meses_evaluables_alerta,meses_vigilancia,meses_candidata_a_verificacion,advertencia
+Morochata,1105,355,378,366,19.6,680.99,162.3,8,8.74,183.0,4.0,12.0,"Municipios de referencia abierta (OSM, no oficial). Alertas solo para municipios con suficientes detecciones."
+Sacaba,1067,315,404,381,18.9,420.42,253.8,8,8.31,183.0,1.0,9.0,"Municipios de referencia abierta (OSM, no oficial). Alertas solo para municipios con suficientes detecciones."
+Villa Tunari,617,170,214,206,10.9,251.55,245.3,8,4.2,183.0,3.0,1.0,"Municipios de referencia abierta (OSM, no oficial). Alertas solo para municipios con suficientes detecciones."
+Quillacollo,495,169,165,156,8.8,485.07,102.0,8,3.03,183.0,4.0,4.0,"Municipios de referencia abierta (OSM, no oficial). Alertas solo para municipios con suficientes detecciones."
+Colomi,431,93,148,141,7.6,94.96,453.9,8,3.15,183.0,1.0,5.0,"Municipios de referencia abierta (OSM, no oficial). Alertas solo para municipios con suficientes detecciones."
+Cocapata,411,135,129,124,7.3,317.23,129.6,8,2.73,183.0,1.0,2.0,"Municipios de referencia abierta (OSM, no oficial). Alertas solo para municipios con suficientes detecciones."
+Tiquipaya,404,178,162,159,7.2,292.94,137.9,8,2.86,183.0,0.0,4.0,"Municipios de referencia abierta (OSM, no oficial). Alertas solo para municipios con suficientes detecciones."
+Vinto,359,95,102,101,6.4,168.4,213.2,8,1.77,183.0,0.0,4.0,"Municipios de referencia abierta (OSM, no oficial). Alertas solo para municipios con suficientes detecciones."
+Sipe Sipe,275,113,120,120,4.9,211.07,130.3,8,2.27,,,,"Municipios de referencia abierta (OSM, no oficial). Alertas solo para municipios con suficientes detecciones."
+Tapacarí,203,82,90,90,3.6,173.63,116.9,9,1.3,,,,"Municipios de referencia abierta (OSM, no oficial). Alertas solo para municipios con suficientes detecciones."
+Cochabamba,195,43,58,55,3.5,44.4,439.2,9,1.38,,,,"Municipios de referencia abierta (OSM, no oficial). Alertas solo para municipios con suficientes detecciones."
+Ayopaya,84,40,36,35,1.5,148.48,56.6,11,0.56,,,,"Municipios de referencia abierta (OSM, no oficial). Alertas solo para municipios con suficientes detecciones."

@@ -1,0 +1,8 @@
+serie,n,ADF_estadistico,ADF_p,ADF_rezagos,crit_1%,crit_5%,crit_10%,KPSS_estadistico,KPSS_p,ADF (5 %),KPSS (5 %)
+"índice (todo, 2001-2026)",290,-3.75,0.0035,12,-3.453,-2.872,-2.572,0.742,0.01,estacionaria,NO estacionaria
+log(1 + índice) (todo),291,-2.908,0.0444,11,-3.453,-2.872,-2.572,1.105,0.01,estacionaria,NO estacionaria
+"índice (solo era VIIRS, 2013+)",153,-3.111,0.0257,12,-3.474,-2.881,-2.577,0.112,0.1,estacionaria,estacionaria
+log(1 + índice) (era VIIRS),161,-9.15,0.0,4,-3.472,-2.88,-2.576,0.138,0.1,estacionaria,estacionaria
+"log(1 + índice), 1 diferencia (d=1)",291,-13.6,0.0,10,-3.453,-2.872,-2.572,0.012,0.1,estacionaria,estacionaria
+"log(1 + índice), diferencia estacional (D=1)",278,-6.941,0.0,12,-3.454,-2.872,-2.572,0.02,0.1,estacionaria,estacionaria
+"log(1 + índice), d=1 y D=1",275,-8.326,0.0,14,-3.454,-2.872,-2.572,0.086,0.1,estacionaria,estacionaria

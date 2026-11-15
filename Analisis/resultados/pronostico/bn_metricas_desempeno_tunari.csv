@@ -1,0 +1,4 @@
+modelo,MAE (mes),RMSE (mes),MAPE % (mes),meses con MAPE (mes),sMAPE % (mes),WAPE % (mes),sesgo % (mes),MAE (año),RMSE (año),MAPE % (año),WAPE % (año),sesgo % (año),cobertura 90 %
+1a_ingenuo_mismo_mes,3.58,6.51,123.68,67,93.31,78.87,-8.4,32.59,36.88,73.81,60.15,-4.32,
+1b_mediana_historica_mes,2.99,5.74,80.34,67,88.24,65.88,-61.2,33.93,41.0,54.92,62.62,-62.62,79.79
+2_binomial_negativa,2.41,4.78,83.51,67,103.53,52.96,-18.41,22.3,26.32,41.21,41.16,-19.45,91.49

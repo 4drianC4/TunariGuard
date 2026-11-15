@@ -1,0 +1,33 @@
+# Dependencias de Python del equipo de datos (análisis, notebooks y verificación). Probado con Python 3.10.7 en Windows 11.
+# Instalar:   python -m venv .venv  ·  .venv\Scripts\activate  ·  pip install -r requirements.txt
+# PyTorch (solo para el LSTM del notebook 10) se instala aparte, en su versión para CPU:
+#   pip install torch==2.7.0 --index-url https://download.pytorch.org/whl/cpu
+
+# Datos y cálculo
+pandas==2.2.2
+numpy==1.26.4
+scipy==1.15.3
+pyarrow==20.0.0
+statsmodels==0.14.4
+scikit-learn==1.6.1
+pmdarima==2.0.4
+prophet==1.1.5
+
+# Geografía
+shapely==2.1.2
+pyproj==3.7.1
+
+# Gráficos y notebooks
+matplotlib==3.10.7
+ipykernel==6.29.5
+IPython==8.35.0
+nbformat==5.10.4
+nbclient==0.10.2
+nbconvert==7.16.6
+jupyterlab==4.4.2
+
+# Utilidades
+requests==2.32.3
+PyYAML==6.0.2
+pillow==12.0.0
+python-docx==1.2.0

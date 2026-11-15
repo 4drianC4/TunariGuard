@@ -1,0 +1,7 @@
+{
+  "modelo": "2_binomial_negativa",
+  "dispersion_alfa": 0.5868,
+  "factor_viirs_por_modis": 2.8715,
+  "origen_hasta": "2026-10-01",
+  "horizonte_hasta": "2031-12-01"
+}

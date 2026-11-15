@@ -1,0 +1,5 @@
+,,n_periodos,razon_conteo_mediana,razon_conteo_CV,razon_frp_mediana,razon_frp_CV,corr_conteos,corr_frp
+Bolivia,anual,13.0,3.606,0.075,0.809,0.085,0.995,0.998
+Bolivia,mensual,156.0,3.648,0.155,0.881,0.241,0.988,0.993
+Recorte Tunari,anual,12.0,5.255,0.214,1.725,0.327,0.934,0.777
+Recorte Tunari,mensual,16.0,4.248,0.333,1.51,0.582,0.854,0.706

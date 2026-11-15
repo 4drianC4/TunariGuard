@@ -1,0 +1,5 @@
+﻿metodo,sesgo_pct,wape_mensual,wape_mensual_temporada,wape_trimestral,wape_anual,adelante_wape_mensual_2016_2025,adelante_wape_anual_2016_2025
+Elegido: lineal sin intercepto,-5.3,39.7,39.1,23.9,14.1,37.1,16.2
+Lineal con intercepto (mínimos cuadrados),9.7,40.7,35.6,24.2,12.2,38.0,11.4
+Binomial negativa con intercepto (verosimilitud),28.1,49.0,53.1,40.9,28.1,42.8,23.4
+"Binomial negativa log-enlace (potencia, verosimilitud)",47.0,74.1,83.3,62.2,47.0,89.9,67.6

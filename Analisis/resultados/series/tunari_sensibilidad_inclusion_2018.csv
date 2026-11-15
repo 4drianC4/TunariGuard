@@ -1,0 +1,3 @@
+﻿escenario,factor_global,modelo,metrica,n_meses_ajuste
+incluye_2018_principal,2.8715128879523366,media_geometrica,celdas_dia,156
+excluye_2018,2.8602443396752357,media_geometrica,celdas_dia,144

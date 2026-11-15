@@ -1,0 +1,5 @@
+,anios,razon_mediana,razon_min,razon_max,CV,correlacion
+detecciones,12.0,5.255,4.053,7.643,0.214,0.934
+celdas_dia,12.0,3.831,3.029,6.0,0.211,0.934
+celdas_distintas,12.0,3.497,2.667,5.107,0.191,0.927
+eventos,12.0,4.139,3.062,6.214,0.226,0.934

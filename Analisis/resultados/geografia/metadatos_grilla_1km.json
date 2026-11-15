@@ -1,0 +1,16 @@
+{
+  "fuente_datos": "firms_bolivia_armonizado_con_2026.parquet",
+  "cobertura_hasta": "2026-10-31",
+  "crs_geografico": "EPSG:4326",
+  "crs_grilla": "EPSG:32720",
+  "tamano_celda_m": 1000.0,
+  "origen_x_m": 102000.0,
+  "origen_y_m": 8055000.0,
+  "regla_columna": "floor((x_utm_m - origen_x_m) / 1000)",
+  "regla_fila": "floor((y_utm_m - origen_y_m) / 1000)",
+  "filas_bbox_antes_de_filtros": 12811,
+  "filas_finales_en_poligono": 5646,
+  "area_poligono_km2": 3289.1265524608166,
+  "limite_oficial": false,
+  "advertencia": "Polígono OSM de referencia; validar/reemplazar por SERNAP para uso oficial."
+}

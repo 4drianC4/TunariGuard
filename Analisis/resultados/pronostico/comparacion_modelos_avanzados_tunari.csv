@@ -1,0 +1,16 @@
+,error mensual %,error anual %,sesgo %,cobertura 90 %
+S3o_sarimax_balance3m_oraculo,56.6,32.3,-20.4,90.4
+(09) 2_binomial_negativa,53.0,41.2,-18.4,91.5
+P1_prophet,57.1,44.0,-16.6,89.4
+P2o_prophet_oraculo,58.4,44.2,-14.0,89.4
+P2_prophet_clima_normal,59.0,44.4,-4.5,89.4
+S2_sarimax_clima_normal,60.2,44.7,-14.9,90.4
+S3_sarimax_balance3m_clima_normal,61.1,44.8,-36.3,88.3
+S2o_sarimax_oraculo,59.9,45.2,-18.0,88.3
+S1_sarima,60.4,45.4,-17.7,90.4
+(09) 5_combinacion_2_3a_3b,57.5,45.7,-16.2,89.4
+(09) 3b_sarima_log,61.5,47.7,-42.7,87.2
+L1_lstm,63.8,54.3,-49.6,84.0
+L2_lstm_clima,65.4,57.9,-21.9,86.2
+(09) 1b_mediana_historica_mes,65.9,62.6,-61.2,79.8
+(09) 3a_ets_log,74.8,64.0,12.4,86.2

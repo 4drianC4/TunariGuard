@@ -1,0 +1,4 @@
+﻿modelo,CRPS,p<=0.10_pct,p<=0.05_pct,p<=0.01_pct,ceros_observados_pct,ceros_predichos_pct
+NB estacional agrupada (actual),5.68,9.4,7.3,1.0,30.2,24.4
+"NB estacional, solo últimos 8 años",5.68,9.4,7.3,1.0,30.2,23.8
+NB con ceros inflados (ZINB),5.68,10.4,7.3,1.0,30.2,25.3

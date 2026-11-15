@@ -1,0 +1,12 @@
+﻿metodo,grupo,descripcion,wape_mensual,wape_mensual_temporada,wape_trimestral,wape_anual,nota
+Referencia: clima de VIIRS (media del mismo mes 2013-2021),referencia,No usa MODIS; predice con el promedio histórico de VIIRS,47.4,37.6,35.4,28.2,"Si ganara a la calibración, MODIS no aportaría información"
+Referencia: predecir 0,referencia,Sin información,100.0,100.0,100.0,100.0,
+"BASE DE COMPARACIÓN (ajuste lineal por el origen, VIIRS = f × MODIS; el factor operativo es la media geométrica 2,87, ver tunari_evaluacion_armonizacion.csv)",elegido,VIIRS = 2.89 x MODIS,39.7,39.1,23.9,14.1,
+Razón de sumas,variante,VIIRS = 3.57 x MODIS,46.1,50.9,38.3,24.0,
+Mediana de razones mensuales,variante,VIIRS = 3.72 x MODIS,49.0,54.3,41.8,26.2,Ignora los meses con MODIS = 0
+Potencia (no lineal): log1p(V)=a+b·log1p(M),variante,"a=0.57, b=1.25",56.8,62.7,44.7,31.0,
+Quantile mapping (igualar distribuciones),alternativa,Mapea cada valor de MODIS a su cuantil en VIIRS,37.6,37.1,24.2,14.3,
+"Celdas más grandes (2 km), factor lineal",alternativa,VIIRS = 2.65 x MODIS (celdas-día de 2 km),37.3,34.7,20.6,13.9,"Menos saturación, pero se pierde detalle espacial"
+"Celdas más grandes (5 km), factor lineal",alternativa,VIIRS = 2.74 x MODIS (celdas-día de 5 km),36.8,34.1,23.2,15.8,"Menos saturación, pero se pierde detalle espacial"
+"Celdas más grandes (10 km), factor lineal",alternativa,VIIRS = 2.85 x MODIS (celdas-día de 10 km),35.9,34.0,23.2,15.8,"Menos saturación, pero se pierde detalle espacial"
+Factor ajustado con totales anuales,alternativa,VIIRS = 3.24 x MODIS,41.3,44.3,31.2,19.2,

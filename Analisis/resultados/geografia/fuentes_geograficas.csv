@@ -1,0 +1,5 @@
+﻿capa,fuente,url,licencia,es_oficial,fecha_descarga,limitacion
+parque_tunari_referencia_osm.geojson,OpenStreetMap contributors / Nominatim,https://nominatim.openstreetmap.org/search?q=Parque+Nacional+Tunari%2C+Bolivia&format=jsonv2&polygon_geojson=1&limit=5,ODbL 1.0,no,2026-11-11,Geometría abierta de referencia. No sustituye un límite oficial de SERNAP.
+distritos_cochabamba_referencia.geojson,Hogaria / ciudatoslab / OpenStreetMap,https://hogaria.com/geo/datos/distritos.geojson,ODbL,no,2026-11-11,Validar con el GAM Cochabamba antes de decisiones administrativas.
+referencia_independiente_wdpa,"UNEP-WCMC Protected Planet, WDPA ID 4644",https://www.protectedplanet.net/4644,Términos de Protected Planet,referencia internacional,2026-11-11,La ficha reporta 3288.79 km²; el sitio público no expone el polígono sin credenciales.
+municipios_tunari_referencia.geojson,OpenStreetMap contributors / Overpass,https://overpass-api.de/api/interpreter (relation boundary=administrative admin_level=8),ODbL 1.0,no,2026-11-11,Geometría abierta simplificada (~20 m). Solo municipios con ≥ 1.0 km² dentro del parque. Validar con INE/GAM.

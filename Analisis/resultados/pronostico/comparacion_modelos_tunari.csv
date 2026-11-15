@@ -1,0 +1,9 @@
+modelo,WAPE mensual %,WAPE anual %,sesgo %,cobertura 90 %
+1a_ingenuo_mismo_mes,78.9,60.1,-8.4,
+1b_mediana_historica_mes,65.9,62.6,-61.2,79.8
+2_binomial_negativa,53.0,41.2,-18.4,91.5
+2b_bn_con_tendencia,68.3,46.5,23.3,95.7
+3a_ets_log,74.8,64.0,12.4,86.2
+3b_sarima_log,61.5,47.7,-42.7,87.2
+4_anual_sen,60.0,45.6,-13.0,43.6
+5_combinacion_2_3a_3b,57.5,45.7,-16.2,89.4

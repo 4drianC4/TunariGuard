@@ -1,0 +1,6 @@
+﻿regla,meses_marcados,tasa_pct,coincidencia_con_nuestra_jaccard,marcados_tambien_por_nuestra
+nuestra (z robusto Y percentil),26,15.0,1.0,26
+valor >= 2 x mediana del mes,35,20.2,0.69,25
+z clásico (media y desv.) >= 2,12,6.9,0.46,12
+"solo percentil >= 0,90",15,8.7,0.58,15
+nuestra con historial de 8 años (ventana móvil),22,12.7,0.85,22
