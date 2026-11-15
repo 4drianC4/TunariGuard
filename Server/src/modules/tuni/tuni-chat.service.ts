@@ -359,10 +359,23 @@ export class TuniChatService {
 
 function argumentos(llamada: Llamada): unknown {
   try {
-    return JSON.parse(llamada.arguments);
+    return sinNulosDeTexto(JSON.parse(llamada.arguments));
   } catch {
     return undefined;
   }
+}
+
+/**
+ * A veces el modelo responde el texto "null" (o "none", "undefined", "") en lugar de un null de JSON
+ * cuando un dato no aplica. Sin esto, Tuni buscaba un área llamada «null» o rechazaba el satélite.
+ */
+export function sinNulosDeTexto(valor: unknown): unknown {
+  if (typeof valor === 'string') return /^\s*(null|none|undefined|n\/a)?\s*$/i.test(valor) ? null : valor;
+  if (Array.isArray(valor)) return valor.map(sinNulosDeTexto);
+  if (valor && typeof valor === 'object') {
+    return Object.fromEntries(Object.entries(valor).map(([k, v]) => [k, sinNulosDeTexto(v)]));
+  }
+  return valor;
 }
 
 function unirRespuestas(respuestas: RespuestaTuni[]): RespuestaTuni {

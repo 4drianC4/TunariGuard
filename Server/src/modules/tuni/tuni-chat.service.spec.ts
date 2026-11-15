@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { TuniChatService } from './tuni-chat.service.js';
+import { sinNulosDeTexto, TuniChatService } from './tuni-chat.service.js';
 import type { TuniDatosService } from './tuni-datos.service.js';
 import type { TuniDocumentosService } from './tuni-documentos.service.js';
 import type { TuniOpenaiService } from './tuni-openai.service.js';
@@ -46,5 +46,22 @@ describe('seguimiento de detecciones en Tuni', () => {
 
     expect(respuesta.answer).toContain('¿Qué fecha exacta quieres consultar?');
     expect(ultimasDetecciones).not.toHaveBeenCalled();
+  });
+});
+
+describe('argumentos de las herramientas', () => {
+  it('convierte los textos "null", "none", "undefined" o vacíos en null de verdad', () => {
+    expect(sinNulosDeTexto({ area: 'null', satelite: 'None', desde: '', hasta: '2024-08-31', corte: ' undefined ' })).toEqual({
+      area: null,
+      satelite: null,
+      desde: null,
+      hasta: '2024-08-31',
+      corte: null,
+    });
+    expect(sinNulosDeTexto({ area: 'Distrito 9', periodos: ['2024-08', 'null'], solo_pendientes: false })).toEqual({
+      area: 'Distrito 9',
+      periodos: ['2024-08', null],
+      solo_pendientes: false,
+    });
   });
 });
