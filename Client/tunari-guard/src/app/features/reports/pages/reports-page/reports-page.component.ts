@@ -30,7 +30,6 @@ const sourceLabels = {
 interface ReportView {
   filters: ReportFilters;
   area: string;
-  areaNotice: string | null;
   method: string;
   data: ReportData;
 }
@@ -70,26 +69,12 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
   };
   readonly kinds = Object.keys(reportTypes) as ReportKind[];
   readonly areas = signal<ReportArea[]>([]);
-  readonly coverage = signal('');
   readonly view = signal<ReportView | null>(null);
   readonly loading = signal(false);
   readonly error = signal('');
   readonly recent = signal<DownloadRecord[]>([]);
   readonly exporting = signal<ExportFormat | null>(null);
   readonly exportError = signal('');
-  readonly coverageNotice = computed(() => {
-    const report = this.view();
-    const coverage = this.coverage();
-    if (!report || !coverage) return null;
-    const cutoff = report.filters.kind === 'detections' ? coverage : coverage.slice(0, 7);
-    if (report.filters.from > cutoff) {
-      return 'El período está fuera de la cobertura declarada del paquete.';
-    }
-    if (report.filters.to > cutoff) {
-      return 'El período supera la cobertura declarada del paquete. Los resultados pueden estar incompletos.';
-    }
-    return null;
-  });
   readonly page = signal(0);
   readonly pageSize = 15;
   readonly pageCount = computed(() => Math.ceil((this.view()?.data.rows.length ?? 0) / this.pageSize));
@@ -131,7 +116,6 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
         throw new Error('El paquete de datos no informa áreas o fecha de cobertura.');
       }
       this.areas.set(areas);
-      this.coverage.set(coverage);
       this.defaults = {
         ...this.defaults,
         area: areas.find((area) => area.area_id === 'parque-tunari')?.area_id ?? areas[0].area_id,
@@ -170,13 +154,12 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
       if (controller.signal.aborted) return;
       const selectedArea = this.areas().find((entry) => entry.area_id === filters.area);
       const area = filters.kind === 'districts' ? 'Distritos de Cochabamba' : selectedArea?.nombre_visible ?? filters.area;
-      const areaNotice = filters.kind === 'districts' ? null : selectedArea?.advertencia ?? null;
       const method = filters.kind === 'detections' ? 'Conteo de registros satelitales' :
         filters.kind === 'alerts' ? 'Comparación con el mismo mes de años anteriores' :
         filters.kind === 'comparison' || filters.source === 'MODIS' || filters.source === 'VIIRS' ? 'Celdas-día por sensor' :
         selectedArea?.metodo_indice === 'mixto_calibrado' && filters.kind !== 'districts' ? 'Índice armonizado MODIS y VIIRS' :
         'VIIRS en escala MODIS';
-      this.view.set({ filters, area, areaNotice, method, data });
+      this.view.set({ filters, area, method, data });
       this.loading.set(false);
     } catch (error) {
       this.finishError(error, controller);
@@ -228,7 +211,7 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
       title: this.reportTypes[filters.kind],
       date: new Date().toLocaleString('es-BO', { timeZone: 'America/La_Paz' }),
       fields,
-      notices: [data.notice, this.coverageNotice(), view.areaNotice].filter((notice): notice is string => !!notice),
+      notices: data.notice ? [data.notice] : [],
     };
   }
 

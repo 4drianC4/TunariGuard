@@ -22,5 +22,5 @@ export function buildReportChart(data: ReportData, kind: ReportKind) {
   const max = Math.max(1, ...displayed.flatMap((entry) => entry.values.map((value) => value ?? 0)));
   const step = Math.pow(10, Math.floor(Math.log10(max)));
   const limit = Math.ceil(max / step) * step;
-  return { entries: displayed, max: limit, ticks: [limit, limit / 2, 0], comparison: kind === 'comparison', shortened: entries.length > displayed.length };
+  return { entries: displayed, max: limit, ticks: [limit, limit / 2, 0], shortened: entries.length > displayed.length };
 }

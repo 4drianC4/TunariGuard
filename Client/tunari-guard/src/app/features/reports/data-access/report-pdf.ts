@@ -87,7 +87,7 @@ class ReportPage {
   }
 }
 
-export function composeReportPdf(data: ReportData, context: ReportExportContext, logo: PdfLogo, measure: Measure): Blob {
+function composeReportPdf(data: ReportData, context: ReportExportContext, logo: PdfLogo, measure: Measure): Blob {
   const [width, height] = data.columns.length > 4 ? [842, 595] : [595, 842];
   const contentWidth = width - margin * 2;
   const bodyEnd = height - 52;

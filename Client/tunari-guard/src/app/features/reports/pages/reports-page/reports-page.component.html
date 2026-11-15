@@ -2,13 +2,6 @@
   <app-page-header section="Reportes" title="Reportes"
     description="Consulta y exporta detecciones, actividad histórica y anomalías térmicas." />
 
-  @if (coverage(); as lastDate) {
-    <div class="tg-card report-coverage">
-      <svg class="report-icon" aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#history"></use></svg>
-      <div><span>Cobertura informada del paquete</span><strong>Hasta {{ lastDate }}</strong></div>
-    </div>
-  }
-
   @if (areas().length) {
     <div class="tg-filter-group">
       <button type="button" class="tg-filter-toggle" (click)="filtersExpanded = !filtersExpanded"
@@ -108,9 +101,6 @@
   }
 
   @if (view(); as report) {
-    @if (coverageNotice(); as notice) {
-      <p class="tr-notice tr-report-context" role="status">{{ notice }}</p>
-    }
     <section class="tg-kpis tg-kpis--fit" aria-label="Indicadores del reporte">
       <article class="tg-kpi">
         <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#fire"></use></svg></span>
@@ -140,17 +130,18 @@
       </article>
     </section>
 
-    @if (report.areaNotice) {
-      <p class="tr-notice area-notice"><strong>Advertencia del área.</strong> {{ report.areaNotice }}</p>
-    }
     <div class="report-overview">
-      <article class="tg-card report-chart">
+      <article class="tg-card report-chart" [class.report-chart-alerts]="report.filters.kind === 'alerts'">
         <h2>{{ report.filters.kind === 'districts' ? 'Actividad por distrito' :
           report.filters.kind === 'detections' ? 'Detecciones por mes' :
           report.filters.kind === 'alerts' ? 'Actividad observada y esperada' : 'Actividad mensual' }}</h2>
         @if (chart(); as graph) {
-          @if (graph.comparison) { <p class="chart-key">Verde oscuro · MODIS / Verde claro · VIIRS</p> }
-          @if (report.filters.kind === 'alerts') { <p class="chart-key">Verde oscuro · Observada / Verde claro · Esperada</p> }
+          @if (report.filters.kind === 'comparison' || report.filters.kind === 'alerts') {
+            <ul class="chart-key chart-legend">
+              <li>{{ report.filters.kind === 'comparison' ? 'MODIS' : 'Observada' }}</li>
+              <li>{{ report.filters.kind === 'comparison' ? 'VIIRS' : 'Esperada' }}</li>
+            </ul>
+          }
           <div class="chart-scroll" tabindex="0" aria-label="Gráfico del reporte">
             <div class="chart-frame">
               <div class="chart-axis" aria-hidden="true">
@@ -160,8 +151,8 @@
                 @for (entry of graph.entries; track entry.label) {
                   <div class="chart-group">
                     <div class="chart-bars">
-                      @for (value of entry.values; track $index; let sensor = $index) {
-                        <span class="chart-bar" [class.secondary]="sensor > 0" [class.missing]="value === null"
+                      @for (value of entry.values; track $index; let seriesIndex = $index) {
+                        <span class="chart-bar" [class.secondary]="seriesIndex > 0" [class.missing]="value === null"
                           [class.latest]="report.filters.kind === 'detections' && entry === graph.entries[graph.entries.length - 1]"
                           [style.height.%]="(value ?? 0) * 100 / graph.max"
                           [title]="entry.label + ' · ' + (value ?? 'Sin dato')"></span>
@@ -183,7 +174,6 @@
           <div><dt>Método <app-map-info topic="el método del reporte"
             text="Los conteos suman registros. Las celdas-día cuentan zonas con detecciones por día. El índice armonizado expresa la actividad en una escala común." /></dt><dd>{{ report.method }}</dd></div>
           <div><dt>Unidad</dt><dd>{{ report.data.headline.unit }}</dd></div>
-          <div><dt>Cobertura</dt><dd>{{ coverage() }}</dd></div>
         </dl>
         <p class="report-reading">Una detección térmica indica presencia de calor. Los registros NRT son provisionales.</p>
       </article>
@@ -227,7 +217,7 @@
             }
           } @else {
             <p class="tr-empty" role="status">
-              {{ coverageNotice() ? 'El paquete cargado no devuelve filas para este período.' : 'Sin resultados para estos filtros.' }}
+              Sin resultados para estos filtros.
             </p>
           }
         </article>

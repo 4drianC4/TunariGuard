@@ -1,55 +1,48 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject
-} from '@angular/core';
-
+import { ChangeDetectionStrategy, Component, computed, inject, resource } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
-import { HotspotStoreService } from '../../../../application/services/hotspot-store.service';
-import { Severity } from '../../../../domain/enums/severity.enum';
-
+import { AlertsApi } from '../../../alerts/data-access/alerts-api.service';
 import { HotspotMapComponent } from '../../../map/components/hotspot-map/hotspot-map.component';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { HistoricalProjectionChartComponent } from '../../../projections/components/historical-projection-chart/historical-projection-chart.component';
+import { ProjectionsService } from '../../../../application/services/projections.service';
+import { DashboardApi } from '../../data-access/dashboard-api.service';
 
 @Component({
   selector: 'app-dashboard-page',
   standalone: true,
-  imports: [
-    RouterLink,
-    DatePipe,
-    PageHeaderComponent,
-    HotspotMapComponent,
-  ],
+  imports: [RouterLink, DatePipe, PageHeaderComponent, HotspotMapComponent, HistoricalProjectionChartComponent],
   templateUrl: './dashboard-page.component.html',
   styleUrl: './dashboard-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardPageComponent {
+  private readonly api = inject(DashboardApi);
+  private readonly alertsApi = inject(AlertsApi);
+  private readonly factorFormat = new Intl.NumberFormat('es-BO', { maximumFractionDigits: 2 });
+  private readonly projectionsService = inject(ProjectionsService);
 
-  readonly store = inject(HotspotStoreService);
+  readonly detections = resource({ loader: ({ abortSignal }) => this.api.detections(abortSignal) });
+  readonly alerts = resource({
+    loader: ({ abortSignal }) => this.alertsApi.list({ modo: 'live', origen: 'REAL', limit: 4 }, abortSignal),
+  });
+  readonly districts = resource({ loader: ({ abortSignal }) => this.api.districtCount(abortSignal) });
+  readonly coverage = resource({ loader: ({ abortSignal }) => this.api.coverage(abortSignal) });
+  readonly projectionHistory = rxResource({ stream: () => this.projectionsService.getHarmonizedHistory() });
+  readonly projection = rxResource({ stream: () => this.projectionsService.getMonthly() });
 
-  readonly alertsHigh = computed(() =>
-    this.store.hotspots().filter(
-      h => h.severity === Severity.HIGH ||
-           h.severity === Severity.CRITICAL
-    ).length
-  );
+  readonly historicalCoverage = computed(() => this.coverage.hasValue() ? this.coverage.value() : null);
 
-  readonly recent = computed(() =>
-    [...this.store.observations()]
-      .sort((a, b) =>
-        b.acquiredAtUtc.localeCompare(a.acquiredAtUtc)
-      )
-      .slice(0, 4)
-  );
+  readonly alertsHigh = computed(() => {
+    if (!this.alerts.hasValue()) return null;
+    const { high, critical } = this.alerts.value().counts;
+    return high + critical;
+  });
 
-  readonly demoAlerts = [
-    { level: 'Crítica', district: 'Tiquipaya', time: 'Hace 18 min', css: 'critical' },
-    { level: 'Alta', district: 'Sacaba', time: 'Hace 37 min', css: 'high' },
-    { level: 'Alta', district: 'Vinto', time: 'Hace 1 h 12 min', css: 'high' },
-    { level: 'Media', district: 'Colcapirhua', time: 'Hace 1 h 45 min', css: 'medium' },
-  ];
+  readonly factor = computed(() => {
+    const factor = this.coverage.hasValue() ? this.coverage.value().factor : null;
+    return factor === null ? null : this.factorFormat.format(factor);
+  });
 }

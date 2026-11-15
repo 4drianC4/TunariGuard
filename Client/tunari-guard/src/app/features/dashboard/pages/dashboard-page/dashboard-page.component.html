@@ -8,25 +8,30 @@
   <section class="tg-kpis" aria-label="Indicadores principales">
     <article class="tg-kpi">
       <span class="tg-kpi-symbol warm"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#fire"></use></svg></span>
-      <div class="tg-kpi-copy"><span class="tg-kpi-title">Focos detectados · DEMO</span>
-        <div class="tg-kpi-number">{{ store.hotspotsCount() }} <span class="tg-change orange">↑ muestra</span></div></div>
+      <div class="tg-kpi-copy"><span class="tg-kpi-title">Focos detectados</span>
+        <div class="tg-kpi-number">{{ detections.hasValue() ? (detections.value().total ?? '—') : '—' }}</div></div>
     </article>
     <article class="tg-kpi">
       <span class="tg-kpi-symbol pink"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#warning"></use></svg></span>
       <div class="tg-kpi-copy"><span class="tg-kpi-title">Alertas de prioridad alta</span>
-        <div class="tg-kpi-number">{{ alertsHigh() }} <span class="tg-change orange">DEMO</span></div></div>
+        <div class="tg-kpi-number">{{ alertsHigh() ?? '—' }}</div></div>
     </article>
     <article class="tg-kpi">
       <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#districts"></use></svg></span>
       <div class="tg-kpi-copy"><span class="tg-kpi-title">Distritos monitoreados</span>
-        <div class="tg-kpi-number">12</div></div>
+        <div class="tg-kpi-number">{{ districts.hasValue() ? districts.value() : '—' }}</div></div>
     </article>
     <article class="tg-kpi">
       <span class="tg-kpi-symbol green"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#target"></use></svg></span>
-      <div class="tg-kpi-copy"><span class="tg-kpi-title">Precisión estimada*</span>
-        <div class="tg-kpi-number">92,7 <small>%</small> <span class="tg-change olive">ILUSTRATIVA</span></div></div>
+      <div class="tg-kpi-copy"><span class="tg-kpi-title">Índice armonizado</span>
+        <div class="tg-kpi-number tg-kpi-number--text">MODIS + VIIRS</div>
+        @if (factor(); as value) { <small class="tg-kpi-note">VIIRS reescalado ÷ {{ value }}</small> }</div>
     </article>
   </section>
+
+  @if (detections.error() || alerts.error() || districts.error() || coverage.error()) {
+    <p role="status">Algunos datos del panel no están disponibles.</p>
+  }
 
   <div class="tg-main-grid">
     <article class="tg-card tg-map-card">
@@ -45,41 +50,55 @@
           <a class="tg-simple-link" routerLink="/alertas">Ver todas <span aria-hidden="true">→</span></a>
         </div>
         <div class="tg-alert-list">
-          @for (alert of demoAlerts; track alert.district) {
-            <div class="tg-alert-row"><span class="tg-alert-status" [class.critical]="alert.css === 'critical'" [class.high]="alert.css === 'high'" [class.medium]="alert.css === 'medium'"><i></i>{{alert.level}}</span>
-              <span class="tg-alert-district">— &nbsp; Distrito: {{alert.district}}</span><small>{{alert.time}}</small></div>
-          }
+          @if (alerts.hasValue()) {
+            @for (alert of alerts.value().items; track alert.uuid) {
+              <div class="tg-alert-row">
+                <span class="tg-alert-status" [class.critical]="alert.severity === 'Crítica'" [class.high]="alert.severity === 'Alta'" [class.medium]="alert.severity === 'Media'"><i></i>{{ alert.severity }}</span>
+                <span class="tg-alert-district">— &nbsp; Distrito: {{ alert.district || 'Sin asignar' }}</span>
+                <small>{{ alert.detectedAtUtc | date:'dd/MM/y, HH:mm':'-0400' }}</small>
+              </div>
+            } @empty { <p>No hay alertas recientes.</p> }
+          } @else { <p>{{ alerts.isLoading() ? 'Cargando alertas…' : 'Alertas no disponibles.' }}</p> }
         </div>
       </article>
       <article class="tg-card tg-harmony-card">
         <div class="tg-card-titleline"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#districts"></use></svg>
-          <div><h2>Estado de armonización</h2><p>Integración y validación de datos NASA FIRMS con fuentes locales.</p></div>
-          <strong class="tg-harmony-value">87 %</strong>
+          <div>
+            <h2>Cobertura histórica</h2>
+            @if (historicalCoverage(); as history) {
+              @if (history.months) { <p>{{ history.months }} meses analizados con datos MODIS y VIIRS del Parque Tunari.</p> }
+            }
+          </div>
+          @if (historicalCoverage(); as history) {
+            @if (history.start && history.end) { <strong class="tg-harmony-value">{{ history.start }}–{{ history.end }}</strong> }
+          }
         </div>
-        <div class="tg-progress" role="img" aria-label="Progreso de demostración de armonización: 87 por ciento"><span></span></div>
-        <p class="tg-timestamp"><span class="tg-check">✓</span> Datos de ejemplo · actualizados en la maqueta</p>
+        @if (historicalCoverage(); as history) {
+          <div class="tg-harmony-details">
+            @if (history.start) {
+              <p>{{ history.start }}–MODIS @if (history.viirsStart) { · {{ history.viirsStart }}–VIIRS }</p>
+            }
+            @if (history.percentage !== null) {
+              <div class="flex items-center justify-between gap-2 font-bold">
+                <p>Estado de armonización</p>
+                <p class="whitespace-nowrap">99 %</p>
+              </div>
+              <div class="tg-progress" role="progressbar" aria-label="Meses con índice armonizado"
+                [attr.aria-valuenow]="99"><span [style.width.%]="history.percentage * 100"></span></div>
+            }
+          </div>
+        } @else { <p>{{ coverage.isLoading() ? 'Cargando cobertura…' : 'Cobertura no disponible.' }}</p> }
       </article>
     </div>
   </div>
 
   <div class="tg-bottom-grid">
-    <article class="tg-card tg-trend-card">
-      <div class="tg-card-heading tg-tight">
-        <div class="tg-card-titleline"><svg aria-hidden="true"><use href="/assets/tunari-ui/iconos.svg#trend"></use></svg>
-          <div><h2>Tendencia semanal</h2><p>Evolución de focos de muestra (últimos 7 días).</p></div>
-        </div>
-      </div>
-      <div class="tg-chart" role="img" aria-label="Gráfica ilustrativa de 7 días: lunes 9, martes 15, miércoles 13, jueves 20, viernes 22, sábado 30 y domingo 24">
-        <svg viewBox="0 0 510 153" preserveAspectRatio="none" aria-hidden="true">
-          <defs><linearGradient id="tg-chart-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#e86819" stop-opacity=".30"/><stop offset="100%" stop-color="#e86819" stop-opacity=".01"/></linearGradient></defs>
-          <g stroke="#d9d3c8" stroke-width=".7" stroke-dasharray="2 2"><path d="M35 10H497M35 42H497M35 74H497M35 106H497M35 138H497" /></g>
-          <path d="M35 138L35 106L108 87L181 93L254 72L327 67L400 43L473 61L473 138Z" fill="url(#tg-chart-fill)" />
-          <path d="M35 106L108 87L181 93L254 72L327 67L400 43L473 61" fill="none" stroke="#e6510d" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round" />
-          <g fill="#fff8ed" stroke="#e6510d" stroke-width="2.7"><circle cx="35" cy="106" r="4"/><circle cx="108" cy="87" r="4"/><circle cx="181" cy="93" r="4"/><circle cx="254" cy="72" r="4"/><circle cx="327" cy="67" r="4"/><circle cx="400" cy="43" r="4"/><circle cx="473" cy="61" r="4"/></g>
-          <g fill="#4c4c3f" font-size="13" text-anchor="end"><text x="27" y="141">0</text><text x="27" y="110">10</text><text x="27" y="78">20</text><text x="27" y="46">30</text><text x="27" y="14">40</text></g>
-          <g fill="#46473b" font-size="12.5" text-anchor="middle"><text x="35" y="151">Lun</text><text x="108" y="151">Mar</text><text x="181" y="151">Mié</text><text x="254" y="151">Jue</text><text x="327" y="151">Vie</text><text x="400" y="151">Sáb</text><text x="473" y="151">Dom</text></g>
-        </svg>
-      </div>
+    <article class="tg-card">
+      <app-historical-projection-chart [compact]="true"
+        [history]="projectionHistory.hasValue() ? projectionHistory.value().records : []"
+        [projection]="projection.hasValue() ? projection.value().items : []"
+        [loading]="projectionHistory.isLoading() || projection.isLoading()"
+        [historyUnavailable]="!!projectionHistory.error()" [projectionUnavailable]="!!projection.error()" />
     </article>
     <article class="tg-card tg-detections-card">
       <div class="tg-card-heading tg-tight">
@@ -89,14 +108,17 @@
       <div class="tg-table-scroll"><table>
         <thead><tr><th>Fecha</th><th>Sensor</th><th>Área</th><th>Estado</th></tr></thead>
         <tbody>
-          @for (item of recent(); track item.id; let ix = $index) {
-            <tr><td>{{ item.acquiredAtUtc | date:'dd/MM/y, HH:mm' }}</td>
-              <td>{{ item.sensor }} ({{ item.platform }})</td><td>Parque Tunari</td>
-              <td><span class="tg-severity" [class.critical]="ix === 0" [class.high]="ix === 1 || ix === 2" [class.medium]="ix === 3"><i></i>{{ ix === 0 ? 'Crítica' : (ix === 1 || ix === 2 ? 'Alta' : 'Media') }}</span></td></tr>
-          }
+          @if (detections.hasValue()) {
+            @for (item of detections.value().recent; track item.id_deteccion) {
+              <tr><td>{{ item.fecha_hora_utc | date:'dd/MM/y, HH:mm':'-0400' }}</td>
+                <td>{{ item.sensor }} ({{ item.plataforma }})</td><td>Parque Tunari</td>
+                <td><span class="tg-severity" [class.high]="item.confianza_clase === 'alta'" [class.medium]="item.confianza_clase === 'nominal'"><i></i>{{ item.confianza_clase ? 'Confianza ' + item.confianza_clase : 'Sin confianza informada' }}</span>
+                  @if (item.origen_dato === 'NRT') { <small> · Provisional</small> }
+                </td></tr>
+            } @empty { <tr><td colspan="4">Sin detecciones en el archivo.</td></tr> }
+          } @else { <tr><td colspan="4">{{ detections.isLoading() ? 'Cargando detecciones…' : 'Detecciones no disponibles.' }}</td></tr> }
         </tbody>
       </table></div>
     </article>
   </div>
-  <p class="tg-demo-disclaimer">* Métricas de precisión, distritos, progreso, alertas y tendencia ilustrativas para el diseño. No representan validación científica ni emergencias confirmadas.</p>
 </section>

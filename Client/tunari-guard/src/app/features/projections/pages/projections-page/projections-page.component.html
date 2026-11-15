@@ -84,55 +84,10 @@
   </div>
 
   <ng-container *ngIf="!loading() && !error()">
-    <div *ngIf="hasTimeline; else emptyProjection" class="projection-layout">
-      <article class="tg-forecast-card projection-chart-card projection-timeline-card">
-        <div class="tg-forecast-card-title">
-          <div>
-            <h2>↗ &nbsp; Evolución histórica y proyección</h2>
-            <p class="projection-chart-subtitle">Índice armonizado observado hasta el último mes disponible y continuidad con el índice esperado por el modelo.</p>
-          </div>
-          <span>{{ timeline[0].mes }} – {{ timeline[timeline.length - 1].mes }}</span>
-        </div>
-        <div class="projection-chart-wrap projection-timeline-wrap">
-          <svg viewBox="0 0 1120 300" preserveAspectRatio="none" role="img" aria-label="Serie histórica del índice armonizado y continuación proyectada">
-            <g *ngFor="let tick of [0,1,2,3,4]">
-              <line x1="62" [attr.y1]="45 + tick * 51" x2="1092" [attr.y2]="45 + tick * 51" stroke="#e8e7df" />
-              <text x="51" [attr.y]="49 + tick * 51" text-anchor="end" font-size="11" fill="#73786e">
-                {{ (maxTimelineValue * (4 - tick) / 4) | number:'1.0-1' }}
-              </text>
-            </g>
-            <line *ngIf="hasHistoryAndProjection"
-              [attr.x1]="projectionStartX" y1="35"
-              [attr.x2]="projectionStartX" y2="250"
-              stroke="#d9a16f" stroke-dasharray="5 5" />
-            <polyline *ngIf="historyPoints" [attr.points]="historyPoints" fill="none" stroke="#526b4c" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
-            <polyline *ngIf="projectionPoints" [attr.points]="projectionPoints" fill="none" stroke="#e8752b" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="8 5" />
-            <g *ngFor="let point of timeline; let i = index">
-              <circle [attr.cx]="chartX(i)" [attr.cy]="chartY(point.value, maxTimelineValue)" r="2.5" [attr.fill]="point.type === 'history' ? '#526b4c' : '#e8752b'">
-                <title>{{ point.mes }} · {{ point.type === 'history' ? 'Índice armonizado' : 'Índice esperado' }}: {{ point.value | number:'1.0-2' }}</title>
-              </circle>
-            </g>
-            <g *ngFor="let tick of timelineTicks">
-              <text [attr.x]="chartX(tick.index)" y="278" text-anchor="middle" font-size="10" fill="#555c50">{{ tick.label }}</text>
-            </g>
-          </svg>
-        </div>
-        <div class="projection-timeline-legend">
-          <span><i class="projection-history-dot"></i> Historial armonizado <small>{{ historyRangeLabel }}</small></span>
-          <span><i class="projection-forecast-dot"></i> Proyección del modelo <small>{{ projectionRangeLabel }}</small></span>
-        </div>
-        <p *ngIf="historyLoading()" class="projection-inline-note">
-  Cargando historial armonizado…
-</p>
-
-<p
-  *ngIf="historyError() && !historyLoading()"
-  class="projection-inline-warning"
-  role="status"
->
-  {{ historyError() }}
-  Se muestra únicamente la proyección disponible.
-</p>
+    <div *ngIf="historyRecords().length || items().length || history.isLoading() || history.error(); else emptyProjection" class="projection-layout">
+      <article class="tg-forecast-card projection-timeline-card">
+        <app-historical-projection-chart [history]="historyRecords()" [projection]="items()"
+          [loading]="history.isLoading()" [historyUnavailable]="!!history.error()" />
       </article>
 
       <div class="projection-support-grid">

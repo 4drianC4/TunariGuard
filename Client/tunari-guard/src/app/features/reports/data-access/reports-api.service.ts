@@ -17,7 +17,6 @@ export interface ReportFilters {
 export interface ReportArea {
   area_id: string;
   nombre_visible: string;
-  advertencia: string | null;
   metodo_indice: 'mixto_calibrado' | 'viirs_reescalado' | null;
 }
 
