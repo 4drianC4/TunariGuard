@@ -1,0 +1,84 @@
+# Tunari Guard en producción (VPS). Uso:
+#   cp .env.production.example .env.production   # y cambiar TODAS las contraseñas
+#   docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
+# Solo Caddy publica puertos (80 y 443). La base, MinIO y la API quedan en la red interna.
+name: tunari-guard
+
+services:
+  db:
+    image: postgis/postgis:17-3.5
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?Falta POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Falta POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:?Falta POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Paquete de datos del equipo (esquema fuego), por si se quiere ejecutar psql aquí.
+      - ./Server/data/fuego:/fuego:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  minio:
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:?Falta S3_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:?Falta S3_SECRET_KEY}
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ['CMD', 'curl', '-fs', 'http://localhost:9000/minio/health/ready']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: ./Server
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      CORS_ORIGINS: https://${DOMAIN:?Falta DOMAIN}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      S3_BUCKET: ${S3_BUCKET:-tunari-guard-uploads}
+      # Tuni (chat con IA). Vacío: Tuni responde solo las preguntas directas.
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      TUNI_CHAT_MODEL: ${TUNI_CHAT_MODEL:-}
+      FIRMS_MAP_KEY: ${FIRMS_MAP_KEY:-}
+
+  web:
+    build: ./Client/tunari-guard
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      DOMAIN: ${DOMAIN}
+      # Dirección que escucha Caddy: el dominio (HTTPS automático) o :80 detrás de otro proxy.
+      SITE_ADDRESS: ${SITE_ADDRESS:-${DOMAIN}}
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  pgdata:
+  miniodata:
+  caddy_data:
+  caddy_config:

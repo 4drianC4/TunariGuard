@@ -203,6 +203,8 @@ La base queda en el puerto **5433** del equipo, para no chocar con un PostgreSQL
 
 Los detalles, los scripts y los ejemplos con `curl` están en [`Server/README.md`](Server/README.md).
 
+**Producción:** para desplegar en un VPS con Docker y HTTPS automático (ivento.tech), sigue [`DEPLOY.md`](DEPLOY.md).
+
 ---
 
 ## 7. Decisiones sobre los datos
