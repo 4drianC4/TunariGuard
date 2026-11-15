@@ -38,6 +38,12 @@ export const envSchema = z.object({
 
   // Integraciones de fases siguientes; opcionales para que la app arranque sin ellas.
   FIRMS_MAP_KEY: optionalString,
+  /** Sincronización periódica con NASA FIRMS. Sin valor: activa solo con NODE_ENV=production. */
+  FIRMS_SYNC_ENABLED: z
+    .enum(['true', 'false', ''])
+    .optional()
+    .transform((v) => (v === 'true' ? true : v === 'false' ? false : undefined)),
+  FIRMS_SYNC_INTERVAL_MINUTES: z.coerce.number().int().min(5).max(1440).default(10),
   LLM_API_KEY: optionalString,
   N8N_ALERT_WEBHOOK_URL: optionalString,
 });

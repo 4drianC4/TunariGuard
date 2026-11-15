@@ -127,7 +127,7 @@ El backend maneja **dos conjuntos de datos** que se complementan:
 | --- | --- | --- |
 | Qué es | Cada detección tal como la reporta NASA FIRMS, importada por nosotros | Análisis ya calculado por el equipo de datos: índice armonizado MODIS/VIIRS, alertas, recurrencia |
 | Para qué | Mapa en tiempo real, filtros, reproducción histórica | Calendario, series, alertas estadísticas, descargas y búsquedas por polígono |
-| Cómo crece | Importando CSV (y en el futuro, sincronizando con FIRMS) | Con los SQL del paquete (`npm run fuego:*`) |
+| Cómo crece | Importando CSV y sincronizando con NASA FIRMS cada 10 minutos | Con los SQL del paquete (`npm run fuego:*`) |
 | Endpoints | `/observations`, `/districts`, `/ingestion`, `/replay` | `/areas`, `/detecciones`, `/metadatos`, etc. |
 
 Son vistas solapadas de las mismas fuentes: **no sumes cifras de una con la otra**.
@@ -322,14 +322,35 @@ Al reemplazar simulados por reales (`POST /ingestion/simulados/borrar` o `npm ru
 - Reimportar no crea alertas nuevas.
 - Repetir un replay tampoco duplica sus alertas.
 
-### 4.9 Proyección y reemplazo de simulados
+### 4.9 Sincronización con NASA FIRMS (detecciones nuevas → alertas)
+
+Cada **10 minutos** (`FIRMS_SYNC_INTERVAL_MINUTES`), el backend:
+1. descarga de NASA FIRMS las detecciones de las **últimas 24 horas** de NOAA-20, NOAA-21, Suomi-NPP y MODIS;
+2. se queda con las del Parque Tunari y el municipio de Cochabamba;
+3. descarta las que ya están en la base;
+4. pasa las nuevas por el importador de siempre.
+
+Así cada detección nueva genera su alerta y llega al mapa en tiempo real (`hotspots:new` y `alert:new`). Son datos **reales y provisionales (NRT)**: nunca disparan el reemplazo de NRT por rango, y el análisis `fuego` no se toca.
+
+- **Fuente de datos:** sin `FIRMS_MAP_KEY` usa los archivos públicos de Sudamérica (no necesitan clave). Con la clave pide solo la zona, que es más liviano.
+- **Cuándo está activa:** por defecto solo en producción. En local se activa con `FIRMS_SYNC_ENABLED=true`, y se puede lanzar a mano en cualquier caso.
+- **Si no aparecen alertas:** fuera de la temporada seca es normal que no haya focos en la zona por días. Revísalo con `GET /ingestion/firms/estado`, que muestra cuántas detecciones trajo cada satélite y cuántas cayeron en la zona.
+
+| Endpoint | Qué hace |
+| --- | --- |
+| `GET /ingestion/firms/estado` | Si está activa, la próxima ejecución y el resultado de la última por satélite |
+| `POST /ingestion/firms/sincronizar` | Sincroniza ahora (aunque la automática esté desactivada) |
+
+**Avisos solo de lo reciente:** las alertas de detecciones de más de **48 horas** se guardan, pero **no se anuncian** con `alert:new`. Así una carga histórica (`datos:cargar`, `POST /alertas/regenerar`) no inunda la pantalla con miles de avisos de años anteriores. El replay siempre avisa.
+
+### 4.10 Proyección y reemplazo de simulados
 
 | Endpoint | Qué hace |
 | --- | --- |
 | `GET /proyeccion/mensual` | Serie mensual de la proyección **simulada** (nov-2026 a dic-2031): índice esperado por el modelo y detecciones generadas (`desde`, `hasta` en `YYYY-MM`). Es un futuro posible, no un pronóstico |
 | `POST /ingestion/simulados/borrar` | `{ "hasta": "2026-11-13", "aplicar": true }`: borra las detecciones simuladas hasta ese día (hora de Bolivia) y sus alertas, y avisa por Socket.IO. Sin `aplicar` es un ensayo. Sin `hasta` borra todas las simuladas. Nunca toca datos reales |
 
-### 4.10 Errores
+### 4.11 Errores
 
 | Código | Cuándo |
 | --- | --- |
@@ -640,7 +661,9 @@ Viven en `.env`, que no se sube a Git. Se validan al arrancar: si falta una obli
 | `S3_PUBLIC_ENDPOINT` | No | Dirección de MinIO vista desde otras computadoras |
 | `S3_BUCKET` / `S3_REGION` | No | Bucket de los CSV (se crea solo) y región |
 | `MINIO_API_PORT` / `MINIO_CONSOLE_PORT` | No (9000 / 9001) | Puertos de MinIO |
-| `FIRMS_MAP_KEY`, `LLM_API_KEY`, `N8N_ALERT_WEBHOOK_URL` | No | Para las fases siguientes (sincronización FIRMS, asistente IA, alertas externas) |
+| `FIRMS_SYNC_ENABLED` / `FIRMS_SYNC_INTERVAL_MINUTES` | No (solo en producción / 10) | Sincronización con NASA FIRMS |
+| `FIRMS_MAP_KEY` | No | Clave de FIRMS: pide solo la zona en vez del archivo de Sudamérica |
+| `LLM_API_KEY`, `N8N_ALERT_WEBHOOK_URL` | No | Asistente IA y alertas externas |
 
 ---
 

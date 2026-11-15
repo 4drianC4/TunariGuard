@@ -57,6 +57,15 @@ dc exec api node scripts/cargar-datos.mjs demo            # proyección simulada
 
 Comprueba con `curl https://ivento.tech/api/v1/health` que `database` y `storage` estén en `up`.
 
+La **sincronización con NASA FIRMS** arranca sola: a los 30 s y luego cada 10 minutos trae las detecciones nuevas de la zona y genera sus alertas. Para revisarla:
+
+```bash
+curl https://ivento.tech/api/v1/ingestion/firms/estado
+```
+```bash
+dc logs -f api | grep FIRMS
+```
+
 ## 3. Actualizar después de un `git push`
 
 ```bash

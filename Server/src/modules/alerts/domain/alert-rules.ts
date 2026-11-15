@@ -14,6 +14,18 @@ export type AlertModeValue = 'LIVE' | 'REPLAY';
 export type ConfidenceLevelValue = 'LOW' | 'NOMINAL' | 'HIGH';
 
 export const PASS_WINDOW_MINUTES = 20;
+/**
+ * Solo se anuncian en vivo (alert:new) las alertas de detecciones recientes. Las de una carga
+ * histórica se guardan igual, pero no se notifican como si fueran novedades.
+ */
+export const NOTIFY_WINDOW_HOURS = 48;
+
+/** ¿Se anuncia esta alerta en tiempo real? El replay siempre; lo demás solo si es reciente. */
+export function shouldNotify(alert: { mode: AlertModeValue; detectedAt: Date }, now = new Date()): boolean {
+  if (alert.mode === 'REPLAY') return true;
+  const edad = now.getTime() - alert.detectedAt.getTime();
+  return edad <= NOTIFY_WINDOW_HOURS * 3_600_000;
+}
 export const THRESHOLDS = {
   /** Detecciones en una pasada que vuelven crítica a cualquier área. */
   criticalCount: 5,

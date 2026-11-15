@@ -22,6 +22,7 @@ interface ServerEvents {
   'hotspots:new': (payload: ReplayFrame) => void;
   'alert:new': () => void;
   'alert:updated': () => void;
+  'alert:removed': () => void;
   'replay:status': (payload: { running: boolean }) => void;
 }
 
@@ -66,6 +67,8 @@ export class RealtimeClientService {
     });
     this.socket.on('alert:new', () => this.alertChanges.next());
     this.socket.on('alert:updated', () => this.alertChanges.next());
+    // Alertas simuladas que dejan de existir al llegar datos reales.
+    this.socket.on('alert:removed', () => this.alertChanges.next());
     this.socket.on('replay:status', (status) => {
       if (!status.running) this.replay.next(null);
     });

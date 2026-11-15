@@ -27,7 +27,7 @@ import { AlertsRepository } from './alerts.repository.js';
 import type { BackfillAlertsBody, ListAlertsQuery, MonthlyContextQuery, UpdateAlertBody } from './alerts.schemas.js';
 import { SEVERITY_LABELS, STATUS_LABELS, severityFromLabel, statusFromLabel, toAlertDto } from './domain/alert-dto.js';
 import { chunkAtGaps } from './domain/backfill-chunks.js';
-import { buildAlerts, PASS_WINDOW_MINUTES, type AlertModeValue } from './domain/alert-rules.js';
+import { buildAlerts, PASS_WINDOW_MINUTES, shouldNotify, type AlertModeValue } from './domain/alert-rules.js';
 import { monthlyContext } from './domain/monthly-context.js';
 
 /**
@@ -128,8 +128,19 @@ export class AlertsService implements OnApplicationBootstrap, OnModuleDestroy {
       const detections = await this.repository.detections(scope, useFuego);
       const created = await this.repository.insertMany(buildAlerts(detections, mode));
       if (!created.length) return;
-      if (mode === 'LIVE') this.logger.log(`${created.length} alertas nuevas (${detections.length} detecciones en áreas vigiladas)`);
-      this.events.emit(ALERTS_CREATED, { alerts: created.map(toAlertDto) } satisfies AlertsCreatedEvent);
+      // Las alertas de registros históricos se guardan, pero no se notifican como novedades.
+      const now = new Date();
+      const recientes = created.filter((a) => shouldNotify(a, now));
+      if (mode === 'LIVE') {
+        this.logger.log(
+          `${created.length} alertas nuevas (${detections.length} detecciones en áreas vigiladas), ` +
+            `${recientes.length} anunciadas en vivo` +
+            (created.length > recientes.length ? `; ${created.length - recientes.length} históricas sin aviso` : ''),
+        );
+      }
+      if (recientes.length) {
+        this.events.emit(ALERTS_CREATED, { alerts: recientes.map(toAlertDto) } satisfies AlertsCreatedEvent);
+      }
     } catch (error) {
       // Una falla al generar alertas no debe tumbar la importación ni el replay.
       this.logger.error('No se pudieron generar alertas', error as Error);
