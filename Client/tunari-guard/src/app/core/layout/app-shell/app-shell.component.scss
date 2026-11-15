@@ -1,7 +1,7 @@
 :host{display:block;min-height:100vh;}
 .app-layout{display:grid;grid-template-columns:286px minmax(0,1fr);min-height:100vh;background:#f5f0e8;}
 .main{min-width:0;background:#f5f0e8;}
-.content{max-width:1800px;margin:0 auto;padding:21px 29px 30px;}
+.content{isolation:isolate;max-width:1800px;margin:0 auto;padding:21px 29px 30px;}
 @media(min-width:1900px){.content{padding-inline:34px}}
 @media(max-width:1100px) and (min-width:801px){.app-layout{grid-template-columns:240px minmax(0,1fr)}.content{padding-inline:18px}}
 @media(max-width:800px){.app-layout{grid-template-columns:minmax(0,1fr)}.content{padding:18px 14px 28px}}
@@ -18,8 +18,13 @@
   .app-layout > app-sidebar.tg-collapsed { width: 80px; }
 }
 @media (max-width: 800px) {
-  .app-layout { grid-template-columns: minmax(0, 1fr); max-width: 100%; }
+  .app-layout {
+    --tg-mobile-bar-height: 66px;
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 100%;
+  }
   .app-layout > app-sidebar { width: 100%; }
+  .main { isolation: isolate; }
 }
 @media (prefers-reduced-motion: reduce) {
   .app-layout > app-sidebar { transition: none; }

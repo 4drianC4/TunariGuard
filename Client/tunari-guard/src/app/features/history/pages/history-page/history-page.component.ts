@@ -26,7 +26,7 @@ export class HistoryPageComponent {
   private readonly districtsService = inject(DistrictsService);
   readonly areas = signal<readonly District[]>([]);
   readonly areasLoading = signal(true);
-  readonly areasError = signal<string | null>(null);
+  readonly areasLoadFailed = signal(false);
 
   readonly areaId = signal('');
   readonly source = signal<HistorySource>(this.metrics.selectedSource());
@@ -64,6 +64,7 @@ export class HistoryPageComponent {
   }
 
   private loadAreas(): void {
+    this.areasLoadFailed.set(false);
     this.areasLoading.set(true);
     this.districtsService.getDistricts().subscribe({
       next: areas => {
@@ -79,14 +80,27 @@ export class HistoryPageComponent {
             this.toYear.update((year) => year === null ? null : Number(this.dates.clamp(String(year), 'year')));
             this.applyFilters();
           });
-        } else {
-          this.areasError.set('El endpoint no devolvió áreas disponibles.');
         }
       },
-      error: error => {
+      error: () => {
         this.areasLoading.set(false);
-        this.areasError.set(error?.error?.message ?? 'No fue posible cargar las áreas.');
+        this.areasLoadFailed.set(true);
       },
+    });
+  }
+
+  retryLoad(): void {
+    if (this.areasLoadFailed()) {
+      this.loadAreas();
+      return;
+    }
+
+    this.metrics.applyFilters({
+      areaId: this.metrics.selectedAreaId(),
+      source: this.metrics.selectedSource(),
+      measure: this.metrics.selectedMeasure(),
+      fromYear: this.metrics.selectedFromYear(),
+      toYear: this.metrics.selectedToYear(),
     });
   }
 

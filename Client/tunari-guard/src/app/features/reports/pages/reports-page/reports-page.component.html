@@ -190,10 +190,13 @@
       <article class="tg-card report-download">
         <h2>Descargar reporte</h2>
         @for (option of formats; track option) {
-          <button class="tr-file" type="button" (click)="generate(option)" [disabled]="!report.data.rows.length">
-            <span class="tr-file-icon">{{ option }}</span><span class="tr-file-meta">{{ exportLabels[option] }}</span>
+          <button class="tr-file" type="button" (click)="generate(option)" [disabled]="!report.data.rows.length || exporting() !== null">
+            <span class="tr-file-icon">{{ option }}</span><span class="tr-file-meta">{{ exporting() === option ? 'Preparando descarga…' : exportLabels[option] }}</span>
             <span class="tr-download" aria-hidden="true">↓</span>
           </button>
+        }
+        @if (exportError(); as message) {
+          <p class="tr-notice tr-error" role="alert">{{ message }}</p>
         }
       </article>
     </div>

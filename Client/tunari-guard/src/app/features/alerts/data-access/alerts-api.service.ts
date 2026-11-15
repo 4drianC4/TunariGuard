@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import type { AlertEvent, AlertsResult, AlertStatus, MonthlyContext } from '../alert-event';
+import type { AlertEvent, AlertsResult, AlertStatus } from '../alert-event';
 
 @Injectable({ providedIn: 'root' })
 export class AlertsApi {
@@ -13,10 +13,6 @@ export class AlertsApi {
 
   detail(id: string, signal: AbortSignal) {
     return this.request<AlertEvent>(this.url + '/' + encodeURIComponent(id), { signal });
-  }
-
-  monthly(signal: AbortSignal) {
-    return this.request<MonthlyContext>(this.url + '/contexto-mensual', { signal });
   }
 
   update(id: string, status: AlertStatus, note: string) {

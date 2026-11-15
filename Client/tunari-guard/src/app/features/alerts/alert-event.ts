@@ -1,6 +1,5 @@
 export const ALERT_COLORS = ['#8eaa49', '#526c26', '#e0b111', '#fb8308', '#e94119'] as const;
 export const SEVERITY_LEVEL = { Media: 2, Alta: 3, 'Crítica': 4 } as const;
-export const MONTHLY_LEVEL = { normal: 0, sin_baseline: null, elevada: 2, alta: 3, muy_alta: 4 } as const;
 export type AlertSeverity = keyof typeof SEVERITY_LEVEL;
 export type AlertStatus = 'Pendiente' | 'En revisión' | 'En análisis' | 'Verificada';
 
@@ -37,19 +36,4 @@ export interface AlertsResult {
   areas: { areaId: string; areaName: string; count: number }[];
   severities: AlertSeverity[];
   statuses: AlertStatus[];
-}
-
-export interface MonthlyContext {
-  fecha_corte: string | null;
-  items: {
-    area_id: string;
-    fecha_corte: string;
-    nombre_visible: string;
-    nivel_alerta: keyof typeof MONTHLY_LEVEL;
-    title: string;
-    message: string;
-    celdas_dia_observadas: number;
-    esperado_modelo: number | null;
-    satelite_base: string;
-  }[];
 }

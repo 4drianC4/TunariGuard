@@ -5,6 +5,8 @@ import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MapInfoComponent } from '../../../map/components/map-info.component';
 import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
+import { buildReportChart } from '../../data-access/report-chart';
+import type { ReportExportContext } from '../../data-access/report-pdf';
 import { exportReport, type ExportFormat } from '../../data-access/report-export';
 import {
   ReportsApiService, type ReportArea, type ReportData, type ReportFilters, type ReportKind,
@@ -53,6 +55,7 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
   readonly dates = inject(DetectionDatesService);
   private readonly api = inject(ReportsApiService);
   private request?: AbortController;
+  private destroyed = false;
   private defaults: ReportFilters = {
     kind: 'detections', area: 'parque-tunari', from: '', to: '', source: 'ALL', confidence: '', alertLevel: '',
   };
@@ -72,6 +75,8 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
   readonly loading = signal(false);
   readonly error = signal('');
   readonly recent = signal<DownloadRecord[]>([]);
+  readonly exporting = signal<ExportFormat | null>(null);
+  readonly exportError = signal('');
   readonly coverageNotice = computed(() => {
     const report = this.view();
     const coverage = this.coverage();
@@ -94,30 +99,7 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
   });
   readonly chart = computed(() => {
     const view = this.view();
-    if (!view) return null;
-    const { kind } = view.filters;
-    let entries: { label: string; values: (number | null)[] }[];
-    if (view.data.detections) {
-      const counts = new Map<string, number>();
-      for (const detection of view.data.detections) {
-        const month = detection.fecha_bo.slice(0, 7);
-        counts.set(month, (counts.get(month) ?? 0) + 1);
-      }
-      entries = [...counts].sort(([a], [b]) => a.localeCompare(b)).map(([label, count]) => ({ label, values: [count] }));
-    } else {
-      const start = kind === 'alerts' ? 4 : 1;
-      const end = kind === 'alerts' ? 6 : kind === 'comparison' ? 3 : 2;
-      entries = view.data.rows.map((row) => ({
-        label: String(row[0]),
-        values: row.slice(start, end).map((value) => typeof value === 'number' ? value : null),
-      }));
-    }
-    const displayed = kind === 'districts' ? entries : entries.slice(-12);
-    if (!displayed.some((entry) => entry.values.some((value) => value !== null))) return null;
-    const max = Math.max(1, ...displayed.flatMap((entry) => entry.values.map((value) => value ?? 0)));
-    const step = Math.pow(10, Math.floor(Math.log10(max)));
-    const limit = Math.ceil(max / step) * step;
-    return { entries: displayed, max: limit, ticks: [limit, limit / 2, 0], comparison: kind === 'comparison', shortened: entries.length > displayed.length };
+    return view ? buildReportChart(view.data, view.filters.kind) : null;
   });
 
   filters = { ...this.defaults };
@@ -133,7 +115,10 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void { void this.initialize(); }
-  ngOnDestroy(): void { this.request?.abort(); }
+  ngOnDestroy(): void {
+    this.destroyed = true;
+    this.request?.abort();
+  }
 
   async initialize(): Promise<void> {
     const controller = this.beginRequest();
@@ -205,35 +190,46 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
     else this.changeKind(kind);
   }
 
-  generate(format: ExportFormat): void {
+  async generate(format: ExportFormat): Promise<void> {
     const view = this.view();
-    if (!view?.data.rows.length || !this.formats.includes(format)) return;
+    if (!view?.data.rows.length || !this.formats.includes(format) || this.exporting()) return;
+
+    this.exportError.set('');
+    this.exporting.set(format);
+    const context = this.exportContext(view);
+    const { kind, from, to } = view.filters;
+    try {
+      const { blob, extension } = await exportReport(format, view.data, context);
+      if (this.destroyed) return;
+      const fileName = `TunariGuard_${kind}_${from}_${to}.${extension}`;
+      const download = { title: context.title, date: context.date, format, fileName, blob };
+      this.download(download);
+      this.recent.update((records) => [download, ...records].slice(0, 6));
+    } catch {
+      this.exportError.set('No se pudo preparar la descarga. Intenta nuevamente.');
+    } finally {
+      this.exporting.set(null);
+    }
+  }
+
+  private exportContext(view: ReportView): ReportExportContext {
     const { filters, data } = view;
-    const title = this.reportTypes[filters.kind];
-    const now = new Date();
-    const date = now.toLocaleString('es-BO', { timeZone: 'America/La_Paz' });
-    const coverageNotice = this.coverageNotice();
-    const details = [
-      'Tunari Guard · ' + title,
-      'Área: ' + view.area,
-      `Período: ${filters.from} a ${filters.to} (hora de Bolivia)`,
-      'Generado: ' + date,
-      'Fuente: NASA FIRMS · paquete de análisis fuego',
-      'Cobertura informada: ' + this.coverage(),
-      'Método: ' + view.method,
-      ...(this.showSource(filters.kind) ? ['Selección: ' + sourceLabels[filters.source]] : []),
-      ...(filters.confidence ? ['Confianza mínima: ' + filters.confidence] : []),
-      ...(filters.alertLevel ? ['Nivel de alerta: ' + filters.alertLevel.replaceAll('_', ' ')] : []),
-      `${data.headline.label}: ${data.headline.value ?? 'Sin cobertura'} ${data.headline.unit}`,
-      data.notice,
-      ...(coverageNotice ? [coverageNotice] : []),
-      ...(view.areaNotice ? [view.areaNotice] : []),
+    const fields: ReportExportContext['fields'] = [
+      ['Área', view.area],
+      ['Período', `${filters.from} a ${filters.to} (hora de Bolivia)`],
+      ['Fuente', 'NASA FIRMS · paquete de análisis fuego'],
+      ['Método', view.method],
     ];
-    const { blob, extension } = exportReport(format, data, details);
-    const fileName = `TunariGuard_${filters.kind}_${filters.from}_${filters.to}.${extension}`;
-    const download = { title, date, format, fileName, blob };
-    this.download(download);
-    this.recent.update((records) => [download, ...records].slice(0, 6));
+    if (this.showSource(filters.kind)) fields.push(['Selección', sourceLabels[filters.source]]);
+    if (filters.confidence) fields.push(['Confianza mínima', filters.confidence]);
+    if (filters.alertLevel) fields.push(['Nivel de alerta', filters.alertLevel.replaceAll('_', ' ')]);
+
+    return {
+      title: this.reportTypes[filters.kind],
+      date: new Date().toLocaleString('es-BO', { timeZone: 'America/La_Paz' }),
+      fields,
+      notices: [data.notice, this.coverageNotice(), view.areaNotice].filter((notice): notice is string => !!notice),
+    };
   }
 
   download(record: DownloadRecord): void {
@@ -252,6 +248,7 @@ export class ReportsPageComponent implements OnInit, OnDestroy {
     this.request = new AbortController();
     this.loading.set(true);
     this.error.set('');
+    this.exportError.set('');
     this.view.set(null);
     this.page.set(0);
     return this.request;
