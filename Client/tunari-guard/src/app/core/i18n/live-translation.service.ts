@@ -101,10 +101,11 @@ export class LiveTranslationService {
   private translate(original: string): string {
     const trimmed = original.trim();
     if (!trimmed) return original;
-    const exact = UI_TRANSLATIONS[trimmed];
+    const normalized = trimmed.replace(/\s+/g, ' ');
+    const exact = UI_TRANSLATIONS[trimmed] ?? UI_TRANSLATIONS[normalized];
     if (exact) return original.replace(trimmed, exact);
     // Translate short UI headings containing dynamic counts without altering numeric values.
-    const prefixed = trimmed.match(/^(.+?)\s*\((\d+)\)$/);
+    const prefixed = normalized.match(/^(.+?)\s*\((\d+)\)$/);
     if (prefixed && UI_TRANSLATIONS[prefixed[1]]) return original.replace(trimmed, `${UI_TRANSLATIONS[prefixed[1]]} (${prefixed[2]})`);
     // Only UI phrasing; do not alter identifiers, numeric data or scientific payloads.
     const dynamic = [
@@ -113,6 +114,9 @@ export class LiveTranslationService {
       [/^1 alerta más en la campanita$/, '1 more alert in notifications'],
       [/^de (\d+) alertas filtradas$/, 'of $1 filtered alerts'],
       [/^Sin alertas con estos filtros$/, 'No alerts match these filters'],
+      [/^\((\d+) detecciones\)$/, '($1 detections)'],
+      [/^Resumen por distrito \((\d+)\)$/, 'District summary ($1)'],
+      [/^(\d+) detecciones$/, '$1 detections'],
     ] as const;
     for (const [pattern, replacement] of dynamic) {
       if (pattern.test(trimmed)) return original.replace(trimmed, trimmed.replace(pattern, replacement));
