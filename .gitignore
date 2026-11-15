@@ -9,3 +9,6 @@
 /TUNARIGUARD-LOGO-V*/
 /tunariguard-diseno-parche/
 
+
+# Variables de producción (contraseñas): nunca a Git
+.env.production
