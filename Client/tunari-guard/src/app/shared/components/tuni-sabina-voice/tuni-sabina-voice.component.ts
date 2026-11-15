@@ -1,4 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, inject } from '@angular/core';
+import { LanguageService } from '../../../core/i18n/language.service';
 
 /**
  * Integracion aditiva: no reemplaza el chat, los controles de captura ni sus peticiones a la API.
@@ -14,6 +15,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestro
 })
 export class TuniSabinaVoiceComponent implements AfterViewInit, OnDestroy {
   private readonly host = inject(ElementRef<HTMLElement>);
+  private readonly i18n = inject(LanguageService);
   private container: HTMLElement | null = null;
   private observer?: MutationObserver;
   private scheduled = false;
@@ -64,7 +66,7 @@ export class TuniSabinaVoiceComponent implements AfterViewInit, OnDestroy {
     // Nunca interceptar el microfono, enviar, cerrar ni los controles de voz continua.
     if (!button.closest('.chat-message, .chat-messages, [class*="message-bubble"], [class*="message-card"]')) return;
     const textLabel = [button.innerText, button.title, button.getAttribute('aria-label')].filter(Boolean).join(' ');
-    const isListen = /(^|\s)(escuchar|reproducir voz|o[ií]r respuesta)(\s|$)/i.test(textLabel);
+    const isListen = /(^|\s)(escuchar|reproducir voz|o[ií]r respuesta|listen|play audio|listen to response)(\s|$)/i.test(textLabel);
     if (!isListen && button !== this.speakingButton) return;
     if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) return;
     const text = this.messageForButton(button);
@@ -111,6 +113,10 @@ export class TuniSabinaVoiceComponent implements AfterViewInit, OnDestroy {
   private preferredVoice(): SpeechSynthesisVoice | null {
     this.loadVoices();
     const list = this.voices;
+    if (this.i18n.language() === 'en') {
+      return list.find(v => /^en[-_]/i.test(v.lang) && /female|aria|jenny|zira|samantha/i.test(v.name))
+        ?? list.find(v => /^en[-_]/i.test(v.lang)) ?? null;
+    }
     return list.find(v => /microsoft\s+sabina/i.test(v.name) && /^es[-_]?mx$/i.test(v.lang))
       ?? list.find(v => /microsoft\s+sabina/i.test(v.name))
       ?? list.find(v => /^es[-_]?mx$/i.test(v.lang) && /female|femenin|mujer|sabina/i.test(v.name))
@@ -152,7 +158,7 @@ export class TuniSabinaVoiceComponent implements AfterViewInit, OnDestroy {
     if (!text) { this.finishSpeech(); return; }
     const voice = this.preferredVoice();
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = voice?.lang ?? 'es-MX';
+    utterance.lang = voice?.lang ?? (this.i18n.language() === 'en' ? 'en-US' : 'es-MX');
     if (voice) utterance.voice = voice;
     // Levemente juvenil, sin sobreacelerar ni distorsionar la pronunciacion.
     utterance.pitch = 1.30;

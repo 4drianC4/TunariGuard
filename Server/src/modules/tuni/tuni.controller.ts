@@ -4,6 +4,7 @@ import {
   Controller,
   HttpCode,
   Post,
+  Headers,
   Res,
   UploadedFile,
   UseInterceptors,
@@ -24,8 +25,28 @@ export class TuniController {
 
   @Post('chat')
   @HttpCode(200)
-  chat(@Body({ schema: chatSchema }) body: ChatBody) {
-    return this.asistente.responder(body);
+  async chat(@Body({ schema: chatSchema }) body: ChatBody, @Headers('accept-language') acceptLanguage?: string) {
+    const response = await this.asistente.responder(body);
+    if (!acceptLanguage?.split(',')[0]?.trim().toLowerCase().startsWith('en')) return response;
+    if (!this.openai.disponible) {
+      return { ...response, language: 'es', translationAvailable: false };
+    }
+    try {
+      const result = await this.openai.chat<{
+        choices: { message: { content: string | null } }[];
+      }>({
+        temperature: 0,
+        max_tokens: 700,
+        messages: [
+          { role: 'system', content: 'Translate the following Spanish forest-monitoring assistant response into natural English. Preserve all numbers, dates, units, place names, satellite identifiers, uncertainty, caveats and scientific meaning exactly. Do not add information. Output only the translation.' },
+          { role: 'user', content: response.answer },
+        ],
+      });
+      const translated = result.choices?.[0]?.message?.content?.trim();
+      return translated ? { ...response, answer: translated, language: 'en' } : { ...response, language: 'es', translationAvailable: false };
+    } catch {
+      return { ...response, language: 'es', translationAvailable: false };
+    }
   }
 
   @Post('transcribe')

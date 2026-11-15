@@ -15,6 +15,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { LiveUpdatesService } from '../../../application/services/live-updates.service';
 import { ALERT_COLORS, SEVERITY_LEVEL, type AlertSeverity } from '../../../features/alerts/alert-event';
+import { LanguageSwitcherComponent } from '../../i18n/language-switcher.component';
 
 const TOAST_DURATION_MS = 10_000;
 const PREVIEW_SEVERITIES = new Map<string, AlertSeverity>([
@@ -35,7 +36,7 @@ interface TunariNotification {
 @Component({
   selector: 'app-topbar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LanguageSwitcherComponent],
   templateUrl: './topbar.component.html',
   styleUrls: ['./topbar.component.scss']
 })
@@ -170,7 +171,6 @@ export class TopbarComponent {
 
   @HostListener('document:keydown')
   enableSound(): void {
-    // El navegador exige una interacción del usuario antes de habilitar audio.
     if (typeof AudioContext === 'undefined') return;
     const audio = this.audio ??= new AudioContext();
     if (audio.state === 'suspended') void audio.resume().catch(() => undefined);
